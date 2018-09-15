@@ -21,40 +21,30 @@ export default class StockListItemMobile extends React.Component {
     renderActionButtons = () => {
         const {symbol, checked = false, onAddIconClick, onSellIconClick, sellChecked = false} = this.props;
 
-        // if (checked || sellChecked) {
-        //     const onClick = checked ? onAddIconClick : onSellIconClick;
-
-        //     return (
-        //         <Button size='small' variant='outlined' onClick={() => onClick(symbol)}>
-        //             {
-        //                 checked ? 'BOUGHT' : 'SOLD'
-        //             }
-        //         </Button>
-        //     );
-        // } else {
-            return (
-                <React.Fragment>
-                    <Button 
-                            size='small' 
-                            color="secondary" 
-                            onClick={() => onSellIconClick(symbol)}
-                            variant={sellChecked ? 'contained': 'outlined'}
-                            style={{boxShadow: 'none'}}
-                    >
-                        Sell
-                    </Button>
-                    <Button 
-                            size='small' 
-                            color="primary" 
-                            onClick={() => onAddIconClick(symbol)}
-                            variant={checked ? 'contained' : 'outlined'}
-                            style={{boxShadow: 'none', marginLeft: '10px'}}
-                    >
-                        Buy
-                    </Button>
-                </React.Fragment>
-            );
-        // }
+        return (
+            <React.Fragment>
+                <Button 
+                        size='small' 
+                        color="secondary" 
+                        onClick={() => onSellIconClick(symbol)}
+                        variant={sellChecked ? 'contained': 'outlined'}
+                        style={{boxShadow: 'none'}}
+                >
+                    <Icon color="#fff">money_off</Icon>
+                    Sell
+                </Button>
+                <Button 
+                        size='small' 
+                        color="primary" 
+                        onClick={() => onAddIconClick(symbol)}
+                        variant={checked ? 'contained' : 'outlined'}
+                        style={{boxShadow: 'none', marginLeft: '10px'}}
+                >
+                    <Icon color="#fff" style={{marginRight: '5px'}}>monetization_on</Icon>
+                    Buy
+                </Button>
+            </React.Fragment>
+        );
     }
 
     render() {
@@ -86,7 +76,7 @@ export default class StockListItemMobile extends React.Component {
             <SGrid container className='stock-row' style={containerStyle}>
                 <Grid item xs={6} style={leftContainerStyle}>
                     <div style={horizontalBox}>
-                        <h3 style={{fontSize: '16px', fontWeight: '400'}}>{symbol}</h3>
+                        <h3 style={{fontSize: '18px', fontWeight: '500'}}>{symbol}</h3>
                         <Icon color="error">{changeIcon}</Icon>
                     </div>
                     <div style={{...horizontalBox, alignItems: 'flex-end'}}>

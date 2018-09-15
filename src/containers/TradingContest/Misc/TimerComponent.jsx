@@ -18,6 +18,10 @@ export default class TimeComponent extends React.Component {
 
     componentWillMount() {
         this.setTimer();
+        this.timerNew = setInterval(function x() {
+            console.log("tick");
+            return x;
+        }(), 1000);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -30,9 +34,11 @@ export default class TimeComponent extends React.Component {
 
     setTimer = (props = this.props) => {
         clearInterval(this.timer);
-        this.timer = setInterval(() => {
+        const self = this;
+        this.timer = setInterval(function x() {
             const {date = moment().format('YYYY-MM-DD')} = props;
-            const hourToSet = props.contestStarted ? contestEndHour : contestStartHour;
+            const hour = _.get(self.props, 'hour', null);
+            const hourToSet = hour !== null ? hour : props.contestStarted ? contestEndHour : contestStartHour;
             const endTime = setEndTimeToDate(date, hourToSet);
             const startTime = moment();
             let difference = null;
@@ -40,8 +46,9 @@ export default class TimeComponent extends React.Component {
                 const secondsDifference = endTime.diff(startTime, 'seconds');
                 difference = moment.utc(secondsDifference * 1000).format('HH:mm:ss');
             }    
-            this.setState({difference});   
-        }, 1000)
+            self.setState({difference});   
+            return x;
+        }(), 1000)
     }
 
     render() {
@@ -50,19 +57,6 @@ export default class TimeComponent extends React.Component {
 
         return (
             <Grid container>
-                <Grid item xs={12} style={{...verticalBox, width: '100%'}}>
-                    <Header
-                            fontSize={type === 'normal' ? '16px' : '14px'}
-                    >
-                        {
-                            this.state.difference === null
-                            ? "Contest Ended"
-                            : contestStarted
-                                ? "Contest ends in"
-                                : "Contest will start in"
-                        }
-                    </Header>
-                </Grid>
                 {
                     this.state.difference !== null &&
                     <Grid item xs={12} style={{...verticalBox}}>

@@ -5,6 +5,7 @@ import moment from 'moment';
 import Media from 'react-media';
 import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import {withRouter} from 'react-router';
@@ -355,7 +356,7 @@ class CreateEntry extends React.Component {
                 }
                 {
                     // contestSubmissionOver && 
-                    // moment(this.state.selectedDate).isSame(todayDate) && 
+                    moment(this.state.selectedDate).isSame(todayDate) &&
                     this.state.positions.length > 0 &&
                     <Grid 
                             item xs={12} 
@@ -364,15 +365,18 @@ class CreateEntry extends React.Component {
                                 position: 'fixed', 
                                 bottom: '20px', 
                                 display: 'flex', 
+                                padding: '0 10px',
                                 justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'
                             }}
                     >
-                        <Button style={fabButtonStyle} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
+                        <Button style={{...fabButtonStyle, ...addStocksStyle}} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
+                            <Icon color="#fff" style={{marginRight: '5px'}}>add_circle</Icon>
                             ADD STOCKS
                         </Button>
                         {
                             !this.state.showPreviousPositions &&
-                            <Button style={fabButtonStyle} size='small' variant="extendedFab" aria-label="Edit" onClick={this.submitPositions}>
+                            <Button style={{...fabButtonStyle, ...submitButtonStyle}} size='small' variant="extendedFab" aria-label="Edit" onClick={this.submitPositions}>
+                                <Icon color="#fff" style={{marginRight: '5px'}}>update</Icon>
                                 UPDATE PICKS
                             </Button>
                         }
@@ -425,3 +429,13 @@ const emptyPortfolioButtonStyle = {
 const SGrid = styled(Grid)`
     background-color: #fff;
 `;
+
+const addStocksStyle = {
+    backgroundColor: '#155FC0',
+    color: '#fff'
+};
+
+const submitButtonStyle = {
+    backgroundColor: '#15C08F',
+    color: '#fff'
+}

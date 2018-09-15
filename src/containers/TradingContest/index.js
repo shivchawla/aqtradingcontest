@@ -10,7 +10,7 @@ import CreateEntry from './CreateEntry';
 
 export default class TradingContest extends React.Component {
     state = {
-        selectedTab: 0
+        selectedTab: 1
     };
 
     handleChange = (event, selectedTab) => {

@@ -126,7 +126,7 @@ export const getRankMedal = rank => {
 }
 
 export const setEndTimeToDate = (date, hourToAdd = 15) => {
-    const dateFormat = 'YYYY-MM-DD';
+    const dateFormat = 'YYYY-MM-DD HH:mm:ss';
     let endDate = moment(date, dateFormat);
     endDate.hours(hourToAdd);
     endDate.minutes(30);

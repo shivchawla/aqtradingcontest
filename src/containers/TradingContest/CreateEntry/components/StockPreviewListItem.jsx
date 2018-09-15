@@ -18,7 +18,7 @@ export default class StockPreviewListItem extends React.Component {
             <SGrid container style={{padding: '10px', marginBottom: '20px'}}>
                 <Grid item  xs={12} style={colStyle}>
                     <Symbol>{symbol}</Symbol>
-                    <SecondayText>{points}</SecondayText>
+                    <SecondayText>{points}k</SecondayText>
                 </Grid>
                 <Grid item  xs={12} style={colStyle}>
                     <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A', textAlign: 'start'}}>{name}</SecondayText>

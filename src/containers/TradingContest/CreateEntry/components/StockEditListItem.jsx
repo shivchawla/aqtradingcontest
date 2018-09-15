@@ -60,7 +60,7 @@ export default class StockEditListItem extends React.Component {
                 </SGridCol>
                 <SGridCol item xs={12} style={colStyle}>
                     <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A', textAlign: 'start'}}>{name}</SecondayText>
-                    <SecondayText color={changeColor}>{chg} ({chgPct})</SecondayText>
+                    <SecondayText color={changeColor}>{chg} ({(chgPct * 100).toFixed(2)}%)</SecondayText>
                 </SGridCol>
                 <SGridCol item xs={12} style={colStyle}>
                     <div style={horizontalBox}>
@@ -81,9 +81,9 @@ export default class StockEditListItem extends React.Component {
 const PointsComponent = ({points, onAddClick, onReduceClick}) => {
     return (
         <div style={{...horizontalBox, justifyContent: 'center', marginRight: '-17px'}}>
-            <ActionIcon type='chevron_left' onClick={onReduceClick} />
-            <SecondayText><span style={{fontSize: '25px', marginRight: '5px'}}>{points}</span>pts</SecondayText>
-            <ActionIcon type='chevron_right' onClick={onAddClick} />
+            <ActionIcon type='remove_circle' onClick={onReduceClick} />
+            <SecondayText><span style={{fontSize: '25px', marginRight: '2px'}}>{points}</span>k</SecondayText>
+            <ActionIcon type='add_circle' onClick={onAddClick} />
         </div>
     );
 }

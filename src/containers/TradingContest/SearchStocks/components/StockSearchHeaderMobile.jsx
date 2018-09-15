@@ -2,6 +2,7 @@ import * as React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import ActionIcon from '../../Misc/ActionIcons';
 import {horizontalBox, primaryColor} from '../../../../constants';
@@ -70,8 +71,9 @@ export default class SearchStockHeader extends React.Component {
                                     variant='contained' 
                                     color='primary' 
                                     onClick={this.props.addSelectedStocksToPortfolio}
-                                    style={{marginRight: '5px'}}
+                                    style={{marginRight: '5px', backgroundColor: primaryColor, boxShadow: 'none'}}
                             >
+                                <Icon color="#fff" style={{marginRight: '5px'}}>done_all</Icon>
                                 DONE
                             </Button>
                         }

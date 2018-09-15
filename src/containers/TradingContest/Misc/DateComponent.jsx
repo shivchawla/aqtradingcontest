@@ -40,6 +40,10 @@ export default class DateComponent extends React.Component {
         this.props.onDateChange && this.props.onDateChange(moment(selectedDate, dateFormat));
     }
 
+    dateField = () => (
+        <h3>Hello World</h3>
+    )
+
     render() {
         const {color = primaryColor} = this.props;
         const { selectedDate } = this.state;
@@ -55,6 +59,7 @@ export default class DateComponent extends React.Component {
                         onChange={this.handleDateChange}
                         showTodayButton
                         style={{textAlign: 'center'}}
+                        // TextFieldComponent={this.dateField()}
                     />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}} onClick={this.navigateToNexDate}> 
@@ -63,4 +68,10 @@ export default class DateComponent extends React.Component {
             </Grid>
         );
     }
+}
+
+const DateFields = props => {
+    return (
+        <span>Hello World</span>
+    );
 }

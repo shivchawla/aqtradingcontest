@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
 import {withRouter} from 'react-router';
 import DateComponent from '../Misc/DateComponent';
 import ParticipantList from './ParticipantList';
@@ -60,39 +61,46 @@ class Participants extends React.Component {
         this.getContestRankings(this.state.selectedDate);
     }
 
-    renderPageContent() {
+    renderWinnerDetails = () => {
         return (
-            <Grid container>
-                <Grid item xs={12} style={topContainerStyle}>
-                    <DateComponent 
-                        date={moment(this.state.selectedDate)}
-                        onDateChange={this.getContestRankings}
-                        style={{backgroundColor: '#15C08F'}}
-                    />
-                    <Grid 
-                            container 
-                            style={{padding: '0 10px', width: '100%', backgroundColor: '#15C08F'}}
-                            justify="center"
-                            alignItems="center"
-                    >
-                        <h3 style={{fontSize: '18px', color: '#fff', textAlign: 'center', fontWeight: 400, marginTop: '10px'}}>Winners</h3>
-                    </Grid>
-                </Grid>
+            <React.Fragment>
                 {
                     this.state.winners.length > 0
                     ? this.renderWinnerList()
                     : this.renderEmptyScreen()
                 }
-            </Grid>
+            </React.Fragment>
         );
     }
 
     render() {
-        if (this.state.loading) {
-            return <LoaderComponent />;
-        } else {
-            return this.renderPageContent();
-        }
+        return (
+            <Grid container>
+                <Grid item xs={12}>
+                    <DateComponent 
+                        date={moment(this.state.selectedDate)}
+                        onDateChange={this.getContestRankings}
+                        style={{backgroundColor: '#15C08F'}}
+                    />
+                </Grid>
+                <Grid item xs={12} style={topContainerStyle}>
+                    <Grid 
+                            container 
+                            style={{...verticalBox, padding: '0 10px', width: '100%', backgroundColor: '#15C08F'}}
+                            justify="center"
+                            alignItems="center"
+                    >
+                        <Icon fontSize='inherit' style={{color: '#FFEE5A', fontSize: '30px'}}>wc</Icon>
+                        <h3 style={{fontSize: '18px', color: '#fff', textAlign: 'center', fontWeight: 400, marginTop: '10px'}}>Winners</h3>
+                    </Grid>
+                </Grid>
+                {
+                    this.state.loading
+                    ? <LoaderComponent />
+                    : this.renderWinnerDetails()
+                }
+            </Grid>
+        );
     }
 }
 

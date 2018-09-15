@@ -11,7 +11,7 @@ export default class ActionIcons extends React.Component {
         return (
             // <SIcon onClick={() => onClick && onClick()} type={type} theme="outlined" />
             <IconButton aria-label="Delete" onClick={() => onClick && onClick()}>
-                <Icon color="error">{type}</Icon>
+                <SIcon color="error">{type}</SIcon>
             </IconButton>
         );
     }
@@ -20,8 +20,4 @@ export default class ActionIcons extends React.Component {
 const SIcon = styled(Icon)`
     color: ${primaryColor};
     font-size: 20px;
-    transition: all 0.2s ease-in-out;
-    &:hover {
-        color: ${primaryColor};
-    }
 `;
