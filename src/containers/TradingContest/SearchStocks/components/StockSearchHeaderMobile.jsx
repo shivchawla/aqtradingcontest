@@ -3,7 +3,6 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Badge from '@material-ui/core/Badge';
 import ActionIcon from '../../Misc/ActionIcons';
 import {horizontalBox, primaryColor} from '../../../../constants';
 
@@ -66,23 +65,19 @@ export default class SearchStockHeader extends React.Component {
                             this.props.selectedStocks.length > 0 &&
                             !this.props.stockPerformanceOpen &&
                             !this.props.stockFilterOpen &&
-                            <Badge 
-                                style={{
-                                    backgroundColor: '#fff', 
-                                    color: primaryColor, 
-                                    fontSize: '14px', 
-                                    marginLeft:'5px',
-                                    right: '5px'
-                                }} 
-                                color="primary"
-                                badgeContent={this.props.selectedStocks.length}
+                            <Button 
+                                    size='small' 
+                                    variant='contained' 
+                                    color='primary' 
+                                    onClick={this.props.addSelectedStocksToPortfolio}
+                                    style={{marginRight: '5px'}}
                             >
-                                <Button onClick={this.props.addSelectedStocksToPortfolio}>DONE</Button>
-                            </Badge>
+                                DONE
+                            </Button>
                         }
                     </Grid>
-                    {this.props.renderSelectedStocks()}
-                    {this.props.renderSelectedStocks('sell')}
+                    {/* {this.props.renderSelectedStocks()}
+                    {this.props.renderSelectedStocks('sell')} */}
                 </SGrid>
             </Grid>
         );

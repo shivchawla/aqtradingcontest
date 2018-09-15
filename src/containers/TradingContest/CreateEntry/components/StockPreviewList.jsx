@@ -8,7 +8,7 @@ export default class StockPreviewList extends React.Component {
         const {positions = []} = this.props;
 
         return (
-            <Grid item className='stock-list' xs={12} style={{...stockListContainer, paddingTop: '20px'}}>
+            <Grid item className='stock-list' xs={12} style={{...stockListContainer, padding: '10px 10px 0 10px'}}>
                 {
                     positions.map((position, index) => {
                         return (

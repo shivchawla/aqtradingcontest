@@ -6,6 +6,7 @@ import Media from 'react-media';
 import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
 import {withRouter} from 'react-router';
 import {Motion, spring} from 'react-motion';
 import {SearchStocks} from '../SearchStocks';
@@ -17,7 +18,7 @@ import DateComponent from '../Misc/DateComponent';
 import LoaderComponent from '../Misc/Loader';
 import {verticalBox, horizontalBox} from '../../../constants';
 import {contestEndHour} from '../constants';
-import {handleCreateAjaxError} from '../../../utils';
+import {handleCreateAjaxError, Utils} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -27,7 +28,7 @@ class CreateEntry extends React.Component {
         super(props);
         this.searchStockComponent = null;
         this.state = {
-            bottomSheetOpenStatus: true,
+            bottomSheetOpenStatus: false,
             positions: [], // Positions to buy
             sellPositions: [], // Positions to sell
             previousPositions: [], // contains the positions for the previous entry in the current contest for buy,
@@ -39,7 +40,8 @@ class CreateEntry extends React.Component {
             contestEndDate: moment().format(dateFormat),
             noEntryFound: false,
             loading: false,
-            listView: 'buy'
+            listView: 'buy',
+            snackbarOpenStatus: false
         };
     }
 
@@ -94,7 +96,7 @@ class CreateEntry extends React.Component {
                                     <div 
                                         style={{
                                             transform: `translate3d(0, ${x}px, 0)`,
-                                            position: 'absolute',
+                                            position: 'fixed',
                                             zIndex: '20',
                                             backgroundColor: '#fff',
                                             zIndex: '20000'
@@ -257,7 +259,7 @@ class CreateEntry extends React.Component {
         const positions = [...this.state.positions, ...processedSellPositions];
         submitEntry(positions, this.state.previousPositions.length > 0)
         .then(response => {
-            console.log(response.data);
+            this.setState({snackbarOpenStatus: true});
         })
         .catch(error => {
             console.log('Error Occured');
@@ -329,9 +331,11 @@ class CreateEntry extends React.Component {
         currentDate.seconds(0);
         const contestSubmissionOver = moment().isBefore(currentDate);
         const todayDate = moment().format(dateFormat);
+        const fabButtonStyle = {padding: '0 10px'};
 
         return (
             <SGrid container>
+                <SnackbarComponent openStatus={this.state.snackbarOpenStatus} message='Entry Successfully Submitted :)'/>
                 {this.renderSearchStocksBottomSheet()}
                 <Grid item xs={12}>
                     <DateComponent 
@@ -353,17 +357,25 @@ class CreateEntry extends React.Component {
                     // contestSubmissionOver && 
                     // moment(this.state.selectedDate).isSame(todayDate) && 
                     this.state.positions.length > 0 &&
-                    <Grid item xs={12} style={{width: '100%', position: 'fixed', bottom: '20px', display: 'flex', justifyContent: 'space-between'}}>
-                        <Button variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet} style={{width: '100px'}}>
-                            {   
-                                this.state.previousPositions.length > 0 ? 'EDIT' : 'ADD'
-                            }
+                    <Grid 
+                            item xs={12} 
+                            style={{
+                                width: '100%', 
+                                position: 'fixed', 
+                                bottom: '20px', 
+                                display: 'flex', 
+                                justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'
+                            }}
+                    >
+                        <Button style={fabButtonStyle} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
+                            ADD STOCKS
                         </Button>
-                        <Button variant="extendedFab" aria-label="Edit" style={{width: '100px'}} onClick={this.submitPositions}>
-                            {
-                                this.state.previousPositions.length > 0 ? 'UPDATE' : 'SUBMIT'
-                            }
-                        </Button>
+                        {
+                            !this.state.showPreviousPositions &&
+                            <Button style={fabButtonStyle} size='small' variant="extendedFab" aria-label="Edit" onClick={this.submitPositions}>
+                                UPDATE PICKS
+                            </Button>
+                        }
                     </Grid>
                 }
             </SGrid>
@@ -381,26 +393,23 @@ class CreateEntry extends React.Component {
 
 export default withRouter(CreateEntry);
 
-const fabContainerStyle = {
-    position: 'fixed',
-    bottom: '40px',
-    width: '100%',
-};
-
-const submitButtonStyle = {
-    backgroundColor: '#15C08F',
-    fontWeight: '400',
-    color: '#fff',
-    width: '100px',
-    display: 'flex',
-    fontSize: '14px',
-    color: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    boxShadow: '0 3px 8px #8D8A8A',
-    zIndex: 2000,
-    border: 'none'
-};
+const SnackbarComponent = ({openStatus = false, message = 'Snackbar Data'}) => {
+    return (
+        <Snackbar
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+            }}
+            open={openStatus}
+            autoHideDuration={1500}
+            onClose={this.handleClose}
+            ContentProps={{
+                'aria-describedby': 'message-id',
+            }}
+            message={<span id="message-id">{message}</span>}              
+        />
+    );
+}
 
 const emptyPortfolioButtonStyle = {
     backgroundColor: '#15C08F',

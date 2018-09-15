@@ -3,6 +3,7 @@ import Media from 'react-media';
 import styled from 'styled-components';
 import {Motion, spring} from 'react-motion';
 import _  from 'lodash';
+import Badge from '@material-ui/core/Badge';
 import Chip from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
@@ -15,7 +16,7 @@ import {screenSize} from '../constants';
 // import SearchStockHeader from '../../Contest/CreateAdvice/Mobile/SearchStockHeader';
 import SearchStockHeaderMobile from './components/StockSearchHeaderMobile';
 import StockList from './components/StockList';
-import {horizontalBox, verticalBox} from '../../../constants';
+import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
 import {fetchAjax, openNotification} from '../../../utils';
 import './css/searchStocks.css';
 
@@ -77,6 +78,8 @@ export class SearchStocks extends React.Component {
     }
 
     renderSearchStockListMobile = () => {
+        const selectedStocks = [...this.state.selectedStocks, ...this.state.sellSelectedStocks];
+
         return (
             <SGrid container>
                 <Grid
@@ -87,13 +90,8 @@ export class SearchStocks extends React.Component {
                             backgroundColor: '#efeff4'
                         }}
                 >
-                    {/* <SearchBar 
-                        style={{width: '90%'}}
-                        placeholder="Search Stocks"
-                        onChange={value => this.handleSearchInputChange(value, 'mobile')}
-                    /> */}
                     <TextField
-                        style={{width: '100%', marginTop: 0, left: '10px'}}
+                        style={{width: '80%', marginTop: 0, left: '10px'}}
                         id="search"
                         label="Search Stocks"
                         type="search"
@@ -103,10 +101,26 @@ export class SearchStocks extends React.Component {
                     {
                         this.shouldFiltersBeShown() &&
                         <ActionIcon type='filter_list' onClick={this.toggleStockFilterOpen} />
-                        // <Icon type="filter" style={{fontSize: '25px'}} onClick={this.toggleStockFilterOpen}/>
+                    }
+                    {
+                        this.shouldFiltersBeShown() &&
+                        selectedStocks.length > 0 &&
+                        !this.state.stockPerformanceOpen &&
+                        !this.state.stockFilterOpen &&
+                        <Badge 
+                            style={{
+                                backgroundColor: '#fff', 
+                                color: primaryColor, 
+                                fontSize: '14px', 
+                                marginLeft:'10px',
+                                right: '5px'
+                            }} 
+                            color="primary"
+                            badgeContent={selectedStocks.length}
+                        />
                     }
                 </Grid>
-                {this.renderBenchmarkDetailMobile()}
+                {/* {this.renderBenchmarkDetailMobile()} */}
                 <Grid
                         item 
                         xs={12} 
@@ -275,9 +289,13 @@ export class SearchStocks extends React.Component {
     conditionallyAddItemToSelectedArray = (symbol, addToPortfolio = false) => {
         const {maxLimit = 5} = this.props;
         const selectedStocks = _.map([...this.state.selectedStocks], _.cloneDeep);
+        const sellSelectedStocks = _.map(this.state.sellSelectedStocks, _.cloneDeep);
         const localStocks = _.map([...this.localStocks], _.cloneDeep);
         const stocks = _.map([...this.state.stocks], _.cloneDeep);
+
         const selectedStockIndex = selectedStocks.indexOf(symbol);
+        const sellSelectedStockIndex = sellSelectedStocks.indexOf(symbol);
+
         const targetIndex = _.findIndex(stocks, stock => stock.symbol === symbol);
         const targetStock = stocks[targetIndex];
         const targetLocalStock = localStocks.filter(stock => stock.symbol === symbol)[0];
@@ -288,6 +306,12 @@ export class SearchStocks extends React.Component {
                     return;
                 }
                 selectedStocks.push(symbol);
+                // Checking if it is present in the be sold array, if present delete it
+                if (sellSelectedStockIndex >= 0) {
+                    sellSelectedStocks.splice(sellSelectedStockIndex, 1);
+                    targetStock.sellChecked = false;
+                    targetLocalStock.sellChecked = false;
+                }
                 targetStock.checked = true;
                 targetLocalStock.checked = true;
             } else {
@@ -296,7 +320,7 @@ export class SearchStocks extends React.Component {
                 targetLocalStock.checked = false;
             }
             stocks[targetIndex] = targetStock;
-            this.setState({selectedStocks, stocks});
+            this.setState({selectedStocks, stocks, sellSelectedStocks});
             this.localStocks = localStocks;
         } else {
             if (selectedStockIndex === -1) {
@@ -304,13 +328,19 @@ export class SearchStocks extends React.Component {
                     openNotification('info', 'Max Limit Reached', "You can't buy more than 5 stocks");
                     return;
                 }
+                // Checking if it is present in the be sold array, if present delete it
+                if (sellSelectedStockIndex >= 0) {
+                    sellSelectedStocks.splice(sellSelectedStockIndex, 1);
+                    targetStock.sellChecked = false;
+                    targetLocalStock.sellChecked = false;
+                }
                 selectedStocks.push(symbol);
                 targetLocalStock.checked = true;
             } else {
                 selectedStocks.splice(selectedStockIndex, 1);
                 targetLocalStock.checked = false;
             }
-            this.setState({selectedStocks});
+            this.setState({selectedStocks, sellSelectedStocks});
             this.localStocks = localStocks;
         }
     }
@@ -318,9 +348,13 @@ export class SearchStocks extends React.Component {
     conditionallyAddItemToSellSelectedArray = (symbol, addToPortfolio = false) => {
         const {maxLimit = 5} = this.props;
         const selectedStocks = _.map([...this.state.sellSelectedStocks], _.cloneDeep);
+        const buySelectedStocks = _.map([...this.state.selectedStocks], _.cloneDeep);
         const localStocks = _.map([...this.localStocks], _.cloneDeep);
         const stocks = _.map([...this.state.stocks], _.cloneDeep);
+
         const selectedStockIndex = selectedStocks.indexOf(symbol);
+        const buySelectedStockIndex = buySelectedStocks.indexOf(symbol);
+
         const targetIndex = _.findIndex(stocks, stock => stock.symbol === symbol);
         const targetStock = stocks[targetIndex];
         const targetLocalStock = localStocks.filter(stock => stock.symbol === symbol)[0];
@@ -329,6 +363,12 @@ export class SearchStocks extends React.Component {
                 if (this.state.sellSelectedStocks.length >= maxLimit) {
                     openNotification('info', 'Max Limit Reached', "You can't sell more than 5 stocks");
                     return;
+                }
+                // Checking if it is present in the be bought array, if present delete it
+                if (buySelectedStockIndex >= 0) {
+                    buySelectedStocks.splice(buySelectedStockIndex, 1);
+                    targetStock.checked = false;
+                    targetLocalStock.checked = false;
                 }
                 selectedStocks.push(symbol);
                 targetStock.sellChecked = true;
@@ -339,7 +379,7 @@ export class SearchStocks extends React.Component {
                 targetLocalStock.sellChecked = false;
             }
             stocks[targetIndex] = targetStock;
-            this.setState({sellSelectedStocks: selectedStocks, stocks});
+            this.setState({sellSelectedStocks: selectedStocks, stocks, selectedStocks: buySelectedStocks});
             this.localStocks = localStocks;
         } else {
             if (selectedStockIndex === -1) {
@@ -347,13 +387,19 @@ export class SearchStocks extends React.Component {
                     openNotification('info', 'Max Limit Reached', "You can't sell more than 5 stocks");
                     return;
                 }
+                // Checking if it is present in the be bought array, if present delete it
+                if (buySelectedStockIndex >= 0) {
+                    buySelectedStocks.splice(buySelectedStockIndex, 1);
+                    targetStock.checked = false;
+                    targetLocalStock.checked = false;
+                }
                 selectedStocks.push(symbol);
                 targetLocalStock.sellChecked = true;
             } else {
                 selectedStocks.splice(selectedStockIndex, 1);
                 targetLocalStock.sellChecked = false;
             }
-            this.setState({sellSelectedStocks: selectedStocks});
+            this.setState({sellSelectedStocks: selectedStocks,selectedStocks: buySelectedStocks});
             this.localStocks = localStocks;
         }
     }
@@ -835,7 +881,7 @@ export class SearchStocks extends React.Component {
                                     portfolioLoading={this.state.portfolioLoading}
                                     toggleStockPerformanceOpen={this.toggleStockPerformanceOpen}
                                     toggleStockFilterOpen={this.toggleStockFilterOpen}
-                                    renderSelectedStocks={this.renderSelectedStocksMobile}
+                                    // renderSelectedStocks={this.renderSelectedStocksMobile}
                             />
                         }
                     />

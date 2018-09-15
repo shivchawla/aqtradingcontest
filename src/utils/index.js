@@ -236,7 +236,6 @@ export class Utils{
 	}
 
 	static getAuthToken(){
-		return "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YjIwYzUyOTlmZTA4MmVkMWRhNTVjNjUiLCJlbWFpbCI6ImFua2l0YUBnbWFpbC5jb20iLCJmaXJzdE5hbWUiOiJBbmtpdGEgIiwibGFzdE5hbWUiOiJCaGF1bWlrIiwicGFzc3dvcmQiOiIkMmEkMTAkT1lxbjRTNGtEZWYxM29TYnkzTGVDT21MekxNTjhMRHBTczdnQ3JnT0h4SFhxWWZsVm9hVGUiLCJjb2RlIjoiOGVlYWQ3OWQtMGJmMS00MzFkLTk3MzYtZWI3ZTE4MjgzYzI5IiwiY3JlYXRlZERhdGUiOiIyMDE4LTA2LTEzVDA3OjE4OjAxLjA3N1oiLCJfX3YiOjAsImlzVXNlckZyb21Hb29nbGUiOmZhbHNlLCJlbWFpbHByZWZlcmVuY2UiOnsid2Vla2x5X3BlcmZvcm1hbmNlX2RpZ2VzdCI6dHJ1ZSwiZGFpbHlfcGVyZm9ybWFuY2VfZGlnZXN0Ijp0cnVlfSwiYWN0aXZlIjp0cnVlLCJpYXQiOjE1MzY5MjE0ODIsImV4cCI6MTUzNzA5NDI4MiwiaXNzIjoiYWltc3F1YW50IiwianRpIjoiand0aWQifQ.oWzzwhZsnSoHtK9gq3v8gnUMb7doXY1STF87rxMz5dHnjYHR-MspCHcT-ywx2kIc9AepBzW4smgj-9SPsCEzkZWoUlBpv3-gN9Hjp_EkiGCvHmw1YCCAcLiDVZSCGc9xTb-UZNyDItCIUU0MC36WRDJJNdpHYpUdFETxTtF9MTvLSxebdmAZsb4XOYZ1xNcKNLbCv2RYRlxHiqxnGYIc0atHJ63WecrVya-vL6NRV7ETA-6PmD_SsJ7XCOKg4Mtrj5B3Tx22IAeQNdXSMcjIbyuY4BiYMxn_G1RSAa7-0VbnfwVOX_POsIJJKGYtRhalJFcuPN9Cc0wR_eG4hwMXRA";
 		this.loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']){
 			return this.loggedInUserinfo['token'];
@@ -247,12 +246,15 @@ export class Utils{
 
 	static getAuthTokenHeader(headers){
 		let headersLocal = headers;
-		if(!headersLocal){
-			headersLocal = {};
-		}
-		if (this.isLoggedIn()){
-			headersLocal['aimsquant-token'] = this.getAuthToken();
-		}
+		// if(!headersLocal){
+		// 	headersLocal = {};
+		// }
+		// if (this.isLoggedIn()){
+		// 	headersLocal['aimsquant-token'] = this.getAuthToken();
+		// }
+		headersLocal = {
+			'aimsquant-token': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YjIwYzUyOTlmZTA4MmVkMWRhNTVjNjUiLCJlbWFpbCI6ImFua2l0YUBnbWFpbC5jb20iLCJmaXJzdE5hbWUiOiJBbmtpdGEgIiwibGFzdE5hbWUiOiJCaGF1bWlrIiwicGFzc3dvcmQiOiIkMmEkMTAkT1lxbjRTNGtEZWYxM29TYnkzTGVDT21MekxNTjhMRHBTczdnQ3JnT0h4SFhxWWZsVm9hVGUiLCJjb2RlIjoiOGVlYWQ3OWQtMGJmMS00MzFkLTk3MzYtZWI3ZTE4MjgzYzI5IiwiY3JlYXRlZERhdGUiOiIyMDE4LTA2LTEzVDA3OjE4OjAxLjA3N1oiLCJfX3YiOjAsImlzVXNlckZyb21Hb29nbGUiOmZhbHNlLCJlbWFpbHByZWZlcmVuY2UiOnsid2Vla2x5X3BlcmZvcm1hbmNlX2RpZ2VzdCI6dHJ1ZSwiZGFpbHlfcGVyZm9ybWFuY2VfZGlnZXN0Ijp0cnVlfSwiYWN0aXZlIjp0cnVlLCJpYXQiOjE1MzY5ODgzNTEsImV4cCI6MTUzNzE2MTE1MSwiaXNzIjoiYWltc3F1YW50IiwianRpIjoiand0aWQifQ.kfulB9DQls8nIC7W3ccL2CAXf4WkgP5cQVVPAbG9sMUiw1KSlg_dXXSvW_Nj4IJ8nWay8-d2TRgiXJ6UENxTyTOcerPW3hE40AmiLXdiEslDSmPe6oV9ps3kZ6qGEc11Gq-dnlTW2LToq-y9g4W4S1kn14E8PtYuS6DrwaMvvyr97fgXw-RSUrdc6RjRsM0MjFrLSnuKa2jkpcf59PBqGSlrVpFPRpcG0b5Z27ZrfSssR4eGLUblrZGDMKw2EQJPqWgLPMP3UZfjieYfMkdICv9RbhPyMQ5NVvo06glN4BvkMSZYyqmbT6hJFNu_GTMfuQy2tu8sPFv0YUefCyDWlw'
+		};
 		return headersLocal;
 	}
 

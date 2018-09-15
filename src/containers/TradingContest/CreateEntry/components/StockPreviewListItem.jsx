@@ -15,13 +15,13 @@ export default class StockPreviewListItem extends React.Component {
         const colStyle = {...horizontalBox, justifyContent: 'space-between'};
 
         return (
-            <SGrid container style={{padding: '0 10px', margin: '0 5px', paddingBottom: '20px', marginBottom: '20px'}}>
+            <SGrid container style={{padding: '10px', marginBottom: '20px'}}>
                 <Grid item  xs={12} style={colStyle}>
                     <Symbol>{symbol}</Symbol>
                     <SecondayText>{points}</SecondayText>
                 </Grid>
                 <Grid item  xs={12} style={colStyle}>
-                    <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A'}}>{name}</SecondayText>
+                    <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A', textAlign: 'start'}}>{name}</SecondayText>
                     <SecondayText>{lastPrice}</SecondayText>
                 </Grid>
             </SGrid>
@@ -30,8 +30,8 @@ export default class StockPreviewListItem extends React.Component {
 }
 
 const SGrid = styled(Grid)`
-    background-color: #F3FFFC;
-    border: 1px solid #ADFFF6;
+    background-color: #FAFCFF;
+    border: 1px solid #F2F5FF;
     border-radius: 3px;
     margin-bottom: 20px;
 `;
