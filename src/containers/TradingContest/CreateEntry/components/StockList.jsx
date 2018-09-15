@@ -8,10 +8,8 @@ export default class StockList extends React.Component {
     calculateMax = (stockItem) => {
         const points = _.get(stockItem, 'points', 10);
         const stockItemType = _.get(stockItem, 'type', null);
-        console.log('Item Type', stockItemType);
         const requiredPositions = this.props.positions.filter(position => position.type === stockItemType);
         const totalSelectedPoints = _.sum(requiredPositions.map(item => item.points));
-        console.log('Required Positions', requiredPositions.length, totalSelectedPoints);
         const allowedExposure = Math.max(0, Math.min(60, (100 - totalSelectedPoints) + points));
         
         return allowedExposure;

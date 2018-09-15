@@ -356,7 +356,7 @@ class CreateEntry extends React.Component {
                                 this.state.previousPositions.length > 0 ? 'EDIT' : 'ADD'
                             }
                         </Button>
-                        <Button variant="extendedFab" aria-label="Edit" style={{width: '100px'}}>
+                        <Button variant="extendedFab" aria-label="Edit" style={{width: '100px'}} onClick={this.submitPositions}>
                             {
                                 this.state.previousPositions.length > 0 ? 'UPDATE' : 'SUBMIT'
                             }
