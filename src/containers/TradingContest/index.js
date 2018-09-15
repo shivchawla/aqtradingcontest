@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
@@ -16,6 +17,14 @@ export default class TradingContest extends React.Component {
     handleChange = (event, selectedTab) => {
         this.setState({selectedTab});
     };
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
 
     render() {
         const {selectedTab} = this.state;

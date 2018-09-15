@@ -1,17 +1,25 @@
 import React from 'react';
+import _ from 'lodash';
 import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import {primaryColor} from '../../../constants';
 
 export default class ActionIcons extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+    
     render() {
         const {type = 'chevron_left', onClick = null} = this.props;
 
         return (
-            // <SIcon onClick={() => onClick && onClick()} type={type} theme="outlined" />
             <IconButton aria-label="Delete" onClick={() => onClick && onClick()}>
-                <SIcon color="error">{type}</SIcon>
+                <SIcon style={{color: this.props.color || primaryColor, fontSize: this.props.size || 24}} fontSize='inherit'>{type}</SIcon>
             </IconButton>
         );
     }

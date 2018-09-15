@@ -1,10 +1,19 @@
 import React from 'react';
+import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {horizontalBox, verticalBox, metricColor} from '../../../constants';
 import {getRankMedal} from '../utils';
 
 export default class ParticipantListItem extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+    
     render() {
         const {userName = 'Saurav Biswas', cost = 99.5, img = null, totalPnl = -55.1, rank = 5} = this.props;
         const medal = getRankMedal(rank);

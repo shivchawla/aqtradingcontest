@@ -4,6 +4,14 @@ import Grid from '@material-ui/core/Grid'
 import StockPreviewListItem from './StockPreviewListItem';
 
 export default class StockPreviewList extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+    
     render() {
         const {positions = []} = this.props;
 

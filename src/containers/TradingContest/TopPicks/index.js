@@ -45,7 +45,6 @@ class Winners extends React.Component {
             const processedParticipants = await processWinnerStocks(winnerParticipants);
             const todayDate = moment().format(dateFormat);
             const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));
-            console.log(contestEnded);
             this.setState({
                 winnerStocks: processedParticipants, 
                 contestActive,
@@ -108,6 +107,14 @@ class Winners extends React.Component {
                 }
             </React.Fragment>
         );
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
     }
 
     render() {

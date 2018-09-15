@@ -10,6 +10,14 @@ import {horizontalBox, primaryColor} from '../../../../constants';
 const textColor = '#757575';
 
 export default class SearchStockHeader extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+    
     render() {
         return (
             <Grid item xs={12} style={{...topHeaderContainer, borderBottom: '1px solid #DFDFDF'}}>

@@ -1,10 +1,19 @@
 import React from 'react';
+import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {PacmanLoader} from 'react-spinners';
 import {primaryColor} from '../../../constants';
 
 export default class LoaderComponent extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+
     render() {
         return (
             <Grid 

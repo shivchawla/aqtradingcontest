@@ -1,9 +1,12 @@
 import React from 'react';
+import _ from 'lodash';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
+import ActionIcon from '../Misc/ActionIcons';
 import DatePicker from 'material-ui-pickers/DatePicker';
-import {horizontalBox, primaryColor} from '../../../constants';
+import {horizontalBox, primaryColor, verticalBox} from '../../../constants';
 
 const dateFormat = 'Do MMM YY';
 
@@ -40,9 +43,13 @@ export default class DateComponent extends React.Component {
         this.props.onDateChange && this.props.onDateChange(moment(selectedDate, dateFormat));
     }
 
-    dateField = () => (
-        <h3>Hello World</h3>
-    )
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
 
     render() {
         const {color = primaryColor} = this.props;
@@ -51,7 +58,7 @@ export default class DateComponent extends React.Component {
         return (
             <Grid container style={{backgroundColor: '#fff', width: '100%', width: '100%', ...this.props.style, padding: '0 30px'}}>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}} onClick={this.navigateToPreviousDate}>
-                    <Icon color="error">chevron_left</Icon>
+                    <ActionIcon size={30} color='#fff' type='chevron_left' />
                 </Grid>
                 <Grid item xs={8} style={{...horizontalBox, justifyContent: 'center'}}>
                     <DatePicker
@@ -59,11 +66,11 @@ export default class DateComponent extends React.Component {
                         onChange={this.handleDateChange}
                         showTodayButton
                         style={{textAlign: 'center'}}
-                        // TextFieldComponent={this.dateField()}
+                        TextFieldComponent={DateFields}
                     />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}} onClick={this.navigateToNexDate}> 
-                    <Icon color="error">chevron_right</Icon>
+                    <ActionIcon size={30} color='#fff' type='chevron_right' />
                 </Grid>
             </Grid>
         );
@@ -72,6 +79,11 @@ export default class DateComponent extends React.Component {
 
 const DateFields = props => {
     return (
-        <span>Hello World</span>
+        <div style={{...verticalBox}}>
+            <IconButton aria-label="calendar" onClick={props.onClick}>
+                <Icon style={{color: '#fff'}}>date_range</Icon>
+            </IconButton>
+            <span style={{fontSize: '14px', color: '#fff', marginTop: '-10px'}} onClick={props.onClick}>{props.value}</span>
+        </div>
     );
 }

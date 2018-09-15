@@ -38,6 +38,14 @@ export default class StockEditListItem extends React.Component {
         }
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+
     render() {
         const {
             symbol = 'LT', 

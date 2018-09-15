@@ -72,6 +72,14 @@ class Participants extends React.Component {
             </React.Fragment>
         );
     }
+    
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
 
     render() {
         return (

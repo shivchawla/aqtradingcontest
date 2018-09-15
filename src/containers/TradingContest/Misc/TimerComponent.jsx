@@ -18,10 +18,6 @@ export default class TimeComponent extends React.Component {
 
     componentWillMount() {
         this.setTimer();
-        this.timerNew = setInterval(function x() {
-            console.log("tick");
-            return x;
-        }(), 1000);
     }
 
     componentWillReceiveProps(nextProps) {

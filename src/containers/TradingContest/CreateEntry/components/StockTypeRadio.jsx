@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
@@ -16,6 +17,14 @@ export default class StockTypeRadio extends React.Component {
         const value = e.target.value;
         this.setState({selectedView: value});
         this.props.onChange && this.props.onChange(value);
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
     }
 
     render() {

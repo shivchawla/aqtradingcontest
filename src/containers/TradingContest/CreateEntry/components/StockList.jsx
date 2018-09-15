@@ -4,7 +4,6 @@ import Grid from '@material-ui/core/Grid'
 import StockEditListItem from './StockEditListItem';
 
 export default class StockList extends React.Component {
-
     calculateMax = (stockItem) => {
         const points = _.get(stockItem, 'points', 10);
         const stockItemType = _.get(stockItem, 'type', null);
@@ -13,6 +12,14 @@ export default class StockList extends React.Component {
         const allowedExposure = Math.max(0, Math.min(60, (100 - totalSelectedPoints) + points));
         
         return allowedExposure;
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
     }
 
     render() {

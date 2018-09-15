@@ -5,6 +5,14 @@ import Grid from '@material-ui/core/Grid'
 import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../constants';
 
 export default class StockPreviewListItem extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+    
     render() {
         const {
             symbol = 'LT', 

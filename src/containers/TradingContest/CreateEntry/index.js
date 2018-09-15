@@ -304,6 +304,14 @@ class CreateEntry extends React.Component {
         this.setState({listView: value});
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+
     componentWillMount = () => {
         this.setState({loading: true});
         Promise.all([
