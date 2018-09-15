@@ -65,6 +65,8 @@ export const convertBackendPositions = positions => {
 export const processSelectedPosition = (oldPositions = [], selectedPositions = []) => {
     const clonedOldPositions = _.map(oldPositions, _.cloneDeep);
     const clonedSelectedPositions = _.map(selectedPositions, _.cloneDeep);
+    console.log('Old Positions', oldPositions);
+    console.log('Process Positions', selectedPositions);
 
     return Promise.map(clonedSelectedPositions, selectedPosition => {
         // Check if position was previously present, if present use the points from the previous position

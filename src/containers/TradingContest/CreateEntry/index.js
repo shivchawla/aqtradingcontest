@@ -11,6 +11,7 @@ import {Motion, spring} from 'react-motion';
 import {SearchStocks} from '../SearchStocks';
 import StockList from './components/StockList';
 import StockPreviewList from './components/StockPreviewList';
+import StockTypeRadio from './components/StockTypeRadio';
 import TimerComponent from '../Misc/TimerComponent';
 import DateComponent from '../Misc/DateComponent';
 import LoaderComponent from '../Misc/Loader';
@@ -38,7 +39,7 @@ class CreateEntry extends React.Component {
             contestEndDate: moment().format(dateFormat),
             noEntryFound: false,
             loading: false,
-            listView: 'BUY'
+            listView: 'buy'
         };
     }
 
@@ -51,7 +52,7 @@ class CreateEntry extends React.Component {
             const positionsToSell = selectedPositions.filter(position => position.points < 0);
             const positionsToBuy = selectedPositions.filter(position => position.points >= 0);
             const processedPositionsToBuy = await processSelectedPosition(this.state.positions, positionsToBuy);
-            const processedPositionsToSell = await processSelectedPosition(this.state.positionsToSell, positionsToSell);
+            const processedPositionsToSell = await processSelectedPosition(this.state.sellPositions, positionsToSell);
             this.setState({
                 positions: processedPositionsToBuy, 
                 sellPositions: processedPositionsToSell,
@@ -62,9 +63,9 @@ class CreateEntry extends React.Component {
         }
     }
 
-    onStockItemChange = (symbol, value) => {
+    onStockItemChange = (symbol, value, type) => {
         // If listView = BUY then modify positions else sellPositions
-        const positions = this.state.listView === 'BUY' ? this.state.positions : this.state.sellPositions;
+        const positions = type === 'buy' ? this.state.positions : this.state.sellPositions;
         const clonedPositions = _.map(positions, _.cloneDeep);
         const requiredPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
         if (requiredPositionIndex !== -1) {
@@ -73,7 +74,7 @@ class CreateEntry extends React.Component {
                 ...requiredPosition,
                 points: value
             };
-            if (this.state.listView === 'BUY') {
+            if (type === 'buy') {
                 this.setState({positions: clonedPositions});
             } else {
                 this.setState({sellPositions: clonedPositions});
@@ -187,8 +188,15 @@ class CreateEntry extends React.Component {
     }
 
     renderStockList = () => {
-        const positions = this.state.listView === 'BUY' ? this.state.positions : this.state.sellPositions;
-        const previewPositions = this.state.listView === 'BUY' ? this.state.previousPositions : this.state.previousSellPositions;
+        let positions = [];
+        if (this.state.listView === 'buy') {
+            positions = this.state.positions;
+        } else if (this.state.listView === 'sell') {
+            positions = this.state.sellPositions;
+        } else if (this.state.listView === 'all') {
+            positions = [...this.state.positions, ...this.state.sellPositions];
+        };
+        const previewPositions = this.state.listView === 'buy' ? this.state.previousPositions : this.state.previousSellPositions;
 
         return (
             !this.state.showPreviousPositions
@@ -286,6 +294,10 @@ class CreateEntry extends React.Component {
         this.setState({listView: value});
     }
 
+    handleStockTypeRadioChange = value => {
+        this.setState({listView: value});
+    }
+
     componentWillMount = () => {
         this.setState({loading: true});
         Promise.all([
@@ -328,20 +340,23 @@ class CreateEntry extends React.Component {
                 </Grid>
                 {
                     (this.state.positions.length === 0 && this.state.previousPositions.length == 0)
-                    ? this.renderEmptySelections()
-                    : this.renderStockList()
+                    ?   this.renderEmptySelections()
+                    :   <React.Fragment>
+                            <Grid item xs={12}><StockTypeRadio onChange={this.handleStockTypeRadioChange}/></Grid>
+                            {this.renderStockList()}
+                        </React.Fragment>
                 }
                 {
-                    contestSubmissionOver && 
-                    moment(this.state.selectedDate).isSame(todayDate) && 
+                    // contestSubmissionOver && 
+                    // moment(this.state.selectedDate).isSame(todayDate) && 
                     this.state.positions.length > 0 &&
-                    <Grid item xs={12} style={{width: '100%', position: 'fixed', bottom: '20px', display: 'flex'}}>
-                        <Button variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
+                    <Grid item xs={12} style={{width: '100%', position: 'fixed', bottom: '20px', display: 'flex', justifyContent: 'space-between'}}>
+                        <Button variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet} style={{width: '100px'}}>
                             {   
                                 this.state.previousPositions.length > 0 ? 'EDIT' : 'ADD'
                             }
                         </Button>
-                        <Button variant="extendedFab" aria-label="Edit">
+                        <Button variant="extendedFab" aria-label="Edit" style={{width: '100px'}}>
                             {
                                 this.state.previousPositions.length > 0 ? 'UPDATE' : 'SUBMIT'
                             }

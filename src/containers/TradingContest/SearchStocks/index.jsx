@@ -128,7 +128,7 @@ export class SearchStocks extends React.Component {
     }
 
     handleSearchInputChange = (e, type = 'desktop') => {
-        const searchQuery = type === 'desktop' ? e.target.value : e;
+        const searchQuery = e.target.value;
         this.setState({searchInput: searchQuery, selectedPage: 0}, () => {
             this.fetchStocks(this.state.searchInput, false);
         });
@@ -387,7 +387,8 @@ export class SearchStocks extends React.Component {
                 totalValue: stock.current,
                 chg: stock.change,
                 chgPct: stock.changePct,
-                points: type === 'buy' ? 10 : -10
+                points: type === 'buy' ? 10 : -10,
+                type
             };
         });
     }

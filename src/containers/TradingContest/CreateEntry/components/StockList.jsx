@@ -7,8 +7,12 @@ export default class StockList extends React.Component {
 
     calculateMax = (stockItem) => {
         const points = _.get(stockItem, 'points', 10);
-        const totalSelectedPoints = _.sum(this.props.positions.map(item => item.points));
-        const allowedExposure = Math.min(60, (100 - totalSelectedPoints) + points);
+        const stockItemType = _.get(stockItem, 'type', null);
+        console.log('Item Type', stockItemType);
+        const requiredPositions = this.props.positions.filter(position => position.type === stockItemType);
+        const totalSelectedPoints = _.sum(requiredPositions.map(item => item.points));
+        console.log('Required Positions', requiredPositions.length, totalSelectedPoints);
+        const allowedExposure = Math.max(0, Math.min(60, (100 - totalSelectedPoints) + points));
         
         return allowedExposure;
     }
@@ -17,7 +21,7 @@ export default class StockList extends React.Component {
         const {positions = []} = this.props;
 
         return (
-            <Grid item className='stock-list' xs={12} style={{...stockListContainer, paddingTop: '20px'}}>
+            <Grid item className='stock-list' xs={12} style={{...stockListContainer, paddingTop: '20px', padding: '0 5px'}}>
                 {
                     positions.map((position, index) => {
                         return (

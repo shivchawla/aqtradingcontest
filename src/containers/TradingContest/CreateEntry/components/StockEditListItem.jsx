@@ -13,37 +13,28 @@ export default class StockEditListItem extends React.Component {
         }
     }
 
-    handleSliderChange = value => {
-        this.setState({points: value});
-    }
-
-    onAfterChange = value => {
-        const symbol = _.get(this.props, 'stockItem.symbol', null);
-        this.props.onStockItemChange(symbol, value);
-    }
-
     componentWillReceiveProps(nextProps, nextState) {
         const points = _.get(nextProps, 'stockItem.points', this.state.points);
         this.setState({points});
     }
 
     onAddClick = () => {
-        const {max = 60 , symbol = 'LT'} = this.props.stockItem;
+        const {max = 60 , symbol = 'LT', type = 'buy'} = this.props.stockItem;
         let {points = 10} = this.state;
         if (points < max) {
             points += 10;
             this.setState({points});
-            this.props.onStockItemChange(symbol, points);
+            this.props.onStockItemChange(symbol, points, type);
         }
     }
 
     onReduceClick = () => {
-        const {min = 10, symbol = 'LT'} = this.props.stockItem;
+        const {min = 10, symbol = 'LT', type = 'buy'} = this.props.stockItem;
         let {points = 10} = this.state;
         if (points > min) {
             points -= 10;
             this.setState({points});
-            this.props.onStockItemChange(symbol, points);
+            this.props.onStockItemChange(symbol, points, type);
         }
     }
 
@@ -62,13 +53,13 @@ export default class StockEditListItem extends React.Component {
         const changeColor = chgPct >= 0 ? metricColor.positive : metricColor.negative;
 
         return (
-            <SGrid container style={{padding: '0 10px', margin: '0 5px', paddingBottom: '20px', marginBottom: '20px'}}>
+            <SGrid container style={{padding: '0 10px', paddingBottom: '0px', marginBottom: '20px', paddingTop: '10px'}}>
                 <SGridCol item xs={12} style={colStyle}>
                     <Symbol>{symbol}</Symbol>
                     <SecondayText>{lastPrice}</SecondayText>
                 </SGridCol>
                 <SGridCol item xs={12} style={colStyle}>
-                    <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A'}}>{name}</SecondayText>
+                    <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A', textAlign: 'start'}}>{name}</SecondayText>
                     <SecondayText color={changeColor}>{chg} ({chgPct})</SecondayText>
                 </SGridCol>
                 <SGridCol item xs={12} style={colStyle}>
@@ -89,7 +80,7 @@ export default class StockEditListItem extends React.Component {
 
 const PointsComponent = ({points, onAddClick, onReduceClick}) => {
     return (
-        <div style={{...horizontalBox, justifyContent: 'center'}}>
+        <div style={{...horizontalBox, justifyContent: 'center', marginRight: '-17px'}}>
             <ActionIcon type='chevron_left' onClick={onReduceClick} />
             <SecondayText><span style={{fontSize: '25px', marginRight: '5px'}}>{points}</span>pts</SecondayText>
             <ActionIcon type='chevron_right' onClick={onAddClick} />
@@ -106,8 +97,8 @@ const SliderMetric = ({label, value, style}) => {
 }
 
 const SGrid = styled(Grid)`
-    background-color: #F3FFFC;
-    border: 1px solid #ADFFF6;
+    background-color: #FAFCFF;
+    border: 1px solid #F2F5FF;
     border-radius: 3px;
     margin-bottom: 20px;
 `;
