@@ -189,14 +189,17 @@ class CreateEntry extends React.Component {
 
     renderStockList = () => {
         let positions = [];
+        let previewPositions = [];
         if (this.state.listView === 'buy') {
             positions = this.state.positions;
+            previewPositions = this.state.previousPositions;
         } else if (this.state.listView === 'sell') {
             positions = this.state.sellPositions;
+            previewPositions = this.state.previousSellPositions;
         } else if (this.state.listView === 'all') {
             positions = [...this.state.positions, ...this.state.sellPositions];
+            previewPositions = [...this.state.previousPositions, ...this.state.previousSellPositions];
         };
-        const previewPositions = this.state.listView === 'buy' ? this.state.previousPositions : this.state.previousSellPositions;
 
         return (
             !this.state.showPreviousPositions
