@@ -74,7 +74,7 @@ export default class StockListItemMobile extends React.Component {
 
         return (
             <SGrid container className='stock-row' style={containerStyle}>
-                <Grid item xs={6} style={leftContainerStyle}>
+                <Grid item xs={6} style={leftContainerStyle} onClick={() => onClick({symbol, name})}>
                     <div style={horizontalBox}>
                         <h3 style={{fontSize: '18px', fontWeight: '500'}}>{symbol}</h3>
                         <Icon color="error">{changeIcon}</Icon>

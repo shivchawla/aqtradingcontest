@@ -52,13 +52,13 @@ export default class DateComponent extends React.Component {
     }
 
     render() {
-        const {color = primaryColor} = this.props;
+        const {color = '#fff'} = this.props;
         const { selectedDate } = this.state;
 
         return (
             <Grid container style={{backgroundColor: '#fff', width: '100%', width: '100%', ...this.props.style, padding: '0 30px'}}>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}} onClick={this.navigateToPreviousDate}>
-                    <ActionIcon size={30} color='#fff' type='chevron_left' />
+                    <ActionIcon size={30} color={color} type='chevron_left' />
                 </Grid>
                 <Grid item xs={8} style={{...horizontalBox, justifyContent: 'center'}}>
                     <DatePicker
@@ -67,10 +67,11 @@ export default class DateComponent extends React.Component {
                         showTodayButton
                         style={{textAlign: 'center'}}
                         TextFieldComponent={DateFields}
+                        color={color}
                     />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}} onClick={this.navigateToNexDate}> 
-                    <ActionIcon size={30} color='#fff' type='chevron_right' />
+                    <ActionIcon size={30} color={color} type='chevron_right' />
                 </Grid>
             </Grid>
         );
@@ -81,9 +82,9 @@ const DateFields = props => {
     return (
         <div style={{...verticalBox}}>
             <IconButton aria-label="calendar" onClick={props.onClick}>
-                <Icon style={{color: '#fff'}}>date_range</Icon>
+                <Icon style={{color: props.color || '#fff'}}>date_range</Icon>
             </IconButton>
-            <span style={{fontSize: '14px', color: '#fff', marginTop: '-10px'}} onClick={props.onClick}>{props.value}</span>
+            <span style={{fontSize: '14px', color: props.color || '#fff', marginTop: '-10px'}} onClick={props.onClick}>{props.value}</span>
         </div>
     );
 }

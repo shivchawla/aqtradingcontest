@@ -8,7 +8,7 @@ import {withRouter} from 'react-router';
 import DateComponent from '../Misc/DateComponent';
 import LoaderComponent from '../Misc/Loader';
 import WinnerList from './WinnerList';
-import {verticalBox} from '../../../constants';
+import {verticalBox, horizontalBox} from '../../../constants';
 import TimerComponent from '../Misc/TimerComponent';
 import {getContestSummary, processWinnerStocks} from '../utils';
 
@@ -18,7 +18,7 @@ class Winners extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: moment().subtract(2, 'days').format(dateFormat),
+            selectedDate: moment().subtract(5, 'days').format(dateFormat),
             winnerStocks: [],
             contestActive: false,
             startDate: moment().format(dateFormat),
@@ -157,10 +157,14 @@ const ContestNotPresentView = () => {
 const ContestEndedView = () => {
     return (
         <Grid container style={{height: '100px'}}>
-            <Grid item xs={12} style={verticalBox}>
-                <Icon style={{color: '#FFEE5A'}}>lock</Icon>
-                <WinnerHeader>TOP PICKS</WinnerHeader>
-                <WinnerSubHeader>The stocks that were most voted</WinnerSubHeader>
+            <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: '20px'}}>
+                <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
+                    <WinnerHeader style={{fontSize: '25px', fontWeight: 500}}>TOP PICKS</WinnerHeader>
+                    <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>lock</Icon>
+                </div>
+                <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
+                    The stocks that were most voted
+                </WinnerSubHeader>
             </Grid>
         </Grid>
     );
@@ -169,9 +173,14 @@ const ContestEndedView = () => {
 const GeneralHeder = ({contestEnded = true}) => {
     return (
         <Grid container style={{height: '100px'}}>
-            <Grid item xs={12} style={verticalBox}>
-                <Icon style={{color: '#FFEE5A'}}>{contestEnded ? 'lock' : 'lock_open'}</Icon>
-                <WinnerHeader>TOP PICKS</WinnerHeader>
+            <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: '20px'}}>
+                <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
+                    <WinnerHeader style={{fontSize: '25px', fontWeight: 500}}>TOP PICKS</WinnerHeader>
+                    <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>{contestEnded ? 'lock' : 'lock_open'}</Icon>
+                </div>
+                <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
+                    The stocks that were most voted
+                </WinnerSubHeader>
             </Grid>
         </Grid>
     );
@@ -190,7 +199,7 @@ const ContestStartedView = ({endDate, contestEnded}) => {
             <Grid item xs={12}>
                 <TimerComponent 
                         date={endDate} 
-                        hour={20}
+                        hour={22}
                         contestStarted={true} 
                 />
             </Grid>
@@ -236,11 +245,10 @@ const WinnerHeader = styled.h3`
     font-size: 18px;
     font-weight: 500;
     color: #fff;
-    margin-top: 10px;
 `;
 
 const WinnerSubHeader = styled.h3`
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 300;
     color: #fff;
     margin-top: 5px;

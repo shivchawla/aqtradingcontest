@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Route from 'react-router/Route';
+import Notifications from 'react-notify-toast';
 import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';

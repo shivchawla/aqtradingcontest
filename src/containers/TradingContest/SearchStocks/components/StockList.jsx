@@ -19,7 +19,7 @@ export default class StockListComponent extends React.Component {
             <React.Fragment>
                 {
                     stocks.length === 0 &&
-                    <h3 style={{fontSize: '16px', textAlign: 'center'}}>No Stocks Found</h3>
+                    <h3 style={{fontSize: '16px', textAlign: 'center', marginTop: '100px', fontWeight: '300'}}>No Stocks Found</h3>
                 }
                 {
                     stocks.map((stock, index) => (

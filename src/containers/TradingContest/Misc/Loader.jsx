@@ -17,7 +17,8 @@ export default class LoaderComponent extends React.Component {
     render() {
         return (
             <Grid 
-                    container 
+                    container
+                    className='loader-container' 
                     style={{height: global.screen.height, width: '100%', backgroundColor: '#fff'}} 
                     alignItems="center" 
                     justify="center"

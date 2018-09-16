@@ -8,16 +8,15 @@ import Chip from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import ActionIcon from '../Misc/ActionIcons';
 import TextField from '@material-ui/core/TextField';
-// import {StockPerformance} from '../../Contest/CreateAdvice/StockPerformance';
+import Snackbar from '@material-ui/core/Snackbar';
+import StockPerformance from './components/StockPerformance';
 import {screenSize} from '../constants';
-// import StockFilter from '../../Contest/SearchStockFilter/StockFilter';
-// import SearchStockHeader from '../../Contest/CreateAdvice/Mobile/SearchStockHeader';
+import SelectedStocksDialog from './components/SelectedStocksDialog';
 import SearchStockHeaderMobile from './components/StockSearchHeaderMobile';
 import StockList from './components/StockList';
 import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
-import {fetchAjax, openNotification} from '../../../utils';
+import {fetchAjax} from '../../../utils';
 import './css/searchStocks.css';
 
 const {requestUrl} = require('../../../localConfig');
@@ -40,7 +39,12 @@ export class SearchStocks extends React.Component {
             filter: {
                 sector: '',
                 industry: ''
-            }
+            },
+            snackbar: {
+                open: false,
+                message: 'N/A'
+            },
+            selectedStocksDialogOpen: false
         };
         this.localStocks = []; // Used to get the list of all stocks obtained from N/W calls
         this.stockListComponent = null;
@@ -87,11 +91,12 @@ export class SearchStocks extends React.Component {
                         xs={12} 
                         style={{
                             ...horizontalBox,
-                            backgroundColor: '#efeff4'
+                            backgroundColor: '#efeff4',
+                            justifyContent: 'space-between'
                         }}
                 >
                     <TextField
-                        style={{width: '80%', marginTop: 0, left: '10px'}}
+                        style={{width: '75%', marginTop: 0, left: '10px'}}
                         id="search"
                         label="Search Stocks"
                         type="search"
@@ -100,11 +105,7 @@ export class SearchStocks extends React.Component {
                     />
                     {
                         this.shouldFiltersBeShown() &&
-                        <ActionIcon type='filter_list' onClick={this.toggleStockFilterOpen} />
-                    }
-                    {
-                        this.shouldFiltersBeShown() &&
-                        selectedStocks.length > 0 &&
+                        // selectedStocks.length > 0 &&
                         !this.state.stockPerformanceOpen &&
                         !this.state.stockFilterOpen &&
                         <Badge 
@@ -112,15 +113,14 @@ export class SearchStocks extends React.Component {
                                 backgroundColor: '#fff', 
                                 color: primaryColor, 
                                 fontSize: '14px', 
-                                marginLeft:'10px',
-                                right: '5px'
+                                right: '30px'
                             }} 
                             color="primary"
                             badgeContent={selectedStocks.length}
-                        />
+                            onClick={this.toggleSelectedStocksDialogClose}
+                        >{null}</Badge>
                     }
                 </Grid>
-                {/* {this.renderBenchmarkDetailMobile()} */}
                 <Grid
                         item 
                         xs={12} 
@@ -302,7 +302,7 @@ export class SearchStocks extends React.Component {
         if (targetStock !== undefined) {
             if (selectedStockIndex === -1) {
                 if (this.state.selectedStocks.length >= maxLimit) {
-                    openNotification('info', 'Max Limit Reached', "You can't buy more than 5 stocks");
+                    this.setState({snackbar: {open: true, message: "You can't buy more than 5 stocks"}});
                     return;
                 }
                 selectedStocks.push(symbol);
@@ -325,7 +325,7 @@ export class SearchStocks extends React.Component {
         } else {
             if (selectedStockIndex === -1) {
                 if (this.state.selectedStocks.length >= maxLimit) {
-                    openNotification('info', 'Max Limit Reached', "You can't buy more than 5 stocks");
+                    this.setState({snackbar: {open: true, message: "You can't buy more than 5 stocks"}});
                     return;
                 }
                 // Checking if it is present in the be sold array, if present delete it
@@ -361,7 +361,7 @@ export class SearchStocks extends React.Component {
         if (targetStock !== undefined) {
             if (selectedStockIndex === -1) {
                 if (this.state.sellSelectedStocks.length >= maxLimit) {
-                    openNotification('info', 'Max Limit Reached', "You can't sell more than 5 stocks");
+                    this.setState({snackbar: {open: true, message: "You can't sell more than 5 stocks"}});
                     return;
                 }
                 // Checking if it is present in the be bought array, if present delete it
@@ -384,7 +384,7 @@ export class SearchStocks extends React.Component {
         } else {
             if (selectedStockIndex === -1) {
                 if (this.state.sellSelectedStocks.length >= maxLimit) {
-                    openNotification('info', 'Max Limit Reached', "You can't sell more than 5 stocks");
+                    this.setState({snackbar: {open: true, message: "You can't sell more than 5 stocks"}});
                     return;
                 }
                 // Checking if it is present in the be bought array, if present delete it
@@ -531,19 +531,9 @@ export class SearchStocks extends React.Component {
                     xs={12} 
                     style={{...horizontalBox, justifyContent: 'center', marginTop: '10px'}}
             >
-                {/* <Button 
-                        onClick={() => this.handlePagination('previous')} 
-                        disabled={this.state.selectedPage === 0}
-                >
-                    Previous
-                </Button>
-                {
-                    this.state.loadingStocks &&
-                    <Icon type="loading" style={{fontSize: '20px'}}/>
-                } */}
                 <Button
                         onClick={() => this.handlePagination('next')}  
-                        disabled={this.state.stocks.length % 10 !== 0}
+                        disabled={this.state.stocks.length % 10 !== 0 || this.state.loadingStocks}
                         type="primary"
                 >
                     MORE
@@ -566,7 +556,7 @@ export class SearchStocks extends React.Component {
             >
                 <Button
                     onClick={() => this.handlePagination('next')}  
-                    disabled={this.state.stocks.length % 10 !== 0}
+                    disabled={this.state.stocks.length % 10 !== 0 || this.state.loadingStocks}
                     type="primary"
                 >
                     MORE
@@ -707,14 +697,15 @@ export class SearchStocks extends React.Component {
                                                 style={{
                                                     transform: `translate3d(${detailX}px, 0, 0)`,
                                                     top: this.state.stockPerformanceOpen ? '85px' : '45px',
-                                                    position: 'absolute'
+                                                    position: 'absolute',
+                                                    width: '100%'
                                                 }}
                                         >
-                                            {/* {
+                                            {
                                                 this.state.stockPerformanceOpen &&
                                                 <StockPerformance stock={this.state.selectedStock}/>
                                             }
-                                            <div
+                                            {/* <div
                                                     style={{
                                                         display: this.state.stockFilterOpen ? 'block' : 'none'
                                                     }}
@@ -853,11 +844,35 @@ export class SearchStocks extends React.Component {
         );
     }
 
+    toggleSelectedStocksDialogClose = () => {
+        this.setState({selectedStocksDialogOpen: !this.state.selectedStocksDialogOpen});
+    }
+
     render() { 
         const selectedStocks = [...this.state.selectedStocks, ...this.state.sellSelectedStocks];
 
         return (
             <React.Fragment>
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    open={this.state.snackbar.open}
+                    autoHideDuration={1500}
+                    ContentProps={{
+                        'aria-describedby': 'message-id',
+                    }}
+                    message={<span id="message-id">{this.state.snackbar.message}</span>}   
+                    style={{zIndex: '200000'}}  
+                    onClose={() => {this.setState({snackbar: {...this.state.snackbar, open: false}})}}         
+                />
+                <SelectedStocksDialog 
+                    open={this.state.selectedStocksDialogOpen} 
+                    onClose={this.toggleSelectedStocksDialogClose}
+                    buyStocks={this.state.selectedStocks}
+                    sellStocks={this.state.sellSelectedStocks}
+                />
                 <SGrid 
                         container
                         style={{
@@ -881,6 +896,7 @@ export class SearchStocks extends React.Component {
                                     portfolioLoading={this.state.portfolioLoading}
                                     toggleStockPerformanceOpen={this.toggleStockPerformanceOpen}
                                     toggleStockFilterOpen={this.toggleStockFilterOpen}
+                                    loading={this.state.loadingStocks}
                                     // renderSelectedStocks={this.renderSelectedStocksMobile}
                             />
                         }

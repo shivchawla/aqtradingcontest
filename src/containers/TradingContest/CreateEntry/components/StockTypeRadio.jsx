@@ -28,11 +28,12 @@ export default class StockTypeRadio extends React.Component {
     }
 
     render() {
+        const {color = primaryColor} = this.props;
         return (
             <Grid container>
                 <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-around', width: '100%'}}>
                     <div style={horizontalBox}>
-                        <RadioLabel>BOUGHT</RadioLabel>
+                        <RadioLabel color={color}>BOUGHT</RadioLabel>
                         <Radio
                             checked={this.state.selectedView === 'buy'}
                             onChange={this.handleChange}
@@ -43,7 +44,7 @@ export default class StockTypeRadio extends React.Component {
                         />
                     </div>
                     <div style={horizontalBox}>
-                        <RadioLabel>SOLD</RadioLabel>
+                        <RadioLabel color={color}>SOLD</RadioLabel>
                         <Radio
                             checked={this.state.selectedView === 'sell'}
                             onChange={this.handleChange}
@@ -54,7 +55,7 @@ export default class StockTypeRadio extends React.Component {
                         />
                     </div>
                     <div style={horizontalBox}>
-                        <RadioLabel>ALL</RadioLabel>
+                        <RadioLabel color={color}>ALL</RadioLabel>
                         <Radio
                             checked={this.state.selectedView === 'all'}
                             onChange={this.handleChange}
@@ -73,5 +74,5 @@ export default class StockTypeRadio extends React.Component {
 const RadioLabel = styled.h3`
     font-size: 13px;
     font-weight: 400;
-    color: ${primaryColor}
+    color: ${props => props.color || primaryColor}
 `;

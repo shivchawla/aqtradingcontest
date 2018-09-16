@@ -80,5 +80,5 @@ export const openNotification = (type, title, message) => {
     //     message: title,
     //     description: message,
     // });
-    console.log(type, title, message);
+    // console.log(type, title, message);
 }

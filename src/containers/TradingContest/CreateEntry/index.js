@@ -3,6 +3,7 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import moment from 'moment';
 import Media from 'react-media';
+import {notify} from 'react-notify-toast';
 import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
@@ -17,7 +18,7 @@ import StockTypeRadio from './components/StockTypeRadio';
 import TimerComponent from '../Misc/TimerComponent';
 import DateComponent from '../Misc/DateComponent';
 import LoaderComponent from '../Misc/Loader';
-import {verticalBox, horizontalBox} from '../../../constants';
+import {verticalBox, primaryColor} from '../../../constants';
 import {contestEndHour} from '../constants';
 import {handleCreateAjaxError, Utils} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary} from '../utils';
@@ -42,7 +43,8 @@ class CreateEntry extends React.Component {
             noEntryFound: false,
             loading: false,
             listView: 'buy',
-            snackbarOpenStatus: false
+            snackbarOpenStatus: false,
+            snackbarMessage: 'N/A'
         };
     }
 
@@ -260,10 +262,13 @@ class CreateEntry extends React.Component {
         const positions = [...this.state.positions, ...processedSellPositions];
         submitEntry(positions, this.state.previousPositions.length > 0)
         .then(response => {
-            this.setState({snackbarOpenStatus: true});
+            this.setState({showPreviousPositions: true});
+            notify.show("Entry Successfully Submitted :)", "success", 5000, primaryColor);
         })
         .catch(error => {
-            console.log('Error Occured');
+            const errorMessage = _.get(error, 'response.data.message', 'Error Occured :(');
+            this.setState({showPreviousPositions: true});
+            notify.show(errorMessage, "error", 5000, primaryColor);
             return handleCreateAjaxError(error, this.props.history, this.props.match.url)
         })
         .finally(() => {
@@ -333,32 +338,22 @@ class CreateEntry extends React.Component {
         })
     }
 
-    renderPageContent() {
+    renderPortfolioPicksDetail = () => {
+        const contestSubmissionOver = moment().isBefore(currentDate);
+        const todayDate = moment().format(dateFormat);
+        const fabButtonStyle = {padding: '0 10px'};
         let currentDate = moment();
         currentDate.hours(contestEndHour);
         currentDate.minutes(30);
         currentDate.seconds(0);
-        const contestSubmissionOver = moment().isBefore(currentDate);
-        const todayDate = moment().format(dateFormat);
-        const fabButtonStyle = {padding: '0 10px'};
 
         return (
-            <SGrid container>
-                <SnackbarComponent openStatus={this.state.snackbarOpenStatus} message='Entry Successfully Submitted :)'/>
-                {this.renderSearchStocksBottomSheet()}
-                <Grid item xs={12}>
-                    <DateComponent 
-                        color='#737373'
-                        onDateChange={this.handleContestDateChange}
-                        style={{padding: '0 10px', position: 'relative'}}
-                        date={moment(this.state.selectedDate)}
-                    />
-                </Grid>
+            <React.Fragment>
                 {
                     (this.state.positions.length === 0 && this.state.previousPositions.length == 0)
                     ?   this.renderEmptySelections()
                     :   <React.Fragment>
-                            <Grid item xs={12}><StockTypeRadio onChange={this.handleStockTypeRadioChange}/></Grid>
+                            <Grid item xs={12}><StockTypeRadio color='#737373' onChange={this.handleStockTypeRadioChange}/></Grid>
                             {this.renderStockList()}
                         </React.Fragment>
                 }
@@ -369,12 +364,15 @@ class CreateEntry extends React.Component {
                     <Grid 
                             item xs={12} 
                             style={{
-                                width: '100%', 
-                                position: 'fixed', 
-                                bottom: '20px', 
                                 display: 'flex', 
                                 padding: '0 10px',
-                                justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'
+                                justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between',
+                                width: '100%',
+                                position: 'fixed',
+                                zIndex: 20,
+                                bottom: '20px',
+                                background: 'transparent',
+                                transform: 'translate3d(0,0,0)'
                             }}
                     >
                         <Button style={{...fabButtonStyle, ...addStocksStyle}} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
@@ -390,22 +388,40 @@ class CreateEntry extends React.Component {
                         }
                     </Grid>
                 }
-            </SGrid>
+            </React.Fragment>
         );
     }
 
     render() {
-        if (this.state.loading) {
-            return <LoaderComponent />;
-        } else {
-            return this.renderPageContent();
-        }
+        return (
+            <SGrid container>
+                <SnackbarComponent 
+                    openStatus={this.state.snackbarOpenStatus} 
+                    message={this.state.snackbarMessage}
+                    onClose={() => this.setState({snackbarOpenStatus: false})}
+                />
+                {this.renderSearchStocksBottomSheet()}
+                <Grid item xs={12}>
+                    <DateComponent 
+                        color='#737373'
+                        onDateChange={this.handleContestDateChange}
+                        style={{padding: '0 10px', position: 'relative'}}
+                        date={moment(this.state.selectedDate)}
+                    />
+                </Grid>
+                {
+                    this.state.loading
+                    ? <LoaderComponent />
+                    : this.renderPortfolioPicksDetail()
+                }
+            </SGrid>
+        );
     }
 }
 
 export default withRouter(CreateEntry);
 
-const SnackbarComponent = ({openStatus = false, message = 'Snackbar Data'}) => {
+const SnackbarComponent = ({openStatus = false, message = 'Snackbar Data', onClose}) => {
     return (
         <Snackbar
             anchorOrigin={{
@@ -414,7 +430,7 @@ const SnackbarComponent = ({openStatus = false, message = 'Snackbar Data'}) => {
             }}
             open={openStatus}
             autoHideDuration={1500}
-            onClose={this.handleClose}
+            onClose={onClose}
             ContentProps={{
                 'aria-describedby': 'message-id',
             }}

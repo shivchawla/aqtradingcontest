@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import styled from 'styled-components';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
@@ -7,7 +8,7 @@ import {withRouter} from 'react-router';
 import DateComponent from '../Misc/DateComponent';
 import ParticipantList from './ParticipantList';
 import LoaderComponent from '../Misc/Loader';
-import {verticalBox} from '../../../constants';
+import {verticalBox, horizontalBox} from '../../../constants';
 import {getContestSummary, processParticipants} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -94,12 +95,32 @@ class Participants extends React.Component {
                 <Grid item xs={12} style={topContainerStyle}>
                     <Grid 
                             container 
-                            style={{...verticalBox, padding: '0 10px', width: '100%', backgroundColor: '#15C08F'}}
-                            justify="center"
-                            alignItems="center"
+                            style={{
+                                ...verticalBox, 
+                                padding: '0 10px', 
+                                width: '100%', 
+                                backgroundColor: '#15C08F',
+                                justifyContent: 'flex-start',
+                                alignItems: 'flex-start'
+                            }}
                     >
-                        <Icon fontSize='inherit' style={{color: '#FFEE5A', fontSize: '30px'}}>wc</Icon>
-                        <h3 style={{fontSize: '18px', color: '#fff', textAlign: 'center', fontWeight: 400, marginTop: '10px'}}>Winners</h3>
+                        <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
+                            <h3 
+                                    style={{
+                                        fontSize: '25px', 
+                                        color: '#fff', 
+                                        textAlign: 'center', 
+                                        fontWeight: 500, 
+                                        marginTop: '10px'
+                                    }}
+                            >
+                                WINNERS
+                            </h3>
+                            <Icon fontSize='inherit' style={{color: '#FFEE5A', fontSize: '30px', marginLeft: '5px'}}>wc</Icon>
+                        </div>
+                        <LeaderboardSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
+                            The participants with best predictions
+                        </LeaderboardSubHeader>
                     </Grid>
                 </Grid>
                 {
@@ -115,13 +136,21 @@ class Participants extends React.Component {
 export default withRouter(Participants);
 
 const topContainerStyle = {
-    ...verticalBox,
     height: '100px',
     backgroundColor: '#15C08F',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    paddingTop: '10px'
 };
 
 const listContainer = {
     padding: '0 10px',
     backgroundColor: '#fff'
 }
+
+const LeaderboardSubHeader = styled.h3`
+    font-size: 17px;
+    font-weight: 300;
+    color: #fff;
+    margin-top: 5px;
+`;
