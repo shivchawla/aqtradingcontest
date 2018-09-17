@@ -116,7 +116,7 @@ class Participants extends React.Component {
                             >
                                 WINNERS
                             </h3>
-                            <Icon fontSize='inherit' style={{color: '#FFEE5A', fontSize: '30px', marginLeft: '5px'}}>wc</Icon>
+                            <Icon fontSize='inherit' style={{color: '#FFEE5A', fontSize: '30px', marginLeft: '5px'}}>supervised_user_circle</Icon>
                         </div>
                         <LeaderboardSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
                             The participants with best predictions

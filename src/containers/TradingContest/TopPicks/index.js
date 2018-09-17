@@ -137,7 +137,7 @@ class Winners extends React.Component {
                     />
                 </Grid>
                 <Grid item xs={12} style={{...verticalBox, padding: '0 10px', backgroundColor: '#15c08f', height: '100px'}}>
-                    {!this.state.loading && this.renderHeader()}
+                    {this.renderHeader()}
                 </Grid>
                 <Grid item xs={12}>
                     {

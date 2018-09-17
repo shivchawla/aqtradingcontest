@@ -232,7 +232,6 @@ class CreateEntry extends React.Component {
             const sellPositions = positions.filter(position => _.get(position, 'investment', 10) < 0);
             const processedBuyPositions = await convertBackendPositions(buyPositions);
             const processedSellPositions = await convertBackendPositions(sellPositions);
-            console.log(processedSellPositions);
             this.setState({noEntryFound: positions.length === 0});
             resolve({positions: processedBuyPositions, sellPositions: processedSellPositions});
         })

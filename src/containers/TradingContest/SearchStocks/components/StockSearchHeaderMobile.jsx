@@ -86,7 +86,7 @@ export default class SearchStockHeader extends React.Component {
                                     onClick={this.props.addSelectedStocksToPortfolio}
                                     style={{marginRight: '5px', backgroundColor: primaryColor, boxShadow: 'none'}}
                             >
-                                <Icon color="#fff" style={{marginRight: '5px'}}>done_all</Icon>
+                                <Icon style={{marginRight: '5px'}}>done_all</Icon>
                                 DONE
                             </Button>
                         }

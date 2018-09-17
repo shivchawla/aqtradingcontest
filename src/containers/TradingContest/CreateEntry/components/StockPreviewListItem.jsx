@@ -23,7 +23,7 @@ export default class StockPreviewListItem extends React.Component {
         const colStyle = {...horizontalBox, justifyContent: 'space-between'};
 
         return (
-            <SGrid container style={{padding: '10px', marginBottom: '20px'}}>
+            <SGrid container style={{padding: '10px'}}>
                 <Grid item  xs={12} style={colStyle}>
                     <Symbol>{symbol}</Symbol>
                     <SecondayText>{points}k</SecondayText>
@@ -41,7 +41,7 @@ const SGrid = styled(Grid)`
     background-color: #FAFCFF;
     border: 1px solid #F2F5FF;
     border-radius: 3px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 `;
 
 const Symbol = styled.h3`

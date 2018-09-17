@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import {Motion, spring} from 'react-motion';
 import _  from 'lodash';
 import Badge from '@material-ui/core/Badge';
+import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
@@ -109,17 +110,21 @@ export class SearchStocks extends React.Component {
                         // selectedStocks.length > 0 &&
                         !this.state.stockPerformanceOpen &&
                         !this.state.stockFilterOpen &&
-                        <Badge 
-                            style={{
-                                backgroundColor: '#fff', 
-                                color: primaryColor, 
-                                fontSize: '14px', 
-                                right: '30px'
-                            }} 
-                            color="primary"
-                            badgeContent={selectedStocks.length}
-                            onClick={this.toggleSelectedStocksDialogClose}
-                        >Selected</Badge>
+                        // <IconButton>
+                            <Badge 
+                                style={{
+                                    backgroundColor: '#fff', 
+                                    color: primaryColor, 
+                                    fontSize: '14px', 
+                                    right: '30px'
+                                }} 
+                                color="primary"
+                                badgeContent={selectedStocks.length}
+                                onClick={this.toggleSelectedStocksDialogClose}
+                            >
+                                {/* <Icon>view_list</Icon> */}
+                            </Badge>
+                        // </IconButton>
                     }
                 </Grid>
                 <Grid
