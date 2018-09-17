@@ -13,6 +13,7 @@ class App extends Component {
         return (
             <MuiPickersUtilsProvider utils={MomentUtils}>
                 <div className="App">
+                    <Notifications style={{zIndex: 3000}}/>
                     <Switch>
                         <Route exact={true} path='/' component={TradingContest} /> 
                     </Switch>

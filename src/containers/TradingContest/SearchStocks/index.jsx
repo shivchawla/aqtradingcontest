@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import StockPerformance from './components/StockPerformance';
+import {notify} from 'react-notify-toast';
 import {screenSize} from '../constants';
 import SelectedStocksDialog from './components/SelectedStocksDialog';
 import SearchStockHeaderMobile from './components/StockSearchHeaderMobile';
@@ -153,7 +154,7 @@ export class SearchStocks extends React.Component {
         const stocks = [...this.state.stocks];
         const skip = this.state.selectedPage * limit;
         const populate = true;
-        const universe = _.get(this.props, 'filters.universe', 'NIFTY_50');
+        const universe = _.get(this.props, 'filters.universe', 'NIFTY_500');
         const sector = _.get(this.props, 'filters.sector', '').length === 0
                 ?   this.state.filter.sector
                 :   _.get(this.props, 'filters.sector', '');
@@ -267,6 +268,8 @@ export class SearchStocks extends React.Component {
                     ?  _.get(stock, 'latestDetailRT.current', 0)
                     :  _.get(stock, 'latestDetail.values.Close', 0);
 
+            const shortable = _.get(stock, 'shortable', false);
+
 
             return {
                 symbol,
@@ -281,7 +284,8 @@ export class SearchStocks extends React.Component {
                 checked: selectedStocks.indexOf(symbol) >= 0,
                 sellChecked: sellSelectedStocks.indexOf(symbol) >= 0,
                 sector: _.get(stock, 'security.detail.Sector', null),
-                industry: _.get(stock, 'security.detail.Industry', null)
+                industry: _.get(stock, 'security.detail.Industry', null),
+                shortable
             };
         }).filter(stock => stock.name !== null);
     }

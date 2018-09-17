@@ -18,7 +18,7 @@ class Winners extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: moment().subtract(5, 'days').format(dateFormat),
+            selectedDate: moment().format(dateFormat),
             winnerStocks: [],
             contestActive: false,
             startDate: moment().format(dateFormat),

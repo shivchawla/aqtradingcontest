@@ -19,20 +19,23 @@ export default class StockListItemMobile extends React.Component {
     }
 
     renderActionButtons = () => {
-        const {symbol, checked = false, onAddIconClick, onSellIconClick, sellChecked = false} = this.props;
+        const {symbol, checked = false, onAddIconClick, onSellIconClick, sellChecked = false, shortable = false} = this.props;
 
         return (
             <React.Fragment>
-                <Button 
+                {
+                    shortable &&
+                    <Button 
                         size='small' 
                         color="secondary" 
                         onClick={() => onSellIconClick(symbol)}
                         variant={sellChecked ? 'contained': 'outlined'}
                         style={{boxShadow: 'none'}}
-                >
-                    <Icon>money_off</Icon>
-                    Sell
-                </Button>
+                    >
+                        <Icon>money_off</Icon>
+                        Sell
+                    </Button>
+                }
                 <Button 
                         size='small' 
                         color="primary" 

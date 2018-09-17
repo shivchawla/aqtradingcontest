@@ -17,7 +17,7 @@ class Participants extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: moment().subtract(3, 'days').format(dateFormat),
+            selectedDate: moment().format(dateFormat),
             winners: [],
             loading: false
         };

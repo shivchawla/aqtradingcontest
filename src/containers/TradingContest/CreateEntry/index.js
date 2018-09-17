@@ -102,9 +102,8 @@ class CreateEntry extends React.Component {
                                         style={{
                                             transform: `translate3d(0, ${x}px, 0)`,
                                             position: 'fixed',
-                                            zIndex: '20',
                                             backgroundColor: '#fff',
-                                            zIndex: '20000'
+                                            zIndex: '2000'
                                         }}
                                     >
                                         <SearchStocks 
@@ -130,7 +129,7 @@ class CreateEntry extends React.Component {
                     render={() => (
                         <SwipeableBottomSheet 
                                 fullScreen 
-                                style={{zIndex: '20000'}}
+                                // style={{zIndex: '20000'}}
                                 overlayStyle={{overflow: 'hidden'}}
                                 open={this.state.bottomSheetOpenStatus}
                                 onChange={this.toggleSearchStockBottomSheet}
@@ -268,13 +267,11 @@ class CreateEntry extends React.Component {
         const positions = [...this.state.positions, ...processedSellPositions];
         submitEntry(positions, this.state.previousPositions.length > 0)
         .then(response => {
-            this.setState({showPreviousPositions: true});
-            notify.show("Entry Successfully Submitted :)", "success", 5000, primaryColor);
+            this.setState({showPreviousPositions: true, snackbarOpenStatus: true, snackbarMessage: 'Succeess :)'});
         })
         .catch(error => {
             const errorMessage = _.get(error, 'response.data.message', 'Error Occured :(');
-            this.setState({showPreviousPositions: true});
-            notify.show(errorMessage, "error", 5000, primaryColor);
+            this.setState({showPreviousPositions: true, snackbarOpenStatus: true, snackbarMessage: errorMessage});
             return handleCreateAjaxError(error, this.props.history, this.props.match.url)
         })
         .finally(() => {
@@ -387,7 +384,13 @@ class CreateEntry extends React.Component {
                         </Button>
                         {
                             !this.state.showPreviousPositions &&
-                            <Button style={{...fabButtonStyle, ...submitButtonStyle}} size='small' variant="extendedFab" aria-label="Edit" onClick={this.submitPositions}>
+                            <Button 
+                                    style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                    size='small' 
+                                    variant="extendedFab" 
+                                    aria-label="Edit" 
+                                    onClick={this.submitPositions}
+                            >
                                 <Icon style={{marginRight: '5px'}}>update</Icon>
                                 UPDATE PICKS
                             </Button>
