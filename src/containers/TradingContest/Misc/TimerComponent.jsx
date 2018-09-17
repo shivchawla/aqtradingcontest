@@ -19,7 +19,7 @@ export default class TimeComponent extends React.Component {
     renderCountdown = ({total, days, hours, minutes, seconds}) => {
         return (
             <div style={{...horizontalBox, width: '100%', justifyContent: 'center'}}>
-                <TimerText>{days}:</TimerText>
+                {days > 0 && <TimerText>{days}:</TimerText>}
                 <TimerText>{hours}:</TimerText>
                 <TimerText>{minutes}:</TimerText>
                 <TimerText>{seconds}</TimerText>
@@ -31,12 +31,11 @@ export default class TimeComponent extends React.Component {
         const type = this.props.type || 'normal';
         const {contestStarted = false} = this.props;
         const date = this.props.date;
-        const localFormattedDate = momentTimezone(new Date(date), "Asia/Kolkata").format('YYYY-MM-DD HH:mm:ss');
         
         return (
             <Grid container>
                 <Countdown 
-                    date = {localFormattedDate} 
+                    date = {date.toDate()} 
                     renderer={this.renderCountdown}
                 /> 
             </Grid>
