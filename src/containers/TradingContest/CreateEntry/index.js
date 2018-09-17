@@ -172,19 +172,19 @@ class CreateEntry extends React.Component {
                 {
                     (moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive)
                     ?   contestRunning
-                        ?   <TimerComponent date={this.state.contestEndDate} contestStarted={true} />
+                        ?   <TimerComponent date={this.state.contestEndDate.toDate()} contestStarted={true} />
                         : contestNotStarted ?  
-                            <TimerComponent date={this.state.contestStartDate} />
+                            <TimerComponent date={this.state.contestStartDate.toDate()} />
                             : null
                     :   null
                 }
                 {
                     (this.state.positions.length === 0 || this.state.previousPositions.length === 0) 
-                    && !moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive
-                    && <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>No entry found for selected date</h3>
+                    && contestEnded &&
+                    <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>No entry found for selected date</h3>
                 }
                 {
-                    moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive && 
+                    contestNotStarted && this.state.contestActive && 
                     <React.Fragment>
                         <h3 style={{textAlign: 'center', padding: '0 20px', fontWeight: 300}}>Please add 5 stocks to participate in today’s contest</h3>
                         <Button 

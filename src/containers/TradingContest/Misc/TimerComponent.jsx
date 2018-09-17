@@ -35,7 +35,7 @@ export default class TimeComponent extends React.Component {
         return (
             <Grid container>
                 <Countdown 
-                    date = {date.toDate()} 
+                    date = {date} 
                     renderer={this.renderCountdown}
                 /> 
             </Grid>
