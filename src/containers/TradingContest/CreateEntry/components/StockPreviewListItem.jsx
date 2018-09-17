@@ -45,8 +45,8 @@ const SGrid = styled(Grid)`
 `;
 
 const Symbol = styled.h3`
-    font-weight: 700;
-    font-size: 22px;
+    font-weight: 600;
+    font-size: 18px;
     color: #6A6A6A;
 `;
 

@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {withRouter} from 'react-router';
 import {Motion, spring} from 'react-motion';
 import {SearchStocks} from '../SearchStocks';
@@ -45,6 +46,7 @@ class CreateEntry extends React.Component {
             noEntryFound: false,
             loading: false,
             listView: 'buy',
+            submissionLoading: false,
             snackbarOpenStatus: false,
             snackbarMessage: 'N/A'
         };
@@ -175,7 +177,7 @@ class CreateEntry extends React.Component {
                 {
                     (this.state.positions.length === 0 || this.state.previousPositions.length === 0) 
                     && !moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive
-                    && <h3 style={{textAlign: 'center', padding: '0 20px'}}>No entry found for selected date</h3>
+                    && <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>No entry found for selected date</h3>
                 }
                 {
                     moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive && 
@@ -265,6 +267,7 @@ class CreateEntry extends React.Component {
     submitPositions = async () => {
         const processedSellPositions = await this.processSellPositions();
         const positions = [...this.state.positions, ...processedSellPositions];
+        this.setState({submissionLoading: true});
         submitEntry(positions, this.state.previousPositions.length > 0)
         .then(response => {
             this.setState({showPreviousPositions: true, snackbarOpenStatus: true, snackbarMessage: 'Succeess :)'});
@@ -275,7 +278,7 @@ class CreateEntry extends React.Component {
             return handleCreateAjaxError(error, this.props.history, this.props.match.url)
         })
         .finally(() => {
-            console.log('Request Ended');
+            // this.setState({submissionLoading: false});
         });
     }
 
@@ -384,16 +387,20 @@ class CreateEntry extends React.Component {
                         </Button>
                         {
                             !this.state.showPreviousPositions &&
-                            <Button 
-                                    style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                    size='small' 
-                                    variant="extendedFab" 
-                                    aria-label="Edit" 
-                                    onClick={this.submitPositions}
-                            >
-                                <Icon style={{marginRight: '5px'}}>update</Icon>
-                                UPDATE PICKS
-                            </Button>
+                            <div>
+                                <Button 
+                                        style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                        size='small' 
+                                        variant="extendedFab" 
+                                        aria-label="Edit" 
+                                        onClick={this.submitPositions}
+                                        disabled={this.state.submissionLoading}
+                                >
+                                    <Icon style={{marginRight: '5px'}}>update</Icon>
+                                    UPDATE PICKS
+                                    {this.state.submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
+                                </Button>
+                            </div>
                         }
                     </Grid>
                 }

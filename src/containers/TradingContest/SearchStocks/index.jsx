@@ -477,18 +477,15 @@ export class SearchStocks extends React.Component {
             return {...stock, checked, sellChecked};
         })
         this.localStocks = localStocks;
-        this.setState({stocks});
+        this.setState({stocks, selectedStocks, sellSelectedStocks});
     }
 
     initializeSelectedStocks = async () => {
         const positions = [...this.props.portfolioPositions];
         const sellPositions = [...this.props.portfolioSellPositions];
-        const selectedStocks = positions.map(position => position.symbol);
-        const sellSelectedStocks = sellPositions.map(position => position.symbol);
         const processedBuySelectedStocks = await this.getLocalStocksFromPortfolio(positions, 'buy');
         const processedSellSelectedStocks = await this.getLocalStocksFromPortfolio(sellPositions, 'sell');
         this.localStocks = [...processedBuySelectedStocks, ...processedSellSelectedStocks];
-        this.setState({selectedStocks, sellSelectedStocks});
     }
 
     /**
