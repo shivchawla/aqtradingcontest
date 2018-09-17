@@ -23,7 +23,10 @@ class Winners extends React.Component {
             contestActive: false,
             startDate: moment().format(dateFormat),
             endDate: moment().add(2, 'days').format(dateFormat),
+            utcStartDate: null,
+            utcEndDate: null,
             resultDate: moment().add(2, 'days').format(dateFormat),
+            utcResultDate: null,
             loading: false,
             contestEnded: false
         };
@@ -41,7 +44,10 @@ class Winners extends React.Component {
             const contestActive = _.get(response.data, 'active', false);
             const startDate = moment(_.get(response.data, 'startDate', null)).format(dateFormat);
             const endDate = moment(_.get(response.data, 'endDate', null)).format(dateFormat);
+            const utcStartDate = _.get(response.data, 'startDate', null);
+            const utcEndDate = _.get(response.data, 'endDate', null);
             const resultDate = moment(_.get(response.data, 'resultDate', null)).format(dateFormat);
+            const utcResultDate = _.get(response.data, 'resultDate', null);
             const processedParticipants = await processWinnerStocks(winnerParticipants);
             const todayDate = moment().format(dateFormat);
             const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));
@@ -51,7 +57,10 @@ class Winners extends React.Component {
                 startDate, 
                 endDate,
                 contestEnded,
-                resultDate
+                resultDate,
+                utcEndDate,
+                utcStartDate,
+                utcResultDate
             });
         })
         .catch(err => {
@@ -83,10 +92,10 @@ class Winners extends React.Component {
                         this.state.contestActive
                         ? contestStarted
                             ?   <ContestStartedView 
-                                    date={this.state.contestEnded ? this.state.resultDate : this.state.endDate}
+                                    endDate={this.state.contestEnded ? this.state.utcResultDate : this.state.utcEndDate}
                                     contestEnded={this.state.contestEnded}
                                 />
-                            :   <ContestWillStartView startDate={this.state.startDate} />
+                            :   <ContestWillStartView startDate={this.state.utcStartDate} />
                         : null
                     }
                 </Grid>

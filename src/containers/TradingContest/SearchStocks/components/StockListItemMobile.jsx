@@ -30,7 +30,7 @@ export default class StockListItemMobile extends React.Component {
                         variant={sellChecked ? 'contained': 'outlined'}
                         style={{boxShadow: 'none'}}
                 >
-                    <Icon color="#fff">money_off</Icon>
+                    <Icon>money_off</Icon>
                     Sell
                 </Button>
                 <Button 
@@ -40,7 +40,7 @@ export default class StockListItemMobile extends React.Component {
                         variant={checked ? 'contained' : 'outlined'}
                         style={{boxShadow: 'none', marginLeft: '10px'}}
                 >
-                    <Icon color="#fff" style={{marginRight: '5px'}}>monetization_on</Icon>
+                    <Icon style={{marginRight: '5px'}}>monetization_on</Icon>
                     Buy
                 </Button>
             </React.Fragment>

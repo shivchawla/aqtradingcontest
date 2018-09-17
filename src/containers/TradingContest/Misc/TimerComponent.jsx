@@ -3,9 +3,9 @@ import _ from 'lodash';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {verticalBox} from '../../../constants';
-import {contestEndHour, contestStartHour} from '../constants';
-import {setEndTimeToDate} from '../utils';
+import Countdown from 'react-countdown-now';
+import momentTimezone from 'moment-timezone';
+import {horizontalBox} from '../../../constants';
 
 export default class TimeComponent extends React.Component {
     constructor(props) {
@@ -16,54 +16,29 @@ export default class TimeComponent extends React.Component {
         }
     }
 
-    componentWillMount() {
-        this.setTimer();
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this.setTimer(nextProps);
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timer);
-    }
-
-    setTimer = (props = this.props) => {
-        clearInterval(this.timer);
-        const self = this;
-        this.timer = setInterval(function x() {
-            const {date = moment().format('YYYY-MM-DD')} = props;
-            const hour = _.get(self.props, 'hour', null);
-            const hourToSet = hour !== null ? hour : props.contestStarted ? contestEndHour : contestStartHour;
-            const endTime = setEndTimeToDate(date, hourToSet);
-            const startTime = moment();
-            let difference = null;
-            if (endTime.isAfter(startTime)) {
-                const secondsDifference = endTime.diff(startTime, 'seconds');
-                difference = moment.utc(secondsDifference * 1000).format('HH:mm:ss');
-            }    
-            self.setState({difference});   
-            return x;
-        }(), 1000)
+    renderCountdown = ({total, days, hours, minutes, seconds}) => {
+        return (
+            <div style={{...horizontalBox, width: '100%', justifyContent: 'center'}}>
+                <TimerText>{days}:</TimerText>
+                <TimerText>{hours}:</TimerText>
+                <TimerText>{minutes}:</TimerText>
+                <TimerText>{seconds}</TimerText>
+            </div>
+        );
     }
 
     render() {
         const type = this.props.type || 'normal';
         const {contestStarted = false} = this.props;
-
+        const date = this.props.date;
+        const localFormattedDate = momentTimezone(new Date(date), "Asia/Kolkata").format('YYYY-MM-DD HH:mm:ss');
+        
         return (
             <Grid container>
-                {
-                    this.state.difference !== null &&
-                    <Grid item xs={12} style={{...verticalBox}}>
-                        <TimerText 
-                                fontSize={type === 'normal' ? '34px' : '20px'}
-                                color={type === 'normal' ? '#15C08F' : '#686868'}
-                        >
-                            {this.state.difference}
-                        </TimerText>
-                    </Grid>
-                }
+                <Countdown 
+                    date = {localFormattedDate} 
+                    renderer={this.renderCountdown}
+                /> 
             </Grid>
         );
     }

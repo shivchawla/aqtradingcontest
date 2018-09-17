@@ -118,7 +118,7 @@ export class SearchStocks extends React.Component {
                             color="primary"
                             badgeContent={selectedStocks.length}
                             onClick={this.toggleSelectedStocksDialogClose}
-                        >{null}</Badge>
+                        >Selected</Badge>
                     }
                 </Grid>
                 <Grid

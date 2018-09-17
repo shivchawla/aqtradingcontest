@@ -40,6 +40,8 @@ class CreateEntry extends React.Component {
             selectedDate: moment().format(dateFormat), // Date that's selected from the DatePicker
             contestStartDate: moment().format(dateFormat),
             contestEndDate: moment().format(dateFormat),
+            contestUtcStartDate: null,
+            contestUtcEndDate: null,
             noEntryFound: false,
             loading: false,
             listView: 'buy',
@@ -167,8 +169,8 @@ class CreateEntry extends React.Component {
                 {
                     (moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive)
                     ?   contestStarted
-                        ?   <TimerComponent date={this.state.endDate} contestStarted={true} />
-                        :   <TimerComponent date={this.state.startDate} />
+                        ?   <TimerComponent date={this.state.contestUtcEndDate} contestStarted={true} />
+                        :   <TimerComponent date={this.state.contestUtcStartDate} />
                     :   null
                 }
                 {
@@ -247,12 +249,16 @@ class CreateEntry extends React.Component {
         return getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
             const contestActive = _.get(response.data, 'active', false);
-            const contestStartDate = moment(_.get(response.data, 'startDate', null)).format(dateFormat);
+            const contestUtcStartDate = _.get(response.data, 'startDate', null);
+            const contestUtcEndDate = _.get(response.data, 'endDate', null);
+            const contestStartDate = moment(_.get(response.data, 'startDate', null)).format(`${dateFormat}`);
             const contestEndDate = moment(_.get(response.data, 'endDate', null)).format(dateFormat);
             this.setState({
                 contestActive,
                 contestStartDate, 
-                contestEndDate
+                contestEndDate,
+                contestUtcEndDate,
+                contestUtcStartDate
             });
         });
     }
@@ -376,13 +382,13 @@ class CreateEntry extends React.Component {
                             }}
                     >
                         <Button style={{...fabButtonStyle, ...addStocksStyle}} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
-                            <Icon color="#fff" style={{marginRight: '5px'}}>add_circle</Icon>
+                            <Icon style={{marginRight: '5px'}}>add_circle</Icon>
                             ADD STOCKS
                         </Button>
                         {
                             !this.state.showPreviousPositions &&
                             <Button style={{...fabButtonStyle, ...submitButtonStyle}} size='small' variant="extendedFab" aria-label="Edit" onClick={this.submitPositions}>
-                                <Icon color="#fff" style={{marginRight: '5px'}}>update</Icon>
+                                <Icon style={{marginRight: '5px'}}>update</Icon>
                                 UPDATE PICKS
                             </Button>
                         }
