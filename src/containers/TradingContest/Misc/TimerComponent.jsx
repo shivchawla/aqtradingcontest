@@ -27,10 +27,22 @@ export default class TimeComponent extends React.Component {
         );
     }
 
+    renderCountdownSmall = ({total, days, hours, minutes, seconds}) => {
+        const timerTextProps = {small: true, fontSize: '16px', color: '#fff'};
+
+        return (
+            <div style={{...horizontalBox, width: '100%', justifyContent: 'center', backgroundColor: '#15c18f'}}>
+                {days > 0 && <TimerText>{days}:</TimerText>}
+                <TimerText {...timerTextProps}>{hours}:</TimerText>
+                <TimerText {...timerTextProps}>{minutes}:</TimerText>
+                <TimerText {...timerTextProps}>{seconds}</TimerText>
+            </div>
+        );
+    }
+
     render() {
-        const type = this.props.type || 'normal';
-        const {contestStarted = false} = this.props;
         const date = this.props.date;
+        const {small = false} = this.props;
         
         return (
             <Grid container>
@@ -41,7 +53,7 @@ export default class TimeComponent extends React.Component {
                 }
                 <Countdown 
                     date = {date} 
-                    renderer={this.renderCountdown}
+                    renderer={small ? this.renderCountdownSmall : this.renderCountdown}
                 /> 
             </Grid>
         );
@@ -49,13 +61,7 @@ export default class TimeComponent extends React.Component {
 }
 
 const TimerText = styled.h3`
-    font-weight: 500;
+    font-weight: ${props => props.small ? 400 : 500};
     font-size: ${props => props.fontSize || '34px'};
     color: ${props => props.color || '#15C08F'};
-`;
-
-const Header = styled.h3`
-    font-size: ${props => props.fontSize || '16px'};
-    color: #fff;
-    font-weight: 400;
 `;

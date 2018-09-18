@@ -57,7 +57,10 @@ export const convertBackendPositions = positions => {
             sector: _.get(position, 'security.detail.Sector', ''),
             points: Math.abs(_.get(position, 'investment', 10)),
             lastPrice: _.get(position, 'lastPrice', ''),
-            symbol: _.get(position, 'security.ticker', '')
+            symbol: _.get(position, 'security.ticker', ''),
+            avgPrice: _.get(position, 'avgPrice', 0),
+            unrealizedPnl: _.get(position, 'unrealizedPnl', 0),
+            unrealizedPnlPct: _.get(position, 'unrealizedPnlPct', 0)
         }
     });
 }
@@ -105,7 +108,7 @@ export const processWinnerStocks = winnerStocks => {
         return {
             symbol: _.get(stock, 'security.ticker', ''),
             numUsers: _.get(stock, 'numUsers', 0),
-            name: _.get(stock, 'security.detail.NSE_name', ''),
+            name: _.get(stock, 'security.detail.Nse_Name', ''),
             rank: index + 1
         }
     })

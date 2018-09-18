@@ -7,6 +7,7 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import ActionIcon from '../Misc/ActionIcons';
 import DatePicker from 'material-ui-pickers/DatePicker';
+import TimerComponent from '../Misc/TimerComponent';
 import {horizontalBox, verticalBox} from '../../../constants';
 
 const dateFormat = 'Do MMM YY';
@@ -75,6 +76,15 @@ export default class DateComponent extends React.Component {
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}} onClick={this.navigateToNexDate}> 
                     <ActionIcon size={30} color={color} type='chevron_right' />
                 </Grid>
+                {
+                    _.get(this.props, 'timerDate', null) !== null &&
+                    <Grid xs={12} style={{marginTop: '-5px', paddingBottom: '10px'}}>
+                        <TimerComponent 
+                            date={this.props.timerDate}  
+                            small
+                        />
+                    </Grid> 
+                }
             </Grid>
         );
     }

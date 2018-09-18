@@ -40,8 +40,6 @@ class CreateEntry extends React.Component {
             selectedDate: moment(), //.format(dateFormat), // Date that's selected from the DatePicker
             contestStartDate: moment(), //.format(dateFormat),
             contestEndDate: moment(), //.format(dateFormat),
-            //contestUtcStartDate: null,
-            //contestUtcEndDate: null,
             noEntryFound: false,
             loading: false,
             listView: 'all',
@@ -161,19 +159,20 @@ class CreateEntry extends React.Component {
     }
 
     renderEmptySelections = () => {
-        const contestEnded = moment().isAfter(moment(this.state.contestEndDate));
-        const contestRunning = moment().isSameOrAfter(moment(this.state.contestStartDate)) && !contestEnded;
-        const contestNotStarted = moment().isBefore(moment(this.state.contestStartDate));
+        const contestEnded = moment().isAfter(this.state.contestEndDate);
+        const contestRunning = moment().isSameOrAfter(this.state.contestStartDate) && !contestEnded;
+        const contestNotStarted = moment().isBefore(this.state.contestStartDate);
         const todayDate = moment().format(dateFormat);
-
-        const activeContestToday = moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive;
+        const formattedSelected = this.state.selectedDate.format(dateFormat); 
+        
+        const activeContestToday = moment(formattedSelected).isSame(todayDate) && this.state.contestActive;
 
         //moment to date conversion
         const contestStartDate = this.state.contestStartDate.toDate();
         const contestEndDate = this.state.contestEndDate.toDate();
 
         return (
-            <Grid container xs={12} style={{...verticalBox, marginTop: '50%'}}>
+            <Grid container style={{...verticalBox, marginTop: '50%'}}>
                 {
 
                     (activeContestToday && contestNotStarted) ?
@@ -233,7 +232,7 @@ class CreateEntry extends React.Component {
         )
     }
 
-    getRecentContestEntry = (requiredDate = moment().format(dateFormat)) => new Promise((resolve, reject) => {
+    getRecentContestEntry = (requiredDate = moment()) => new Promise((resolve, reject) => {
         this.setState({loading: true});
         const errorCallback = (err) => {
             const errorData = _.get(err, 'response.data', null);
@@ -242,7 +241,7 @@ class CreateEntry extends React.Component {
             reject(errorData);
         };
 
-        getContestEntry(requiredDate, this.props.history, this.props.match.url, errorCallback)
+        getContestEntry(requiredDate.format(dateFormat), this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
             const positions = _.get(response, 'data.positions', []);
             const buyPositions = positions.filter(position => _.get(position, 'investment', 10) >= 0);
@@ -258,24 +257,19 @@ class CreateEntry extends React.Component {
     })
 
     getContestStatus = selectedDate => {
-        const date = moment(selectedDate).format(dateFormat);
-        this.setState({selectedDate: date});
+        const date = this.state.selectedDate.format(dateFormat);
         const errorCallback = err => {
             this.setState({contestActive: false});
         }
         return getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
             const contestActive = _.get(response.data, 'active', false);
-            //const contestUtcStartDate = _.get(response.data, 'startDate', null);
-            //const contestUtcEndDate = _.get(response.data, 'endDate', null);
             const contestStartDate = moment(_.get(response.data, 'startDate', null)); //.format(`${dateFormat}`);
             const contestEndDate = moment(_.get(response.data, 'endDate', null)); //.format(dateFormat);
             this.setState({
                 contestActive,
                 contestStartDate, 
                 contestEndDate,
-                //contestUtcEndDate,
-                //contestUtcStartDate
             });
         });
     }
@@ -283,7 +277,7 @@ class CreateEntry extends React.Component {
     submitPositions = async () => {
         const processedSellPositions = await this.processSellPositions();
         const positions = [...this.state.positions, ...processedSellPositions];
-        this.setState({submissionLoading: true});
+        this.setState({submissionLoading: true,});
         submitEntry(positions, this.state.previousPositions.length > 0)
         .then(response => {
             this.setState({
@@ -316,9 +310,8 @@ class CreateEntry extends React.Component {
     }
 
     handleContestDateChange = async selectedDate => {
-        const requiredDate = selectedDate.format(dateFormat);
-        this.setState({selectedDate: requiredDate});
-        const contestData = await this.getRecentContestEntry(requiredDate);
+        this.setState({selectedDate}); 
+        const contestData = await this.getRecentContestEntry(selectedDate);
         const {positions = [], sellPositions = []} = contestData;
         this.setState({
             positions,
@@ -348,7 +341,7 @@ class CreateEntry extends React.Component {
     componentWillMount = () => {
         this.setState({loading: true});
         Promise.all([
-            this.getRecentContestEntry(),
+            this.getRecentContestEntry(this.state.selectedDate),
             this.getContestStatus(this.state.selectedDate)
         ])
         .then(([contestData]) => {
@@ -376,7 +369,7 @@ class CreateEntry extends React.Component {
         currentDate.seconds(0);
         const longInvestmentTotal = getTotalInvestment(this.state.positions);
         const shortInvestmentTotal = getTotalInvestment(this.state.sellPositions);
-
+        const formattedSelectedDate = this.state.selectedDate.format(dateFormat);
 
         return (
             this.state.positions.length === 0 && this.state.previousPositions.length == 0
@@ -395,7 +388,7 @@ class CreateEntry extends React.Component {
                     {this.renderStockList()}
                     
                     {
-                        !contestSubmissionOver &&
+                        moment(formattedSelectedDate).isSame(todayDate) && !contestSubmissionOver &&
                         <div style={{display: 'flex', width: '95%', padding:'0 10px', position: 'fixed', zIndex:2, bottom: '20px', justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'}}>
                             <Button style={{...fabButtonStyle, ...addStocksStyle}} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
                                 <Icon style={{marginRight: '5px'}}>add_circle</Icon>
@@ -426,6 +419,27 @@ class CreateEntry extends React.Component {
         );
     }
 
+    renderDateComponent = () => {
+        const contestEnded = moment().isAfter(this.state.contestEndDate);
+        const contestRunning = moment().isSameOrAfter(this.state.contestStartDate) && !contestEnded;
+
+        return (
+            <DateComponent 
+                color='#fff'
+                onDateChange={this.handleContestDateChange}
+                style={{backgroundColor: '#15C08F'}}
+                date={this.state.selectedDate}
+                timerDate={
+                    (contestEnded || this.state.positions.length === 0)
+                    ? null
+                    : contestRunning 
+                        ?  this.state.contestEndDate 
+                        :  this.state.contestStartDate
+                }
+            />
+        );
+    }
+
     render() {
         return (
             <SGrid container>
@@ -436,12 +450,7 @@ class CreateEntry extends React.Component {
                 />
                 {this.renderSearchStocksBottomSheet()}
                 <Grid item xs={12} style={{marginTop: '110px'}}>
-                    <DateComponent 
-                        color='#fff'
-                        onDateChange={this.handleContestDateChange}
-                        style={{backgroundColor: '#15C08F'}}
-                        date={moment(this.state.selectedDate)}
-                    />
+                    {this.renderDateComponent()}
                 </Grid>
                 {
                     this.state.loading

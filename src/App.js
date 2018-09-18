@@ -17,13 +17,13 @@ class App extends Component {
                 <div className="App">
                     <Notifications style={{zIndex: 3000}}/>
                     <Switch>
-                        <Route exact={true} path='/' component={TradingContest} /> 
+                        <Route exact={true} path='/dailycontest' component={TradingContest} /> 
                     </Switch>
                     <Switch>
-                        <Route exact={true} path='/home' component={TradingContestHome} /> 
+                        <Route exact={true} path='/dailycontest/home' component={TradingContestHome} /> 
                     </Switch>
                     <Switch>
-                        <Route exact={true} path='/how' component={TradingContestHowItWorks} /> 
+                        <Route exact={true} path='/dailycontest/how' component={TradingContestHowItWorks} /> 
                     </Switch>
                 </div>
             </MuiPickersUtilsProvider>

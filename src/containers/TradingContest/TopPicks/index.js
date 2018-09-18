@@ -23,10 +23,7 @@ class Winners extends React.Component {
             contestActive: false,
             startDate: moment(), //.format(dateFormat),
             endDate: moment().add(1, 'days'), //.format(dateFormat),
-            //utcStartDate: null,
-            //utcEndDate: null,
             resultDate: moment().add(1, 'days'), //.format(dateFormat),
-            //utcResultDate: null,
             loading: false,
             contestEnded: false
         };
@@ -44,10 +41,7 @@ class Winners extends React.Component {
             const contestActive = _.get(response.data, 'active', false);
             const startDate = moment(_.get(response.data, 'startDate', null));
             const endDate = moment(_.get(response.data, 'endDate', null));
-            //const utcStartDate = _.get(response.data, 'startDate', null);
-            //const utcEndDate = _.get(response.data, 'endDate', null);
             const resultDate = moment(_.get(response.data, 'resultDate', null));//.format(dateFormat);
-            //const utcResultDate = _.get(response.data, 'resultDate', null);
             const processedParticipants = await processWinnerStocks(winnerParticipants);
             const todayDate = moment().format(dateFormat);
             const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));
@@ -58,9 +52,6 @@ class Winners extends React.Component {
                 endDate,
                 contestEnded,
                 resultDate,
-                //utcEndDate,
-                //utcStartDate,
-                //utcResultDate
             });
         })
         .catch(err => {
@@ -92,7 +83,12 @@ class Winners extends React.Component {
                     {
                         this.state.contestActive 
                             ?   <ContestStartedView 
-                                    endDate={contestEnded ? this.state.resultDate : contestRunning ? this.state.endDate :  this.state.startDate}
+                                    endDate={
+                                        contestEnded 
+                                        ? this.state.resultDate 
+                                        : contestRunning 
+                                            ? this.state.endDate 
+                                            :  this.state.startDate}
                                     contestEnded={contestEnded}
                                     contestRunning={contestRunning}
                                 />

@@ -26,7 +26,7 @@ export default class StockList extends React.Component {
         const {positions = []} = this.props;
 
         return (
-            <Grid item className='stock-list' xs={12} style={{...stockListContainer, paddingTop: '20px', padding: '0 5px'}}>
+            <Grid item className='stock-list' xs={12} style={{paddingTop: '20px', padding: '0 5px', paddingBottom: '80px'}}>
                 {
                     positions.map((position, index) => {
                         return (
@@ -45,10 +45,3 @@ export default class StockList extends React.Component {
         );
     }
 }
-
-const stockListContainer = {
-    height: global.screen.height - 50,
-    overflow: 'hidden',
-    overflowY: 'scroll',
-    paddingBottom: '100px'
-};

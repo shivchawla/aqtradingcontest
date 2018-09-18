@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {horizontalBox, verticalBox} from '../../../constants';
+import {horizontalBox, verticalBox, nameEllipsisStyle} from '../../../constants';
 import {getRankMedal} from '../utils';
 
 export default class WinnerListItem extends React.Component {
@@ -25,7 +25,7 @@ export default class WinnerListItem extends React.Component {
                 </Grid>
                 <Grid item xs={9} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <Symbol>{symbol}</Symbol>
-                    <SecondaryText>{name}</SecondaryText>
+                    <SecondaryText style={{...nameEllipsisStyle, textAlign: 'start', color: '#6A6A6A'}}>{name}</SecondaryText>
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}}>
                     <Points>{numUsers}</Points>
@@ -56,7 +56,7 @@ const Symbol = styled.h3`
 `;
 
 const SecondaryText = styled.h3`
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 300;
     color: #717171;
 `;
