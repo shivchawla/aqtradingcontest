@@ -37,14 +37,14 @@ class CreateEntry extends React.Component {
             previousSellPositions: [], // contains the positions for the previous entry in the current contest for sell,
             showPreviousPositions: false, // Whether to show the previous positions for the current contest,
             contestActive: false, // Checks whether the contest is active,
-            selectedDate: moment().format(dateFormat), // Date that's selected from the DatePicker
-            contestStartDate: moment().format(dateFormat),
-            contestEndDate: moment().format(dateFormat),
-            contestUtcStartDate: null,
-            contestUtcEndDate: null,
+            selectedDate: moment(), //.format(dateFormat), // Date that's selected from the DatePicker
+            contestStartDate: moment(), //.format(dateFormat),
+            contestEndDate: moment(), //.format(dateFormat),
+            //contestUtcStartDate: null,
+            //contestUtcEndDate: null,
             noEntryFound: false,
             loading: false,
-            listView: 'buy',
+            listView: 'all',
             submissionLoading: false,
             snackbarOpenStatus: false,
             snackbarMessage: 'N/A'
@@ -161,27 +161,45 @@ class CreateEntry extends React.Component {
     }
 
     renderEmptySelections = () => {
-        const contestStarted = moment().isSameOrAfter(moment(this.state.contestStartDate, dateFormat));
+        const contestEnded = moment().isAfter(moment(this.state.contestEndDate));
+        const contestRunning = moment().isSameOrAfter(moment(this.state.contestStartDate)) && !contestEnded;
+        const contestNotStarted = moment().isBefore(moment(this.state.contestStartDate));
         const todayDate = moment().format(dateFormat);
 
+        const activeContestToday = moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive;
+
+        //moment to date conversion
+        const contestStartDate = this.state.contestStartDate.toDate();
+        const contestEndDate = this.state.contestEndDate.toDate();
+
         return (
-            <Grid item xs={12} style={{...verticalBox, marginTop: '50%'}}>
+            <Grid container xs={12} style={{...verticalBox, marginTop: '50%'}}>
                 {
-                    (moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive)
-                    ?   contestStarted
-                        ?   <TimerComponent date={this.state.contestUtcEndDate} contestStarted={true} />
-                        :   <TimerComponent date={this.state.contestUtcStartDate} />
+
+                    (activeContestToday && contestNotStarted) ?
+                        <TimerComponent 
+                            date={contestNotStarted ? contestStartDate : null}  
+                            contestStarted={!contestNotStarted}
+                            tag={contestNotStarted ? "New Contest starts in" : 
+                                "Contest has ended"}  
+                        />
+                    
                     :   null
                 }
                 {
                     (this.state.positions.length === 0 || this.state.previousPositions.length === 0) 
-                    && !moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive
-                    && <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>No entry found for selected date</h3>
+                    && contestEnded &&
+                    <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>No entry found for selected date</h3>
                 }
                 {
-                    moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive && 
+                    (contestRunning && activeContestToday) &&
                     <React.Fragment>
-                        <h3 style={{textAlign: 'center', padding: '0 20px', fontWeight: 300}}>Please add 5 stocks to participate in today’s contest</h3>
+                        <TimerComponent 
+                            date={contestEndDate}  
+                            contestStarted={true}
+                            tag="Please add 5 stocks to participate in today’s contest" /> 
+                        
+                       
                         <Button 
                                 style={emptyPortfolioButtonStyle}
                                 onClick={this.toggleSearchStockBottomSheet}
@@ -248,16 +266,16 @@ class CreateEntry extends React.Component {
         return getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
             const contestActive = _.get(response.data, 'active', false);
-            const contestUtcStartDate = _.get(response.data, 'startDate', null);
-            const contestUtcEndDate = _.get(response.data, 'endDate', null);
-            const contestStartDate = moment(_.get(response.data, 'startDate', null)).format(`${dateFormat}`);
-            const contestEndDate = moment(_.get(response.data, 'endDate', null)).format(dateFormat);
+            //const contestUtcStartDate = _.get(response.data, 'startDate', null);
+            //const contestUtcEndDate = _.get(response.data, 'endDate', null);
+            const contestStartDate = moment(_.get(response.data, 'startDate', null)); //.format(`${dateFormat}`);
+            const contestEndDate = moment(_.get(response.data, 'endDate', null)); //.format(dateFormat);
             this.setState({
                 contestActive,
                 contestStartDate, 
                 contestEndDate,
-                contestUtcEndDate,
-                contestUtcStartDate
+                //contestUtcEndDate,
+                //contestUtcStartDate
             });
         });
     }
@@ -349,7 +367,7 @@ class CreateEntry extends React.Component {
     }
 
     renderPortfolioPicksDetail = () => {
-        const contestSubmissionOver = moment().isBefore(currentDate);
+        const contestSubmissionOver = moment().isAfter(this.state.endDate);
         const todayDate = moment().format(dateFormat);
         const fabButtonStyle = {padding: '0 10px'};
         let currentDate = moment();
@@ -359,65 +377,52 @@ class CreateEntry extends React.Component {
         const longInvestmentTotal = getTotalInvestment(this.state.positions);
         const shortInvestmentTotal = getTotalInvestment(this.state.sellPositions);
 
+
         return (
-            <React.Fragment>
-                {
-                    (this.state.positions.length === 0 && this.state.previousPositions.length == 0)
-                    ?   this.renderEmptySelections()
-                    :   <React.Fragment>
-                            <Grid item xs={12} style={{backgroundColor: '#15c18f'}}>
-                                <StockTypeRadio 
-                                    color='#fff' 
-                                    onChange={this.handleStockTypeRadioChange}
-                                    longTotal={longInvestmentTotal}
-                                    shortTotal={shortInvestmentTotal}
-                                />
-                            </Grid>
-                            {this.renderStockList()}
-                        </React.Fragment>
-                }
-                {
-                    // contestSubmissionOver && 
-                    moment(this.state.selectedDate).isSame(todayDate) &&
-                    this.state.positions.length > 0 &&
-                    <Grid 
-                            item xs={12} 
-                            style={{
-                                display: 'flex', 
-                                padding: '0 10px',
-                                justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between',
-                                width: '100%',
-                                position: 'fixed',
-                                zIndex: 20,
-                                bottom: '20px',
-                                background: 'transparent',
-                                transform: 'translate3d(0,0,0)'
-                            }}
-                    >
-                        <Button style={{...fabButtonStyle, ...addStocksStyle}} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
-                            <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                            ADD STOCKS
-                        </Button>
-                        {
-                            !this.state.showPreviousPositions &&
-                            <div>
-                                <Button 
-                                        style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                        size='small' 
-                                        variant="extendedFab" 
-                                        aria-label="Edit" 
-                                        onClick={this.submitPositions}
-                                        disabled={this.state.submissionLoading}
-                                >
-                                    <Icon style={{marginRight: '5px'}}>update</Icon>
-                                    UPDATE PICKS
-                                    {this.state.submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
-                                </Button>
-                            </div>
-                        }
-                    </Grid>
-                }
-            </React.Fragment>
+            this.state.positions.length === 0 && this.state.previousPositions.length == 0
+            ?   this.renderEmptySelections()
+            :   <Grid item xs={12}>
+                    <div>
+                    <StockTypeRadio 
+                        color='#fff' 
+                        onChange={this.handleStockTypeRadioChange} 
+                        defaultView={this.state.listView}
+                        longTotal={longInvestmentTotal}
+                        shortTotal={shortInvestmentTotal}
+                        style={{backgroundColor: '#15c18f'}}
+                    />
+                    </div>
+                    {this.renderStockList()}
+                    
+                    {
+                        !contestSubmissionOver &&
+                        <div style={{display: 'flex', width: '95%', padding:'0 10px', position: 'fixed', zIndex:2, bottom: '20px', justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'}}>
+                            <Button style={{...fabButtonStyle, ...addStocksStyle}} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
+                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
+                                ADD STOCKS
+                            </Button>
+                            {
+                                !this.state.showPreviousPositions &&
+                                <div>
+                                    <Button 
+                                            style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                            size='small' 
+                                            variant="extendedFab" 
+                                            aria-label="Edit" 
+                                            onClick={this.submitPositions}
+                                            disabled={this.state.submissionLoading}
+                                    >
+                                        <Icon style={{marginRight: '5px'}}>update</Icon>
+                                        UPDATE PICKS
+                                        {this.state.submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
+                                    </Button>
+                                </div>
+                            }
+                        </div>
+                    }
+                </Grid>
+            
+            
         );
     }
 
@@ -472,11 +477,11 @@ const emptyPortfolioButtonStyle = {
     backgroundColor: '#15C08F',
     color: '#fff',
     borderRadius: '4px',
-    width: '80%',
+    width: '50%',
     border: 'none',
-    // height: '50px',
     position: 'fixed',
-    bottom: '25px'
+    bottom: '25px',
+    left:'25%'
 };
 
 const SGrid = styled(Grid)`

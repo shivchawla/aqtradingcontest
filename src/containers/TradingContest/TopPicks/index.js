@@ -21,12 +21,12 @@ class Winners extends React.Component {
             selectedDate: moment().format(dateFormat),
             winnerStocks: [],
             contestActive: false,
-            startDate: moment().format(dateFormat),
-            endDate: moment().add(2, 'days').format(dateFormat),
-            utcStartDate: null,
-            utcEndDate: null,
-            resultDate: moment().add(2, 'days').format(dateFormat),
-            utcResultDate: null,
+            startDate: moment(), //.format(dateFormat),
+            endDate: moment().add(1, 'days'), //.format(dateFormat),
+            //utcStartDate: null,
+            //utcEndDate: null,
+            resultDate: moment().add(1, 'days'), //.format(dateFormat),
+            //utcResultDate: null,
             loading: false,
             contestEnded: false
         };
@@ -42,12 +42,12 @@ class Winners extends React.Component {
         .then(async response => {
             const winnerParticipants = _.get(response.data, 'topStocks', []);
             const contestActive = _.get(response.data, 'active', false);
-            const startDate = moment(_.get(response.data, 'startDate', null)).format(dateFormat);
-            const endDate = moment(_.get(response.data, 'endDate', null)).format(dateFormat);
-            const utcStartDate = _.get(response.data, 'startDate', null);
-            const utcEndDate = _.get(response.data, 'endDate', null);
-            const resultDate = moment(_.get(response.data, 'resultDate', null)).format(dateFormat);
-            const utcResultDate = _.get(response.data, 'resultDate', null);
+            const startDate = moment(_.get(response.data, 'startDate', null));
+            const endDate = moment(_.get(response.data, 'endDate', null));
+            //const utcStartDate = _.get(response.data, 'startDate', null);
+            //const utcEndDate = _.get(response.data, 'endDate', null);
+            const resultDate = moment(_.get(response.data, 'resultDate', null));//.format(dateFormat);
+            //const utcResultDate = _.get(response.data, 'resultDate', null);
             const processedParticipants = await processWinnerStocks(winnerParticipants);
             const todayDate = moment().format(dateFormat);
             const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));
@@ -58,9 +58,9 @@ class Winners extends React.Component {
                 endDate,
                 contestEnded,
                 resultDate,
-                utcEndDate,
-                utcStartDate,
-                utcResultDate
+                //utcEndDate,
+                //utcStartDate,
+                //utcResultDate
             });
         })
         .catch(err => {
@@ -76,7 +76,8 @@ class Winners extends React.Component {
     }
 
     renderTopPicksDetails = () => {
-        const contestStarted = moment().isSameOrAfter(moment(this.state.startDate, dateFormat));
+        const contestEnded = moment().isAfter(moment(this.state.endDate));
+        const contestRunning = moment().isSameOrAfter(moment(this.state.startDate)) && !contestEnded;
         
         return (
             <SGrid container>
@@ -89,13 +90,12 @@ class Winners extends React.Component {
                         !this.state.contestActive && this.state.winnerStocks.length < 1 && <ContestNotPresentView />
                     }
                     {
-                        this.state.contestActive
-                        ? contestStarted
+                        this.state.contestActive 
                             ?   <ContestStartedView 
-                                    endDate={this.state.contestEnded ? this.state.utcResultDate : this.state.utcEndDate}
-                                    contestEnded={this.state.contestEnded}
+                                    endDate={contestEnded ? this.state.resultDate : contestRunning ? this.state.endDate :  this.state.startDate}
+                                    contestEnded={contestEnded}
+                                    contestRunning={contestRunning}
                                 />
-                            :   <ContestWillStartView startDate={this.state.utcStartDate} />
                         : null
                     }
                 </Grid>
@@ -172,7 +172,7 @@ const ContestEndedView = () => {
                     <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>lock</Icon>
                 </div>
                 <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
-                    The stocks that were most voted
+                    Most voted stocks
                 </WinnerSubHeader>
             </Grid>
         </Grid>
@@ -188,29 +188,25 @@ const GeneralHeder = ({contestEnded = true}) => {
                     <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>{contestEnded ? 'lock' : 'lock_open'}</Icon>
                 </div>
                 <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
-                    The stocks that were most voted
+                    Most voted stocks
                 </WinnerSubHeader>
             </Grid>
         </Grid>
     );
 }
 
-const ContestStartedView = ({endDate, contestEnded}) => {
+const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
     return (
         <Grid container style={{marginTop: '15%'}}>
             <Grid item xs={12}>
                 <h3 style={{fontSize: '18px', color: '#4B4B4B', fontWeight: 300}}>
                     {
-                        contestEnded ? 'Results to be declared in' : 'Contest will end in'
+                        contestEnded ? 'Results to be declared in' : contestRunning ? 'Contest submission ends in' : 'New Contest will start in'
                     }
                 </h3>
             </Grid>
             <Grid item xs={12}>
-                <TimerComponent 
-                        date={endDate} 
-                        hour={22}
-                        contestStarted={true} 
-                />
+                <TimerComponent date={endDate} />
             </Grid>
         </Grid>
     );

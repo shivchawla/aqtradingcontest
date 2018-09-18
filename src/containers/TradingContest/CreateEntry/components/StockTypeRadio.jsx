@@ -23,7 +23,7 @@ class StockTypeRadio extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedView: 'buy'
+            selectedView: this.props.defaultView
         }
     }
 
@@ -42,10 +42,10 @@ class StockTypeRadio extends React.Component {
     }
 
     render() {
-        const {color = primaryColor, radioColor = '#fff', classes, longTotal = 0, shortTotal = 0} = this.props;
+        const {color = primaryColor, radioColor = '#fff', classes, longTotal = 0, shortTotal = 0, style={}} = this.props;
 
         return (
-            <Grid container>
+            <Grid container style={style}>
                 <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-around', width: '100%', paddingBottom: '5px'}}>
                     <div style={horizontalBox}>
                         <div style={{...verticalBox}}>
