@@ -3,9 +3,23 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
-import {horizontalBox, primaryColor} from '../../../../constants';
+import {withStyles} from '@material-ui/core/styles';
+import {green, blue} from '@material-ui/core/colors';
+import {horizontalBox, primaryColor, verticalBox} from '../../../../constants';
 
-export default class StockTypeRadio extends React.Component {
+const styles = {
+    checked: {
+        color: green[600]
+    },
+    root: {
+        color: '#fff',
+        '&$checked': {
+            color: 'blue[500]'
+        }
+    }
+};
+
+class StockTypeRadio extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -28,12 +42,16 @@ export default class StockTypeRadio extends React.Component {
     }
 
     render() {
-        const {color = primaryColor} = this.props;
+        const {color = primaryColor, radioColor = '#fff', classes, longTotal = 0, shortTotal = 0} = this.props;
+
         return (
             <Grid container>
-                <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-around', width: '100%'}}>
+                <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-around', width: '100%', paddingBottom: '5px'}}>
                     <div style={horizontalBox}>
-                        <RadioLabel color={color}>LONG</RadioLabel>
+                        <div style={{...verticalBox}}>
+                            <RadioLabel color={color}>LONG</RadioLabel>
+                            <RadioLabel fontSize='11px' color={color}>({longTotal} / 100)</RadioLabel>
+                        </div>
                         <Radio
                             checked={this.state.selectedView === 'buy'}
                             onChange={this.handleChange}
@@ -41,10 +59,17 @@ export default class StockTypeRadio extends React.Component {
                             name="radio-buy"
                             aria-label="A"
                             style={{marginLeft: '-5px'}}
+                            classes={{
+                                checked: classes.checked,
+                                root: classes.root
+                            }}
                         />
                     </div>
                     <div style={horizontalBox}>
-                        <RadioLabel color={color}>SHORT</RadioLabel>
+                        <div style={{...verticalBox}}>
+                            <RadioLabel color={color}>SHORT</RadioLabel>
+                            <RadioLabel fontSize='11px' color={color}>({shortTotal} / 100)</RadioLabel>
+                        </div>
                         <Radio
                             checked={this.state.selectedView === 'sell'}
                             onChange={this.handleChange}
@@ -52,10 +77,17 @@ export default class StockTypeRadio extends React.Component {
                             name="radio-sell"
                             aria-label="A"
                             style={{marginLeft: '-5px'}}
+                            classes={{
+                                checked: classes.checked,
+                                root: classes.root
+                            }}
                         />
                     </div>
                     <div style={horizontalBox}>
-                        <RadioLabel color={color}>ALL</RadioLabel>
+                        <div style={{...verticalBox}}>
+                            <RadioLabel color={color}>ALL</RadioLabel>
+                            <RadioLabel fontSize='11px' color={color}>({longTotal + shortTotal} / 200)</RadioLabel>
+                        </div>
                         <Radio
                             checked={this.state.selectedView === 'all'}
                             onChange={this.handleChange}
@@ -63,6 +95,10 @@ export default class StockTypeRadio extends React.Component {
                             name="radio-all"
                             aria-label="A"
                             style={{marginLeft: '-5px'}}
+                            classes={{
+                                checked: classes.checked,
+                                root: classes.root
+                            }}
                         />
                     </div>
                 </Grid>
@@ -71,8 +107,10 @@ export default class StockTypeRadio extends React.Component {
     }
 }
 
+export default withStyles(styles)(StockTypeRadio);
+
 const RadioLabel = styled.h3`
-    font-size: 13px;
+    font-size: ${props => props.fontSize || '13px'};
     font-weight: 400;
-    color: ${props => props.color || primaryColor}
+    color: ${props => props.color || primaryColor};
 `;

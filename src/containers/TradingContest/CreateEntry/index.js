@@ -3,7 +3,6 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import moment from 'moment';
 import Media from 'react-media';
-import {notify} from 'react-notify-toast';
 import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
@@ -19,10 +18,10 @@ import StockTypeRadio from './components/StockTypeRadio';
 import TimerComponent from '../Misc/TimerComponent';
 import DateComponent from '../Misc/DateComponent';
 import LoaderComponent from '../Misc/Loader';
-import {verticalBox, primaryColor} from '../../../constants';
+import {verticalBox} from '../../../constants';
 import {contestEndHour} from '../constants';
-import {handleCreateAjaxError, Utils} from '../../../utils';
-import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary} from '../utils';
+import {handleCreateAjaxError} from '../../../utils';
+import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getTotalInvestment} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
 
@@ -269,7 +268,13 @@ class CreateEntry extends React.Component {
         this.setState({submissionLoading: true});
         submitEntry(positions, this.state.previousPositions.length > 0)
         .then(response => {
-            this.setState({showPreviousPositions: true, snackbarOpenStatus: true, snackbarMessage: 'Succeess :)'});
+            this.setState({
+                previousPositions: this.state.positions,
+                previousSellPositions: this.state.sellPositions, 
+                showPreviousPositions: true, 
+                snackbarOpenStatus: true, 
+                snackbarMessage: 'Succeess :)'
+            });
         })
         .catch(error => {
             const errorMessage = _.get(error, 'response.data.message', 'Error Occured :(');
@@ -277,7 +282,7 @@ class CreateEntry extends React.Component {
             return handleCreateAjaxError(error, this.props.history, this.props.match.url)
         })
         .finally(() => {
-            // this.setState({submissionLoading: false});
+            this.setState({submissionLoading: false});
         });
     }
 
@@ -351,6 +356,8 @@ class CreateEntry extends React.Component {
         currentDate.hours(contestEndHour);
         currentDate.minutes(30);
         currentDate.seconds(0);
+        const longInvestmentTotal = getTotalInvestment(this.state.positions);
+        const shortInvestmentTotal = getTotalInvestment(this.state.sellPositions);
 
         return (
             <React.Fragment>
@@ -358,7 +365,14 @@ class CreateEntry extends React.Component {
                     (this.state.positions.length === 0 && this.state.previousPositions.length == 0)
                     ?   this.renderEmptySelections()
                     :   <React.Fragment>
-                            <Grid item xs={12}><StockTypeRadio color='#737373' onChange={this.handleStockTypeRadioChange}/></Grid>
+                            <Grid item xs={12} style={{backgroundColor: '#15c18f'}}>
+                                <StockTypeRadio 
+                                    color='#fff' 
+                                    onChange={this.handleStockTypeRadioChange}
+                                    longTotal={longInvestmentTotal}
+                                    shortTotal={shortInvestmentTotal}
+                                />
+                            </Grid>
                             {this.renderStockList()}
                         </React.Fragment>
                 }
@@ -418,9 +432,9 @@ class CreateEntry extends React.Component {
                 {this.renderSearchStocksBottomSheet()}
                 <Grid item xs={12} style={{marginTop: '110px'}}>
                     <DateComponent 
-                        color='#737373'
+                        color='#fff'
                         onDateChange={this.handleContestDateChange}
-                        style={{padding: '0 10px', position: 'relative'}}
+                        style={{backgroundColor: '#15C08F'}}
                         date={moment(this.state.selectedDate)}
                     />
                 </Grid>

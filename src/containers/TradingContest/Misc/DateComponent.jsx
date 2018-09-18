@@ -1,12 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
+import styled from 'styled-components';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import ActionIcon from '../Misc/ActionIcons';
 import DatePicker from 'material-ui-pickers/DatePicker';
-import {horizontalBox, primaryColor, verticalBox} from '../../../constants';
+import {horizontalBox, verticalBox} from '../../../constants';
 
 const dateFormat = 'Do MMM YY';
 
@@ -21,7 +22,6 @@ export default class DateComponent extends React.Component {
     navigateToPreviousDate = () => {
         const date = moment(this.state.selectedDate, dateFormat).subtract(1, 'days');
         this.setState({selectedDate: date}, () => this.onDateChange());
-        this.onDateChange();
     }
 
     onDateChange = _.debounce(() => {
@@ -82,11 +82,17 @@ export default class DateComponent extends React.Component {
 
 const DateFields = props => {
     return (
-        <div style={{...verticalBox}}>
+        <div style={{...horizontalBox}}>
             <IconButton aria-label="calendar" onClick={props.onClick}>
                 <Icon style={{color: props.color || '#fff'}}>date_range</Icon>
             </IconButton>
-            <span style={{fontSize: '14px', color: props.color || '#fff', marginTop: '-10px'}} onClick={props.onClick}>{props.value}</span>
+            <DateText color={props.color} onClick={props.onClick}>{props.value}</DateText>
         </div>
     );
 }
+
+const DateText = styled.span`
+    font-size: 14px;
+    color: ${props => props.color || '#fff'};
+    margin-top: 5px;
+`;

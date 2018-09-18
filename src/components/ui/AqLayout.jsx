@@ -5,9 +5,23 @@ import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import MenuIcon from '@material-ui/icons/Menu';
+import {withStyles} from '@material-ui/core/styles';
+import {primaryColor} from '../../constants';
 import NavigationDrawer from './NavigationDrawer';
 
-export default class AqLayout extends React.Component {
+const styles = {
+    root: {
+        backgroundColor: '#fff'
+    },
+    title: {
+        color: '#444'
+    },
+    icon: {
+        color: '#444'
+    }
+}
+
+class AqLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,7 +34,13 @@ export default class AqLayout extends React.Component {
     }
 
     render() {
-        const {pageTitle = 'SamplePage', showDrawer = true, navigationDrawerOpen = false, onNavigationDrawerClose = null} = this.props;
+        const {
+            pageTitle = 'SamplePage', 
+            showDrawer = true, 
+            navigationDrawerOpen = false, 
+            onNavigationDrawerClose = null,
+            classes
+        } = this.props;
 
         return (
             <div>
@@ -28,16 +48,16 @@ export default class AqLayout extends React.Component {
                     open={this.state.navigationDrawerOpenStatus} 
                     onClose={this.toggleNavigationDrawer}
                 />
-                <AppBar>
+                <AppBar className={classes.root}>
                     <Toolbar>
                         <IconButton 
-                                color="inherit" 
+                                className={classes.icon}
                                 aria-label="Menu"
                                 onClick={this.toggleNavigationDrawer}
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="title" color="inherit">
+                        <Typography variant="title" className={classes.title}>
                             {pageTitle}
                         </Typography>
                     </Toolbar>
@@ -48,3 +68,5 @@ export default class AqLayout extends React.Component {
         );
     }
 }
+
+export default withStyles(styles)(AqLayout);

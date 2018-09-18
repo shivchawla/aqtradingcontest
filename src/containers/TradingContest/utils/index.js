@@ -134,3 +134,7 @@ export const setEndTimeToDate = (date, hourToAdd = 15) => {
 
     return endDate;
 }
+
+export const getTotalInvestment = (positions = []) => {
+    return _.sum(positions.map(position => position.points));
+}
