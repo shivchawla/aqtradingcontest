@@ -7,6 +7,7 @@ import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
 import TradingContest from './containers/TradingContest';
 import TradingContestHome from './containers/TradingContest/Home';
+import TradingContestHowItWorks from './containers/TradingContest/HowItWorks';
 import './App.css';
 
 class App extends Component {
@@ -20,6 +21,9 @@ class App extends Component {
                     </Switch>
                     <Switch>
                         <Route exact={true} path='/home' component={TradingContestHome} /> 
+                    </Switch>
+                    <Switch>
+                        <Route exact={true} path='/how' component={TradingContestHowItWorks} /> 
                     </Switch>
                 </div>
             </MuiPickersUtilsProvider>

@@ -14,22 +14,24 @@ export default class DateComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // selectedDate: new Date()
             selectedDate: props.date || moment()
         }
     }
 
-    navigateToPreviousDate = _.debounce(() => {
+    navigateToPreviousDate = () => {
         const date = moment(this.state.selectedDate, dateFormat).subtract(1, 'days');
-        this.setState({selectedDate: date});
-        this.props.onDateChange && this.props.onDateChange(date);
-    }, 500)
+        this.setState({selectedDate: date}, () => this.onDateChange());
+        this.onDateChange();
+    }
 
-    navigateToNexDate = _.debounce(() => {
+    onDateChange = _.debounce(() => {
+        this.props.onDateChange && this.props.onDateChange(this.state.selectedDate);
+    }, 500);
+
+    navigateToNexDate = () => {
         const date = moment(this.state.selectedDate, dateFormat).add(1, 'days');
-        this.setState({selectedDate: date});
-        this.props.onDateChange && this.props.onDateChange(date);
-    }, 500)
+        this.setState({selectedDate: date}, () => this.onDateChange());
+    }
 
     handleDatePickerChange = date => {
         const selectedDate = moment(date).format(dateFormat);
