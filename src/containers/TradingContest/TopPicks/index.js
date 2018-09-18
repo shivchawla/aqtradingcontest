@@ -94,6 +94,7 @@ class Winners extends React.Component {
                             ?   <ContestStartedView 
                                     endDate={contestEnded ? this.state.resultDate : contestRunning ? this.state.endDate :  this.state.startDate}
                                     contestEnded={contestEnded}
+                                    contestRunning={contestRunning}
                                 />
                         : null
                     }
@@ -171,7 +172,7 @@ const ContestEndedView = () => {
                     <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>lock</Icon>
                 </div>
                 <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
-                    The stocks that were most voted
+                    Most voted stocks
                 </WinnerSubHeader>
             </Grid>
         </Grid>
@@ -187,7 +188,7 @@ const GeneralHeder = ({contestEnded = true}) => {
                     <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>{contestEnded ? 'lock' : 'lock_open'}</Icon>
                 </div>
                 <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
-                    The stocks that were most voted
+                    Most voted stocks
                 </WinnerSubHeader>
             </Grid>
         </Grid>
@@ -200,7 +201,7 @@ const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
             <Grid item xs={12}>
                 <h3 style={{fontSize: '18px', color: '#4B4B4B', fontWeight: 300}}>
                     {
-                        contestEnded ? 'Results to be declared in' : contestRunning ? 'Contest will end in' : 'Contest will start in'
+                        contestEnded ? 'Results to be declared in' : contestRunning ? 'Contest submission ends in' : 'New Contest will start in'
                     }
                 </h3>
             </Grid>

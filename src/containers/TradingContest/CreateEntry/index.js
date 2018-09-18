@@ -167,15 +167,24 @@ class CreateEntry extends React.Component {
         const contestNotStarted = moment().isBefore(moment(this.state.contestStartDate));
         const todayDate = moment().format(dateFormat);
 
+        const activeContestToday = moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive;
+
+        //moment to date conversion
+        const contestStartDate = this.state.contestStartDate.toDate();
+        const contestEndDate = this.state.contestEndDate.toDate();
+
         return (
-            <Grid item xs={12} style={{...verticalBox, marginTop: '50%'}}>
+            <Grid container xs={12} style={{...verticalBox, marginTop: '50%'}}>
                 {
-                    (moment(this.state.selectedDate).isSame(todayDate) && this.state.contestActive)
-                    ?   contestRunning
-                        ?   <TimerComponent date={this.state.contestEndDate.toDate()} contestStarted={true} />
-                        : contestNotStarted ?  
-                            <TimerComponent date={this.state.contestStartDate.toDate()} />
-                            : null
+
+                    (activeContestToday && contestNotStarted) ?
+                        <TimerComponent 
+                            date={contestNotStarted ? contestStartDate : null}  
+                            contestStarted={!contestNotStarted}
+                            tag={contestNotStarted ? "New Contest starts in" : 
+                                "Contest has ended"}  
+                        />
+                    
                     :   null
                 }
                 {
@@ -184,9 +193,14 @@ class CreateEntry extends React.Component {
                     <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>No entry found for selected date</h3>
                 }
                 {
-                    contestNotStarted && this.state.contestActive && 
+                    (contestRunning && activeContestToday) &&
                     <React.Fragment>
-                        <h3 style={{textAlign: 'center', padding: '0 20px', fontWeight: 300}}>Please add 5 stocks to participate in today’s contest</h3>
+                        <TimerComponent 
+                            date={contestEndDate}  
+                            contestStarted={true}
+                            tag="Please add 5 stocks to participate in today’s contest" /> 
+                        
+                       
                         <Button 
                                 style={emptyPortfolioButtonStyle}
                                 onClick={this.toggleSearchStockBottomSheet}
@@ -445,11 +459,11 @@ const emptyPortfolioButtonStyle = {
     backgroundColor: '#15C08F',
     color: '#fff',
     borderRadius: '4px',
-    width: '80%',
+    width: '50%',
     border: 'none',
-    // height: '50px',
     position: 'fixed',
-    bottom: '25px'
+    bottom: '25px',
+    left:'25%'
 };
 
 const SGrid = styled(Grid)`

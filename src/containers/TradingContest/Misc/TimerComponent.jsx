@@ -34,6 +34,11 @@ export default class TimeComponent extends React.Component {
         
         return (
             <Grid container>
+                {this.props.tag  &&
+                    <h3 style={{fontSize: '16px', color: '#4B4B4B', fontWeight: 300, margin: '0 auto', width:'70%'}}>
+                        {this.props.tag}
+                    </h3>
+                }
                 <Countdown 
                     date = {date} 
                     renderer={this.renderCountdown}
