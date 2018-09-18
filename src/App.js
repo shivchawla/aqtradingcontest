@@ -6,6 +6,7 @@ import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
 import TradingContest from './containers/TradingContest';
+import TradingContestHome from './containers/TradingContest/Home';
 import './App.css';
 
 class App extends Component {
@@ -16,6 +17,9 @@ class App extends Component {
                     <Notifications style={{zIndex: 3000}}/>
                     <Switch>
                         <Route exact={true} path='/' component={TradingContest} /> 
+                    </Switch>
+                    <Switch>
+                        <Route exact={true} path='/home' component={TradingContestHome} /> 
                     </Switch>
                 </div>
             </MuiPickersUtilsProvider>

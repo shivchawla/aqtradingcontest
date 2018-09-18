@@ -97,7 +97,7 @@ class CreateEntry extends React.Component {
                 <Media 
                     query="(max-width: 600px)"
                     render={() => (
-                        <Motion style={{x: spring(this.state.bottomSheetOpenStatus ? -55 : -(global.screen.height + 55))}}>
+                        <Motion style={{x: spring(this.state.bottomSheetOpenStatus ? 0 : -(global.screen.height + 45))}}>
                             {
                                 ({x}) => 
                                     <div 
@@ -416,7 +416,7 @@ class CreateEntry extends React.Component {
                     onClose={() => this.setState({snackbarOpenStatus: false})}
                 />
                 {this.renderSearchStocksBottomSheet()}
-                <Grid item xs={12}>
+                <Grid item xs={12} style={{marginTop: '110px'}}>
                     <DateComponent 
                         color='#737373'
                         onDateChange={this.handleContestDateChange}

@@ -129,7 +129,7 @@ class Winners extends React.Component {
     render() {
         return (
             <SGrid container>
-                <Grid item xs={12}>
+                <Grid item xs={12} style={{marginTop: '110px'}}>
                     <DateComponent 
                         onDateChange={this.getContestRankings}
                         style={{padding: '0 10px', backgroundColor: '#15C08F'}}

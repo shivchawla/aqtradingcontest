@@ -84,7 +84,7 @@ class Participants extends React.Component {
 
     render() {
         return (
-            <Grid container>
+            <Grid container style={{marginTop: '110px'}}>
                 <Grid item xs={12}>
                     <DateComponent 
                         date={moment(this.state.selectedDate)}
