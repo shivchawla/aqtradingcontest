@@ -93,16 +93,16 @@ export default class DateComponent extends React.Component {
 const DateFields = props => {
     return (
         <div style={{...horizontalBox}}>
-            <IconButton aria-label="calendar" onClick={props.onClick}>
+            {/*<IconButton aria-label="calendar" onClick={props.onClick}>
                 <Icon style={{color: props.color || '#fff'}}>date_range</Icon>
-            </IconButton>
+            </IconButton>*/}
             <DateText color={props.color} onClick={props.onClick}>{props.value}</DateText>
         </div>
     );
 }
 
 const DateText = styled.span`
-    font-size: 14px;
+    font-size: 16px;
     color: ${props => props.color || '#fff'};
-    margin-top: 5px;
+    margin-top: 1px;
 `;

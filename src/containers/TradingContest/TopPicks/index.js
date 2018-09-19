@@ -18,7 +18,7 @@ class Winners extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: moment().format(dateFormat),
+            selectedDate: props.selectedDate || moment(),
             winnerStocks: [],
             contestActive: false,
             startDate: moment(), //.format(dateFormat),
@@ -27,6 +27,12 @@ class Winners extends React.Component {
             loading: false,
             contestEnded: false
         };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.selectedDate !== nextProps.selectedDate) {
+            this.setState({selectedDate: nextProps.selectedDate}, this.getContestRankings(nextProps.selectedDate));
+        }
     }
 
     getContestRankings = selectedDate => {
@@ -124,17 +130,12 @@ class Winners extends React.Component {
 
     render() {
         return (
-            <SGrid container>
-                <Grid item xs={12} style={{marginTop: '110px'}}>
-                    <DateComponent 
-                        onDateChange={this.getContestRankings}
-                        style={{padding: '0 10px', backgroundColor: '#15C08F'}}
-                        date={moment(this.state.selectedDate)}
-                    />
-                </Grid>
-                <Grid item xs={12} style={{...verticalBox, padding: '0 10px', backgroundColor: '#15c08f', height: '100px'}}>
+            <SGrid container style={topPicksDetailStyle}>
+                
+                <Grid item xs={12} style={{...verticalBox, padding: '0 10px', color:'grey', height: '100px'}}>
                     {this.renderHeader()}
                 </Grid>
+                
                 <Grid item xs={12}>
                     {
                         !this.state.loading
@@ -164,7 +165,7 @@ const ContestEndedView = () => {
         <Grid container style={{height: '100px'}}>
             <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: '20px'}}>
                 <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
-                    <WinnerHeader style={{fontSize: '25px', fontWeight: 500}}>TOP PICKS</WinnerHeader>
+                    <WinnerHeader>TOP PICKS</WinnerHeader>
                     <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>lock</Icon>
                 </div>
                 <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
@@ -180,7 +181,7 @@ const GeneralHeder = ({contestEnded = true}) => {
         <Grid container style={{height: '100px'}}>
             <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: '20px'}}>
                 <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
-                    <WinnerHeader style={{fontSize: '25px', fontWeight: 500}}>TOP PICKS</WinnerHeader>
+                    <WinnerHeader>TOP PICKS</WinnerHeader>
                     <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>{contestEnded ? 'lock' : 'lock_open'}</Icon>
                 </div>
                 <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
@@ -229,12 +230,15 @@ const SGrid = styled(Grid)`
     background-color: #fff;
 `;
 
-const topContainerStyle = {
-    ...verticalBox,
-    height: '100px',
-    padding: '0 10px',
-    backgroundColor: '#15C08F',
+const topPicksDetailStyle = {
+    height: 'calc(100vh - 180px)',
+    minHeight: '480px',
+    justifyContent: 'center',
+    margin: '10px 10px 10px 10px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+    backgroundColor:'#fff'
 };
+
 
 const ContestStatus = styled.h3`
     color: #fff;
@@ -244,14 +248,14 @@ const ContestStatus = styled.h3`
 
 const WinnerHeader = styled.h3`
     font-size: 18px;
-    font-weight: 500;
-    color: #fff;
+    font-weight: 400;
+    color: grey;
 `;
 
 const WinnerSubHeader = styled.h3`
-    font-size: 17px;
+    font-size: 14px;
     font-weight: 300;
-    color: #fff;
+    color: grey;
     margin-top: 5px;
 `;
 

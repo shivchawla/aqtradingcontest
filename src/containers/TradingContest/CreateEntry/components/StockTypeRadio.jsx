@@ -12,7 +12,7 @@ const styles = {
         color: green[600]
     },
     root: {
-        color: '#fff',
+        //color: '#fff',
         '&$checked': {
             color: 'blue[500]'
         }
@@ -42,7 +42,7 @@ class StockTypeRadio extends React.Component {
     }
 
     render() {
-        const {color = primaryColor, radioColor = '#fff', classes, longTotal = 0, shortTotal = 0, style={}} = this.props;
+        const {color = primaryColor, radioColor = 'black', classes, longTotal = 0, shortTotal = 0, style={}} = this.props;
 
         return (
             <Grid container style={style}>

@@ -65,16 +65,17 @@ export default class StockEditListItem extends React.Component {
                 <SGridCol item xs={12} style={colStyle}>
                     <Symbol>{symbol}</Symbol>
                     <SecondayText>{lastPrice}</SecondayText>
-                </SGridCol>
-                <SGridCol item xs={12} style={colStyle}>
-                    <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A', textAlign: 'start'}}>{name}</SecondayText>
                     <SecondayText color={changeColor}>{chg} ({(chgPct * 100).toFixed(2)}%)</SecondayText>
                 </SGridCol>
                 <SGridCol item xs={12} style={colStyle}>
-                    <div style={horizontalBox}>
+                    <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A', textAlign: 'start'}}>{name}</SecondayText>
+                </SGridCol>
+                <SGridCol item xs={12} style={colStyle}>
+                    {/*<div style={horizontalBox}>
                         <SliderMetric label='Min' value={min} />
                         <SliderMetric style={{marginLeft: '10px'}} label='Max' value={max} />
-                    </div>
+                    </div>*/}
+                    <div></div>
                     <PointsComponent 
                         points={points} 
                         onAddClick={this.onAddClick}
@@ -90,7 +91,7 @@ const PointsComponent = ({points, onAddClick, onReduceClick}) => {
     return (
         <div style={{...horizontalBox, justifyContent: 'center', marginRight: '-17px'}}>
             <ActionIcon type='remove_circle' onClick={onReduceClick} />
-            <SecondayText><span style={{fontSize: '25px', marginRight: '2px'}}>{points}</span>k</SecondayText>
+            <SecondayText><span style={{fontSize: '20px', marginRight: '2px'}}>{points}</span>k</SecondayText>
             <ActionIcon type='add_circle' onClick={onAddClick} />
         </div>
     );
@@ -116,13 +117,13 @@ const SGridCol = styled(Grid)`
 `;
 
 const Symbol = styled.h3`
-    font-weight: 700;
-    font-size: 22px;
+    font-weight: 400;
+    font-size: 17px;
     color: #6A6A6A;
 `;
 
 const SecondayText = styled.h3`
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
     color: ${props => props.color || '#6A6A6A'} 
 `;

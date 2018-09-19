@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
@@ -8,10 +9,12 @@ import AqLayout from '../../components/ui/AqLayout';
 import TopPicks from './TopPicks';
 import Leaderboard from './Leaderboard';
 import CreateEntry from './CreateEntry';
+import DateComponent from './Misc/DateComponent';
 
 export default class TradingContest extends React.Component {
     state = {
-        selectedTab: 0
+        selectedTab: 0,
+        selectedDate: moment()
     };
 
     handleChange = (event, selectedTab) => {
@@ -26,44 +29,53 @@ export default class TradingContest extends React.Component {
         return false;
     }
 
+    updateDate = (date) => {
+        this.setState({selectedDate: date});
+    }
+
     render() {
         const {selectedTab} = this.state;
 
         return (
-                <AqLayout
-                        appBar={
+                <AqLayout>
+                    <Grid container style={{backgroundColor: '#f5f6fa'}}>
+                        <Grid item xs={12}>
                             <STabs
-                                    value={selectedTab}
-                                    onChange={this.handleChange}
-                                    indicatorColor="secondary"
-                                    textColor="secondary"
-                                    fullWidth
-                            >
-                                <STab label="MY PICKS" />
-                                <STab label="TOP PICKS" />
-                                <STab label="LEADERBOARD"/>
+                                value={selectedTab}
+                                onChange={this.handleChange}
+                                indicatorColor="secondary"
+                                fullWidth>
+                                    <STab label="MY PICKS" />
+                                    <STab label="TOP PICKS" />
+                                    <STab label="LEADERBOARD"/>
                             </STabs>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <DateComponent 
+                                color='grey'
+                                date={this.state.selectedDate}
+                                onDateChange={this.updateDate}
+                            />
+                        </Grid>
+                        {
+                            this.state.selectedTab === 0 && 
+                            <Grid item xs={12}>
+                                <CreateEntry selectedDate={this.state.selectedDate}/>
+                            </Grid>
                         }
-                >
-                    <Grid container style={{position: 'absolute'}}>
-                    {
-                        this.state.selectedTab === 0 && 
-                        <Grid item xs={12}>
-                            <CreateEntry />
-                        </Grid>
-                    }
-                    {
-                        this.state.selectedTab === 1 && 
-                        <Grid item xs={12}>
-                            <TopPicks />
-                        </Grid>
-                    }
-                    {
-                        this.state.selectedTab === 2 && 
-                        <Grid item xs={12}>
-                            <Leaderboard />
-                        </Grid>
-                    }
+                        {
+                            this.state.selectedTab === 1 && 
+                            <Grid item xs={12}>
+                                <TopPicks selectedDate={this.state.selectedDate}/>
+                            </Grid>
+                        }
+                        {
+                            this.state.selectedTab === 2 && 
+                            <Grid item xs={12}>
+                                <Leaderboard selectedDate={this.state.selectedDate}/>
+                            </Grid>
+                        }
                     </Grid>
                 </AqLayout>
         );
@@ -71,7 +83,8 @@ export default class TradingContest extends React.Component {
 }
 
 const STabs = styled(Tabs)`
-    background-color: #fff;
+    background-color: #15c08f;
+    color: #fff;
 `;
 
 const STab = styled(Tab)`

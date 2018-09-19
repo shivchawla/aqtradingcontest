@@ -11,10 +11,12 @@ import NavigationDrawer from './NavigationDrawer';
 
 const styles = {
     root: {
-        backgroundColor: '#fff'
+        backgroundColor: '#15c08f',
+        boxShadow: 'none'
     },
     title: {
-        color: '#444'
+        color: '#fff',
+        fontWeight: 400
     },
     icon: {
         color: '#444'
@@ -35,7 +37,7 @@ class AqLayout extends React.Component {
 
     render() {
         const {
-            pageTitle = 'SamplePage', 
+            pageTitle = 'Stock Pick Contest', 
             showDrawer = true, 
             navigationDrawerOpen = false, 
             onNavigationDrawerClose = null,
@@ -48,9 +50,10 @@ class AqLayout extends React.Component {
                     open={this.state.navigationDrawerOpenStatus} 
                     onClose={this.toggleNavigationDrawer}
                 />
-                <AppBar className={classes.root}>
+                <AppBar position="relative" className={classes.root}>
                     <Toolbar>
                         <IconButton 
+                                style={{color: '#fff'}}
                                 className={classes.icon}
                                 aria-label="Menu"
                                 onClick={this.toggleNavigationDrawer}
@@ -61,8 +64,9 @@ class AqLayout extends React.Component {
                             {pageTitle}
                         </Typography>
                     </Toolbar>
-                    {this.props.appBar}
+                    {/*this.props.appBar*/}
                 </AppBar>
+                
                 {this.props.children}
             </div>
         );

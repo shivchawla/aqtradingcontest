@@ -17,11 +17,17 @@ class Participants extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: moment().format(dateFormat),
+            selectedDate: props.selectedDate || moment(),
             winners: [],
             loading: false
         };
     }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.selectedDate !== nextProps.selectedDate) {
+            this.setState({selectedDate: nextProps.selectedDate}, this.getContestRankings(nextProps.selectedDate));
+        }
+    } 
 
     getContestRankings = selectedDate => {
         const date = moment(selectedDate).format(dateFormat);
@@ -84,50 +90,24 @@ class Participants extends React.Component {
 
     render() {
         return (
-            <Grid container style={{marginTop: '110px'}}>
-                <Grid item xs={12}>
-                    <DateComponent 
-                        date={moment(this.state.selectedDate)}
-                        onDateChange={this.getContestRankings}
-                        style={{backgroundColor: '#15C08F'}}
-                    />
-                </Grid>
-                <Grid item xs={12} style={topContainerStyle}>
-                    <Grid 
-                            container 
-                            style={{
-                                ...verticalBox, 
-                                padding: '0 10px', 
-                                width: '100%', 
-                                backgroundColor: '#15C08F',
-                                justifyContent: 'flex-start',
-                                alignItems: 'flex-start'
-                            }}
-                    >
-                        <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
-                            <h3 
-                                    style={{
-                                        fontSize: '25px', 
-                                        color: '#fff', 
-                                        textAlign: 'center', 
-                                        fontWeight: 500, 
-                                        marginTop: '10px'
-                                    }}
-                            >
-                                WINNERS
-                            </h3>
-                            <Icon fontSize='inherit' style={{color: '#FFEE5A', fontSize: '30px', marginLeft: '5px'}}>supervised_user_circle</Icon>
-                        </div>
-                        <LeaderboardSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
-                            The participants with best predictions
-                        </LeaderboardSubHeader>
+            <Grid container style={{backgroundColor: '#f5f6fa'}}>
+                <Grid item xs={12} style={leaderboardDetailStyle}>
+                    <Grid container>
+                        <Grid item style={{padding: '0px 10px', marginTop: '20px', color:'grey'}}>
+                            <LeaderBoardHeader/ >
+
+                            <LeaderboardSubHeader style={{marginTop:'2px', textAlign:'start'}}>
+                                Top Stock Pickers
+                            </LeaderboardSubHeader>
+                        </Grid>
+                        
+                        {
+                            this.state.loading
+                            ? <LoaderComponent />
+                            : this.renderWinnerDetails()
+                        }
                     </Grid>
                 </Grid>
-                {
-                    this.state.loading
-                    ? <LoaderComponent />
-                    : this.renderWinnerDetails()
-                }
             </Grid>
         );
     }
@@ -135,12 +115,13 @@ class Participants extends React.Component {
 
 export default withRouter(Participants);
 
-const topContainerStyle = {
-    height: '100px',
-    backgroundColor: '#15C08F',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    paddingTop: '10px'
+const leaderboardDetailStyle = {
+    height: 'calc(100vh - 180px)',
+    minHeight: '480px',
+    justifyContent: 'center',
+    margin: '10px 10px 10px 10px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+    backgroundColor:'#fff'
 };
 
 const listContainer = {
@@ -149,8 +130,23 @@ const listContainer = {
 }
 
 const LeaderboardSubHeader = styled.h3`
-    font-size: 17px;
+    font-size: 14px;
     font-weight: 300;
-    color: #fff;
+    color: grey;
     margin-top: 5px;
 `;
+
+const LeaderBoardHeader = () => {
+    return (
+        <div style={{...horizontalBox, backgroundColor: '#fff'}}>
+            <h3 
+                style={{
+                    fontSize: '18px', 
+                    color: 'grey', 
+                    fontWeight: 500, 
+                }}>LEADERBOARD
+            </h3>
+            <Icon fontSize='inherit' style={{color: '#15c08f', fontSize: '30px', marginLeft: '5px'}}>supervised_user_circle</Icon>
+        </div>
+    );
+}
