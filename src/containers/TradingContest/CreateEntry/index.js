@@ -186,9 +186,10 @@ class CreateEntry extends React.Component {
                     :   null
                 }
                 {
-                    (this.state.positions.length === 0 || this.state.previousPositions.length === 0) 
-                    && contestEnded &&
-                    <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>No entry found for selected date</h3>
+                    !moment(formattedSelected).isSame(todayDate )&& this.state.noEntryFound &&
+                    <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>
+                        No entry found for selected date
+                    </h3>
                 }
                 {
                     (contestRunning && activeContestToday) &&
