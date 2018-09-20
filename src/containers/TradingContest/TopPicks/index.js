@@ -110,13 +110,7 @@ class Winners extends React.Component {
 
     renderHeader = () => {
         return (
-            <React.Fragment>
-                {
-                    (!this.state.contestActive && this.state.winnerStocks.length > 0) 
-                    ? <ContestEndedView />
-                    : <GeneralHeader contestEnded={this.state.contestEnded}/>
-                }
-            </React.Fragment>
+            <GeneralHeader contestEnded={this.state.contestEnded}/>
         );
     }
 
@@ -181,7 +175,7 @@ const GeneralHeader = ({contestEnded = true}) => {
         <div style={{...verticalBox, padding: '10px 10px 0px 10px', color:'grey', height:'50px', alignItems:'start'}}>
             <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
                 <WinnerHeader>TOP PICKS</WinnerHeader>
-                <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>supervised_user_circle</Icon>
+                <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>{contestEnded ? 'lock' : 'supervised_user_circle'}</Icon>
             </div>
             <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
                 Most voted stocks
@@ -192,7 +186,7 @@ const GeneralHeader = ({contestEnded = true}) => {
 
 const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
     return (
-        <Grid container style={{marginTop: '15%'}}>
+        <Grid container style={{marginTop: '0%'}}>
             <Grid item xs={12}>
                 <h3 style={{fontSize: '18px', color: '#4B4B4B', fontWeight: 300}}>
                     {

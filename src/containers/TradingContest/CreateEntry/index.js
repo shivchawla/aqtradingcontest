@@ -298,7 +298,7 @@ class CreateEntry extends React.Component {
                 previousSellPositions: this.state.sellPositions, 
                 showPreviousPositions: true, 
                 snackbarOpenStatus: true, 
-                snackbarMessage: 'Succeess :)'
+                snackbarMessage: 'Contest entry submitted successFully'
             });
         })
         .catch(error => {
@@ -364,9 +364,6 @@ class CreateEntry extends React.Component {
         })
         .then(contestEntryData => {
             const {positions = [], sellPositions = []} = contestEntryData;
-            
-            console.log(sellPositions);
-
             return this.setState({
                 noEntryFound: positions.length === 0,
                 positions,
@@ -527,7 +524,7 @@ const SnackbarComponent = ({openStatus = false, message = 'Snackbar Data', onClo
                 horizontal: 'center',
             }}
             open={openStatus}
-            autoHideDuration={1500}
+            autoHideDuration={3000}
             onClose={onClose}
             ContentProps={{
                 'aria-describedby': 'message-id',

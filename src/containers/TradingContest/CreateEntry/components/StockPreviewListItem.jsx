@@ -25,8 +25,6 @@ export default class StockPreviewListItem extends React.Component {
             type='buy' 
         } = this.props.position;
 
-        console.log(this.props.position);
-        
         const isBuy = type=='buy';
         const direction = isBuy ? 'BUY' : 'SELL';
 

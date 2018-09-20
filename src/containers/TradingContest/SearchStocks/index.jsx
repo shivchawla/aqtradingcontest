@@ -310,6 +310,7 @@ export class SearchStocks extends React.Component {
         const targetLocalStock = localStocks.filter(stock => stock.symbol === symbol)[0];
         if (targetStock !== undefined) {
             if (selectedStockIndex === -1) {
+
                 if (this.state.selectedStocks.length >= maxLimit) {
                     this.setState({snackbar: {open: true, message: "You can't buy more than 5 stocks"}});
                     return;
@@ -861,16 +862,16 @@ export class SearchStocks extends React.Component {
             <React.Fragment>
                 <Snackbar
                     anchorOrigin={{
-                        vertical: 'bottom',
+                        vertical: 'top',
                         horizontal: 'center',
                     }}
                     open={this.state.snackbar.open}
-                    autoHideDuration={1500}
+                    autoHideDuration={3000}
                     ContentProps={{
                         'aria-describedby': 'message-id',
                     }}
                     message={<span id="message-id">{this.state.snackbar.message}</span>}   
-                    style={{zIndex: '200000'}}  
+                    style={{zIndex: '200000', marginBottom: '20px'}}  
                     onClose={() => {this.setState({snackbar: {...this.state.snackbar, open: false}})}}         
                 />
                 <SelectedStocksDialog 

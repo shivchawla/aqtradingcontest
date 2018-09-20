@@ -9,6 +9,31 @@ import {metricColor, horizontalBox, verticalBox} from '../../../../constants';
 
 const textColor = '#757575';
 
+const styles = {
+    buyButton: {
+        outlined: {
+            color: '#4caf50',
+            borderColor:'#4caf50',
+            backgroundColor:'#fff'
+        },
+        contained :{
+            backgroundColor: '#4caf50',
+            color: '#fff'    
+        },
+    },
+    sellButton: {
+        outlined: {
+            color: '#e84242',
+            borderColor:'#e84242',
+            backgroundColor:'#fff'
+        },
+        contained :{
+            backgroundColor: '#e84242',
+            color: '#fff'    
+        },
+    },
+}
+
 export default class StockListItemMobile extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(nextProps, this.props) || !_.isEqual(nextState, this.state)) {
@@ -20,17 +45,18 @@ export default class StockListItemMobile extends React.Component {
 
     renderActionButtons = () => {
         const {symbol, checked = false, onAddIconClick, onSellIconClick, sellChecked = false, shortable = false} = this.props;
+        const { classes } = this.props;
 
         return (
             <React.Fragment>
                 {
                     shortable &&
-                    <Button 
+                    <Button
                         size='small' 
                         color="secondary" 
                         onClick={() => onSellIconClick(symbol)}
                         variant={sellChecked ? 'contained': 'outlined'}
-                        style={{boxShadow: 'none'}}
+                        style={{boxShadow: 'none', ...(sellChecked ? styles.sellButton.contained : styles.sellButton.outlined)}}
                     >
                         {/*<Icon>money_off</Icon>*/}
                         Sell
@@ -41,7 +67,9 @@ export default class StockListItemMobile extends React.Component {
                         color="primary" 
                         onClick={() => onAddIconClick(symbol)}
                         variant={checked ? 'contained' : 'outlined'}
-                        style={{boxShadow: 'none', marginLeft: '10px'}}
+                        style={{boxShadow: 'none', marginLeft: '10px',
+                            ...(checked ? styles.buyButton.contained : styles.buyButton.outlined)
+                        }}
                 >
                     {/*<Icon style={{marginRight: '5px'}}>monetization_on</Icon>*/}
                     Buy
