@@ -8,7 +8,7 @@ import {withRouter} from 'react-router';
 import DateComponent from '../Misc/DateComponent';
 import LoaderComponent from '../Misc/Loader';
 import WinnerList from './WinnerList';
-import {verticalBox, horizontalBox} from '../../../constants';
+import {verticalBox, horizontalBox, primaryColor} from '../../../constants';
 import TimerComponent from '../Misc/TimerComponent';
 import {getContestSummary, processWinnerStocks} from '../utils';
 
@@ -114,7 +114,7 @@ class Winners extends React.Component {
                 {
                     (!this.state.contestActive && this.state.winnerStocks.length > 0) 
                     ? <ContestEndedView />
-                    : <GeneralHeder contestEnded={this.state.contestEnded}/>
+                    : <GeneralHeader contestEnded={this.state.contestEnded}/>
                 }
             </React.Fragment>
         );
@@ -132,7 +132,7 @@ class Winners extends React.Component {
         return (
             <SGrid container style={topPicksDetailStyle}>
                 
-                <Grid item xs={12} style={{...verticalBox, padding: '0 10px', color:'grey', height: '100px'}}>
+                <Grid item xs={12}>
                     {this.renderHeader()}
                 </Grid>
                 
@@ -152,7 +152,7 @@ export default withRouter(Winners);
 
 const ContestNotPresentView = () => {
     return (
-        <Grid container style={{marginTop: '15%'}}>
+        <Grid container style={{marginTop: '-100px'}}>
             <Grid item xs={12} style={verticalBox}>
                 <ContestNotAvailableText>No contest avaiable for selected date</ContestNotAvailableText>
             </Grid>
@@ -176,19 +176,17 @@ const ContestEndedView = () => {
     );
 }
 
-const GeneralHeder = ({contestEnded = true}) => {
+const GeneralHeader = ({contestEnded = true}) => {
     return (
-        <Grid container style={{height: '100px'}}>
-            <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: '20px'}}>
-                <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
-                    <WinnerHeader>TOP PICKS</WinnerHeader>
-                    <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>{contestEnded ? 'lock' : 'lock_open'}</Icon>
-                </div>
-                <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
-                    Most voted stocks
-                </WinnerSubHeader>
-            </Grid>
-        </Grid>
+        <div style={{...verticalBox, padding: '10px 10px 0px 10px', color:'grey', height:'50px', alignItems:'start'}}>
+            <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
+                <WinnerHeader>TOP PICKS</WinnerHeader>
+                <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>supervised_user_circle</Icon>
+            </div>
+            <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
+                Most voted stocks
+            </WinnerSubHeader>
+        </div>
     );
 }
 
@@ -234,7 +232,8 @@ const topPicksDetailStyle = {
     height: 'calc(100vh - 180px)',
     minHeight: '480px',
     justifyContent: 'center',
-    margin: '10px 10px 10px 10px',
+    margin: '10px auto',
+    width:'95%',
     boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
     backgroundColor:'#fff'
 };
@@ -254,7 +253,7 @@ const WinnerHeader = styled.h3`
 
 const WinnerSubHeader = styled.h3`
     font-size: 14px;
-    font-weight: 300;
+    font-weight: 400;
     color: grey;
     margin-top: 5px;
 `;
@@ -262,5 +261,5 @@ const WinnerSubHeader = styled.h3`
 const ContestNotAvailableText = styled.h3`
     font-size: 18px;
     font-weight: 400;
-    color: #15C08F;
+    color: primaryColor;
 `;

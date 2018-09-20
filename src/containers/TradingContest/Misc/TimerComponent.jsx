@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Countdown from 'react-countdown-now';
 import momentTimezone from 'moment-timezone';
-import {horizontalBox} from '../../../constants';
+import {horizontalBox, primaryColor} from '../../../constants';
 
 export default class TimeComponent extends React.Component {
     constructor(props) {
@@ -31,7 +31,7 @@ export default class TimeComponent extends React.Component {
         const timerTextProps = {small: true, fontSize: '16px', color: '#fff'};
 
         return (
-            <div style={{...horizontalBox, width: '100%', justifyContent: 'center', backgroundColor: '#15c18f'}}>
+            <div style={{...horizontalBox, width: '100%', justifyContent: 'center', backgroundColor: primaryColor}}>
                 {days > 0 && <TimerText>{days}:</TimerText>}
                 <TimerText {...timerTextProps}>{hours}:</TimerText>
                 <TimerText {...timerTextProps}>{minutes}:</TimerText>
@@ -63,5 +63,5 @@ export default class TimeComponent extends React.Component {
 const TimerText = styled.h3`
     font-weight: ${props => props.small ? 400 : 500};
     font-size: ${props => props.fontSize || '34px'};
-    color: ${props => props.color || '#15C08F'};
+    color: ${props => props.color || primaryColor};
 `;

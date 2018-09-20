@@ -11,7 +11,7 @@ import NavigationDrawer from './NavigationDrawer';
 
 const styles = {
     root: {
-        backgroundColor: '#15c08f',
+        backgroundColor: primaryColor,
         boxShadow: 'none'
     },
     title: {

@@ -48,10 +48,7 @@ class StockTypeRadio extends React.Component {
             <Grid container style={style}>
                 <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-around', width: '100%', paddingBottom: '5px'}}>
                     <div style={horizontalBox}>
-                        <div style={{...verticalBox}}>
-                            <RadioLabel color={color}>LONG</RadioLabel>
-                            <RadioLabel fontSize='11px' color={color}>({longTotal} / 100)</RadioLabel>
-                        </div>
+                        
                         <Radio
                             checked={this.state.selectedView === 'buy'}
                             onChange={this.handleChange}
@@ -64,12 +61,14 @@ class StockTypeRadio extends React.Component {
                                 root: classes.root
                             }}
                         />
+                        <div style={{...verticalBox}}>
+                            <RadioLabel color={color}>LONG</RadioLabel>
+                            <RadioLabel fontSize='11px' color={color}>({longTotal}K / 100K)</RadioLabel>
+                        </div>
+                        
                     </div>
                     <div style={horizontalBox}>
-                        <div style={{...verticalBox}}>
-                            <RadioLabel color={color}>SHORT</RadioLabel>
-                            <RadioLabel fontSize='11px' color={color}>({shortTotal} / 100)</RadioLabel>
-                        </div>
+                        
                         <Radio
                             checked={this.state.selectedView === 'sell'}
                             onChange={this.handleChange}
@@ -82,12 +81,14 @@ class StockTypeRadio extends React.Component {
                                 root: classes.root
                             }}
                         />
+
+                        <div style={{...verticalBox}}>
+                            <RadioLabel color={color}>SHORT</RadioLabel>
+                            <RadioLabel fontSize='11px' color={color}>({shortTotal}K / 100K)</RadioLabel>
+                        </div>
+                        
                     </div>
                     <div style={horizontalBox}>
-                        <div style={{...verticalBox}}>
-                            <RadioLabel color={color}>ALL</RadioLabel>
-                            <RadioLabel fontSize='11px' color={color}>({longTotal + shortTotal} / 200)</RadioLabel>
-                        </div>
                         <Radio
                             checked={this.state.selectedView === 'all'}
                             onChange={this.handleChange}
@@ -100,6 +101,12 @@ class StockTypeRadio extends React.Component {
                                 root: classes.root
                             }}
                         />
+
+                        <div style={{...verticalBox}}>
+                            <RadioLabel color={color}>ALL</RadioLabel>
+                            <RadioLabel fontSize='11px' color={color}>({longTotal + shortTotal}K / 200K)</RadioLabel>
+                        </div>
+                        
                     </div>
                 </Grid>
             </Grid>

@@ -19,7 +19,7 @@ export default class ActionIcons extends React.Component {
 
         return (
             <IconButton aria-label="Delete" onClick={() => onClick && onClick()}>
-                <SIcon style={{color: this.props.color || primaryColor, fontSize: this.props.size || 24}} fontSize='inherit'>{type}</SIcon>
+                <SIcon style={{color: this.props.color || primaryColor, fontSize: this.props.size || 20}} fontSize='inherit'>{type}</SIcon>
             </IconButton>
         );
     }

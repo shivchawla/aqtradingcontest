@@ -51,16 +51,18 @@ export const convertBackendPositions = positions => {
     const clonedPositions = _.map(positions, _.cloneDeep);
 
     return Promise.map(clonedPositions, position => {
+        var pts = _.get(position, 'investment', 10);
         return {
             name: _.get(position, 'security.detail.Nse_Name', ''),
             industry: _.get(position, 'security.detail.Industry', ''),
             sector: _.get(position, 'security.detail.Sector', ''),
-            points: Math.abs(_.get(position, 'investment', 10)),
+            points: Math.abs(pts),
             lastPrice: _.get(position, 'lastPrice', ''),
             symbol: _.get(position, 'security.ticker', ''),
             avgPrice: _.get(position, 'avgPrice', 0),
             unrealizedPnl: _.get(position, 'unrealizedPnl', 0),
-            unrealizedPnlPct: _.get(position, 'unrealizedPnlPct', 0)
+            unrealizedPnlPct: _.get(position, 'unrealizedPnlPct', 0),
+            type: pts > 0 ? 'buy' : 'sell'
         }
     });
 }

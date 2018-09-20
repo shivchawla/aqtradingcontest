@@ -18,7 +18,7 @@ import StockTypeRadio from './components/StockTypeRadio';
 import TimerComponent from '../Misc/TimerComponent';
 import DateComponent from '../Misc/DateComponent';
 import LoaderComponent from '../Misc/Loader';
-import {verticalBox} from '../../../constants';
+import {verticalBox, primaryColor, secondaryColor} from '../../../constants';
 import {contestEndHour} from '../constants';
 import {handleCreateAjaxError} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getTotalInvestment} from '../utils';
@@ -37,6 +37,7 @@ class CreateEntry extends React.Component {
             previousSellPositions: [], // contains the positions for the previous entry in the current contest for sell,
             showPreviousPositions: false, // Whether to show the previous positions for the current contest,
             contestActive: false, // Checks whether the contest is active,
+            contestFound: true, //Checks whether contest exists for the data
             selectedDate: props.selectedDate || moment(), //.format(dateFormat), // Date that's selected from the DatePicker
             contestStartDate: moment(), //.format(dateFormat),
             contestEndDate: moment(), //.format(dateFormat),
@@ -78,8 +79,10 @@ class CreateEntry extends React.Component {
             const requiredPosition = clonedPositions[requiredPositionIndex];
             clonedPositions[requiredPositionIndex] = {
                 ...requiredPosition,
-                points: value
+                points: value,
+                type
             };
+
             if (type === 'buy') {
                 this.setState({positions: clonedPositions});
             } else {
@@ -160,43 +163,26 @@ class CreateEntry extends React.Component {
     }
 
     renderEmptySelections = () => {
-        console.log("Empty Selections");
-        console.log(this.state.contestStartDate);
-        console.log(this.state.contestEndDate);
-
         const contestEnded = moment().isAfter(this.state.contestEndDate);
-        const contestRunning = moment().isSameOrAfter(this.state.contestStartDate) && !contestEnded;
+        const contestRunning = moment().isSameOrAfter(this.state.contestStartDate) && !contestEnded && this.state.contestActive;
         const contestNotStarted = moment().isBefore(this.state.contestStartDate);
         const todayDate = moment().format(dateFormat);
         const formattedSelected = this.state.selectedDate.format(dateFormat); 
         
-        const isSelectedToday = moment(formattedSelected).isSame(moment(todayDate));
-
-        const activeContestToday = isSelectedToday && this.state.contestActive;
+        const contestActive = this.state.contestActive;
 
         //moment to date conversion
         const contestStartDate = this.state.contestStartDate.toDate();
         const contestEndDate = this.state.contestEndDate.toDate();
 
-        console.log("2nd");
-        console.log(formattedSelected);
-        console.log(todayDate);
-
-        console.log(!isSelectedToday);
-        console.log(this.state.noEntryFound);
-        console.log(!isSelectedToday && this.state.noEntryFound);
-
-        console.log("3rd");
-
-        console.log(contestRunning);
-        console.log(activeContestToday);
-        console.log(contestRunning && activeContestToday);
+        const noEntryFound = this.state.noEntryFound;
+        const contestFound = this.state.contestFound;
 
         return (
-            <Grid container style={{...verticalBox, marginTop: '50%'}}>
+            <Grid container style={{...verticalBox, marginTop: '30%'}}>
                 {
 
-                    (activeContestToday && contestNotStarted) ?
+                    (contestActive && contestNotStarted) ?
                         <TimerComponent 
                             date={contestNotStarted ? contestStartDate : null}  
                             contestStarted={!contestNotStarted}
@@ -207,13 +193,20 @@ class CreateEntry extends React.Component {
                     :   null
                 }
                 {
-                    !isSelectedToday && this.state.noEntryFound && 
+                    !contestFound &&
+                    <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>
+                        No contest found for selected date
+                    </h3>
+                }
+
+                {
+                    contestFound && (contestActive && contestEnded) && noEntryFound && 
                     <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>
                         No entry found for selected date
                     </h3>
                 }
                 {
-                    (contestRunning && activeContestToday) &&
+                    contestRunning &&
                     <React.Fragment>
                         <TimerComponent 
                             date={contestEndDate}  
@@ -255,11 +248,9 @@ class CreateEntry extends React.Component {
     }
 
     getRecentContestEntry = (requiredDate = moment()) => new Promise((resolve, reject) => {
-        this.setState({loading: true});
+        //this.setState({loading: true});
         const errorCallback = (err) => {
             const errorData = _.get(err, 'response.data', null);
-            this.setState({noEntryFound: true, positions: [], previousPositions: []});
-
             reject(errorData);
         };
 
@@ -270,34 +261,31 @@ class CreateEntry extends React.Component {
             const sellPositions = positions.filter(position => _.get(position, 'investment', 10) < 0);
             const processedBuyPositions = await convertBackendPositions(buyPositions);
             const processedSellPositions = await convertBackendPositions(sellPositions);
-            this.setState({noEntryFound: positions.length === 0});
+            
             resolve({positions: processedBuyPositions, sellPositions: processedSellPositions});
-        })
-        .finally(() => {
-            this.setState({loading: false});
         })
     })
 
-    getContestStatus = selectedDate => {
+    getContestStatus = selectedDate =>  new Promise((resolve, reject) => {
         const date = this.state.selectedDate.format(dateFormat);
         const errorCallback = err => {
-            this.setState({contestActive: false});
+            reject(err); 
         }
+
         return getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
-            console.log("Baap Re");
-            console.log(response.data);
-
             const contestActive = _.get(response.data, 'active', false);
             const contestStartDate = moment(_.get(response.data, 'startDate', null)); //.format(`${dateFormat}`);
             const contestEndDate = moment(_.get(response.data, 'endDate', null)); //.format(dateFormat);
-            this.setState({
+            
+            resolve({
                 contestActive,
                 contestStartDate, 
                 contestEndDate,
             });
+
         });
-    }
+    })
 
     submitPositions = async () => {
         const processedSellPositions = await this.processSellPositions();
@@ -334,17 +322,72 @@ class CreateEntry extends React.Component {
         })
     }
 
-    handleContestDateChange = async selectedDate => {
-        const contestData = await this.getRecentContestEntry(selectedDate);
-        const {positions = [], sellPositions = []} = contestData;
-        this.setState({
-            positions,
-            sellPositions,
-            previousPositions: positions,
-            previousSellPositions: sellPositions,
-            showPreviousPositions: true,
+    updateContestStatusOnDateChange = (selectedDate) => {
+        return new Promise((resolve, reject) => {
+            
+            this.getContestStatus(this.state.selectedDate)
+            .then(contestStatus => {
+                resolve(contestStatus)
+            })
+            .catch(err => {
+                return this.setState({
+                    contestFound: false, contestActive: false},
+                    () => reject(err));
+                
+            })
+        })
+        .then(contestStatus => {
+            const {contestActive,
+                contestStartDate, 
+                contestEndDate} = contestStatus;
+
+            return this.setState({contestFound: true,
+                contestActive,
+                contestStartDate, 
+                contestEndDate});
         }) 
     }
+
+    updateContestEntryStatusOnDateChange = (selectedDate) => {
+        
+        return new Promise((resolve, reject) => {
+            this.getRecentContestEntry(selectedDate)
+            .then(contestEntryData => {
+                resolve(contestEntryData);
+            })
+            .catch(err => {
+                this.setState(
+                    {noEntryFound: true, positions: [], previousPositions: []},
+                    () => reject(err));
+                
+            })
+        })
+        .then(contestEntryData => {
+            const {positions = [], sellPositions = []} = contestEntryData;
+            
+            console.log(sellPositions);
+
+            return this.setState({
+                noEntryFound: positions.length === 0,
+                positions,
+                sellPositions,
+                previousPositions: positions,
+                previousSellPositions: sellPositions,
+                showPreviousPositions: true,
+            });
+        })
+    }
+
+    handleContestDateChange = _.throttle((selectedDate) => {
+        this.setState({loading: true});
+        return this.updateContestStatusOnDateChange(selectedDate)
+        .then(contestStatus => {
+            return this.updateContestEntryStatusOnDateChange(selectedDate)
+        })
+        .finally(() => {
+            this.setState({loading: false});
+        }) 
+    }, 500)
 
     onSegmentValueChange = value => {
         this.setState({listView: value});
@@ -363,41 +406,19 @@ class CreateEntry extends React.Component {
     }
 
     componentWillMount = () => {
-
-        console.log("Component Will Mount");
-        console.log(this.state.selectedDate);
-
-        this.setState({loading: true});
-        Promise.all([
-            this.getRecentContestEntry(this.state.selectedDate),
-            this.getContestStatus(this.state.selectedDate)
-        ])
-        .then(([contestData]) => {
-            const {positions = [], sellPositions = []} = contestData;
-            this.setState({
-                positions,
-                sellPositions,
-                previousSellPositions: sellPositions,
-                previousPositions: positions,
-                showPreviousPositions: true
-            });
-        })
-        .finally(() => {
-            this.setState({loading: false});
-        })
+        this.handleContestDateChange(this.state.selectedDate);
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("Next props");
         if (this.props.selectedDate !== nextProps.selectedDate) {
-            this.setState({selectedDate: nextProps.selectedDate}, this.handleContestDateChange(nextProps.selectedDate));
+            this.setState({selectedDate: nextProps.selectedDate}, () => this.handleContestDateChange(nextProps.selectedDate));
         }
     } 
 
     renderPortfolioPicksDetail = () => {
         const contestSubmissionOver = moment().isAfter(this.state.endDate);
         const todayDate = moment().format(dateFormat);
-        const fabButtonStyle = {padding: '0 10px'};
+        const fabButtonStyle = {borderRadius:'5px', padding: '0 10px'};
         let currentDate = moment();
         currentDate.hours(contestEndHour);
         currentDate.minutes(30);
@@ -407,7 +428,8 @@ class CreateEntry extends React.Component {
         const formattedSelectedDate = this.state.selectedDate.format(dateFormat);
 
         return (
-            this.state.positions.length === 0 && this.state.previousPositions.length == 0
+            !this.state.contestFound || (this.state.noEntryFound && this.state.positions.length === 0 && this.state.previousPositions.length == 0)
+            
             ?   this.renderEmptySelections()
             :   <Grid item xs={12}>
                     <div>
@@ -427,7 +449,7 @@ class CreateEntry extends React.Component {
                         <div style={{display: 'flex', width: '95%', padding:'0 10px', position: 'fixed', zIndex:2, bottom: '20px', justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'}}>
                             <Button style={{...fabButtonStyle, ...addStocksStyle}} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
                                 <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                ADD STOCKS
+                                UPDATE
                             </Button>
                             {
                                 !this.state.showPreviousPositions &&
@@ -441,7 +463,7 @@ class CreateEntry extends React.Component {
                                             disabled={this.state.submissionLoading}
                                     >
                                         <Icon style={{marginRight: '5px'}}>update</Icon>
-                                        UPDATE PICKS
+                                        SUBMIT
                                         {this.state.submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
                                     </Button>
                                 </div>
@@ -516,7 +538,7 @@ const SnackbarComponent = ({openStatus = false, message = 'Snackbar Data', onClo
 }
 
 const emptyPortfolioButtonStyle = {
-    backgroundColor: '#15C08F',
+    backgroundColor: primaryColor,
     color: '#fff',
     borderRadius: '4px',
     width: '50%',
@@ -531,11 +553,11 @@ const SGrid = styled(Grid)`
 `;
 
 const addStocksStyle = {
-    backgroundColor: '#155FC0',
+    backgroundColor: secondaryColor,
     color: '#fff'
 };
 
 const submitButtonStyle = {
-    backgroundColor: '#15C08F',
+    backgroundColor: primaryColor,
     color: '#fff'
 }

@@ -8,7 +8,7 @@ import {withRouter} from 'react-router';
 import DateComponent from '../Misc/DateComponent';
 import ParticipantList from './ParticipantList';
 import LoaderComponent from '../Misc/Loader';
-import {verticalBox, horizontalBox} from '../../../constants';
+import {verticalBox, horizontalBox, primaryColor} from '../../../constants';
 import {getContestSummary, processParticipants} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -48,7 +48,7 @@ class Participants extends React.Component {
 
     renderEmptyScreen = () => {
         return (
-            <Grid item xs={12} style={{...listContainer, paddingTop: '50%'}}>
+            <Grid item xs={12} style={{...listContainer, marginTop: '-100px'}}>
                 <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 300}}>
                     Winner list not present for this date. 
                 </h3>
@@ -90,24 +90,17 @@ class Participants extends React.Component {
 
     render() {
         return (
-            <Grid container style={{backgroundColor: '#f5f6fa'}}>
-                <Grid item xs={12} style={leaderboardDetailStyle}>
-                    <Grid container>
-                        <Grid item style={{padding: '0px 10px', marginTop: '20px', color:'grey'}}>
-                            <LeaderBoardHeader/ >
-
-                            <LeaderboardSubHeader style={{marginTop:'2px', textAlign:'start'}}>
-                                Top Stock Pickers
-                            </LeaderboardSubHeader>
-                        </Grid>
-                        
-                        {
-                            this.state.loading
-                            ? <LoaderComponent />
-                            : this.renderWinnerDetails()
-                        }
-                    </Grid>
+            <Grid container style={leaderboardDetailStyle}>
+                <Grid item xs={12}>
+                     <LeaderBoardHeader/ >
                 </Grid>
+               
+                
+                {
+                    this.state.loading
+                    ? <LoaderComponent />
+                    : this.renderWinnerDetails()
+                }
             </Grid>
         );
     }
@@ -119,7 +112,8 @@ const leaderboardDetailStyle = {
     height: 'calc(100vh - 180px)',
     minHeight: '480px',
     justifyContent: 'center',
-    margin: '10px 10px 10px 10px',
+    margin: '10px auto',
+    width:'95%',
     boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
     backgroundColor:'#fff'
 };
@@ -138,15 +132,27 @@ const LeaderboardSubHeader = styled.h3`
 
 const LeaderBoardHeader = () => {
     return (
-        <div style={{...horizontalBox, backgroundColor: '#fff'}}>
-            <h3 
-                style={{
-                    fontSize: '18px', 
-                    color: 'grey', 
-                    fontWeight: 500, 
-                }}>LEADERBOARD
-            </h3>
-            <Icon fontSize='inherit' style={{color: '#15c08f', fontSize: '30px', marginLeft: '5px'}}>supervised_user_circle</Icon>
+        <div style={{...verticalBox, padding: '10px 10px 0px 10px', color:'grey', height:'50px', alignItems:'start'}}>
+            <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
+                <WinnerHeader>LEADERBOARD</WinnerHeader>
+                <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>supervised_user_circle</Icon>
+            </div>
+            <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
+                Top Stock Pickers
+            </WinnerSubHeader>
         </div>
     );
 }
+
+const WinnerHeader = styled.h3`
+    font-size: 18px;
+    font-weight: 400;
+    color: grey;
+`;
+
+const WinnerSubHeader = styled.h3`
+    font-size: 14px;
+    font-weight: 400;
+    color: grey;
+    margin-top: 5px;
+`;

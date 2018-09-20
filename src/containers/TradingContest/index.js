@@ -10,6 +10,7 @@ import TopPicks from './TopPicks';
 import Leaderboard from './Leaderboard';
 import CreateEntry from './CreateEntry';
 import DateComponent from './Misc/DateComponent';
+import {primaryColor} from '../../constants';
 
 export default class TradingContest extends React.Component {
     state = {
@@ -54,7 +55,6 @@ export default class TradingContest extends React.Component {
                         <Grid item xs={12}>
                             <DateComponent 
                                 color='grey'
-                                date={this.state.selectedDate}
                                 onDateChange={this.updateDate}
                             />
                         </Grid>
@@ -83,7 +83,7 @@ export default class TradingContest extends React.Component {
 }
 
 const STabs = styled(Tabs)`
-    background-color: #15c08f;
+    background-color: ${primaryColor};
     color: #fff;
 `;
 

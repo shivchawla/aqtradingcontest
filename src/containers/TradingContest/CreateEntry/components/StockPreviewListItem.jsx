@@ -21,8 +21,15 @@ export default class StockPreviewListItem extends React.Component {
             points = 0,
             chg = null,
             chgPct = null,
-            avgPrice = null 
+            avgPrice = null,
+            type='buy' 
         } = this.props.position;
+
+        console.log(this.props.position);
+        
+        const isBuy = type=='buy';
+        const direction = isBuy ? 'BUY' : 'SELL';
+
         let change = null, changePct = null;
         if (chg === null) {
             change = lastPrice - avgPrice;
@@ -33,24 +40,29 @@ export default class StockPreviewListItem extends React.Component {
         }
         const colStyle = {...horizontalBox, justifyContent: 'space-between'};
         const changeColor = change > 0 ? metricColor.positive : metricColor.negative;
+        changePct = `(${changePct}%)`;
+
         return (
             <SGrid container style={{padding: '10px'}}>
                 <Grid item  xs={12} style={colStyle}>
-                    <Symbol>{symbol}</Symbol>
-                    <SecondayText style={{fontSize: '20px'}}>{points}k</SecondayText>
+                    <Symbol>
+                        {symbol} 
+                        <span style={{backgroundColor: isBuy ? 'green' : 'red', color:'#fff', padding:'1px 2px', fontSize:'8px', marginLeft:'5px'}}>{direction}</span>
+                    </Symbol>
+
+                    <SecondayText style={{fontSize: '20px'}}>{points}K</SecondayText>
                 </Grid>
                 <Grid item  xs={12} style={colStyle}>
                     <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A', textAlign: 'start'}}>{name}</SecondayText>
                     {/* <SecondayText style={{fontSize: '20px'}}>{points}k</SecondayText> */}
                     <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                        <SecondayText>
+                        <SecondayText style={{fontSize:'16px', marginTop:'-4px'}}>
                             {lastPrice}
                         </SecondayText>
                         <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={changeColor}>
-                            ({change.toFixed(2)}
+                            {change.toFixed(2)}
                         </ChangeText>
-                        <ChangeDivider>|</ChangeDivider>
-                        <ChangeText style={{marginLeft: '2px'}} color={changeColor}>{changePct}%)</ChangeText>
+                        <ChangeText style={{marginLeft: '2px'}} color={changeColor}>{changePct}</ChangeText>
                     </div>
                 </Grid>
             </SGrid>
