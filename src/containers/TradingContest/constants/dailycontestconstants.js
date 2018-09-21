@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-09-11 20:06:27
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-09-11 20:40:00
+* @Last Modified time: 2018-09-20 18:55:08
 */
 
 import React, {Fragment} from 'react'
@@ -17,7 +17,7 @@ export const scoringText = 'The theme of the Best Stock Picks Contest is to awar
 export const faqs = [
     {
         header: 'How do I enter the contest?', 
-        content: 'Click “Submit Entry", Add up to 10 stocks to buy and up to 10 stocks to sell. Then click “Enter Contest".'
+        content: 'Click “Enter Contest", Add up to 10 stocks to buy and up to 10 stocks to sell. Then click “Submit".'
     },
     {
         header: 'What stocks/universe is allowed?',
@@ -75,7 +75,7 @@ export const requirements = [
     {header: 'Profitability', content: 'Your Contest entry must be profitable.'},
     {header: 'Stock Universe', content: 'You can only buy stocks that are valid NIFTY 500 constituents.'},
     {header: 'Shortable Universe', content: 'You can only sell stocks that have valid futue contracts associated with it.'},
-    {header: 'Minimum Stocks', content: 'You must buy and sell at-least one stock. Maximum is 10 stocks.'},
+    {header: 'Minimum Stocks', content: 'You must buy/sell at-least 5 stocks. Maximum is 10 stocks each side.'},
     
 ];
 

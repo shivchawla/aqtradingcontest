@@ -120,7 +120,7 @@ class CreateEntry extends React.Component {
                                             pageUrl={this.props.match.url}
                                             isUpdate={false}
                                             benchmark='NIFTY_50'
-                                            maxLimit={5}
+                                            maxLimit={10}
                                         />
                                     </div>
                             }
@@ -290,6 +290,13 @@ class CreateEntry extends React.Component {
     submitPositions = async () => {
         const processedSellPositions = await this.processSellPositions();
         const positions = [...this.state.positions, ...processedSellPositions];
+        
+        //Added FE check for at-least 5 trades
+        if (positions.length < 5) {
+            this.setState({snackbarOpenStatus: true, snackbarMessage: 'Please add at-least 5 trades'});
+            return; 
+        }
+
         this.setState({submissionLoading: true,});
         submitEntry(positions, this.state.previousPositions.length > 0)
         .then(response => {
@@ -413,13 +420,8 @@ class CreateEntry extends React.Component {
     } 
 
     renderPortfolioPicksDetail = () => {
-        const contestSubmissionOver = moment().isAfter(this.state.endDate);
-        const todayDate = moment().format(dateFormat);
+        const contestSubmissionOver = moment().isAfter(this.state.contestEndDate);
         const fabButtonStyle = {borderRadius:'5px', padding: '0 10px'};
-        let currentDate = moment();
-        currentDate.hours(contestEndHour);
-        currentDate.minutes(30);
-        currentDate.seconds(0);
         const longInvestmentTotal = getTotalInvestment(this.state.positions);
         const shortInvestmentTotal = getTotalInvestment(this.state.sellPositions);
         const formattedSelectedDate = this.state.selectedDate.format(dateFormat);
@@ -442,7 +444,7 @@ class CreateEntry extends React.Component {
                     {this.renderStockList()}
                     
                     {
-                        moment(formattedSelectedDate).isSame(todayDate) && !contestSubmissionOver &&
+                        !contestSubmissionOver &&
                         <div style={{display: 'flex', width: '95%', padding:'0 10px', position: 'fixed', zIndex:2, bottom: '20px', justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'}}>
                             <Button style={{...fabButtonStyle, ...addStocksStyle}} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
                                 <Icon style={{marginRight: '5px'}}>add_circle</Icon>

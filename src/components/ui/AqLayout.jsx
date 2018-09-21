@@ -7,7 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import MenuIcon from '@material-ui/icons/Menu';
 import {withStyles} from '@material-ui/core/styles';
 import {primaryColor} from '../../constants';
-import NavigationDrawer from './NavigationDrawer';
+import {NavigationDrawer} from './NavigationDrawer';
 
 const styles = {
     root: {
@@ -48,7 +48,7 @@ class AqLayout extends React.Component {
             <div>
                 <NavigationDrawer 
                     open={this.state.navigationDrawerOpenStatus} 
-                    onClose={this.toggleNavigationDrawer}
+                    onToggle={this.toggleNavigationDrawer}
                 />
                 <AppBar position="relative" className={classes.root}>
                     <Toolbar>

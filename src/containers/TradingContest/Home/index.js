@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import {primaryColor, verticalBox} from '../../../constants';
+import {primaryColor, secondaryColor, verticalBox} from '../../../constants';
 import {howItWorksContents, prizeText, requirements, scoringText, faqs} from '../constants/dailycontestconstants';
 import AqLayout from '../../../components/ui/AqLayout';
 
@@ -28,7 +28,7 @@ export default class ContestHome extends React.Component {
 
     renderTopSection = () => {
         const containerStyle = {
-            backgroundColor: '#00B79C',
+            backgroundColor: primaryColor,
             height: '180px',
         };
 
@@ -55,15 +55,15 @@ export default class ContestHome extends React.Component {
                                     marginTop:'5px'
                                 }}
                         >
-                            Beat the market and win cash prizes every week
+                            Pick the best stocks and win prizes everyday 
                         </h3>
   
                         <SButton 
-                                onClick={() => this.props.history.push('/')}
+                                onClick={() => this.props.history.push('/dailycontest/how')}
                                 variant="extendedFab"
-                                style={{marginTop: '20px', backgroundColor: '#fff'}}
+                                style={{marginTop: '20px', backgroundColor: secondaryColor, borderRadius:'5px', color: '#fff'}}
                         >
-                            Submit Entry
+                            Enter Contest
                         </SButton>
                     </Grid>
                 </Grid>
@@ -189,7 +189,7 @@ export default class ContestHome extends React.Component {
                     backgroundColor: '#00b79c'
                 }}
             >
-                <Grid container style={{height: '100%', paddingBottom: '50px', marginTop: '50px', width: '100%'}}>
+                <Grid container style={{height: '100%', paddingBottom: '50px', width: '100%'}}>
                     {this.renderTopSection()} 
                     {this.renderTabsSection()}
                 </Grid>

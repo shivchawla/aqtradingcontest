@@ -96,6 +96,16 @@ export const nameEllipsisStyle = {
     color: '#0091EA'
 };
 
+export const nameEllipsisStyle2 = {
+    fontSize: '14px', 
+    overflow: 'hidden', 
+    textOverflow: 'ellipsis', 
+    whiteSpace: 'nowrap', 
+    width: '250px',
+    cursor: 'pointer',
+    color: '#0091EA'
+};
+
 export const buttonStyle = {
     // width: '100px',
     marginBottom: '10px',

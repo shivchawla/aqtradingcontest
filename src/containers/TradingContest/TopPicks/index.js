@@ -43,16 +43,16 @@ class Winners extends React.Component {
         }
         getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
-            const winnerParticipants = _.get(response.data, 'topStocks', []);
+            const topStocks = _.get(response.data, 'topStocks', []);
             const contestActive = _.get(response.data, 'active', false);
             const startDate = moment(_.get(response.data, 'startDate', null));
             const endDate = moment(_.get(response.data, 'endDate', null));
             const resultDate = moment(_.get(response.data, 'resultDate', null));//.format(dateFormat);
-            const processedParticipants = await processWinnerStocks(winnerParticipants);
+            //const processedParticipants = await processWinnerStocks(winnerParticipants);
             const todayDate = moment().format(dateFormat);
             const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));
             this.setState({
-                winnerStocks: processedParticipants, 
+                winnerStocks: topStocks.map((item, index) => {item.rank = index+1; return item;}), 
                 contestActive,
                 startDate, 
                 endDate,
@@ -242,13 +242,13 @@ const ContestStatus = styled.h3`
 const WinnerHeader = styled.h3`
     font-size: 18px;
     font-weight: 400;
-    color: grey;
+    color: black;
 `;
 
 const WinnerSubHeader = styled.h3`
     font-size: 14px;
     font-weight: 400;
-    color: grey;
+    color: black;
     margin-top: 5px;
 `;
 
