@@ -38,7 +38,7 @@ class Participants extends React.Component {
         const date = moment(selectedDate).format(dateFormat);
         this.setState({selectedDate: date, loading: true});
         const errorCallback = err => {
-            this.setState({winners: []});
+            this.setState({winners: [], contestActive: false});
         }
          getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
