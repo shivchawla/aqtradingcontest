@@ -29,22 +29,17 @@ class NavigationDrawerImpl extends React.Component {
         return false;
     }
 
-    routeUrl = (url) => {
-        this.props.history.push(url);
+    routeUrl = (url, href) => {
+        href ? window.location = url : this.props.history.push(url);
     }
 
     render() {
-        const links = [
-            {name: 'Daily Contest', url: '/dailycontest/home'},
-            {name: 'Investment Idea Contest', url: '/contest'},
-            //{name: 'Home', url: '/dailycontest'},
-        ];
         const {open = false, onToggle = null} = this.props;
 
         return (
             <Drawer open={open} onClose={() => {onToggle && onToggle()}}>
                 
-                <div onClick={() => this.props.history.push('/home')} 
+                <div onClick={() => {window.location='/home'}} 
                     style={{...horizontalBox, height:'56px', padding:'0 16px'}}>
                     <img src={logo} style={{height: '25px'}}/>
                     <div style={{cursor: 'pointer', marginLeft: '10px', marginTop:'2px'}}>
@@ -71,13 +66,15 @@ class NavigationDrawerImpl extends React.Component {
                         <ListItem 
                             button
                             onClick={() => {
-                                Utils.isLoggedIn()
-                                ?   this.logoutUser()
-                                :   this.props.history.push('/login')
+                                if(Utils.isLoggedIn()){
+                                    console.log("Hola");
+                                    Utils.logoutUser()
+                                }
+                                window.location='/login';
                             }}>
                             
                             <ListItemIcon>
-                                <Icon style={{color: titleColor}}>{Utils.isLoggedIn() ? 'logout' : 'login'}</Icon>
+                                <Icon style={{color: titleColor}}>{'logout'}</Icon>
                             </ListItemIcon>
 
                             <ListItemText
@@ -109,7 +106,7 @@ class ListItemComponent extends React.Component {
 
     render() {
         const {item, depth, classes, onClick} = this.props;
-        const {name, url, children, icon} = item;
+        const {name, url, children, icon, href} = item;
       
         const style = {padding: depth == 2 ? '10px 30px' : '10px 13px'};
 
@@ -147,7 +144,7 @@ class ListItemComponent extends React.Component {
         return (
             <ListItem
                 button
-                onClick={() => {onClick && onClick(url)}}
+                onClick={() => {onClick && onClick(url, href)}}
                 style={{...listItemTextStyle, ...style}}>
                 {icon &&
                     <ListItemIcon>
@@ -208,12 +205,12 @@ const menuCategories = [
 
     {
         name: "Investment Idea Contest", icon:'card_travel', children: [
-            {name: "Contest Home", url: '/contest/home', icon:'explore'},
-            {name: "Leaderboard", url: '/contest/leaderboard', icon: 'grade_outline'},
-            {name: "How", url: '/contest/how', icon: 'help_outline'},
+            {name: "Contest Home", url: '/contest/home', href:true, icon:'explore'},
+            {name: "Leaderboard", url: '/contest/leaderboard', href:true, icon: 'grade_outline'},
+            {name: "How", url: '/contest/how', href:true, icon: 'help_outline'},
         ]
     },
     {
-        name: "Home", url:'/home', icon:'home_outline'
+        name: "Home", url:'/home', href:true, icon:'home_outline'
     }
 ];
