@@ -9,6 +9,7 @@ import ActionIcon from '../Misc/ActionIcons';
 import DatePicker from 'material-ui-pickers/DatePicker';
 import TimerComponent from '../Misc/TimerComponent';
 import {horizontalBox, verticalBox} from '../../../constants';
+const DateHelper = require('../../../utils/date');
 
 const dateFormat = 'Do MMM YY';
 
@@ -16,12 +17,16 @@ export default class DateComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: moment()
+            selectedDate: moment(DateHelper.nextNonHolidayWeekday(null, true))
         }
     }
 
+    componentWillMount() {
+        this.onDateChange(this.state.selectedDate);
+    }
+
     navigateToPreviousDate = () => {
-        const date = moment(this.state.selectedDate, dateFormat).subtract(1, 'days');
+        const date = moment(DateHelper.previousNonHolidayWeekday(this.state.selectedDate.toDate()));
         this.setState({selectedDate: date}, () => this.onDateChange());
     }
 
@@ -30,7 +35,7 @@ export default class DateComponent extends React.Component {
     }
 
     navigateToNexDate = () => {
-        const date = moment(this.state.selectedDate, dateFormat).add(1, 'days');
+        const date = moment(DateHelper.nextNonHolidayWeekday(this.state.selectedDate.toDate()));
         this.setState({selectedDate: date}, () => this.onDateChange());
     }
 
@@ -54,6 +59,12 @@ export default class DateComponent extends React.Component {
         return false;
     }
 
+    disabledDate = (date) => {
+        const isWeekend = date.get('day') === 0 || date.get('day') === 6;
+        const isHoliday = DateHelper.isHoliday(date);
+        return isWeekend || isHoliday;
+    }
+
     render() {
         const {color = '#fff'} = this.props;
         const { selectedDate } = this.state;
@@ -67,7 +78,7 @@ export default class DateComponent extends React.Component {
                     <DatePicker
                         value={selectedDate}
                         onChange={this.handleDateChange}
-                        showTodayButton
+                        shouldDisableDate={this.disabledDate}
                         style={{textAlign: 'center'}}
                         TextFieldComponent={DateFields}
                         color={color}

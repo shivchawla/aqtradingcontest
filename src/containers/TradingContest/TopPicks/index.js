@@ -48,9 +48,8 @@ class Winners extends React.Component {
             const startDate = moment(_.get(response.data, 'startDate', null));
             const endDate = moment(_.get(response.data, 'endDate', null));
             const resultDate = moment(_.get(response.data, 'resultDate', null));//.format(dateFormat);
-            //const processedParticipants = await processWinnerStocks(winnerParticipants);
-            const todayDate = moment().format(dateFormat);
-            const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));
+            const contestEnded = moment().isAfter(endDate);
+            
             this.setState({
                 winnerStocks: topStocks.map((item, index) => {item.rank = index+1; return item;}), 
                 contestActive,
@@ -75,7 +74,8 @@ class Winners extends React.Component {
     renderTopPicksDetails = () => {
         const contestEnded = moment().isAfter(moment(this.state.endDate));
         const contestRunning = moment().isSameOrAfter(moment(this.state.startDate)) && !contestEnded;
-        
+        const winnerStocks = this.state.winnerStocks;
+        const contestActive  = this.state.contestActive;
         return (
             <SGrid container>
                 <Grid 
@@ -83,9 +83,6 @@ class Winners extends React.Component {
                         xs={12} 
                         style={{...verticalBox, padding: '0 10px', backgroundColor: '#fff'}}
                 >
-                    {
-                        !this.state.contestActive && this.state.winnerStocks.length < 1 && <ContestNotPresentView />
-                    }
                     {
                         this.state.contestActive 
                             ?   <ContestStartedView 
@@ -101,9 +98,16 @@ class Winners extends React.Component {
                         : null
                     }
                 </Grid>
-                <Grid item xs={12} style={{padding: '10px'}}>
-                    <WinnerList winners={this.state.winnerStocks}/>
-                </Grid>
+                
+                {!contestActive &&
+                    <Grid item xs={12} style={{padding: '10px'}}>
+                        {winnerStocks.length == 0 
+                            ?    <ContestNotPresentView /> 
+                            :    <WinnerList winners={this.state.winnerStocks}/>
+                        }
+                    </Grid>
+                }
+
             </SGrid>
         );
     }
@@ -149,22 +153,6 @@ const ContestNotPresentView = () => {
         <Grid container style={{marginTop: '-100px'}}>
             <Grid item xs={12} style={verticalBox}>
                 <ContestNotAvailableText>No contest avaiable for selected date</ContestNotAvailableText>
-            </Grid>
-        </Grid>
-    );
-}
-
-const ContestEndedView = () => {
-    return (
-        <Grid container style={{height: '100px'}}>
-            <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start', justifyContent: 'flex-start', paddingTop: '20px'}}>
-                <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
-                    <WinnerHeader>TOP PICKS</WinnerHeader>
-                    <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>lock</Icon>
-                </div>
-                <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
-                    Most voted stocks
-                </WinnerSubHeader>
             </Grid>
         </Grid>
     );
