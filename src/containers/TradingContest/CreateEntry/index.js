@@ -15,11 +15,10 @@ import {SearchStocks} from '../SearchStocks';
 import StockList from './components/StockList';
 import StockPreviewList from './components/StockPreviewList';
 import StockTypeRadio from './components/StockTypeRadio';
+import SelectionMetrics from './components/SelectionMetrics';
 import TimerComponent from '../Misc/TimerComponent';
-import DateComponent from '../Misc/DateComponent';
 import LoaderComponent from '../Misc/Loader';
 import {verticalBox, primaryColor, secondaryColor} from '../../../constants';
-import {contestEndHour} from '../constants';
 import {handleCreateAjaxError} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getTotalInvestment} from '../utils';
 
@@ -31,6 +30,7 @@ class CreateEntry extends React.Component {
         this.searchStockComponent = null;
         this.state = {
             bottomSheetOpenStatus: false,
+            pnlStats: {}, // PnL stats for the selected entry obtained due to date change
             positions: [], // Positions to buy
             sellPositions: [], // Positions to sell
             previousPositions: [], // contains the positions for the previous entry in the current contest for buy,
@@ -158,10 +158,6 @@ class CreateEntry extends React.Component {
         )
     }
 
-    componentDidMount() {
-        // this.searchStockComponent.resetSearchFilters();
-    }
-
     renderEmptySelections = () => {
         const contestEnded = moment().isAfter(this.state.contestEndDate);
         const contestRunning = moment().isSameOrAfter(this.state.contestStartDate) && !contestEnded && this.state.contestActive;
@@ -257,12 +253,13 @@ class CreateEntry extends React.Component {
         getContestEntry(requiredDate.format(dateFormat), this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
             const positions = _.get(response, 'data.positions', []);
+            const pnlStats = _.get(response, 'data.pnlStats', {});
             const buyPositions = positions.filter(position => _.get(position, 'investment', 10) >= 0);
             const sellPositions = positions.filter(position => _.get(position, 'investment', 10) < 0);
             const processedBuyPositions = await convertBackendPositions(buyPositions);
             const processedSellPositions = await convertBackendPositions(sellPositions);
             
-            resolve({positions: processedBuyPositions, sellPositions: processedSellPositions});
+            resolve({positions: processedBuyPositions, sellPositions: processedSellPositions, pnlStats});
         })
     })
 
@@ -370,7 +367,8 @@ class CreateEntry extends React.Component {
             })
         })
         .then(contestEntryData => {
-            const {positions = [], sellPositions = []} = contestEntryData;
+            const {positions = [], sellPositions = [], pnlStats} = contestEntryData;
+
             return this.setState({
                 noEntryFound: positions.length === 0,
                 positions,
@@ -378,6 +376,7 @@ class CreateEntry extends React.Component {
                 previousPositions: positions,
                 previousSellPositions: sellPositions,
                 showPreviousPositions: true,
+                pnlStats
             });
         })
     }
@@ -424,25 +423,21 @@ class CreateEntry extends React.Component {
         const fabButtonStyle = {borderRadius:'5px', padding: '0 10px'};
         const longInvestmentTotal = getTotalInvestment(this.state.positions);
         const shortInvestmentTotal = getTotalInvestment(this.state.sellPositions);
-        const formattedSelectedDate = this.state.selectedDate.format(dateFormat);
 
         return (
             !this.state.contestFound || (this.state.noEntryFound && this.state.positions.length === 0 && this.state.previousPositions.length == 0)
             
             ?   this.renderEmptySelections()
             :   <Grid item xs={12}>
-                    <div>
+                    {contestSubmissionOver && <SelectionMetrics {...this.state.pnlStats} />}
                     <StockTypeRadio 
-                        //color='#fff' 
                         onChange={this.handleStockTypeRadioChange} 
                         defaultView={this.state.listView}
                         longTotal={longInvestmentTotal}
                         shortTotal={shortInvestmentTotal}
                         style={{backgroundColor: '#fff'}}
                     />
-                    </div>
                     {this.renderStockList()}
-                    
                     {
                         !contestSubmissionOver &&
                         <div style={{display: 'flex', width: '95%', padding:'0 10px', position: 'fixed', zIndex:2, bottom: '20px', justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'}}>
@@ -472,28 +467,6 @@ class CreateEntry extends React.Component {
                 </Grid>
             
             
-        );
-    }
-
-    //NOT IN USE
-    renderDateComponent = () => {
-        const contestEnded = moment().isAfter(this.state.contestEndDate);
-        const contestRunning = moment().isSameOrAfter(this.state.contestStartDate) && !contestEnded;
-
-        return (
-            <DateComponent 
-                color='grey'
-                onDateChange={this.handleContestDateChange}
-                style={{backgroundColor: '#fff'}}
-                date={this.state.selectedDate}
-                timerDate={
-                    (contestEnded || this.state.positions.length === 0)
-                    ? null
-                    : contestRunning 
-                        ?  this.state.contestEndDate 
-                        :  this.state.contestStartDate
-                }
-            />
         );
     }
 

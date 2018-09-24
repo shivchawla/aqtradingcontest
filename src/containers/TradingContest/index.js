@@ -18,9 +18,9 @@ import {primaryColor} from '../../constants';
 
 export default class TradingContest extends React.Component {
     state = {
-        selectedTab: 0,
+        selectedTab: 1,
         selectedDate: moment(),
-        bottomSheetOpen: true
+        bottomSheetOpen: false
     };
 
     handleChange = (event, selectedTab) => {
@@ -50,7 +50,6 @@ export default class TradingContest extends React.Component {
                     style={{position: 'absolute', right: 0}}
                     onClick={this.toggleBottomSheet}
             >
-                {/* <AccountCircle /> */}
                 <Icon>contact_support</Icon>
             </IconButton>
         );

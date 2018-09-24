@@ -5,11 +5,11 @@ import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
 import {withRouter} from 'react-router';
-import DateComponent from '../Misc/DateComponent';
+import TimelineSegment from '../Misc/TimelineSegment';
 import TimerComponent from '../Misc/TimerComponent';
 import ParticipantList from './ParticipantList';
 import LoaderComponent from '../Misc/Loader';
-import {verticalBox, horizontalBox, primaryColor} from '../../../constants';
+import {verticalBox, horizontalBox} from '../../../constants';
 import {getContestSummary, processParticipants} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -131,7 +131,8 @@ class Participants extends React.Component {
 
             <Grid container style={leaderboardDetailStyle}>
                 <Grid item xs={12}>
-                     <LeaderBoardHeader/ >
+                     <LeaderBoardHeader />
+                     <TimelineSegment />
                 </Grid>
 
                 <Grid item xs={12}>

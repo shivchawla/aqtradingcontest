@@ -67,7 +67,6 @@ class NavigationDrawerImpl extends React.Component {
                             button
                             onClick={() => {
                                 if(Utils.isLoggedIn()){
-                                    console.log("Hola");
                                     Utils.logoutUser()
                                 }
                                 window.location='/login';

@@ -5,12 +5,12 @@ import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router';
-import DateComponent from '../Misc/DateComponent';
 import LoaderComponent from '../Misc/Loader';
+import TimelineSegment from '../Misc/TimelineSegment';
 import WinnerList from './WinnerList';
-import {verticalBox, horizontalBox, primaryColor} from '../../../constants';
+import {verticalBox, horizontalBox} from '../../../constants';
 import TimerComponent from '../Misc/TimerComponent';
-import {getContestSummary, processWinnerStocks} from '../utils';
+import {getContestSummary} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
 
@@ -132,8 +132,8 @@ class Winners extends React.Component {
                 
                 <Grid item xs={12}>
                     {this.renderHeader()}
+                    <TimelineSegment />
                 </Grid>
-                
                 <Grid item xs={12}>
                     {
                         !this.state.loading
