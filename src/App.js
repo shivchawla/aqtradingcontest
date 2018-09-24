@@ -8,6 +8,7 @@ import Switch from 'react-router-dom/Switch';
 import TradingContest from './containers/TradingContest';
 import TradingContestHome from './containers/TradingContest/Home';
 import TradingContestHowItWorks from './containers/TradingContest/HowItWorks';
+import AuthRoute from './containers/AuthRoute';
 import './App.css';
 
 class App extends Component {
@@ -17,12 +18,8 @@ class App extends Component {
                 <div className="App">
                     <Notifications style={{zIndex: 3000}}/>
                     <Switch>
-                        <Route exact={true} path='/dailycontest' component={TradingContest} /> 
-                    </Switch>
-                    <Switch>
+                        <AuthRoute path='/dailycontest' component={TradingContest} /> 
                         <Route exact={true} path='/dailycontest/home' component={TradingContestHome} /> 
-                    </Switch>
-                    <Switch>
                         <Route exact={true} path='/dailycontest/how' component={TradingContestHowItWorks} /> 
                     </Switch>
                 </div>

@@ -6,16 +6,21 @@ import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import AqLayout from '../../components/ui/AqLayout';
+import IconButton from '@material-ui/core/IconButton';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import Icon from '@material-ui/core/Icon';
 import TopPicks from './TopPicks';
 import Leaderboard from './Leaderboard';
 import CreateEntry from './CreateEntry';
+import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import {primaryColor} from '../../constants';
 
 export default class TradingContest extends React.Component {
     state = {
         selectedTab: 0,
-        selectedDate: moment()
+        selectedDate: moment(),
+        bottomSheetOpen: true
     };
 
     handleChange = (event, selectedTab) => {
@@ -34,12 +39,37 @@ export default class TradingContest extends React.Component {
         this.setState({selectedDate: date});
     }
 
+    toggleBottomSheet = () => {
+        this.setState({bottomSheetOpen: !this.state.bottomSheetOpen});
+    }
+
+    renderExtraIcon = () => {
+        return (
+            <IconButton
+                    color="inherit"
+                    style={{position: 'absolute', right: 0}}
+                    onClick={this.toggleBottomSheet}
+            >
+                {/* <AccountCircle /> */}
+                <Icon>contact_support</Icon>
+            </IconButton>
+        );
+    }
+
     render() {
         const {selectedTab} = this.state;
 
         return (
-                <AqLayout>
-                    <Grid container style={{backgroundColor: '#f5f6fa'}}>
+                <AqLayout
+                        extraAction={this.renderExtraIcon()}
+                >
+                    <HowItWorksBottomSheet open={this.state.bottomSheetOpen} toggle={this.toggleBottomSheet}/>
+                    <Grid 
+                            container 
+                            style={{
+                                backgroundColor: '#f5f6fa'
+                            }}
+                    >
                         <Grid item xs={12}>
                             <STabs
                                 value={selectedTab}

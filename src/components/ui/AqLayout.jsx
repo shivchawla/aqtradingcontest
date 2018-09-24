@@ -38,9 +38,6 @@ class AqLayout extends React.Component {
     render() {
         const {
             pageTitle = 'Stock Pick Contest', 
-            showDrawer = true, 
-            navigationDrawerOpen = false, 
-            onNavigationDrawerClose = null,
             classes
         } = this.props;
 
@@ -63,6 +60,7 @@ class AqLayout extends React.Component {
                         <Typography variant="title" className={classes.title}>
                             {pageTitle}
                         </Typography>
+                        {this.props.extraAction}
                     </Toolbar>
                     {/*this.props.appBar*/}
                 </AppBar>

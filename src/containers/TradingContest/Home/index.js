@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Carousel from 'nuka-carousel';
 import {primaryColor, secondaryColor, verticalBox} from '../../../constants';
 import {howItWorksContents, prizeText, requirements, scoringText, faqs} from '../constants/dailycontestconstants';
 import AqLayout from '../../../components/ui/AqLayout';
@@ -74,11 +75,15 @@ export default class ContestHome extends React.Component {
     renderHowItWorks = () => {   
         return (
             <Grid container justify="space-between" style={{marginTop: '20px'}}>
-                {
-                    howItWorksContents.map((item, index) => {
-                        return <HowItWorksCard key={index} {...item} />
-                    })
-                }
+                <Carousel
+                        swiping
+                >
+                    {
+                        howItWorksContents.map((item, index) => {
+                            return <HowItWorksCard key={index} {...item} />
+                        })
+                    }
+                </Carousel>
             </Grid>
         );
     }
@@ -198,7 +203,7 @@ export default class ContestHome extends React.Component {
     }
 }
 
-const HowItWorksCard = ({image, header, content, span=12}) => {
+export const HowItWorksCard = ({image, header, content, span=12}) => {
     const containerStyle = {
         ...verticalBox,
         border: '1px solid #eaeaea',
@@ -206,7 +211,8 @@ const HowItWorksCard = ({image, header, content, span=12}) => {
         padding: '15px',
         borderRadius: '4px',
         marginBottom: '20px',
-        width: '95%'
+        width: '95%',
+        height: '200px'
     };
 
     return (

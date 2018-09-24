@@ -505,7 +505,7 @@ class CreateEntry extends React.Component {
                     message={this.state.snackbarMessage}
                     onClose={() => this.setState({snackbarOpenStatus: false})}
                 />
-                {this.state.bottomSheetOpenStatus && this.renderSearchStocksBottomSheet()}
+                {this.renderSearchStocksBottomSheet()}
                 {
                     this.state.loading
                     ? <LoaderComponent />
