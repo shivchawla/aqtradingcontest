@@ -228,16 +228,14 @@ export class Utils{
 	}
 
 	static isLoggedIn() {
-		// if (this.loggedInUserinfo && this.loggedInUserinfo['token']) {
-		// 	return true;
-		// }else{
-		// 	return false;
-		// }
-		return true;
+		if (this.loggedInUserinfo && this.loggedInUserinfo['token']) {
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	static getAuthToken(){
-		return "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YjA1MWI1YTBlOTVjYjE0NDcwYWJlODEiLCJlbWFpbCI6InNhcnUuc3JleW9AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiU2F1cmF2IiwibGFzdE5hbWUiOiJCaXN3YXMiLCJwYXNzd29yZCI6IiQyYSQxMCR0MzhNQmpGOGtkNTVGS21Tcjc0T3ZlUFNTaWltQ0VieVR3YnAzZnlpS01xUndJZmdEZE1UcSIsImNvZGUiOiJkNjU1OWNlMS1iYWE1LTRlYmYtYjYwYi1iODQzY2UxZjQzYTciLCJjcmVhdGVkRGF0ZSI6IjIwMTgtMDUtMjNUMDc6NDI6MTguMzE0WiIsIl9fdiI6MCwiaXNVc2VyRnJvbUdvb2dsZSI6ZmFsc2UsImVtYWlscHJlZmVyZW5jZSI6eyJ3ZWVrbHlfcGVyZm9ybWFuY2VfZGlnZXN0Ijp0cnVlLCJkYWlseV9wZXJmb3JtYW5jZV9kaWdlc3QiOnRydWV9LCJhY3RpdmUiOnRydWUsImlhdCI6MTUzNzg1MzQ0MywiZXhwIjoxNTM4MDI2MjQzLCJpc3MiOiJhaW1zcXVhbnQiLCJqdGkiOiJqd3RpZCJ9.MmGaDZhV_tawc--IvpBkUktSQyQan5BPT6t2g3isVAQ5RuMomqzd6XVE-jCKeNJi8ExoT4QxXyXzKkK8R_x8_Ih0gyjgL2Btda94kcvgRjTknuggPoabhUqiVNn3PXZgmt2cabm9eN9-2E_FL1qzmUIQJ4z_Zfl9yc-McnaAKVdlrjGPXNWhTbejYBJl5lKhJnBEiKPYkO-_OWaAOHu50OGu3BUTTq4vw-GuVWeUV1LNdORvDhvqjLoPRjHtdqs7PnsFuVbCVyyhpG-p4Y43phBc5Tur3MxC_Oo6GKOgK2WMoTQ2YCB_XQpqDrmVe71H8SXiK4aWcVRwuxxjbNnt8A";
 		this.loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']){
 			return this.loggedInUserinfo['token'];
@@ -254,9 +252,7 @@ export class Utils{
 		if (this.isLoggedIn()){
 			headersLocal['aimsquant-token'] = this.getAuthToken();
 		}
-		headersLocal = {
-			'aimsquant-token': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YjA1MWI1YTBlOTVjYjE0NDcwYWJlODEiLCJlbWFpbCI6InNhcnUuc3JleW9AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiU2F1cmF2IiwibGFzdE5hbWUiOiJCaXN3YXMiLCJwYXNzd29yZCI6IiQyYSQxMCR0MzhNQmpGOGtkNTVGS21Tcjc0T3ZlUFNTaWltQ0VieVR3YnAzZnlpS01xUndJZmdEZE1UcSIsImNvZGUiOiJkNjU1OWNlMS1iYWE1LTRlYmYtYjYwYi1iODQzY2UxZjQzYTciLCJjcmVhdGVkRGF0ZSI6IjIwMTgtMDUtMjNUMDc6NDI6MTguMzE0WiIsIl9fdiI6MCwiaXNVc2VyRnJvbUdvb2dsZSI6ZmFsc2UsImVtYWlscHJlZmVyZW5jZSI6eyJ3ZWVrbHlfcGVyZm9ybWFuY2VfZGlnZXN0Ijp0cnVlLCJkYWlseV9wZXJmb3JtYW5jZV9kaWdlc3QiOnRydWV9LCJhY3RpdmUiOnRydWUsImlhdCI6MTUzNzg1ODY4NSwiZXhwIjoxNTM4MDMxNDg1LCJpc3MiOiJhaW1zcXVhbnQiLCJqdGkiOiJqd3RpZCJ9.U9q0MeRPvVrvfyPcsZoP0M2KfgEZkvN0XHrEHlxqKYP0lpq0au2xpIMxzZRVrbFUggnbCzC3ydvddTVvm-5bgIDR3gI4ahX8r7E7ekd9zTty-ySTNX9dgEN-j_QpdWCgOcE0GqqMyCkGMBHBDDY1vKPU4HXT_yR-ikwveyxW4z74ybYj0mgfc6GYyOLMT_MbZ-7lEM9opMemU8whS_mDVUJNWRl4P2wGx_0Jyk3dKuJRaXTzmAgT3HyTfwfv4EQyhLLwgbxZwRCeFxzo4QF5rlqYHb6x14BU5gITp2Om1Zo9lqviW1d_sICVAuBcbkUTjyyAudM4pMPYLC2Vk5gYdw'
-		};
+		
 		return headersLocal;
 	}
 
