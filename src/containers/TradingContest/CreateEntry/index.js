@@ -6,6 +6,7 @@ import Media from 'react-media';
 import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -15,9 +16,10 @@ import {SearchStocks} from '../SearchStocks';
 import StockList from './components/StockList';
 import StockPreviewList from './components/StockPreviewList';
 import StockTypeRadio from './components/StockTypeRadio';
-import SelectionMetrics from './components/SelectionMetrics';
+import EntryDetailBottomSheet from './components/EntryDetailBottomSheet';
 import TimerComponent from '../Misc/TimerComponent';
 import LoaderComponent from '../Misc/Loader';
+import {DailyContestCreate, DailyContestCreateMeta} from '../metas';
 import {verticalBox, primaryColor, secondaryColor} from '../../../constants';
 import {handleCreateAjaxError} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getTotalInvestment} from '../utils';
@@ -30,7 +32,8 @@ class CreateEntry extends React.Component {
         this.searchStockComponent = null;
         this.state = {
             bottomSheetOpenStatus: false,
-            pnlStats: {}, // PnL stats for the selected entry obtained due to date change
+            pnlStats: {}, // Daily PnL stats for the selected entry obtained due to date change
+            weeklyPnlStats: {}, // Weekly PnL stats
             positions: [], // Positions to buy
             sellPositions: [], // Positions to sell
             previousPositions: [], // contains the positions for the previous entry in the current contest for buy,
@@ -38,15 +41,17 @@ class CreateEntry extends React.Component {
             showPreviousPositions: false, // Whether to show the previous positions for the current contest,
             contestActive: false, // Checks whether the contest is active,
             contestFound: true, //Checks whether contest exists for the data
-            selectedDate: props.selectedDate || moment(), //.format(dateFormat), // Date that's selected from the DatePicker
-            contestStartDate: moment(), //.format(dateFormat),
-            contestEndDate: moment(), //.format(dateFormat),
+            selectedDate: props.selectedDate || moment(), // Date that's selected from the DatePicker
+            contestStartDate: moment(),
+            contestEndDate: moment(),
+            contestResultDate: moment(),
             noEntryFound: false,
             loading: false,
             listView: 'all',
             submissionLoading: false,
             snackbarOpenStatus: false,
-            snackbarMessage: 'N/A'
+            snackbarMessage: 'N/A',
+            entryDetailBottomSheetOpenStatus: false
         };
     }
 
@@ -253,13 +258,19 @@ class CreateEntry extends React.Component {
         getContestEntry(requiredDate.format(dateFormat), this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
             const positions = _.get(response, 'data.positions', []);
-            const pnlStats = _.get(response, 'data.pnlStats', {});
+            const pnlStats = _.get(response, 'data.pnlStats.daily', {});
+            const weeklyPnlStats = _.get(response, 'data.pnlStats.weekly', {});
             const buyPositions = positions.filter(position => _.get(position, 'investment', 10) >= 0);
             const sellPositions = positions.filter(position => _.get(position, 'investment', 10) < 0);
             const processedBuyPositions = await convertBackendPositions(buyPositions);
             const processedSellPositions = await convertBackendPositions(sellPositions);
             
-            resolve({positions: processedBuyPositions, sellPositions: processedSellPositions, pnlStats});
+            resolve({
+                positions: processedBuyPositions, 
+                sellPositions: processedSellPositions, 
+                pnlStats,
+                weeklyPnlStats
+            });
         })
     })
 
@@ -272,13 +283,15 @@ class CreateEntry extends React.Component {
         return getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
             const contestActive = _.get(response.data, 'active', false);
-            const contestStartDate = moment(_.get(response.data, 'startDate', null)); //.format(`${dateFormat}`);
-            const contestEndDate = moment(_.get(response.data, 'endDate', null)); //.format(dateFormat);
+            const contestStartDate = moment(_.get(response.data, 'startDate', null)); 
+            const contestEndDate = moment(_.get(response.data, 'endDate', null));
+            const contestResultDate = moment(_.get(response.data, 'resultDate', null));
             
             resolve({
                 contestActive,
                 contestStartDate, 
                 contestEndDate,
+                contestResultDate
             });
 
         });
@@ -367,7 +380,7 @@ class CreateEntry extends React.Component {
             })
         })
         .then(contestEntryData => {
-            const {positions = [], sellPositions = [], pnlStats} = contestEntryData;
+            const {positions = [], sellPositions = [], pnlStats, weeklyPnlStats} = contestEntryData;
 
             return this.setState({
                 noEntryFound: positions.length === 0,
@@ -376,7 +389,8 @@ class CreateEntry extends React.Component {
                 previousPositions: positions,
                 previousSellPositions: sellPositions,
                 showPreviousPositions: true,
-                pnlStats
+                pnlStats,
+                weeklyPnlStats
             });
         })
     }
@@ -408,6 +422,10 @@ class CreateEntry extends React.Component {
         return false;
     }
 
+    toggleEntryDetailBottomSheet = () => {
+        this.setState({entryDetailBottomSheetOpenStatus: !this.state.entryDetailBottomSheetOpenStatus});
+    }
+
     componentWillMount = () => {
         this.handleContestDateChange(this.state.selectedDate);
     }
@@ -429,7 +447,6 @@ class CreateEntry extends React.Component {
             
             ?   this.renderEmptySelections()
             :   <Grid item xs={12}>
-                    {contestSubmissionOver && <SelectionMetrics {...this.state.pnlStats} />}
                     <StockTypeRadio 
                         onChange={this.handleStockTypeRadioChange} 
                         defaultView={this.state.listView}
@@ -439,30 +456,51 @@ class CreateEntry extends React.Component {
                     />
                     {this.renderStockList()}
                     {
-                        !contestSubmissionOver &&
-                        <div style={{display: 'flex', width: '95%', padding:'0 10px', position: 'fixed', zIndex:2, bottom: '20px', justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'}}>
-                            <Button style={{...fabButtonStyle, ...addStocksStyle}} size='small' variant="extendedFab" aria-label="Delete" onClick={this.toggleSearchStockBottomSheet}>
-                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                UPDATE
-                            </Button>
-                            {
-                                !this.state.showPreviousPositions &&
-                                <div>
-                                    <Button 
-                                            style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                            size='small' 
-                                            variant="extendedFab" 
-                                            aria-label="Edit" 
-                                            onClick={this.submitPositions}
-                                            disabled={this.state.submissionLoading}
-                                    >
-                                        <Icon style={{marginRight: '5px'}}>update</Icon>
-                                        SUBMIT
-                                        {this.state.submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
-                                    </Button>
-                                </div>
-                            }
-                        </div>
+                        contestSubmissionOver 
+                        ?   <div style={{...fabContainerStyle, justifyContent: 'center'}}>
+                                <Button 
+                                        style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                        size='small' variant="extendedFab" 
+                                        aria-label="Delete" 
+                                        onClick={this.toggleEntryDetailBottomSheet}
+                                >
+                                    <Icon style={{marginRight: '5px'}}>timeline</Icon>
+                                    Performance
+                                </Button>
+                            </div>
+                        :   <div 
+                                    style={{
+                                        ...fabContainerStyle,
+                                        justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'
+                                    }}
+                            >
+                                <Button 
+                                        style={{...fabButtonStyle, ...addStocksStyle}} 
+                                        size='small' variant="extendedFab" 
+                                        aria-label="Delete" 
+                                        onClick={this.toggleSearchStockBottomSheet}
+                                >
+                                    <Icon style={{marginRight: '5px'}}>add_circle</Icon>
+                                    UPDATE
+                                </Button>
+                                {
+                                    !this.state.showPreviousPositions &&
+                                    <div>
+                                        <Button 
+                                                style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                                size='small' 
+                                                variant="extendedFab" 
+                                                aria-label="Edit" 
+                                                onClick={this.submitPositions}
+                                                disabled={this.state.submissionLoading}
+                                        >
+                                            <Icon style={{marginRight: '5px'}}>update</Icon>
+                                            SUBMIT
+                                            {this.state.submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
+                                        </Button>
+                                    </div>
+                                }
+                            </div>
                     }
                 </Grid>
             
@@ -472,19 +510,29 @@ class CreateEntry extends React.Component {
 
     render() {
         return (
-            <SGrid container>
-                <SnackbarComponent 
-                    openStatus={this.state.snackbarOpenStatus} 
-                    message={this.state.snackbarMessage}
-                    onClose={() => this.setState({snackbarOpenStatus: false})}
-                />
-                {this.renderSearchStocksBottomSheet()}
-                {
-                    this.state.loading
-                    ? <LoaderComponent />
-                    : this.renderPortfolioPicksDetail()
-                }
-            </SGrid>
+            <React.Fragment>
+                <DailyContestCreateMeta />
+                <SGrid container>
+                    <EntryDetailBottomSheet 
+                        open={this.state.entryDetailBottomSheetOpenStatus}
+                        toggle={this.toggleEntryDetailBottomSheet}
+                        dailyMetric={this.state.pnlStats}
+                        weeklyMetric={this.state.weeklyPnlStats}
+                        resultDate={this.state.contestResultDate}
+                    />
+                    <SnackbarComponent 
+                        openStatus={this.state.snackbarOpenStatus} 
+                        message={this.state.snackbarMessage}
+                        onClose={() => this.setState({snackbarOpenStatus: false})}
+                    />
+                    {this.renderSearchStocksBottomSheet()}
+                    {
+                        this.state.loading
+                        ? <LoaderComponent />
+                        : this.renderPortfolioPicksDetail()
+                    }
+                </SGrid>
+            </React.Fragment>
         );
     }
 }
@@ -532,4 +580,13 @@ const addStocksStyle = {
 const submitButtonStyle = {
     backgroundColor: primaryColor,
     color: '#fff'
-}
+};
+
+const fabContainerStyle = {
+    display: 'flex', 
+    width: '95%', 
+    padding:'0 10px', 
+    position: 'fixed', 
+    zIndex:2, 
+    bottom: '20px', 
+};

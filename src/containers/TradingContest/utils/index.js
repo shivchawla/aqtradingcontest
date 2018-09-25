@@ -42,7 +42,7 @@ export const submitEntry = async (positions, isUpdate = false) => {
 
 export const getContestEntry = (date = null, history, currentUrl, errorCallback = undefined) => {
     const requiredDate = date === null ? moment().format(dateFormat) : date;
-    const url = `${requestUrl}/dailycontest/entry?date=${requiredDate}`;
+    const url = `${requestUrl}/dailycontest/entry?date=${requiredDate}&populatePnl=true`;
 
     return fetchAjax(url, history, currentUrl, undefined, errorCallback)
 }

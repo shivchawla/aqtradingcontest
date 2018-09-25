@@ -4,3 +4,13 @@ export const screenSize = {
     mobile: '600px',
     desktop: '601px'
 };
+
+export const bottomSheetStyle = {
+    position: 'fixed',
+    top:0,
+    backgroundColor: '#fff',
+    zIndex: '2000',
+    overflow: 'hidden',
+    overflowY: 'scroll',
+    height: '100vh'
+}

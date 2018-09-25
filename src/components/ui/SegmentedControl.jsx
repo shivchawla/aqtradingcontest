@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import {horizontalBox, primaryColor} from '../../../constants';
+import {horizontalBox, primaryColor} from '../../constants';
 
 const styles = {
     tabRoot: {
@@ -28,24 +28,23 @@ class TimelineSegment extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedView: 'daily'
+            selectedView: 0
         }
     }
 
-    handleChange = (e, selectedValue) => {
-        const value = selectedValue === 0 ? 'daily' : 'weekly';
+    handleChange = (e, value) => {
         this.setState({selectedView: value});
         this.props.onChange && this.props.onChange(value);
     }
 
     render() {
-        const { classes } = this.props;
+        const {classes, labels = ['Segment 1', 'Segment 2']} = this.props;
 
         return (
             <Grid container style={{...horizontalBox, justifyContent: 'center'}}>
                 <Paper style={{margin: '10px 0', overflow: 'hidden', transform: 'scale(0.7, 0.7)'}}>
                     <Tabs
-                            value={this.state.selectedView === 'daily' ? 0 : 1}
+                            value={this.state.selectedView}
                             onChange={this.handleChange}
                             indicatorColor="primary"
                             textColor="primary"
@@ -53,11 +52,11 @@ class TimelineSegment extends React.Component {
                             classes={{indicator: classes.tabsIndicator}}
                     >
                         <Tab 
-                            label="Daily" 
+                            label={labels[0]} 
                             classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
                         />
                         <Tab 
-                            label="Weekly" 
+                            label={labels[1]} 
                             classes={{ root: classes.tabRoot, selected: classes.tabSelected }}
                         />
                     </Tabs>

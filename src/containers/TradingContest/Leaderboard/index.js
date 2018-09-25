@@ -10,6 +10,7 @@ import TimerComponent from '../Misc/TimerComponent';
 import ParticipantList from './ParticipantList';
 import LoaderComponent from '../Misc/Loader';
 import {verticalBox, horizontalBox} from '../../../constants';
+import {DailyContestCreateMeta} from '../metas';
 import {getContestSummary, processParticipants} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -124,7 +125,7 @@ class Participants extends React.Component {
                     <Grid item xs={12} style={listContainer}>
                         {winners.length == 0 
                             ?    <ContestNotPresentView /> 
-                            :    <ParticipantList winners={this.state.timelineView === 'daily' ? this.state.winners : this.state.winnersWeekly}/>
+                            :    <ParticipantList winners={this.state.timelineView === 'daily' ? winners : winnersWeekly}/>
                         }
                     </Grid>
                 }
@@ -138,12 +139,22 @@ class Participants extends React.Component {
     }
 
     render() {
+        const {winners = [], winnersWeekly = []} = this.state;
+        const emptyList = winners.length === 0 && winnersWeekly.length ===0;
+
         return (
             <Grid container style={leaderboardDetailStyle}>
-                <Grid item xs={12}>
-                     <TimelineSegment onChange={this.handleTimelineChange}/>
-                </Grid>
-                <Grid item xs={12}>
+                <DailyContestCreateMeta />
+                {
+                    this.state.winners.length > 0 &&
+                    <Grid item xs={12}>
+                        <TimelineSegment onChange={this.handleTimelineChange}/>
+                    </Grid>
+                }
+                <Grid 
+                        item xs={12} 
+                        style={{...verticalBox, justifyContent: emptyList ? 'center' : 'flex-start'}}
+                >
                     {
                         !this.state.loading
                         ? this.renderWinnerList()
@@ -159,7 +170,7 @@ export default withRouter(Participants);
 
 const ContestNotPresentView = () => {
     return (
-        <Grid container style={{marginTop: '-100px'}}>
+        <Grid container>
             <Grid item xs={12} style={verticalBox}>
                 <ContestNotAvailableText>No contest avaiable for selected date</ContestNotAvailableText>
             </Grid>

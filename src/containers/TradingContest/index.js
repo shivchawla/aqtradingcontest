@@ -18,7 +18,7 @@ import {primaryColor} from '../../constants';
 
 export default class TradingContest extends React.Component {
     state = {
-        selectedTab: 1,
+        selectedTab: 0,
         selectedDate: moment(),
         bottomSheetOpen: false
     };
@@ -83,6 +83,7 @@ export default class TradingContest extends React.Component {
 
                         <Grid item xs={12}>
                             <DateComponent 
+                                selectedDate={this.state.selectedDate}
                                 color='grey'
                                 onDateChange={this.updateDate}
                             />

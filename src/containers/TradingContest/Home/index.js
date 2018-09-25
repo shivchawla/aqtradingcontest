@@ -8,6 +8,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Carousel from 'nuka-carousel';
 import {primaryColor, secondaryColor, verticalBox} from '../../../constants';
+import {DailyContestHomeMeta} from '../metas';
 import {howItWorksContents, prizeText, requirements, scoringText, faqs} from '../constants/dailycontestconstants';
 import AqLayout from '../../../components/ui/AqLayout';
 
@@ -194,6 +195,7 @@ export default class ContestHome extends React.Component {
                     backgroundColor: '#00b79c'
                 }}
             >
+                <DailyContestHomeMeta />
                 <Grid container style={{height: '100%', paddingBottom: '50px', width: '100%'}}>
                     {this.renderTopSection()} 
                     {this.renderTabsSection()}
