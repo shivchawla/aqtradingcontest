@@ -18,7 +18,7 @@ import {primaryColor} from '../../constants';
 
 export default class TradingContest extends React.Component {
     state = {
-        selectedTab: 0,
+        selectedTab: 1,
         selectedDate: moment(),
         bottomSheetOpen: false
     };
