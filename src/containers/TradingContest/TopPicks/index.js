@@ -20,12 +20,14 @@ class Winners extends React.Component {
         this.state = {
             selectedDate: props.selectedDate || moment(),
             winnerStocks: [],
+            winnerStocksWeekly: [],
             contestActive: false,
-            startDate: moment(), //.format(dateFormat),
-            endDate: moment().add(1, 'days'), //.format(dateFormat),
-            resultDate: moment().add(1, 'days'), //.format(dateFormat),
+            startDate: moment(),
+            endDate: moment().add(1, 'days'),
+            resultDate: moment().add(1, 'days'),
             loading: false,
-            contestEnded: false
+            contestEnded: false,
+            timelineView: 'daily'
         };
     }
 
@@ -44,14 +46,16 @@ class Winners extends React.Component {
         getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
         .then(async response => {
             const topStocks = _.get(response.data, 'topStocks', []);
+            const topStocksWeekly = _.get(response.data, 'topStocks_weekly', []);
             const contestActive = _.get(response.data, 'active', false);
             const startDate = moment(_.get(response.data, 'startDate', null));
             const endDate = moment(_.get(response.data, 'endDate', null));
-            const resultDate = moment(_.get(response.data, 'resultDate', null));//.format(dateFormat);
+            const resultDate = moment(_.get(response.data, 'resultDate', null));
             const contestEnded = moment().isAfter(endDate);
             
             this.setState({
                 winnerStocks: topStocks.map((item, index) => {item.rank = index+1; return item;}), 
+                winnerStocksWeekly: topStocksWeekly.map((item, index) => {item.rank = index+1; return item;}),
                 contestActive,
                 startDate, 
                 endDate,
@@ -75,7 +79,9 @@ class Winners extends React.Component {
         const contestEnded = moment().isAfter(moment(this.state.endDate));
         const contestRunning = moment().isSameOrAfter(moment(this.state.startDate)) && !contestEnded;
         const winnerStocks = this.state.winnerStocks;
+        const winnerStocksWeekly = this.state.winnerStocksWeekly;
         const contestActive  = this.state.contestActive;
+
         return (
             <SGrid container>
                 <Grid 
@@ -99,22 +105,19 @@ class Winners extends React.Component {
                     }
                 </Grid>
                 
-                {!contestActive &&
+                {
+                    !contestActive &&
                     <Grid item xs={12} style={{padding: '10px'}}>
                         {winnerStocks.length == 0 
                             ?    <ContestNotPresentView /> 
-                            :    <WinnerList winners={this.state.winnerStocks}/>
+                            :    <WinnerList 
+                                    winners={this.state.timelineView === 'daily' ? this.state.winnerStocks : this.state.winnerStocksWeekly}
+                                />
                         }
                     </Grid>
                 }
 
             </SGrid>
-        );
-    }
-
-    renderHeader = () => {
-        return (
-            <GeneralHeader contestEnded={this.state.contestEnded}/>
         );
     }
 
@@ -126,13 +129,15 @@ class Winners extends React.Component {
         return false;
     }
 
+    handleTimeLineChange = view => {
+        this.setState({timelineView: view});
+    }
+
     render() {
         return (
             <SGrid container style={topPicksDetailStyle}>
-                
                 <Grid item xs={12}>
-                    {this.renderHeader()}
-                    <TimelineSegment />
+                    <TimelineSegment onChange={this.handleTimeLineChange}/>
                 </Grid>
                 <Grid item xs={12}>
                     {
@@ -155,20 +160,6 @@ const ContestNotPresentView = () => {
                 <ContestNotAvailableText>No contest avaiable for selected date</ContestNotAvailableText>
             </Grid>
         </Grid>
-    );
-}
-
-const GeneralHeader = ({contestEnded = true}) => {
-    return (
-        <div style={{...verticalBox, padding: '10px 10px 0px 10px', color:'grey', height:'50px', alignItems:'start'}}>
-            <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
-                <WinnerHeader>TOP PICKS</WinnerHeader>
-                <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>{contestEnded ? 'lock' : 'supervised_user_circle'}</Icon>
-            </div>
-            <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
-                Most voted stocks
-            </WinnerSubHeader>
-        </div>
     );
 }
 

@@ -62,7 +62,6 @@ class AqLayout extends React.Component {
                         </Typography>
                         {this.props.extraAction}
                     </Toolbar>
-                    {/*this.props.appBar*/}
                 </AppBar>
                 
                 {this.props.children}

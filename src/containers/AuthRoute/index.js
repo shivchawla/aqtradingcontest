@@ -7,6 +7,7 @@ export default class AuthRoute extends React.Component {
         const {path = '/', component: Component} = this.props;
         return (
             <Route
+                exact={true}
                 path={path} 
                 render={()=>(
                     Utils.isLoggedIn() ? <Component/> : <Redirect push to='/login' />

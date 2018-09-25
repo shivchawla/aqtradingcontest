@@ -12,11 +12,9 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 
 import {Utils} from '../../utils';
-import {primaryColor, horizontalBox} from '../../constants';
+import {horizontalBox} from '../../constants';
 import logo from "../../assets/logo-advq-new.png";
 
 
@@ -30,7 +28,7 @@ class NavigationDrawerImpl extends React.Component {
     }
 
     routeUrl = (url, href) => {
-        href ? window.location = url : this.props.history.push(url);
+        href ? window.location.href = url : this.props.history.push(url);
     }
 
     render() {
@@ -39,7 +37,7 @@ class NavigationDrawerImpl extends React.Component {
         return (
             <Drawer open={open} onClose={() => {onToggle && onToggle()}}>
                 
-                <div onClick={() => {window.location='/home'}} 
+                <div onClick={() => {window.location.href='/home'}} 
                     style={{...horizontalBox, height:'56px', padding:'0 16px'}}>
                     <img src={logo} style={{height: '25px'}}/>
                     <div style={{cursor: 'pointer', marginLeft: '10px', marginTop:'2px'}}>
@@ -51,7 +49,7 @@ class NavigationDrawerImpl extends React.Component {
                 </div>
                 
                 <div tabIndex={0} role="button">
-                    <List component='nav' style={{width: '250px'}}>
+                    <List component='nav' style={{width: '300px'}}>
                         {
                             menuCategories.map((item, index) => (
                                 <ListItemComponent 
@@ -112,29 +110,29 @@ class ListItemComponent extends React.Component {
         if (children) {
             return (
                 <div>
-                <ListItem button onClick={this.handleClick}>
-                    {icon &&
-                        <ListItemIcon>
-                            <Icon style={{color: titleColor}}>{icon}</Icon>
-                        </ListItemIcon>
-                    }
-                    <ListItemText
-                        style={{padding:'0px'}}
-                        disableTypography
-                        primary={<Typography type="subheading" style={{textStyle}}>{name}</Typography>}
-                      />
-                    {/*<ListItemText primary={name} className={{primary: classes.text}}/>*/}
-                    
-                    {this.state.open ? <ExpandLess /> : <ExpandMore />}
-                </ListItem>
+                    <ListItem button onClick={this.handleClick}>
+                        {icon &&
+                            <ListItemIcon>
+                                <Icon style={{color: titleColor}}>{icon}</Icon>
+                            </ListItemIcon>
+                        }
+                        <ListItemText
+                            style={{padding:'0px'}}
+                            disableTypography
+                            primary={<Typography type="subheading" style={{textStyle}}>{name}</Typography>}
+                        />
+                        {/*<ListItemText primary={name} className={{primary: classes.text}}/>*/}
                         
-                <Collapse in={this.state.open}>
-                    {
-                        children.map((item, index) => (
-                            <ListItemComponent item={item} depth={depth+1} onClick={onClick}/>
-                        ))
-                    }   
-                </Collapse>
+                        {this.state.open ? <ExpandLess /> : <ExpandMore />}
+                    </ListItem>
+                            
+                    <Collapse in={this.state.open}>
+                        {
+                            children.map((item, index) => (
+                                <ListItemComponent item={item} depth={depth+1} onClick={onClick}/>
+                            ))
+                        }   
+                    </Collapse>
                 </div>
 
             );
@@ -198,7 +196,6 @@ const menuCategories = [
         name: "Stock Picks Contest", icon:'bubble_chart', children: [
             {name: "Contest Home", url: '/dailycontest/home', icon:'explore'},
             {name: "Top Picks", url: '/dailycontest', icon: 'grade_outline'},
-            {name: "How", url: '/dailycontest/how', icon: 'help_outline'},
         ]
     },
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import ParticipantListItem from './ParticipantListItem';
@@ -11,6 +12,14 @@ export default class ParticipantList extends React.Component {
 
         return false;
     }
+
+    renderWinners = () => {
+        const {winners = []} = this.props;
+
+        return winners.map((winner, index) => (
+            <ParticipantListItem key={index} {...winner} />
+        ));
+    }
     
     render() {
         const {winners = []} = this.props;
@@ -19,12 +28,18 @@ export default class ParticipantList extends React.Component {
             <Grid container style={{backgroundColor: '#fff'}}>
                 <Grid item xs={12}>
                     {
-                        winners.map(winner => (
-                            <ParticipantListItem {...winner} />
-                        ))
+                        winners.length === 0
+                        ? <Error>No Data Found</Error>
+                        : this.renderWinners()
                     }
                 </Grid>
             </Grid>
         );
     }
 }
+
+const Error = styled.h3`
+    color: #717171;
+    font-weight: 500;
+    font-size: 15px;
+`;

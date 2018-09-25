@@ -60,7 +60,7 @@ export default class ContestHome extends React.Component {
                         </h3>
   
                         <SButton 
-                                onClick={() => this.props.history.push('/dailycontest/how')}
+                                onClick={() => this.props.history.push('/dailycontest/create')}
                                 variant="extendedFab"
                                 style={{marginTop: '20px', backgroundColor: secondaryColor, borderRadius:'5px', color: '#fff'}}
                         >

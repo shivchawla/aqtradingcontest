@@ -19,12 +19,14 @@ class Participants extends React.Component {
         super(props);
         this.state = {
             contestActive: false,
-            startDate: moment(), //.format(dateFormat),
-            endDate: moment().add(1, 'days'), //.format(dateFormat),
-            resultDate: moment().add(1, 'days'), //.format(dateFormat),
+            startDate: moment(),
+            endDate: moment().add(1, 'days'),
+            resultDate: moment().add(1, 'days'),
             selectedDate: props.selectedDate || moment(),
             winners: [],
-            loading: false
+            winnersWeekly: [],
+            loading: false,
+            timelineView: 'daily'
         };
     }
 
@@ -46,15 +48,24 @@ class Participants extends React.Component {
             const contestActive = _.get(response.data, 'active', false);
             const startDate = moment(_.get(response.data, 'startDate', null));
             const endDate = moment(_.get(response.data, 'endDate', null));
-            const resultDate = moment(_.get(response.data, 'resultDate', null));//.format(dateFormat);
-            //const processedParticipants = await processWinnerStocks(winnerParticipants);
+            const resultDate = moment(_.get(response.data, 'resultDate', null));      
             const todayDate = moment().format(dateFormat);
-            const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));
-        
+            const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));  
             const winnerParticipants = _.get(response.data, 'winners', []);
+            const winnerParticipantsWeekly = _.get(response.data, 'winners_weekly', []);
+            console.log('Winner Participants', winnerParticipants);
+            console.log('Winner Participants Weekly', winnerParticipantsWeekly);
             const processedParticipants = await processParticipants(winnerParticipants);
+            const processedParticipantsWeekly = await processParticipants(winnerParticipantsWeekly);
 
-            this.setState({contestActive, startDate, endDate, resultDate, winners: processedParticipants});
+            this.setState({
+                contestActive, 
+                startDate, 
+                endDate, 
+                resultDate, 
+                winners: processedParticipants,
+                winnersWeekly: processedParticipantsWeekly
+            });
         })
         .finally(() => {
             this.setState({loading: false});
@@ -86,7 +97,8 @@ class Participants extends React.Component {
     renderWinnerList() {
         const contestEnded = moment().isAfter(this.state.endDate);
         const contestRunning = moment().isSameOrAfter(this.state.startDate) && !contestEnded;
-        const winners = this.state.winners || [];
+        const winners = this.state.winners;
+        const winnersWeekly = this.state.winnersWeekly;
         const contestActive = this.state.contestActive;
 
         return(
@@ -112,7 +124,7 @@ class Participants extends React.Component {
                     <Grid item xs={12} style={listContainer}>
                         {winners.length == 0 
                             ?    <ContestNotPresentView /> 
-                            :    <ParticipantList winners={this.state.winners}/>
+                            :    <ParticipantList winners={this.state.timelineView === 'daily' ? this.state.winners : this.state.winnersWeekly}/>
                         }
                     </Grid>
                 }
@@ -121,20 +133,16 @@ class Participants extends React.Component {
                 
     } 
 
+    handleTimelineChange = view => {
+        this.setState({timelineView: view});
+    }
+
     render() {
-        const contestEnded = moment().isAfter(moment(this.state.endDate));
-        const contestRunning = moment().isSameOrAfter(moment(this.state.startDate)) && !contestEnded;
-        const winners = this.state.winners || [];
-        const contestActive = this.state.contestActive;
-
         return (
-
             <Grid container style={leaderboardDetailStyle}>
                 <Grid item xs={12}>
-                     <LeaderBoardHeader />
-                     <TimelineSegment />
+                     <TimelineSegment onChange={this.handleTimelineChange}/>
                 </Grid>
-
                 <Grid item xs={12}>
                     {
                         !this.state.loading
@@ -191,40 +199,6 @@ const listContainer = {
     padding: '0 10px',
     backgroundColor: '#fff'
 }
-
-const LeaderboardSubHeader = styled.h3`
-    font-size: 14px;
-    font-weight: 300;
-    color: grey;
-    margin-top: 5px;
-`;
-
-const LeaderBoardHeader = () => {
-    return (
-        <div style={{...verticalBox, padding: '10px 10px 0px 10px', color:'grey', height:'50px', alignItems:'start'}}>
-            <div style={{...horizontalBox, width: '100%', justifyContent: 'flex-start'}}>
-                <WinnerHeader>LEADERBOARD</WinnerHeader>
-                <Icon style={{color: '#FFEE5A', marginLeft: '5px'}}>supervised_user_circle</Icon>
-            </div>
-            <WinnerSubHeader style={{textAlign: 'start', marginTop: '2px'}}>
-                Top Stock Pickers
-            </WinnerSubHeader>
-        </div>
-    );
-}
-
-const WinnerHeader = styled.h3`
-    font-size: 18px;
-    font-weight: 400;
-    color: grey;
-`;
-
-const WinnerSubHeader = styled.h3`
-    font-size: 14px;
-    font-weight: 400;
-    color: grey;
-    margin-top: 5px;
-`;
 
 const ContestNotAvailableText = styled.h3`
     font-size: 18px;
