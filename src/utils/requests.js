@@ -47,11 +47,11 @@ export const handleGetError = (error, history, redirectUrl) => {
             if (error.response.status === 400 || 
                         (error.response.status === 403 && _.get(error, 'response.data.code', '') !== 'server_error')
                 ) {
-                history.push('/forbiddenAccess');
+                window.location.href = '/forbiddenAccess';
             }
         }
     } else {
-        history.push('/login');
+        window.location.href = '/login';
     }
     return error;
 }
@@ -70,7 +70,7 @@ export const handleCreateAjaxError = (error, history, redirectUrl, disableNotifi
             !disableNotification && openNotification('error', 'Error', errorMessage);
         }
     } else {
-        history.push('/login');
+        window.location.href = '/login';
     }
     return error;
 }
