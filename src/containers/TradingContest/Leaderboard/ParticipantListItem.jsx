@@ -15,7 +15,7 @@ export default class ParticipantListItem extends React.Component {
     }
     
     render() {
-        const {userName = 'Saurav Biswas', cost = 99.5, img = null, totalPnl = -55.1, rank = 5} = this.props;
+        const {userName = 'Saurav Biswas', cost = 99.5, pnl = -55.1, rank = 5, pnlPct = 0, profitFactor}  = this.props;
         const medal = getRankMedal(rank);
 
         return (
@@ -25,9 +25,19 @@ export default class ParticipantListItem extends React.Component {
                 </Grid>
                 <Grid item xs={9} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <Name>{userName}</Name>
-                    <div style={horizontalBox}>
-                        <SecondaryText>Total PnL</SecondaryText>
-                        <SecondaryText color={metricColor.negative} style={{marginLeft: '5px'}}>₹{(totalPnl * 1000).toFixed(2)}</SecondaryText>
+                    <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
+                        <SecondaryText color={metricColor.negative} style={{marginLeft: '5px'}}>
+                            ₹{(pnl * 1000).toFixed(2)}
+                            <p style={labelStyle}>PnL</p>
+                        </SecondaryText>
+                        <SecondaryText color={metricColor.negative} style={{marginLeft: '5px'}}>
+                            ₹{(pnlPct * 100).toFixed(2)}
+                            <p style={labelStyle}>PnL Pct</p>
+                        </SecondaryText>
+                        <SecondaryText style={{marginLeft: '5px'}}>
+                            {(profitFactor).toFixed(2)}
+                            <p style={labelStyle}>Profit Factor</p>
+                        </SecondaryText>
                     </div>
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}}>
@@ -59,7 +69,7 @@ const Name = styled.h3`
 `;
 
 const SecondaryText = styled.h3`
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 300;
     color: ${props => props.color || '#717171'};
 `;
@@ -69,3 +79,9 @@ const Score = styled.h3`
     font-weight: 500;
     color: #717171;
 `;
+
+const labelStyle = {
+    fontSize:'12px',
+    marginTop:'-2px',
+    color: '#444'
+};

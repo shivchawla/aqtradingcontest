@@ -20,7 +20,7 @@ import {Utils} from '../../utils';
 export default class TradingContest extends React.Component {
     createEntryComponent = null;
     state = {
-        selectedTab: 0,
+        selectedTab: 2,
         selectedDate: moment().subtract(1, 'days'),
         bottomSheetOpen: false
     };

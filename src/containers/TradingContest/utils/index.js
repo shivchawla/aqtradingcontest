@@ -98,8 +98,10 @@ export const processParticipants = winnerParticipants => {
     return Promise.map(winnerParticipants, participant => {
         return {
             userName: `${_.get(participant, 'advisor.user.firstName', 'Saurav')} ${_.get(participant, 'advisor.user.lastName', 'Biswas')}`,
-            totalPnl: _.get(participant, 'pnlStats.totalPnl', 0),
-            cost: _.get(participant, 'pnlStats.cost', 0),
+            pnl: _.get(participant, 'pnlStats.total.pnl', 0),
+            pnlPct: _.get(participant, 'pnlStats.total.pnlPct', 0),
+            profitFactor: _.get(participant, 'pnlStats.total.profitFactor', 0),
+            cost: _.get(participant, 'pnlStats.total.cost', 0),
             rank: _.get(participant, 'rank', 5)
         }
     })

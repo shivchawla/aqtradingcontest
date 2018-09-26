@@ -54,8 +54,6 @@ class Participants extends React.Component {
             const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));  
             const winnerParticipants = _.get(response.data, 'winners', []);
             const winnerParticipantsWeekly = _.get(response.data, 'winners_weekly', []);
-            console.log('Winner Participants', winnerParticipants);
-            console.log('Winner Participants Weekly', winnerParticipantsWeekly);
             const processedParticipants = await processParticipants(winnerParticipants);
             const processedParticipantsWeekly = await processParticipants(winnerParticipantsWeekly);
 
@@ -106,6 +104,9 @@ class Participants extends React.Component {
             <SGrid container>
                 <Grid item xs={12} style={{...verticalBox, padding: '0 10px', backgroundColor: '#fff'}}>
                     {
+                        this.state.winners.length > 0 && <TimelineSegment onChange={this.handleTimelineChange}/>
+                    }
+                    {
                         this.state.contestActive 
                             ?   <ContestStartedView 
                                     endDate={
@@ -149,9 +150,6 @@ class Participants extends React.Component {
                         item xs={12} 
                         style={{...verticalBox, justifyContent: emptyList ? 'center' : 'flex-start'}}
                 >
-                    {
-                        this.state.winners.length > 0 && <TimelineSegment onChange={this.handleTimelineChange}/>
-                    }
                     {
                         !this.state.loading
                         ? this.renderWinnerList()
