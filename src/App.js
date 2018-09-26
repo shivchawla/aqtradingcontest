@@ -24,9 +24,9 @@ class App extends Component {
                         render={() => {
                             return (
                                 <Switch>
-                                    <AuthRoute path='/dailycontest/create' component={TradingContest} /> 
-                                    <Route path='/dailycontest/home' component={TradingContestHome} /> 
-                                    <Route path='/dailycontest/how' component={TradingContestHowItWorks} /> 
+                                    <Route exact={true} path='/dailycontest/create' component={TradingContest} /> 
+                                    <Route exact={true} path='/dailycontest/home' component={TradingContestHome} /> 
+                                    <Route exact={true} path='/dailycontest/how' component={TradingContestHowItWorks} /> 
                                 </Switch>
                             );
                         }}

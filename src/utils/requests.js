@@ -52,11 +52,11 @@ export const handleGetError = (error, history, redirectUrl) => {
             if (error.response.status === 400 || 
                         (error.response.status === 403 && _.get(error, 'response.data.code', '') !== 'server_error')
                 ) {
-                window.location.href = '/forbiddenAccess';
+                window.location.assign('/forbiddenAccess');
             }
         }
     } else {
-        window.location.href = '/login';
+        window.location.assign('https://staging.adviceqube.com/login');
     }
     return error;
 }
@@ -75,7 +75,7 @@ export const handleCreateAjaxError = (error, history, redirectUrl, disableNotifi
             !disableNotification && openNotification('error', 'Error', errorMessage);
         }
     } else {
-        window.location.href = '/login';
+        window.location.assign('https://staging.adviceqube.com/login');
     }
     return error;
 }

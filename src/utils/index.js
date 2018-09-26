@@ -141,7 +141,7 @@ export class Utils{
 		}
 		if (history){
 			!redirect && Utils.logoutUser();
-			window.location.href = '/login';
+			window.location.assign('https://staging.adviceqube.com/login');
 		}
 	}
 
@@ -155,7 +155,7 @@ export class Utils{
 						return;
 					}else{
 						this.setShouldUpdateToken(true);
-						window.location.href = '/tokenUpdate?redirectUrl='+encodeURIComponent(fromUrl);
+						window.location.assign(`/tokenUpdate?redirectUrl=${encodeURIComponent(fromUrl)}`);
 						reject(false);
 					}
 				}else{
@@ -506,7 +506,7 @@ export class Utils{
 
 	static checkForInternet (error, history) {
 		if (error.message === 'Network Error') {
-			window.location.href = '/errorPage';
+			window.location.assign('/errorPage');
 		}
 	}
 
@@ -524,7 +524,7 @@ export class Utils{
           this.checkForInternet(error, history);
           if (error.response) {
               if (error.response.status === 400 || error.response.status === 403) {
-                  window.location.href = '/forbiddenAccess';
+                  window.location.assign('/forbiddenAccess');
               }
               this.checkErrorForTokenExpiry(error, history, redirectUrl);
           }
@@ -564,7 +564,7 @@ export const constructErrorMessage = error => {
 
 export const checkForInternet = (error, history) => {
 	if (error.message === 'Network Error') {
-		window.location.href = '/errorPage';
+		window.location.assign('/errorPage');
 	}
 };
 

@@ -15,6 +15,7 @@ import CreateEntry from './CreateEntry';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import {primaryColor} from '../../constants';
+import {Utils} from '../../utils';
 
 export default class TradingContest extends React.Component {
     state = {
@@ -53,6 +54,12 @@ export default class TradingContest extends React.Component {
                 <Icon>contact_support</Icon>
             </IconButton>
         );
+    }
+
+    componentWillMount() {
+        if (!Utils.isLoggedIn()) {
+            window.location.assign('/login');
+        }
     }
 
     render() {
