@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {horizontalBox, verticalBox, nameEllipsisStyle2, metricColor} from '../../../constants';
 import {getRankMedal} from '../utils';
+import {Utils} from '../../../utils';
 
 export default class WinnerListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -19,8 +20,8 @@ export default class WinnerListItem extends React.Component {
         const symbol = _.get(security, 'detail.NSE_ID', null) || security.ticker;
         const name = _.get(security, 'detail.Nse_Name', null) || '';
         
-        const lastPrice = _.get(lastDetail, 'Close', 0.0).toFixed(2);
-        const change = _.get(lastDetail, 'Change', 0.0);
+        const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(lastDetail, 'Close', 0));
+        const change = Utils.formatMoneyValueMaxTwoDecimals(_.get(lastDetail, 'Change', 0));
         const changePct = `(${(_.get(lastDetail, 'ChangePct', 0.0)*100).toFixed(2)}%)`;
         
         const colStyle = {...horizontalBox, justifyContent: 'space-between'};
@@ -37,18 +38,13 @@ export default class WinnerListItem extends React.Component {
                     <Symbol>{symbol}</Symbol>
                     <SecondaryText style={{...nameEllipsisStyle2, textAlign: 'start'}}>{name}</SecondaryText>
                 </Grid>
-                {/*<Grid item xs={5} style={{...verticalBox, justifyContent: 'flex-end'}}>
-                    <Points>{numUsers}<span>users</span></Points>
-                    <SecondaryText>{lastPrice} <span style={{fontSize:'12px', color: changeColor}}>{change} {changePct}</span></SecondaryText>
-                </Grid>*/}
-
                 <Grid item  xs={12} style={{...colStyle, marginTop:'10px'}}>
                     <SecondaryText>
-                        {lastPrice} <p style={labelStyle}>Last Price</p>
+                        ₹{lastPrice} <p style={labelStyle}>Last Price</p>
                     </SecondaryText>
 
                     <SecondaryText>
-                        <span style={{color: changeColor}}>{change} {changePct}</span><p style={labelStyle}>Change</p>
+                        <span style={{color: changeColor}}>₹{change} {changePct}</span><p style={labelStyle}>Change</p>
                     </SecondaryText>
 
                     <SecondaryText>

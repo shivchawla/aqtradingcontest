@@ -2,7 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid'
+import Icon from '@material-ui/core/Icon';
 import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../constants';
+import {Utils} from '../../../../utils';
 
 export default class StockPreviewListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -31,14 +33,19 @@ export default class StockPreviewListItem extends React.Component {
         let change = null, changePct = null;
         if (chg === null) {
             change = lastPrice - avgPrice;
-            changePct = Number(((change / avgPrice) * 100).toFixed(2));
+            changePct = (change / avgPrice) * 100;
         } else {
             change = chg;
-            changePct = Number((chgPct * 100).toFixed(2));
+            changePct = chgPct * 100;
         }
         const colStyle = {...horizontalBox, justifyContent: 'space-between'};
         const changeColor = change > 0 ? metricColor.positive : metricColor.negative;
-        changePct = `(${changePct}%)`;
+        const pointsChange = (type === 'buy' ? 1 : -1) * ((changePct * points) / 100);
+        const changedPoints = Number((points + pointsChange).toFixed(2));
+        const pointsChangeColor = type === 'buy'
+                ? change > 0 ? metricColor.positive : metricColor.negative
+                : change < 0 ? metricColor.positive : metricColor.negative;
+        changePct = `(${changePct.toFixed(2)}%)`;
 
         return (
             <SGrid container style={{padding: '10px'}}>
@@ -47,15 +54,19 @@ export default class StockPreviewListItem extends React.Component {
                         {symbol} 
                         <span style={{backgroundColor: isBuy ? 'green' : 'red', color:'#fff', padding:'1px 2px', fontSize:'8px', marginLeft:'5px'}}>{direction}</span>
                     </Symbol>
-
-                    <SecondayText style={{fontSize: '20px'}}>{points}K</SecondayText>
+                    <div style={{...horizontalBox}}>
+                        <SecondayText style={{fontSize: '18px'}}>{points}K</SecondayText>
+                        <Icon style={{color: pointsChangeColor}}>arrow_right_alt</Icon>
+                        <SecondayText style={{fontSize: '18px', color: pointsChangeColor}}>{changedPoints}K</SecondayText>
+                    </div>
                 </Grid>
                 <Grid item  xs={12} style={colStyle}>
-                    <SecondayText style={{...nameEllipsisStyle, color: '#6A6A6A', textAlign: 'start'}}>{name}</SecondayText>
-                    {/* <SecondayText style={{fontSize: '20px'}}>{points}k</SecondayText> */}
+                    <SecondayText style={{...nameEllipsisStyle, width: '150px', color: '#6A6A6A', textAlign: 'start'}}>
+                        {name}
+                    </SecondayText>
                     <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                        <SecondayText style={{fontSize:'16px', marginTop:'-4px'}}>
-                            {lastPrice}
+                        <SecondayText style={{fontSize:'14px', marginTop:'-4px'}}>
+                            ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                         </SecondayText>
                         <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={changeColor}>
                             {change.toFixed(2)}

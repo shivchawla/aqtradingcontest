@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ActionIcon from '../../Misc/ActionIcons';
 import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../constants';
+import {Utils} from '../../../../utils';
 
 export default class StockEditListItem extends React.Component {
     constructor(props) {
@@ -70,11 +71,17 @@ export default class StockEditListItem extends React.Component {
             <SGrid container style={{padding: '0 10px', paddingBottom: '0px', paddingTop: '10px'}}>
                 
                 <SGridCol item xs={12} style={colStyle}>
-                    <Symbol>{symbol}
+                    <Symbol>
+                        {symbol}
                         <Tag style={{backgroundColor: isBuy ? 'green' : 'red'}}>{direction}</Tag>
-                        <p style={{...nameEllipsisStyle, color: '#6A6A6A', textAlign: 'start', marginTop:'0px'}}>{name}</p>
-                        </Symbol>
-                    <SecondayText style={{marginTop:'-20px'}}>{lastPrice} <span style={{fontSize:'12px', color: changeColor}}>{chg} ({(chgPct * 100).toFixed(2)}%)</span></SecondayText>
+                        <p style={{...nameEllipsisStyle, width: '170px', color: '#6A6A6A', textAlign: 'start', marginTop:'0px'}}>{name}</p>
+                    </Symbol>
+                    <SecondayText style={{marginTop:'-20px', fontSize: '16px'}}>
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)} 
+                        <span style={{fontSize:'12px', color: changeColor, marginLeft: '2px'}}>
+                            {chg} ({(chgPct * 100).toFixed(2)}%)
+                        </span>
+                    </SecondayText>
                 </SGridCol>
 
                 <SGridCol item xs={12} style={{...colStyle, marginTop:'-10px'}}>

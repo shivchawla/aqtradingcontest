@@ -1,8 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
@@ -10,7 +9,7 @@ import {Motion, spring} from 'react-motion';
 import SelectionMetrics from './SelectionMetrics';
 import SegmentedControl from '../../../../components/ui/SegmentedControl';
 import {bottomSheetStyle} from '../../constants';
-import {primaryColor, horizontalBox, metricColor} from '../../../../constants';
+import {primaryColor, horizontalBox, metricColor, verticalBox} from '../../../../constants';
 
 export default class EntryDetailBottomSheet extends React.Component {
     constructor(props) {
@@ -33,7 +32,7 @@ export default class EntryDetailBottomSheet extends React.Component {
     }
 
     render() {
-        const {open = false, dailyMetric ={}, weeklyMetric = {}} = this.props; 
+        const {open = false, dailyMetric ={}, weeklyMetric = {}, resultDate = moment()} = this.props; 
         const metrics = this.state.selectedView === 0 ? dailyMetric : weeklyMetric;
 
         return (
@@ -48,7 +47,7 @@ export default class EntryDetailBottomSheet extends React.Component {
                         >
                             <Grid container>
                                 <Grid item xs={12} style={{...horizontalBox, alignItems: 'start', justifyContent: 'center'}}>
-                                    <Header>PnL Performance</Header>
+                                    <Header>Performance</Header>
                                     <IconButton style={{position: 'absolute', right: 0}} onClick={this.props.toggle}>
                                         <Icon style={{color: metricColor.negative}}>highlight_off</Icon>
                                     </IconButton>
@@ -59,8 +58,20 @@ export default class EntryDetailBottomSheet extends React.Component {
                                         onChange={this.handleSegmentChange}
                                     />
                                 </Grid>
-                                <Grid item xs={12} style={{marginTop: '20px'}}>
-                                    <SelectionMetrics {...metrics}/>
+                                <Grid item xs={12} style={{...verticalBox, marginTop: '20px'}}>
+                                    <MetricsHeader>Long</MetricsHeader>
+                                    <SelectionMetrics {...metrics.long}/>
+                                </Grid>
+                                <Grid item xs={12} style={{...verticalBox, marginTop: '20px'}}>
+                                    <MetricsHeader>Short</MetricsHeader>
+                                    <SelectionMetrics {...metrics.short}/>
+                                </Grid>
+                                <Grid item xs={12} style={{...verticalBox, marginTop: '20px'}}>
+                                    <MetricsHeader>Total</MetricsHeader>
+                                    <SelectionMetrics {...metrics.total}/>
+                                </Grid>
+                                <Grid item xs={12} style={{marginTop: '10px'}}>
+                                    <Warning>* As of {resultDate.format('Do MMM YY')}</Warning>
                                 </Grid>
                             </Grid>
                         </div>
@@ -75,4 +86,17 @@ const Header = styled.h3`
     color: ${primaryColor};
     font-weight: 500;
     margin: 20px 0; 
+`;
+
+const Warning = styled.h3`
+    font-size: 14px;
+    color: ${metricColor.neutral};
+    text-align: center;
+    font-weight: 400;
+`;
+
+const MetricsHeader = styled.h3`
+    font-size: 14px;
+    font-weight: 400;
+    color: #131313;
 `;

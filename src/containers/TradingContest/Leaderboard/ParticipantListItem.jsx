@@ -26,8 +26,8 @@ export default class ParticipantListItem extends React.Component {
                 <Grid item xs={9} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <Name>{userName}</Name>
                     <div style={horizontalBox}>
-                        <SecondaryText>Excess Return</SecondaryText>
-                        <SecondaryText color={metricColor.negative} style={{marginLeft: '5px'}}>{totalPnl}%</SecondaryText>
+                        <SecondaryText>Total PnL</SecondaryText>
+                        <SecondaryText color={metricColor.negative} style={{marginLeft: '5px'}}>₹{(totalPnl * 1000).toFixed(2)}</SecondaryText>
                     </div>
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}}>

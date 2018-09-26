@@ -145,16 +145,13 @@ class Participants extends React.Component {
         return (
             <Grid container style={leaderboardDetailStyle}>
                 <DailyContestCreateMeta />
-                {
-                    this.state.winners.length > 0 &&
-                    <Grid item xs={12}>
-                        <TimelineSegment onChange={this.handleTimelineChange}/>
-                    </Grid>
-                }
                 <Grid 
                         item xs={12} 
                         style={{...verticalBox, justifyContent: emptyList ? 'center' : 'flex-start'}}
                 >
+                    {
+                        this.state.winners.length > 0 && <TimelineSegment onChange={this.handleTimelineChange}/>
+                    }
                     {
                         !this.state.loading
                         ? this.renderWinnerList()

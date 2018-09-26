@@ -19,7 +19,7 @@ import {primaryColor} from '../../constants';
 export default class TradingContest extends React.Component {
     state = {
         selectedTab: 0,
-        selectedDate: moment(),
+        selectedDate: moment().subtract(1, 'days'),
         bottomSheetOpen: false
     };
 

@@ -6,7 +6,6 @@ import Media from 'react-media';
 import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -17,9 +16,10 @@ import StockList from './components/StockList';
 import StockPreviewList from './components/StockPreviewList';
 import StockTypeRadio from './components/StockTypeRadio';
 import EntryDetailBottomSheet from './components/EntryDetailBottomSheet';
+import SelectionMetricsMini from './components/SelectionMetricsMini';
 import TimerComponent from '../Misc/TimerComponent';
 import LoaderComponent from '../Misc/Loader';
-import {DailyContestCreate, DailyContestCreateMeta} from '../metas';
+import {DailyContestCreateMeta} from '../metas';
 import {verticalBox, primaryColor, secondaryColor} from '../../../constants';
 import {handleCreateAjaxError} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getTotalInvestment} from '../utils';
@@ -307,7 +307,7 @@ class CreateEntry extends React.Component {
             return; 
         }
 
-        this.setState({submissionLoading: true,});
+        this.setState({submissionLoading: true});
         submitEntry(positions, this.state.previousPositions.length > 0)
         .then(response => {
             this.setState({
@@ -354,14 +354,14 @@ class CreateEntry extends React.Component {
             })
         })
         .then(contestStatus => {
-            const {contestActive,
-                contestStartDate, 
-                contestEndDate} = contestStatus;
+            const {contestActive, contestStartDate, contestEndDate, contestResultDate} = contestStatus;
 
             return this.setState({contestFound: true,
                 contestActive,
                 contestStartDate, 
-                contestEndDate});
+                contestEndDate,
+                contestResultDate
+            });
         }) 
     }
 
@@ -426,6 +426,21 @@ class CreateEntry extends React.Component {
         this.setState({entryDetailBottomSheetOpenStatus: !this.state.entryDetailBottomSheetOpenStatus});
     }
 
+    getRequiredMetrics = () => {
+        const pnlStats = this.state.pnlStats;
+        const {listView = 'all'} = this.state;
+        switch(listView) {
+            case 'buy':
+                return _.get(pnlStats, 'long');
+            case 'sell':
+                return _.get(pnlStats, 'short', {});
+            case 'all':
+                return _.get(pnlStats, 'total', {});
+            default:
+                return _.get(pnlStats, 'total', {}); 
+        }
+    }
+
     componentWillMount = () => {
         this.handleContestDateChange(this.state.selectedDate);
     }
@@ -454,53 +469,49 @@ class CreateEntry extends React.Component {
                         shortTotal={shortInvestmentTotal}
                         style={{backgroundColor: '#fff'}}
                     />
+                    {
+                        contestSubmissionOver &&
+                        <SelectionMetricsMini 
+                            {...this.getRequiredMetrics()}
+                            onClick={this.toggleEntryDetailBottomSheet}
+                        />
+                    }
                     {this.renderStockList()}
                     {
-                        contestSubmissionOver 
-                        ?   <div style={{...fabContainerStyle, justifyContent: 'center'}}>
-                                <Button 
-                                        style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                        size='small' variant="extendedFab" 
-                                        aria-label="Delete" 
-                                        onClick={this.toggleEntryDetailBottomSheet}
-                                >
-                                    <Icon style={{marginRight: '5px'}}>timeline</Icon>
-                                    Performance
-                                </Button>
-                            </div>
-                        :   <div 
-                                    style={{
-                                        ...fabContainerStyle,
-                                        justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'
-                                    }}
+                        !contestSubmissionOver &&
+                        <div 
+                                style={{
+                                    ...fabContainerStyle,
+                                    justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'
+                                }}
+                        >
+                            <Button 
+                                    style={{...fabButtonStyle, ...addStocksStyle}} 
+                                    size='small' variant="extendedFab" 
+                                    aria-label="Delete" 
+                                    onClick={this.toggleSearchStockBottomSheet}
                             >
-                                <Button 
-                                        style={{...fabButtonStyle, ...addStocksStyle}} 
-                                        size='small' variant="extendedFab" 
-                                        aria-label="Delete" 
-                                        onClick={this.toggleSearchStockBottomSheet}
-                                >
-                                    <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                    UPDATE
-                                </Button>
-                                {
-                                    !this.state.showPreviousPositions &&
-                                    <div>
-                                        <Button 
-                                                style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                                size='small' 
-                                                variant="extendedFab" 
-                                                aria-label="Edit" 
-                                                onClick={this.submitPositions}
-                                                disabled={this.state.submissionLoading}
-                                        >
-                                            <Icon style={{marginRight: '5px'}}>update</Icon>
-                                            SUBMIT
-                                            {this.state.submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
-                                        </Button>
-                                    </div>
-                                }
-                            </div>
+                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
+                                UPDATE
+                            </Button>
+                            {
+                                !this.state.showPreviousPositions &&
+                                <div>
+                                    <Button 
+                                            style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                            size='small' 
+                                            variant="extendedFab" 
+                                            aria-label="Edit" 
+                                            onClick={this.submitPositions}
+                                            disabled={this.state.submissionLoading}
+                                    >
+                                        <Icon style={{marginRight: '5px'}}>update</Icon>
+                                        SUBMIT
+                                        {this.state.submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
+                                    </Button>
+                                </div>
+                            }
+                        </div>
                     }
                 </Grid>
             
