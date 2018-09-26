@@ -56,7 +56,7 @@ export const handleGetError = (error, history, redirectUrl) => {
             }
         }
     } else {
-        window.location.assign('https://staging.adviceqube.com/login');
+        window.location.assign('/login');
     }
     return error;
 }
@@ -75,7 +75,7 @@ export const handleCreateAjaxError = (error, history, redirectUrl, disableNotifi
             !disableNotification && openNotification('error', 'Error', errorMessage);
         }
     } else {
-        window.location.assign('https://staging.adviceqube.com/login');
+        window.location.assign('/login');
     }
     return error;
 }
