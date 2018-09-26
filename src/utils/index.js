@@ -141,7 +141,7 @@ export class Utils{
 		}
 		if (history){
 			!redirect && Utils.logoutUser();
-			window.location.assign('https://staging.adviceqube.com/login');
+			window.location.assign('/login');
 		}
 	}
 
