@@ -1,7 +1,7 @@
 import axios from 'axios';
 import _ from 'lodash';
-// import {notification} from 'antd';
 import {Utils} from './index';
+
 const localConfig = require('../localConfig.js');
 
 export const getStockData = (ticker, field='priceHistory', detailType='detail') => {
@@ -13,8 +13,11 @@ export const getStockData = (ticker, field='priceHistory', detailType='detail') 
     });
 };
 
-export const fetchAjax = (url, history, redirectUrl = '/advice', header=undefined, errorCallback = undefined) => {
-    return axios.get(url, {headers: header ? header : Utils.getAuthTokenHeader()})
+export const fetchAjax = (url, history, redirectUrl = '/advice', header=undefined, errorCallback = undefined, source = null) => {
+    return axios.get(url, {
+        cancelToken: _.get(source, 'token', null),
+        headers: header ? header : Utils.getAuthTokenHeader()
+    })
     .catch(error => {
         const status = _.get(error, 'response.status', 400);
         if (status === 403) {

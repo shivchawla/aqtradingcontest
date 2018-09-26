@@ -201,7 +201,7 @@ const menuCategories = [
 
     {
         name: "Investment Idea Contest", icon:'card_travel', children: [
-            {name: "Contest Home", url: '/contest/home', href:true, icon:'explore'},
+            {name: "Contest Home", url: '/contest', href:true, icon:'explore'},
             {name: "Leaderboard", url: '/contest/leaderboard', href:true, icon: 'grade_outline'},
             {name: "How", url: '/contest/how', href:true, icon: 'help_outline'},
         ]

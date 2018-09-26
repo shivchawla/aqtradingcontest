@@ -11,6 +11,7 @@ import {primaryColor, secondaryColor, verticalBox} from '../../../constants';
 import {DailyContestHomeMeta} from '../metas';
 import {howItWorksContents, prizeText, requirements, scoringText, faqs} from '../constants/dailycontestconstants';
 import AqLayout from '../../../components/ui/AqLayout';
+import './home.css';
 
 export default class ContestHome extends React.Component {
     constructor(props) {

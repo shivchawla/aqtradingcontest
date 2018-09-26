@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import axios from 'axios';
 import styled from 'styled-components';
 import moment from 'moment';
 import Media from 'react-media';
@@ -25,8 +26,9 @@ import {handleCreateAjaxError} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getTotalInvestment} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
+const CancelToken = axios.CancelToken;
 
-class CreateEntry extends React.Component {
+export default class CreateEntry extends React.Component {
     constructor(props) {
         super(props);
         this.searchStockComponent = null;
@@ -53,6 +55,7 @@ class CreateEntry extends React.Component {
             snackbarMessage: 'N/A',
             entryDetailBottomSheetOpenStatus: false
         };
+        this.source = CancelToken.source();
     }
 
     toggleSearchStockBottomSheet = () => {
@@ -255,7 +258,7 @@ class CreateEntry extends React.Component {
             reject(errorData);
         };
 
-        getContestEntry(requiredDate.format(dateFormat), this.props.history, this.props.match.url, errorCallback)
+        getContestEntry(requiredDate.format(dateFormat), this.props.history, this.props.match.url, errorCallback, this.source)
         .then(async response => {
             const positions = _.get(response, 'data.positions', []);
             const pnlStats = _.get(response, 'data.pnlStats.daily', {});
@@ -271,8 +274,12 @@ class CreateEntry extends React.Component {
                 pnlStats,
                 weeklyPnlStats
             });
-        })
+        });
     })
+
+    cancelGetContestEntryCall = () => {
+        this.source.cancel();
+    }
 
     getContestStatus = selectedDate =>  new Promise((resolve, reject) => {
         const date = this.state.selectedDate.format(dateFormat);
@@ -373,14 +380,18 @@ class CreateEntry extends React.Component {
                 resolve(contestEntryData);
             })
             .catch(err => {
-                this.setState(
-                    {noEntryFound: true, positions: [], previousPositions: []},
-                    () => reject(err));
-                
+                this.setState({
+                    noEntryFound: true, 
+                    positions: [], 
+                    previousPositions: [],
+                    sellPositions: [],
+                    previousSellPositions: []
+                },() => reject(err));
             })
         })
         .then(contestEntryData => {
             const {positions = [], sellPositions = [], pnlStats, weeklyPnlStats} = contestEntryData;
+            console.log('Sell Positions', sellPositions);
 
             return this.setState({
                 noEntryFound: positions.length === 0,
@@ -547,8 +558,6 @@ class CreateEntry extends React.Component {
         );
     }
 }
-
-export default withRouter(CreateEntry);
 
 const SnackbarComponent = ({openStatus = false, message = 'Snackbar Data', onClose}) => {
     return (

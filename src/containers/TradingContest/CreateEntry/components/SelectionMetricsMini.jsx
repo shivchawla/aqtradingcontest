@@ -24,8 +24,8 @@ export default class SelectionMetricsMini extends React.Component {
                 <Grid item xs={10}>
                     <Grid container spacing={8}>
                         <MetricItem label='Profit Factor' value={(profitFactor || 0).toFixed(2)} />
-                        <MetricItem money coloured label='Total PnL' value={((pnl || 0) * 1000).toFixed(2)} />
-                        <MetricItem percentage label='Total PnL Pct' value={((pnlPct || 0) * 100).toFixed(2)} />
+                        <MetricItem money coloured label='Total PnL' value={((pnl || 0) * 1000)} />
+                        <MetricItem percentage coloured label='Total PnL Pct' value={((pnlPct || 0) * 100).toFixed(2)} />
                     </Grid>
                 </Grid>
                 <Grid item xs={2}>

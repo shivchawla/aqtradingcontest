@@ -58,17 +58,17 @@ export default class EntryDetailBottomSheet extends React.Component {
                                         onChange={this.handleSegmentChange}
                                     />
                                 </Grid>
-                                <Grid item xs={12} style={{...verticalBox, marginTop: '20px'}}>
-                                    <MetricsHeader>Long</MetricsHeader>
-                                    <SelectionMetrics {...metrics.long}/>
+                                <Grid item xs={12} style={verticalBox}>
+                                    <MetricsHeader>Total</MetricsHeader>
+                                    <SelectionMetrics {...metrics.total} bordered/>
                                 </Grid>
-                                <Grid item xs={12} style={{...verticalBox, marginTop: '20px'}}>
+                                <Grid item xs={12} style={verticalBox}>
+                                    <MetricsHeader>Long</MetricsHeader>
+                                    <SelectionMetrics {...metrics.long} bordered/>
+                                </Grid>
+                                <Grid item xs={12} style={verticalBox}>
                                     <MetricsHeader>Short</MetricsHeader>
                                     <SelectionMetrics {...metrics.short}/>
-                                </Grid>
-                                <Grid item xs={12} style={{...verticalBox, marginTop: '20px'}}>
-                                    <MetricsHeader>Total</MetricsHeader>
-                                    <SelectionMetrics {...metrics.total}/>
                                 </Grid>
                                 <Grid item xs={12} style={{marginTop: '10px'}}>
                                     <Warning>* As of {resultDate.format('Do MMM YY')}</Warning>
@@ -97,6 +97,6 @@ const Warning = styled.h3`
 
 const MetricsHeader = styled.h3`
     font-size: 14px;
-    font-weight: 400;
-    color: #131313;
+    font-weight: 600;
+    color: ${primaryColor};
 `;

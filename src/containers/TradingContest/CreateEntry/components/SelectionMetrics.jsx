@@ -14,19 +14,20 @@ export default class SelectionMetrics extends React.Component {
     }
 
     render() {
-        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0} = this.props;
+        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, bordered = false, cost = 0} = this.props;
+        const borderColor = bordered ? '#D6D6D6' : 'tranparent';
 
         return (
             <div style={{padding: '0 10px'}}>
                 <SGrid container>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} style={{borderBottom: `1px solid ${borderColor}`}}>
                         <Grid container>
-                            <MetricItem label='Net Value' value={(netValue || 0).toFixed(2)} />
-                            <MetricItem money label='Negative PnL' value={((pnlNegative || 0) * 1000).toFixed(2)} />
-                            <MetricItem money label='Positive PnL' value={((pnlPositive || 0) * 1000).toFixed(2)} />
+                            <MetricItem label='Cost' value={`${(cost || 0)}K`} />
                             <MetricItem label='Profit Factor' value={(profitFactor || 0).toFixed(2)} />
-                            <MetricItem money label='Total PnL' coloured value={((pnl || 0) * 1000).toFixed(2)} />
-                            <MetricItem label='Total PnL Pct' percentage value={((pnlPct || 0) * 100).toFixed(2)} />
+                            <MetricItem money label='Negative PnL' value={((pnlNegative || 0) * 1000)} />
+                            <MetricItem money label='Positive PnL' value={((pnlPositive || 0) * 1000)} />
+                            <MetricItem money label='Total PnL' coloured value={((pnl || 0) * 1000)} />
+                            <MetricItem label='Total PnL Pct' coloured percentage value={((pnlPct || 0) * 100).toFixed(2)} />
                         </Grid>
                     </Grid>
                 </SGrid>
@@ -37,11 +38,11 @@ export default class SelectionMetrics extends React.Component {
 
 const MetricItem = ({label, value, percentage = false, coloured = false, money = false}) => {
     const color = coloured ? value < 0 ? metricColor.negative : metricColor.positive : '#4B4B4B';
-    let nValue = money ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(value)}` : value;
-    nValue = percentage ? `${nValue} %` : nValue;
+    let nValue = money ? `₹${Utils.formatMoneyValueMaxTwoDecimals(value)}` : value;
+    nValue = percentage ? `${nValue}%` : nValue;
 
     return (
-        <Grid item xs={4} style={{marginBottom: '20px'}}>
+        <Grid item xs={4} style={{marginBottom: '15px'}}>
             <Grid container>
                 <Grid item xs={12}>
                     <MetricValueText color={color}>{nValue}</MetricValueText>
@@ -55,14 +56,14 @@ const MetricItem = ({label, value, percentage = false, coloured = false, money =
 }
 
 const MetricValueText = styled.h3`
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 500;
     color: ${props => props.color || '#4B4B4B'};
     margin-bottom: 5px;
 `;
 
 const MetricLabelText = styled.h5`
-    font-size: 14px;
+    font-size: 12px;
     color: #717171;
     font-weight: 400;
 `;

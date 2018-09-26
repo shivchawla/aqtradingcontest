@@ -40,11 +40,11 @@ export const submitEntry = async (positions, isUpdate = false) => {
     });
 }
 
-export const getContestEntry = (date = null, history, currentUrl, errorCallback = undefined) => {
+export const getContestEntry = (date = null, history, currentUrl, errorCallback = undefined, source = null) => {
     const requiredDate = date === null ? moment().format(dateFormat) : date;
     const url = `${requestUrl}/dailycontest/entry?date=${requiredDate}&populatePnl=true`;
 
-    return fetchAjax(url, history, currentUrl, undefined, errorCallback)
+    return fetchAjax(url, history, currentUrl, undefined, errorCallback, source)
 }
 
 export const convertBackendPositions = positions => {

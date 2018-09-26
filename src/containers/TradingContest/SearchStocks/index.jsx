@@ -312,7 +312,7 @@ export class SearchStocks extends React.Component {
             if (selectedStockIndex === -1) {
 
                 if (this.state.selectedStocks.length >= maxLimit) {
-                    this.setState({snackbar: {open: true, message: "You can't buy more than 5 stocks"}});
+                    this.setState({snackbar: {open: true, message: `You can't buy more than ${maxLimit} stocks`}});
                     return;
                 }
                 selectedStocks.push(symbol);
@@ -335,7 +335,7 @@ export class SearchStocks extends React.Component {
         } else {
             if (selectedStockIndex === -1) {
                 if (this.state.selectedStocks.length >= maxLimit) {
-                    this.setState({snackbar: {open: true, message: "You can't buy more than 5 stocks"}});
+                    this.setState({snackbar: {open: true, message: `You can't buy more than ${maxLimit} stocks`}});
                     return;
                 }
                 // Checking if it is present in the be sold array, if present delete it
@@ -371,7 +371,7 @@ export class SearchStocks extends React.Component {
         if (targetStock !== undefined) {
             if (selectedStockIndex === -1) {
                 if (this.state.sellSelectedStocks.length >= maxLimit) {
-                    this.setState({snackbar: {open: true, message: "You can't sell more than 5 stocks"}});
+                    this.setState({snackbar: {open: true, message: `You can't sell more than ${maxLimit} stocks`}});
                     return;
                 }
                 // Checking if it is present in the be bought array, if present delete it
@@ -394,7 +394,7 @@ export class SearchStocks extends React.Component {
         } else {
             if (selectedStockIndex === -1) {
                 if (this.state.sellSelectedStocks.length >= maxLimit) {
-                    this.setState({snackbar: {open: true, message: "You can't sell more than 5 stocks"}});
+                    this.setState({snackbar: {open: true, message: `You can't sell more than ${maxLimit} stocks`}});
                     return;
                 }
                 // Checking if it is present in the be bought array, if present delete it
