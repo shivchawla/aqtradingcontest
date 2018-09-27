@@ -24,17 +24,7 @@ export default class ParticipantList extends React.Component {
     render() {
         const {winners = []} = this.props;
 
-        return (
-            <Grid container style={{backgroundColor: '#fff'}}>
-                <Grid item xs={12}>
-                    {
-                        winners.length === 0
-                        ? <Error>No Data Found</Error>
-                        : this.renderWinners()
-                    }
-                </Grid>
-            </Grid>
-        );
+        return winners.length === 0 ? <Error>No Data Found</Error> : this.renderWinners();
     }
 }
 
@@ -42,4 +32,5 @@ const Error = styled.h3`
     color: #717171;
     font-weight: 500;
     font-size: 15px;
+    margin-top: 50%;
 `;

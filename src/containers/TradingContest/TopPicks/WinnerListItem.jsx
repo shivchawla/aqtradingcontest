@@ -48,7 +48,7 @@ export default class WinnerListItem extends React.Component {
                     </SecondaryText>
 
                     <SecondaryText>
-                        {numUsers} <p style={labelStyle}>Votes</p>
+                        {numUsers.total} <p style={labelStyle}>Votes</p>
                     </SecondaryText>
                 
                 </Grid>
