@@ -193,6 +193,7 @@ export default class ContestHome extends React.Component {
             <AqLayout
                 loading={this.state.loading}
                 theme='dark'
+                pageTitle={null}
                 navbarStyle={{
                     backgroundColor: '#00b79c'
                 }}

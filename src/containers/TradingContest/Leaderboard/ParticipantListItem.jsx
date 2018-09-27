@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {horizontalBox, verticalBox, metricColor} from '../../../constants';
+import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../constants';
 import {getRankMedal} from '../utils';
 
 export default class ParticipantListItem extends React.Component {
@@ -20,11 +20,16 @@ export default class ParticipantListItem extends React.Component {
 
         return (
             <SGrid container>
-                <Grid item xs={1} style={{...verticalBox, justifyContent: 'center'}}>
+                <Grid item xs={1} style={{textAlign: 'start'}}>
                     <img src={medal} width={20}/>
                 </Grid>
-                <Grid item xs={9} style={{...verticalBox, alignItems: 'flex-start'}}>
+                <Grid item xs={8} style={{textAlign: 'start'}}>
                     <Name>{userName}</Name>
+                </Grid>
+                <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                    <Score>{cost}K</Score>
+                </Grid>
+                <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
                         <SecondaryText color={metricColor.negative} style={{marginLeft: '5px'}}>
                             ₹{(pnl * 1000).toFixed(2)}
@@ -40,9 +45,6 @@ export default class ParticipantListItem extends React.Component {
                         </SecondaryText>
                     </div>
                 </Grid>
-                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                    <Score>{cost}</Score>
-                </Grid>
             </SGrid>
         ); 
     }
@@ -56,10 +58,10 @@ const SGrid = styled(Grid)`
     margin-bottom: 20px;
     background-color: #FAFCFF;
     border-radius: 4px;
-    /* box-shadow: 0 3px 5px #C3E0F9; */
     margin-top: 20px;
     border: 1px solid #F2F5FF;
     background-color: #fff;
+    padding-bottom: 0px;
 `;
 
 const Name = styled.h3`
@@ -72,12 +74,14 @@ const SecondaryText = styled.h3`
     font-size: 16px;
     font-weight: 300;
     color: ${props => props.color || '#717171'};
+    text-align: start;
 `;
 
 const Score = styled.h3`
     font-size: 20px;
     font-weight: 500;
     color: #717171;
+    color: ${primaryColor}
 `;
 
 const labelStyle = {
