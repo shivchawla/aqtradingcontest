@@ -195,7 +195,7 @@ const menuCategories = [
     {
         name: "Stock Picks Contest", icon:'bubble_chart', children: [
             {name: "Contest Home", url: '/dailycontest/home', icon:'explore'},
-            {name: "Top Picks", url: '/dailycontest', icon: 'grade_outline'},
+            {name: "Top Picks", url: '/dailycontest/create', icon: 'grade_outline'},
         ]
     },
 
