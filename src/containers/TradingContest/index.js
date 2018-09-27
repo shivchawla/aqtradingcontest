@@ -20,8 +20,8 @@ import {Utils} from '../../utils';
 export default class TradingContest extends React.Component {
     createEntryComponent = null;
     state = {
-        selectedTab: 2,
-        selectedDate: moment().subtract(1, 'days'),
+        selectedTab: 0,
+        selectedDate: moment(),
         bottomSheetOpen: false
     };
 
@@ -38,7 +38,7 @@ export default class TradingContest extends React.Component {
     }
 
     updateDate = (date) => {
-        this.createEntryComponent && this.createEntryComponent.cancelGetContestEntryCall();
+        // this.createEntryComponent && this.createEntryComponent.cancelGetContestEntryCall();
         this.setState({selectedDate: date});
     }
 
