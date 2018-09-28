@@ -26,32 +26,19 @@ const styles = {
 }
 
 class TimelineSegment extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            selectedView: 'daily'
-        }
-    }
-
     handleChange = (e, selectedValue) => {
         const value = selectedValue === 0 ? 'daily' : 'weekly';
-        this.setState({selectedView: value});
         this.props.onChange && this.props.onChange(value);
     }
 
-    componentWillReceiveProps(nextProps) {
-        const {selectedView} = nextProps;
-        this.setState({selectedView});
-    }
-
     render() {
-        const { classes } = this.props;
+        const {classes, selectedView = 'daily'} = this.props;
 
         return (
             <Grid container style={{...horizontalBox, justifyContent: 'center'}}>
                 <Paper style={{margin: '10px 0', overflow: 'hidden', transform: 'scale(0.7, 0.7)'}}>
                     <Tabs
-                            value={this.state.selectedView === 'daily' ? 0 : 1}
+                            value={selectedView === 'daily' ? 0 : 1}
                             onChange={this.handleChange}
                             indicatorColor="primary"
                             textColor="primary"

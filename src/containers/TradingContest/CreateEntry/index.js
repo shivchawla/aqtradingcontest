@@ -313,7 +313,7 @@ export default class CreateEntry extends React.Component {
             this.setState({snackbarOpenStatus: true, snackbarMessage: 'Please add at-least 5 trades'});
             return; 
         }
-
+        this.cancelGetContestEntryCall();
         this.setState({submissionLoading: true});
         submitEntry(positions, this.state.previousPositions.length > 0)
         .then(response => {

@@ -106,7 +106,10 @@ class Winners extends React.Component {
                                     {
                                         this.state.winnerStocks.length > 0 &&
                                         <Grid item xs={12}>
-                                            <TimelineSegment onChange={this.handleTimeLineChange}/>
+                                            <TimelineSegment 
+                                                onChange={this.handleTimeLineChange}
+                                                selectedView={this.state.timelineView}
+                                            />
                                         </Grid>
                                     }
                                     <ContestStartedView 
