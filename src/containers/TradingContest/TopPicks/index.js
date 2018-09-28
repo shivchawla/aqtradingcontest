@@ -103,15 +103,6 @@ class Winners extends React.Component {
                                             backgroundColor: '#fff'
                                         }}
                                 >
-                                    {
-                                        this.state.winnerStocks.length > 0 &&
-                                        <Grid item xs={12}>
-                                            <TimelineSegment 
-                                                onChange={this.handleTimeLineChange}
-                                                selectedView={this.state.timelineView}
-                                            />
-                                        </Grid>
-                                    }
                                     <ContestStartedView 
                                         endDate={
                                             contestEnded 
@@ -124,10 +115,19 @@ class Winners extends React.Component {
                                         contestRunning={contestRunning}
                                     />
                                 </Grid>
-                            }                            
+                            }     
+                            {
+                                this.state.winnerStocks.length > 0 &&
+                                <Grid item xs={12} style={{position: 'absolute', top: '0px', width: '100%'}}>
+                                    <TimelineSegment 
+                                        onChange={this.handleTimeLineChange}
+                                        selectedView={this.state.timelineView}
+                                    />
+                                </Grid>
+                            }                       
                             {
                                 contestEnded &&
-                                <Grid item xs={12} style={{padding: '10px'}}>
+                                <Grid item xs={12} style={{padding: '10px', marginTop: '60px'}}>
                                     {
                                         (winnerStocks.length > 0 || winnerStocksWeekly.length > 0) && 
                                         <WinnerList 
@@ -158,7 +158,7 @@ class Winners extends React.Component {
     render() {
         return (
             <SGrid container style={topPicksDetailStyle}>
-                <Grid item xs={12} style={verticalBox}>
+                <Grid item xs={12} style={{...verticalBox, position: 'relative'}}>
                     {
                         !this.state.loading
                         ? this.renderTopPicksDetails()
