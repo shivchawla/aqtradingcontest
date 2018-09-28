@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -36,6 +37,11 @@ class TimelineSegment extends React.Component {
         const value = selectedValue === 0 ? 'daily' : 'weekly';
         this.setState({selectedView: value});
         this.props.onChange && this.props.onChange(value);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {selectedView} = nextProps;
+        this.setState({selectedView});
     }
 
     render() {

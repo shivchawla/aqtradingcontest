@@ -104,7 +104,11 @@ class Participants extends React.Component {
             <SGrid container>
                 <Grid item xs={12} style={{...verticalBox, padding: '0 10px', backgroundColor: '#fff'}}>
                     {
-                        this.state.winners.length > 0 && <TimelineSegment onChange={this.handleTimelineChange}/>
+                        this.state.winners.length > 0 && 
+                        <TimelineSegment 
+                            onChange={this.handleTimelineChange}
+                            selectedView={this.state.timelineView}
+                        />
                     }
                     {
                         this.state.contestActive 

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../constants';
 import {getRankMedal} from '../utils';
+import {Utils} from '../../../utils';
 
 export default class ParticipantListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -32,11 +33,11 @@ export default class ParticipantListItem extends React.Component {
                 <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
                         <SecondaryText color={metricColor.negative} style={{marginLeft: '5px'}}>
-                            ₹{(pnl * 1000).toFixed(2)}
+                            ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl * 1000)}
                             <p style={labelStyle}>PnL</p>
                         </SecondaryText>
                         <SecondaryText color={metricColor.negative} style={{marginLeft: '5px'}}>
-                            ₹{(pnlPct * 100).toFixed(2)}
+                            {(pnlPct * 100).toFixed(2)}%
                             <p style={labelStyle}>PnL Pct</p>
                         </SecondaryText>
                         <SecondaryText style={{marginLeft: '5px'}}>

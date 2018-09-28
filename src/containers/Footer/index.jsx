@@ -25,8 +25,9 @@ export default class Footer extends React.Component {
                     <ListItem url='/faq'>FAQ</ListItem>
                 </ColGrid>
                 <ColGrid item xs={6}>
-                    <ListHeader>Other Products</ListHeader>
-                    <ListItem url='https://www.aimsquant.com/home'>Quant Research</ListItem>
+                    <ListHeader>Rules</ListHeader>
+                    <ListItem url='/dailycontest/tnc'>Daily Trading Contest</ListItem>
+                    <ListItem url='/contest/rules'>Investment Idea Contest</ListItem>
                 </ColGrid>
             </SGrid>
         );

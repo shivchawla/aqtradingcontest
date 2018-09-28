@@ -6,9 +6,9 @@ export default class DailyContestTnC extends React.Component {
     
     renderPageContent() {
         return (
-            <div style={{padding: '20px 40px', fontSize: '16px'}}>
+            <div style={{padding: '20px 40px', fontSize: '16px', textAlign: 'start'}}>
                 
-                <h1 style="margin-bottom: 40px;">Contest Rules</h1>
+                <h1 style={{marginBottom: '40px', fontWeight: 400}}>Contest Rules</h1>
                 <h3 style={h3Style}>Overview</h3>
                 <p>The Best Stock Picks Contest at AdviceQube is a daly competition that awards the best stock pickers. The contest is based on Indian markets and designed to evaluate expert's ability to pick outperforming stocks using subset of trade-able equities on National Stock Exchange, India. Each day, the top 5 participants are awarded a 10 free trades with Upstox, our prefered brokerage partner.</p>
                 <p>&nbsp;</p>
@@ -80,10 +80,11 @@ export default class DailyContestTnC extends React.Component {
 
 const h3Style = {
     fontSize: '18px',
-    color: primaryColor
+    color: primaryColor,
+    fontWeight: 400
 };
 
 const bulletStyle = {
     marginBottom: '8px',
-    lineHeight: '20px'
+    lineHeight: '20px',
 };

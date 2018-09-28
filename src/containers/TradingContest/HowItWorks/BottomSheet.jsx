@@ -36,17 +36,21 @@ export default class BottomSheet extends React.Component {
                                     height: '100vh'
                                 }}
                         >
-                            <Grid item xs={12} style={{...horizontalBox, alignItems: 'start', justifyContent: 'center', height: 0}}>
-                                <Header>Create Entry in 3 simple steps</Header>
-                                <IconButton style={{position: 'absolute', right: 0}} onClick={this.props.toggle}>
-                                    <Icon style={{color: metricColor.negative}}>highlight_off</Icon>
-                                </IconButton>
+                            <Grid item xs={12}>
+                                <div style={{...horizontalBox, alignItems: 'start', justifyContent: 'center'}}>
+                                    <Header>Create Entry in 3 simple steps</Header>
+                                    <IconButton style={{position: 'absolute', right: 0}} onClick={this.props.toggle}>
+                                        <Icon style={{color: metricColor.negative}}>highlight_off</Icon>
+                                    </IconButton>
+                                </div>
+                                <div style={{...verticalBox, marginTop: '30px'}}>
+                                    {
+                                        howItWorksContents.map((item, index) => {
+                                            return <HowItWorksCard key={index} {...item} />
+                                        })
+                                    }
+                                </div>
                             </Grid>
-                            {
-                                howItWorksContents.map((item, index) => {
-                                    return <HowItWorksCard key={index} {...item} />
-                                })
-                            }
                         </Grid>
                 }
             </Motion>
@@ -61,42 +65,42 @@ const Header = styled.h3`
     margin: 20px 0; 
 `;
 
-export const HowItWorksCard = ({image, header, content, span=12}) => {
+export const HowItWorksCard = ({image, header, content}) => {
     const containerStyle = {
         ...verticalBox,
-        border: '1px solid #eaeaea',
         margin: '0 10px',
         borderRadius: '4px',
         width: '95%',
         height: '140px',
+        alignItems: 'flex-start'
     };
 
     return (
-        <Grid item xs={span} style={containerStyle}>
+        <div style={containerStyle}>
             <h3 style={cardHeaderTextStyle}>{header}</h3>
             <Grid container>
-                <Grid item xs={7} style={{marginTop: '10px'}}>
+                <Grid item xs={9} style={{marginTop: '10px'}}>
                     <h5 style={cardContentTextStyle}>{content}</h5>
                 </Grid>
-                <Grid item xs={5}>
+                <Grid item xs={3} style={{...verticalBox, alignItems: 'flex-end', paddingRight: '20px', marginTop: '-20px'}}>
                     <img src={image} />
                 </Grid>
             </Grid>
-        </Grid>
+        </div>
     );
 };
 
 const cardHeaderTextStyle = {
     fontSize: '18px',
-    color: '#6A6A6A',
+    color: '#3D3D3D',
     fontWeight: 400,
     textAlign: 'start',
-    marginLeft: '16px',
+    marginLeft: '9px',
     width: '100%'
 };
 
 const cardContentTextStyle = {
-    fontSize: '15px',
+    fontSize: '14px',
     color: '#717171',
     fontWeight: 300,
     textAlign: 'start',

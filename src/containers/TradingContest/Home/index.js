@@ -40,20 +40,10 @@ export default class ContestHome extends React.Component {
             <Grid item xs={12} style={containerStyle}>
                 <Grid container style={{height: '100%'}}>
                     <Grid item xs={12} style={{...verticalBox, height: '100%'}}>
-                        <h1 
-                                style={{
-                                    color: '#fff', 
-                                    fontSize: '24px', 
-                                    fontWeight: 400, 
-                                    margin: 0, 
-                                }}
-                        >
-                            Daily Trading Contest
-                        </h1>
                         <h3 
                                 style={{
                                     color: '#fff', 
-                                    fontSize: '16px', 
+                                    fontSize: '20px', 
                                     fontWeight: 300,
                                     textAlign: 'center',
                                     marginTop:'5px'
@@ -148,7 +138,7 @@ export default class ContestHome extends React.Component {
 
     renderTabsSection = () => {
         return (
-            <Grid item xs={12} style={{height: '80vh'}}>
+            <Grid item xs={12} style={{minHeight: '80vh'}}>
                 <Grid container>
                     <Grid item xs={12}>
                         <Tabs
@@ -193,7 +183,7 @@ export default class ContestHome extends React.Component {
             <AqLayout
                 loading={this.state.loading}
                 theme='dark'
-                pageTitle={null}
+                pageTitle='Daily Stock Picks'
                 navbarStyle={{
                     backgroundColor: '#00b79c'
                 }}

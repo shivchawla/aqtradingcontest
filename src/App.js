@@ -8,9 +8,8 @@ import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
 import TradingContest from './containers/TradingContest';
 import TradingContestHome from './containers/TradingContest/Home';
-import TradingContestHowItWorks from './containers/TradingContest/HowItWorks';
 import UnderDevelopment from './containers/UnderDevelopment';
-import AuthRoute from './containers/AuthRoute';
+import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
 import './App.css';
 
 class App extends Component {
@@ -26,7 +25,7 @@ class App extends Component {
                                 <Switch>
                                     <Route exact={true} path='/dailycontest/create' component={TradingContest} /> 
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHome} /> 
-                                    <Route exact={true} path='/dailycontest/how' component={TradingContestHowItWorks} /> 
+                                    <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
                                 </Switch>
                             );
                         }}
@@ -36,6 +35,7 @@ class App extends Component {
                         render={() => {
                             return (
                                 <Switch>
+                                    <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
                                     <Route component={UnderDevelopment} />
                                 </Switch>
                             );
