@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
 import {withStyles} from '@material-ui/core/styles';
 import {green, blue} from '@material-ui/core/colors';
-import {horizontalBox, primaryColor, verticalBox} from '../../../../constants';
+import {horizontalBox, primaryColor, verticalBox} from '../../../../../constants';
 
 const styles = {
     checked: {

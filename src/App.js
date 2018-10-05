@@ -35,6 +35,7 @@ class App extends Component {
                         render={() => {
                             return (
                                 <Switch>
+                                    <Route exact={true} path='/dailycontest/create' component={TradingContest} /> 
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
                                     <Route component={UnderDevelopment} />
                                 </Switch>

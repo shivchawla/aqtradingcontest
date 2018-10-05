@@ -5,8 +5,8 @@ import styled from 'styled-components';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
-import {metricColor, primaryColor} from '../../../../constants';
-import {Utils} from '../../../../utils';
+import {metricColor, primaryColor} from '../../../../../constants';
+import {Utils} from '../../../../../utils';
 
 export default class SelectionMetricsMini extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {

@@ -2,9 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import ActionIcon from '../../Misc/ActionIcons';
-import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../constants';
-import {Utils} from '../../../../utils';
+import ActionIcon from '../../../Misc/ActionIcons';
+import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../../constants';
+import {Utils} from '../../../../../utils';
 
 export default class StockEditListItem extends React.Component {
     constructor(props) {

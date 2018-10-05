@@ -7,9 +7,9 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import {Motion, spring} from 'react-motion';
 import SelectionMetrics from './SelectionMetrics';
-import SegmentedControl from '../../../../components/ui/SegmentedControl';
-import {bottomSheetStyle} from '../../constants';
-import {primaryColor, horizontalBox, metricColor, verticalBox} from '../../../../constants';
+import SegmentedControl from '../../../../../components/ui/SegmentedControl';
+import {bottomSheetStyle} from '../../../constants';
+import {primaryColor, horizontalBox, metricColor, verticalBox} from '../../../../../constants';
 
 export default class EntryDetailBottomSheet extends React.Component {
     constructor(props) {

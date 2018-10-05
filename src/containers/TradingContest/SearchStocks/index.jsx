@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import {Motion, spring} from 'react-motion';
 import _  from 'lodash';
 import Badge from '@material-ui/core/Badge';
-import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
@@ -12,10 +11,11 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import StockPerformance from './components/StockPerformance';
-import {notify} from 'react-notify-toast';
+import StockFilter from './components/StockFilter';
 import {screenSize} from '../constants';
 import SelectedStocksDialog from './components/SelectedStocksDialog';
 import SearchStockHeaderMobile from './components/StockSearchHeaderMobile';
+import SearchStockHeaderDesktop from './components/SearchStockHeaderDesktop';
 import StockList from './components/StockList';
 import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
 import {fetchAjax} from '../../../utils';
@@ -728,14 +728,15 @@ export class SearchStocks extends React.Component {
                         </Motion>
                     )}
                 />
-                {/* <Media 
+                <Media 
                     query={`(min-width: ${screenSize.desktop})`}
                     render={() => (
                         <React.Fragment>
                             {
                                 this.shouldFiltersBeShown() &&
-                                <Col 
-                                        span={4}
+                                <Grid 
+                                        item 
+                                        xs={2} 
                                         style={{
                                             height: global.screen.height - 195,
                                             overflow: 'hidden',
@@ -747,10 +748,11 @@ export class SearchStocks extends React.Component {
                                         onFilterChange={this.onFilterChange}
                                         filters={this.props.filters}
                                     />
-                                </Col>
+                                </Grid>
                             }
-                            <Col 
-                                    span={this.shouldFiltersBeShown() ? 10 : 12} 
+                            <Grid 
+                                    item
+                                    xs={this.shouldFiltersBeShown() ? 5 : 6} 
                                     style={{
                                         padding: '20px',
                                         height: global.screen.height - 195,
@@ -760,9 +762,10 @@ export class SearchStocks extends React.Component {
                                     }}
                             >
                                 {this.renderSearchStocksList()}
-                            </Col>
-                            <Col 
-                                    span={this.shouldFiltersBeShown() ? 10 : 12}
+                            </Grid> 
+                            <Grid 
+                                    item
+                                    xs={this.shouldFiltersBeShown() ? 5 : 6}
                                     style={{
                                         padding: '20px',
                                         height: global.screen.height - 195,
@@ -771,12 +774,12 @@ export class SearchStocks extends React.Component {
                                         borderRight: '1px solid #eaeaea'
                                     }}
                             >
-                                {this.renderSelectedStocks()}
+                                {/* {this.renderSelectedStocks()} */}
                                 <StockPerformance stock={this.state.selectedStock}/>
-                            </Col>
+                            </Grid>
                         </React.Fragment>
                     )}
-                /> */}
+                />
             </React.Fragment>
         );
     }
@@ -908,10 +911,10 @@ export class SearchStocks extends React.Component {
                             />
                         }
                     />
-                    {/* <Media 
+                    <Media 
                         query='(min-width: 601px)'
                         render={() => 
-                            <SearchStockHeader 
+                            <SearchStockHeaderDesktop
                                 filters={this.props.filters}
                                 selectedStocks={this.state.selectedStocks}
                                 stockPerformanceOpen={this.state.stockPerformanceOpen}
@@ -920,7 +923,7 @@ export class SearchStocks extends React.Component {
                                 portfolioLoading={this.state.portfolioLoading}
                             />
                         }
-                    /> */}
+                    />
                     {this.renderStockListDetails()}
                 </SGrid>
             </React.Fragment>

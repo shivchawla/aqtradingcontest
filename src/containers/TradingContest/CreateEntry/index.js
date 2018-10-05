@@ -6,24 +6,16 @@ import moment from 'moment';
 import Media from 'react-media';
 import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
-import Icon from '@material-ui/core/Icon';
-import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import {withRouter} from 'react-router';
 import {Motion, spring} from 'react-motion';
 import {SearchStocks} from '../SearchStocks';
-import StockList from './components/StockList';
-import StockPreviewList from './components/StockPreviewList';
-import StockTypeRadio from './components/StockTypeRadio';
-import EntryDetailBottomSheet from './components/EntryDetailBottomSheet';
-import SelectionMetricsMini from './components/SelectionMetricsMini';
-import TimerComponent from '../Misc/TimerComponent';
+import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
+import CreateEntryLayoutMobile from './components/mobile/CreateEntryLayoutMobile';
+import CreateEntryLayoutDesktop from './components/desktop/CreateEntryLayoutDesktop';
 import LoaderComponent from '../Misc/Loader';
 import {DailyContestCreateMeta} from '../metas';
-import {verticalBox, primaryColor, secondaryColor} from '../../../constants';
 import {handleCreateAjaxError} from '../../../utils';
-import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getTotalInvestment} from '../utils';
+import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
 const CancelToken = axios.CancelToken;
@@ -140,7 +132,7 @@ export default class CreateEntry extends React.Component {
                     render={() => (
                         <SwipeableBottomSheet 
                                 fullScreen 
-                                // style={{zIndex: '20000'}}
+                                style={{zIndex: '20000'}}
                                 overlayStyle={{overflow: 'hidden'}}
                                 open={this.state.bottomSheetOpenStatus}
                                 onChange={this.toggleSearchStockBottomSheet}
@@ -152,6 +144,7 @@ export default class CreateEntry extends React.Component {
                                 toggleBottomSheet={this.toggleSearchStockBottomSheet}
                                 addPositions={this.conditionallyAddPosition}
                                 portfolioPositions={this.state.positions}
+                                portfolioSellPositions={this.state.sellPositions}
                                 filters={{}}
                                 ref={el => this.searchStockComponent = el}
                                 history={this.props.history}
@@ -163,91 +156,6 @@ export default class CreateEntry extends React.Component {
                     )}
                 />
             </React.Fragment>
-        )
-    }
-
-    renderEmptySelections = () => {
-        const contestEnded = moment().isAfter(this.state.contestEndDate);
-        const contestRunning = moment().isSameOrAfter(this.state.contestStartDate) && !contestEnded && this.state.contestActive;
-        const contestNotStarted = moment().isBefore(this.state.contestStartDate);
-        const todayDate = moment().format(dateFormat);
-        const formattedSelected = this.state.selectedDate.format(dateFormat); 
-        
-        const contestActive = this.state.contestActive;
-
-        //moment to date conversion
-        const contestStartDate = this.state.contestStartDate.toDate();
-        const contestEndDate = this.state.contestEndDate.toDate();
-
-        const noEntryFound = this.state.noEntryFound;
-        const contestFound = this.state.contestFound;
-
-        return (
-            <Grid container style={{...verticalBox, marginTop: '30%'}}>
-                {
-
-                    (contestActive && contestNotStarted) ?
-                        <TimerComponent 
-                            date={contestNotStarted ? contestStartDate : null}  
-                            contestStarted={!contestNotStarted}
-                            tag={contestNotStarted ? "New Contest starts in" : 
-                                "Contest has ended"}  
-                        />
-                    
-                    :   null
-                }
-                {
-                    !contestFound &&
-                    <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>
-                        No contest found for selected date
-                    </h3>
-                }
-
-                {
-                    contestFound && (contestActive && contestEnded) && noEntryFound && 
-                    <h3 style={{textAlign: 'center', padding: '0 20px', color: '#4B4B4B', fontWeight: 500, fontSize: '18px'}}>
-                        No entry found for selected date
-                    </h3>
-                }
-                {
-                    contestRunning &&
-                    <React.Fragment>
-                        <TimerComponent 
-                            date={contestEndDate}  
-                            contestStarted={true}
-                            tag="Please add 5 stocks to participate in today’s contest" /> 
-                        
-                       
-                        <Button 
-                                style={emptyPortfolioButtonStyle}
-                                onClick={this.toggleSearchStockBottomSheet}
-                        >
-                            ADD STOCKS
-                        </Button>
-                    </React.Fragment>
-                }
-            </Grid>
-        );
-    }
-
-    renderStockList = () => {
-        let positions = [];
-        let previewPositions = [];
-        if (this.state.listView === 'buy') {
-            positions = this.state.positions;
-            previewPositions = this.state.previousPositions;
-        } else if (this.state.listView === 'sell') {
-            positions = this.state.sellPositions;
-            previewPositions = this.state.previousSellPositions;
-        } else if (this.state.listView === 'all') {
-            positions = [...this.state.positions, ...this.state.sellPositions];
-            previewPositions = [...this.state.previousPositions, ...this.state.previousSellPositions];
-        };
-
-        return (
-            !this.state.showPreviousPositions
-            ? <StockList positions={positions} onStockItemChange={this.onStockItemChange} />
-            : <StockPreviewList positions={previewPositions} />
         )
     }
 
@@ -452,6 +360,10 @@ export default class CreateEntry extends React.Component {
         }
     }
 
+    componentDidMount() {
+        this.searchStockComponent.fetchStocks('');
+    }
+
     componentWillMount = () => {
         this.handleContestDateChange(this.state.selectedDate);
     }
@@ -463,70 +375,37 @@ export default class CreateEntry extends React.Component {
     } 
 
     renderPortfolioPicksDetail = () => {
-        const contestSubmissionOver = moment().isAfter(this.state.contestEndDate);
-        const fabButtonStyle = {borderRadius:'5px', padding: '0 10px'};
-        const longInvestmentTotal = getTotalInvestment(this.state.positions);
-        const shortInvestmentTotal = getTotalInvestment(this.state.sellPositions);
-
+        const props = {
+            contestStartDate: this.state.contestStartDate,
+            contestEndDate: this.state.contestEndDate,
+            contestActive: this.state.contestActive,
+            positions: this.state.positions,
+            sellPositions: this.state.sellPositions,
+            contestFound: this.state.contestFound,
+            noEntryFound: this.state.noEntryFound,
+            previousPositions: this.state.previousPositions,
+            listView: this.state.listView,
+            handleStockTypeRadioChange: this.handleStockTypeRadioChange,
+            toggleEntryDetailBottomSheet: this.toggleEntryDetailBottomSheet,
+            toggleSearchStockBottomSheet: this.toggleSearchStockBottomSheet,
+            showPreviousPositions: this.state.showPreviousPositions,
+            submitPositions: this.submitPositions,
+            submissionLoading: this.state.submissionLoading,
+            getRequiredMetrics: this.getRequiredMetrics,
+            previousSellPositions: this.state.previousSellPositions,
+            onStockItemChange: this.onStockItemChange
+        }
         return (
-            !this.state.contestFound || (this.state.noEntryFound && this.state.positions.length === 0 && this.state.previousPositions.length == 0)
-            
-            ?   this.renderEmptySelections()
-            :   <Grid item xs={12}>
-                    <StockTypeRadio 
-                        onChange={this.handleStockTypeRadioChange} 
-                        defaultView={this.state.listView}
-                        longTotal={longInvestmentTotal}
-                        shortTotal={shortInvestmentTotal}
-                        style={{backgroundColor: '#fff'}}
-                    />
-                    {
-                        contestSubmissionOver &&
-                        <SelectionMetricsMini 
-                            {...this.getRequiredMetrics()}
-                            onClick={this.toggleEntryDetailBottomSheet}
-                        />
-                    }
-                    {this.renderStockList()}
-                    {
-                        !contestSubmissionOver &&
-                        <div 
-                                style={{
-                                    ...fabContainerStyle,
-                                    justifyContent: this.state.showPreviousPositions ? 'center' : 'space-between'
-                                }}
-                        >
-                            <Button 
-                                    style={{...fabButtonStyle, ...addStocksStyle}} 
-                                    size='small' variant="extendedFab" 
-                                    aria-label="Delete" 
-                                    onClick={this.toggleSearchStockBottomSheet}
-                            >
-                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                UPDATE
-                            </Button>
-                            {
-                                !this.state.showPreviousPositions &&
-                                <div>
-                                    <Button 
-                                            style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                            size='small' 
-                                            variant="extendedFab" 
-                                            aria-label="Edit" 
-                                            onClick={this.submitPositions}
-                                            disabled={this.state.submissionLoading}
-                                    >
-                                        <Icon style={{marginRight: '5px'}}>update</Icon>
-                                        SUBMIT
-                                        {this.state.submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
-                                    </Button>
-                                </div>
-                            }
-                        </div>
-                    }
-                </Grid>
-            
-            
+            <React.Fragment>
+                <Media 
+                    query="(max-width: 600px)"
+                    render={() => <CreateEntryLayoutMobile {...props}/>}
+                />
+                <Media 
+                    query="(min-width: 601px)"
+                    render={() => <CreateEntryLayoutDesktop {...props}/>}
+                />
+            </React.Fragment>
         );
     }
 
@@ -577,36 +456,6 @@ const SnackbarComponent = ({openStatus = false, message = 'Snackbar Data', onClo
     );
 }
 
-const emptyPortfolioButtonStyle = {
-    backgroundColor: primaryColor,
-    color: '#fff',
-    borderRadius: '4px',
-    width: '50%',
-    border: 'none',
-    position: 'fixed',
-    bottom: '25px',
-    left:'25%'
-};
-
 const SGrid = styled(Grid)`
     background-color: #fff;
 `;
-
-const addStocksStyle = {
-    backgroundColor: secondaryColor,
-    color: '#fff'
-};
-
-const submitButtonStyle = {
-    backgroundColor: primaryColor,
-    color: '#fff'
-};
-
-const fabContainerStyle = {
-    display: 'flex', 
-    width: '95%', 
-    padding:'0 10px', 
-    position: 'fixed', 
-    zIndex:2, 
-    bottom: '20px', 
-};

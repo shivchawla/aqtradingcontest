@@ -3,6 +3,7 @@ import _ from 'lodash';
 import Media from 'react-media';
 import {screenSize} from '../../constants';
 import StockListItemMobile from './StockListItemMobile';
+import StockListItemDesktop from './StockListItemDesktop';
 
 export default class StockListComponent extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -36,18 +37,19 @@ export default class StockListComponent extends React.Component {
                                     />
                                 )}
                             />
-                            {/* <Media 
+                            <Media 
                                 query={`(min-width: ${screenSize.desktop})`}
                                 render={() => (
-                                    <StockListItem 
+                                    <StockListItemDesktop 
                                         key={index} 
                                         {...stock} 
                                         onClick={this.props.handleStockListItemClick} 
                                         onAddIconClick={this.props.conditionallyAddItemToSelectedArray}
+                                        onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
                                         selected={stock.symbol === this.props.selectedStock}
                                     />
                                 )}
-                            /> */}
+                            />
                         </React.Fragment>
                     ))
                 }

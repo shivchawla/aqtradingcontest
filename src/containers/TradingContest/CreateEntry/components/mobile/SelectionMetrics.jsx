@@ -2,8 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {metricColor} from '../../../../constants';
-import {Utils} from '../../../../utils';
+import {metricColor} from '../../../../../constants';
+import {Utils} from '../../../../../utils';
 
 export default class SelectionMetrics extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
