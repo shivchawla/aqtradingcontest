@@ -374,6 +374,11 @@ export default class CreateEntry extends React.Component {
         }
     } 
 
+    handleDesktopDateChange = date => {
+        this.setState({selectedDate: date});
+        this.handleContestDateChange(date);
+    }
+
     renderPortfolioPicksDetail = () => {
         const props = {
             contestStartDate: this.state.contestStartDate,

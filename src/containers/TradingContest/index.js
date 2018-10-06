@@ -131,8 +131,18 @@ export default class TradingContest extends React.Component {
             <Switch>
                 <Route 
                     exact={true} 
-                    path={`${this.props.match.url}`} 
+                    path={`${this.props.match.url}/create`} 
                     render={props => <CreateEntry {...props}/>} 
+                />
+                <Route 
+                    exact={true} 
+                    path={`${this.props.match.url}/toppicks`} 
+                    render={props => <TopPicks {...props}/>} 
+                />
+                <Route 
+                    exact={true} 
+                    path={`${this.props.match.url}/leaderboard`} 
+                    render={props => <Leaderboard {...props}/>} 
                 />
             </Switch>
         );

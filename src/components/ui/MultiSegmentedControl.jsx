@@ -46,7 +46,7 @@ class MultiSegmentedControl extends React.Component {
         const {classes, labels = ['Segment 1', 'Segment 2']} = this.props;
 
         return (
-            <Grid container style={{...horizontalBox, justifyContent: 'center'}}>
+            <Grid container style={{...horizontalBox, justifyContent: 'flex-start'}}>
                 <Paper style={{margin: '10px 0', overflow: 'hidden', transform: 'scale(0.7, 0.7)'}}>
                     <Tabs
                             value={this.state.selectedView}
@@ -72,4 +72,4 @@ class MultiSegmentedControl extends React.Component {
     }
 }
 
-export default withStyles(styles)(TimelineSegment);
+export default withStyles(styles)(MultiSegmentedControl);

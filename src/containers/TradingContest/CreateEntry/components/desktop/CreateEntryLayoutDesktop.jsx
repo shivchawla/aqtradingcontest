@@ -5,14 +5,21 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimerComponent from '../../../Misc/TimerComponent';
-import DesktopHeader from '../../../Misc/DesktopHeader';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
-import StockList from '../mobile/StockList';
-import StockPreviewList from '../mobile/StockPreviewList';
+import StockList from '../common/StockList';
+import StockPreviewList from '../common/StockPreviewList';
+import AqLayoutDesktop from '../../../../../components/ui/AqDesktopLayout';
 import {getTotalInvestment} from '../../../utils';
-import {verticalBox, primaryColor, secondaryColor} from '../../../../../constants';
+import {verticalBox, primaryColor, secondaryColor, horizontalBox} from '../../../../../constants';
+import MultiSegmentedControl from '../../../../../components/ui/MultiSegmentedControl';
 
 export default class CreateEntryLayoutMobile extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            listView: 'all'
+        };
+    }
 
     renderEmptySelections = () => {
         const {contestActive, noEntryFound, contestFound} = this.props;
@@ -75,13 +82,13 @@ export default class CreateEntryLayoutMobile extends React.Component {
     renderStockList = () => {
         let positions = [];
         let previewPositions = [];
-        if (this.props.listView === 'buy') {
+        if (this.state.listView === 'buy') {
             positions = this.props.positions;
             previewPositions = this.props.previousPositions;
-        } else if (this.props.listView === 'sell') {
+        } else if (this.state.listView === 'sell') {
             positions = this.props.sellPositions;
             previewPositions = this.props.previousSellPositions;
-        } else if (this.props.listView === 'all') {
+        } else if (this.state.listView === 'all') {
             positions = [...this.props.positions, ...this.props.sellPositions];
             previewPositions = [...this.props.previousPositions, ...this.props.previousSellPositions];
         };
@@ -93,7 +100,22 @@ export default class CreateEntryLayoutMobile extends React.Component {
         )
     }
 
-    render() {
+    handleSegmentControlChange = value => {
+        let nValue = 'all';
+        switch(value) {
+            case 0:
+                nValue = 'buy';
+                break;
+            case 1:
+                nValue = 'sell';
+            default:
+                break;
+        }
+
+        this.setState({listView: nValue});
+    }
+
+    renderContent() {
         const {
             contestEndDate, 
             positions = [], 
@@ -101,8 +123,6 @@ export default class CreateEntryLayoutMobile extends React.Component {
             contestFound = false,
             noEntryFound = false,
             previousPositions = [],
-            listView,
-            handleStockTypeRadioChange,
             toggleEntryDetailBottomSheet,
             toggleSearchStockBottomSheet,
             showPreviousPositions,
@@ -117,10 +137,55 @@ export default class CreateEntryLayoutMobile extends React.Component {
 
         return (
             !contestFound || (noEntryFound && positions.length === 0 && previousPositions.length == 0)
-            
             ?   this.renderEmptySelections()
-            :   <Grid item xs={12}>
-                    <DesktopHeader header='Top Picks'/>
+            :   <Grid container>
+                    <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                        <Grid container>
+                            <Grid item xs={4}>
+                                <MultiSegmentedControl 
+                                    onChange={this.handleSegmentControlChange} 
+                                    labels={['BUY', 'SELL', 'ALL']}
+                                />
+                            </Grid>
+                        </Grid>
+                        {
+                            !contestSubmissionOver &&
+                            <Grid item xs={8} 
+                                    style={{
+                                        ...fabContainerStyle,
+                                        justifyContent: 'flex-end'
+                                    }}
+                            >
+                                <Button 
+                                        style={{...fabButtonStyle, ...addStocksStyle}} 
+                                        size='small' 
+                                        variant="contained" 
+                                        aria-label="Delete" 
+                                        onClick={toggleSearchStockBottomSheet}
+                                >
+                                    <Icon style={{marginRight: '5px'}}>add_circle</Icon>
+                                    UPDATE
+                                </Button>
+                                {
+                                    !showPreviousPositions &&
+                                    <div>
+                                        <Button 
+                                                style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                                size='small' 
+                                                variant="contained" 
+                                                aria-label="Edit" 
+                                                onClick={submitPositions}
+                                                disabled={submissionLoading}
+                                        >
+                                            <Icon style={{marginRight: '5px'}}>update</Icon>
+                                            SUBMIT
+                                            {submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
+                                        </Button>
+                                    </div>
+                                }
+                            </Grid>
+                        }
+                    </Grid>
                     {
                         contestSubmissionOver &&
                         <SelectionMetricsMini 
@@ -129,43 +194,18 @@ export default class CreateEntryLayoutMobile extends React.Component {
                         />
                     }
                     {this.renderStockList()}
-                    {
-                        !contestSubmissionOver &&
-                        <div 
-                                style={{
-                                    ...fabContainerStyle,
-                                    justifyContent: showPreviousPositions ? 'center' : 'space-between'
-                                }}
-                        >
-                            <Button 
-                                    style={{...fabButtonStyle, ...addStocksStyle}} 
-                                    size='small' variant="extendedFab" 
-                                    aria-label="Delete" 
-                                    onClick={toggleSearchStockBottomSheet}
-                            >
-                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                UPDATE
-                            </Button>
-                            {
-                                !showPreviousPositions &&
-                                <div>
-                                    <Button 
-                                            style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                            size='small' 
-                                            variant="extendedFab" 
-                                            aria-label="Edit" 
-                                            onClick={submitPositions}
-                                            disabled={submissionLoading}
-                                    >
-                                        <Icon style={{marginRight: '5px'}}>update</Icon>
-                                        SUBMIT
-                                        {submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
-                                    </Button>
-                                </div>
-                            }
-                        </div>
-                    }
                 </Grid>
+        );
+    }
+
+    render() {
+        return (
+            <AqLayoutDesktop 
+                    header='My Picks'
+                    handleDateChange={this.props.handleDateChange}
+            >
+                {this.renderContent()}
+            </AqLayoutDesktop>
         );
     }
 }
@@ -185,15 +225,16 @@ const fabContainerStyle = {
     display: 'flex', 
     width: '95%', 
     padding:'0 10px', 
-    position: 'fixed', 
+    position: 'absolute', 
     zIndex:2, 
-    bottom: '20px', 
+    right: '20px', 
 };
 
 
 const addStocksStyle = {
     backgroundColor: secondaryColor,
-    color: '#fff'
+    color: '#fff',
+    marginRight: '20px'
 };
 
 const submitButtonStyle = {

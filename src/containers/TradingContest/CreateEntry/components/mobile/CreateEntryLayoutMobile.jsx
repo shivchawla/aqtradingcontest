@@ -7,8 +7,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import TimerComponent from '../../../Misc/TimerComponent';
 import StockTypeRadio from './StockTypeRadio';
 import SelectionMetricsMini from './SelectionMetricsMini';
-import StockList from './StockList';
-import StockPreviewList from './StockPreviewList';
+import StockList from '../common/StockList';
+import StockPreviewList from '../common/StockPreviewList';
 import {getTotalInvestment} from '../../../utils';
 import {verticalBox, primaryColor, secondaryColor} from '../../../../../constants';
 
