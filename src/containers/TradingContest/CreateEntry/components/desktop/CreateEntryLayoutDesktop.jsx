@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import moment from 'moment';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
@@ -19,6 +20,14 @@ export default class CreateEntryLayoutMobile extends React.Component {
         this.state = {
             listView: 'all'
         };
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(nextProps, this.props) || !_.isEqual(this.state, nextState)) {
+            return true;
+        }
+
+        return false;
     }
 
     renderEmptySelections = () => {
@@ -202,7 +211,8 @@ export default class CreateEntryLayoutMobile extends React.Component {
         return (
             <AqLayoutDesktop 
                     header='My Picks'
-                    handleDateChange={this.props.handleDateChange}
+                    handleDateChange={this.props.onDateChange}
+                    loading={this.props.loading}
             >
                 {this.renderContent()}
             </AqLayoutDesktop>

@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
@@ -6,6 +7,14 @@ import {horizontalBox} from '../../../constants';
 import DateComponent from './DateComponent';
 
 export default class DesktopHeader extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(nextProps, this.props) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+
     render() {
         const {header = 'Page Header', selectedDate = moment()} = this.props;
 

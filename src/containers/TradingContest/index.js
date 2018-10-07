@@ -22,7 +22,7 @@ export default class TradingContest extends React.Component {
     createEntryComponent = null;
     state = {
         selectedTab: 0,
-        selectedDate: moment(),
+        selectedDate: moment().subtract(11, 'days'),
         bottomSheetOpen: false
     };
 

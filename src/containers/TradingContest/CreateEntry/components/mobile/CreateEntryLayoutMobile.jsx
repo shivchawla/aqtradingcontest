@@ -9,6 +9,7 @@ import StockTypeRadio from './StockTypeRadio';
 import SelectionMetricsMini from './SelectionMetricsMini';
 import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
+import LoaderComponent from '../../../Misc/Loader';
 import {getTotalInvestment} from '../../../utils';
 import {verticalBox, primaryColor, secondaryColor} from '../../../../../constants';
 
@@ -93,7 +94,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
         )
     }
 
-    render() {
+    renderContent = () => {
         const {
             contestEndDate, 
             positions = [], 
@@ -172,6 +173,14 @@ export default class CreateEntryLayoutMobile extends React.Component {
                         </div>
                     }
                 </Grid>
+        );
+    }
+
+    render() {
+        return (
+            this.props.loading 
+            ?   <LoaderComponent />
+            :   this.renderContent()
         );
     }
 }

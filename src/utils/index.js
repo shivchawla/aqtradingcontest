@@ -228,16 +228,14 @@ export class Utils{
 	}
 
 	static isLoggedIn() {
-		// if (this.loggedInUserinfo && this.loggedInUserinfo['token']) {
-		// 	return true;
-		// }else{
-		// 	return false;
-		// }
-		return true;
+		if (this.loggedInUserinfo && this.loggedInUserinfo['token']) {
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	static getAuthToken(){
-		return "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YmFjOGFkMTQzYTA3YjRhMGE5YzU1ODgiLCJlbWFpbCI6InNhcnUuc3JleW9AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiU2F1cmF2IiwibGFzdE5hbWUiOiJCaXN3YXMiLCJwYXNzd29yZCI6IiQyYSQxMCQuaERtTFlPdTdsUFp2em8xYUdQSEEuVUlKUlltRHkxbFlpMGVaV2dTNHBqQ3dBQzB1dXBSZSIsImNvZGUiOiIyOGRiN2YyYy1kNmQ5LTQ1ZTQtOGM2YS0xYjE5NjE5ODI4ZmYiLCJjcmVhdGVkRGF0ZSI6IjIwMTgtMDktMjdUMDc6NDY6MjUuMjA1WiIsIl9fdiI6MCwiaXNVc2VyRnJvbUdvb2dsZSI6ZmFsc2UsImVtYWlscHJlZmVyZW5jZSI6eyJ3ZWVrbHlfcGVyZm9ybWFuY2VfZGlnZXN0Ijp0cnVlLCJkYWlseV9wZXJmb3JtYW5jZV9kaWdlc3QiOnRydWV9LCJhY3RpdmUiOnRydWUsImlhdCI6MTUzODYyOTgwOCwiZXhwIjoxNTM4ODAyNjA4LCJpc3MiOiJhaW1zcXVhbnQiLCJqdGkiOiJqd3RpZCJ9.m6EB-uAcFQwknheTYvSutElQOyMy0Y1u1kAfuGclQEbWvtZ6uTbdjYK3OBNphjRZg9df2dWKbY6LUzimzBl8jVTXkRCkhBgqoacFdyeWnFBWvOIkYll_X_gi3P0gE42sIREYiO3dorN_xyMDKyv1AEEUVQjpaZm89ott6nqNX9mtLx5QDTPP4fOGVbBtE-GRF6mx2RFStL0CWXjdFlkIlHygmh3MVY5Yd5PEszNS2p-hNi-0-NZlOV5bGTexWTjdBK33CuyNNMhCCpNYT6EdDQlxxLfamCY8UiuPhtu8kkwuAqfRSTnWdVHXvNTEFl0GQqOU_0sAq8RD7hv5zmnIDg";
 		this.loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']){
 			return this.loggedInUserinfo['token'];
@@ -254,9 +252,6 @@ export class Utils{
 		if (this.isLoggedIn()){
 			headersLocal['aimsquant-token'] = this.getAuthToken();
 		}
-		headersLocal = {
-			'aimsquant-token': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YmFjOGFkMTQzYTA3YjRhMGE5YzU1ODgiLCJlbWFpbCI6InNhcnUuc3JleW9AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiU2F1cmF2IiwibGFzdE5hbWUiOiJCaXN3YXMiLCJwYXNzd29yZCI6IiQyYSQxMCQuaERtTFlPdTdsUFp2em8xYUdQSEEuVUlKUlltRHkxbFlpMGVaV2dTNHBqQ3dBQzB1dXBSZSIsImNvZGUiOiIyOGRiN2YyYy1kNmQ5LTQ1ZTQtOGM2YS0xYjE5NjE5ODI4ZmYiLCJjcmVhdGVkRGF0ZSI6IjIwMTgtMDktMjdUMDc6NDY6MjUuMjA1WiIsIl9fdiI6MCwiaXNVc2VyRnJvbUdvb2dsZSI6ZmFsc2UsImVtYWlscHJlZmVyZW5jZSI6eyJ3ZWVrbHlfcGVyZm9ybWFuY2VfZGlnZXN0Ijp0cnVlLCJkYWlseV9wZXJmb3JtYW5jZV9kaWdlc3QiOnRydWV9LCJhY3RpdmUiOnRydWUsImlhdCI6MTUzODYyOTgwOCwiZXhwIjoxNTM4ODAyNjA4LCJpc3MiOiJhaW1zcXVhbnQiLCJqdGkiOiJqd3RpZCJ9.m6EB-uAcFQwknheTYvSutElQOyMy0Y1u1kAfuGclQEbWvtZ6uTbdjYK3OBNphjRZg9df2dWKbY6LUzimzBl8jVTXkRCkhBgqoacFdyeWnFBWvOIkYll_X_gi3P0gE42sIREYiO3dorN_xyMDKyv1AEEUVQjpaZm89ott6nqNX9mtLx5QDTPP4fOGVbBtE-GRF6mx2RFStL0CWXjdFlkIlHygmh3MVY5Yd5PEszNS2p-hNi-0-NZlOV5bGTexWTjdBK33CuyNNMhCCpNYT6EdDQlxxLfamCY8UiuPhtu8kkwuAqfRSTnWdVHXvNTEFl0GQqOU_0sAq8RD7hv5zmnIDg'
-		};
 		
 		return headersLocal;
 	}

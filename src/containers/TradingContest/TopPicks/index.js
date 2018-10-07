@@ -1,14 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
+import Media from 'react-media';
 import moment from 'moment';
-import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router';
-import LoaderComponent from '../Misc/Loader';
-import TimelineSegment from '../Misc/TimelineSegment';
-import WinnerList from './WinnerList';
-import {verticalBox, horizontalBox} from '../../../constants';
+import TopPicksLayoutMobile from './mobile/TopPicksLayout';
+import TopPicksLayoutDesktop from './desktop/TopPicksLayout';
+import {verticalBox} from '../../../constants';
 import TimerComponent from '../Misc/TimerComponent';
 import {DailyContestCreateMeta} from '../metas';
 import {getContestSummary} from '../utils';
@@ -78,71 +77,6 @@ class Winners extends React.Component {
         this.getContestRankings(this.state.selectedDate);
     }
 
-    renderTopPicksDetails = () => {
-        const contestEnded = moment().isAfter(moment(this.state.endDate));
-        const contestRunning = moment().isSameOrAfter(moment(this.state.startDate)) && !contestEnded;
-        const winnerStocks = this.state.winnerStocks;
-        const winnerStocksWeekly = this.state.winnerStocksWeekly;
-        const contestActive  = this.state.contestActive;
-
-        return (
-            <SGrid container>
-                <DailyContestCreateMeta />
-                {
-                    this.state.noContestFound
-                    ?   <ContestNotPresentView />
-                    :   <React.Fragment>
-                            {
-                                this.state.winnerStocks.length === 0 &&
-                                <Grid 
-                                        item 
-                                        xs={12} 
-                                        style={{
-                                            ...verticalBox, 
-                                            padding: '0 10px', 
-                                            backgroundColor: '#fff'
-                                        }}
-                                >
-                                    <ContestStartedView 
-                                        endDate={
-                                            contestEnded 
-                                            ? this.state.resultDate 
-                                            : contestRunning 
-                                                ? this.state.endDate 
-                                                :  this.state.startDate
-                                        }
-                                        contestEnded={contestEnded}
-                                        contestRunning={contestRunning}
-                                    />
-                                </Grid>
-                            }     
-                            {
-                                this.state.winnerStocks.length > 0 &&
-                                <Grid item xs={12} style={{position: 'absolute', top: '0px', width: '100%'}}>
-                                    <TimelineSegment 
-                                        onChange={this.handleTimeLineChange}
-                                        selectedView={this.state.timelineView}
-                                    />
-                                </Grid>
-                            }                       
-                            {
-                                contestEnded &&
-                                <Grid item xs={12} style={{padding: '10px', marginTop: '60px'}}>
-                                    {
-                                        (winnerStocks.length > 0 || winnerStocksWeekly.length > 0) && 
-                                        <WinnerList 
-                                            winners={this.state.timelineView === 'daily' ? winnerStocks : winnerStocksWeekly}
-                                        />
-                                    }
-                                </Grid>
-                            }
-                        </React.Fragment>
-
-                }
-            </SGrid>
-        );
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -155,17 +89,37 @@ class Winners extends React.Component {
         this.setState({timelineView: view});
     }
 
+    handleDateChange = date => {
+        this.setState({selectedDate: date});
+        this.getContestRankings(date);
+    }
+
     render() {
+        const props = {
+            endDate: this.state.endDate,
+            startDate: this.state.startDate,
+            winnerStocks: this.state.winnerStocks,
+            winnerStocksWeekly: this.state.winnerStocksWeekly,
+            contestActive: this.state.contestActive,
+            noContestFound: this.state.noContestFound,
+            resultDate: this.state.resultDate,
+            handleTimeLineChange: this.handleTimeLineChange,
+            timelineView: this.state.timelineView,
+            loading: this.state.loading
+        };
+
         return (
-            <SGrid container style={topPicksDetailStyle}>
-                <Grid item xs={12} style={{...verticalBox, position: 'relative'}}>
-                    {
-                        !this.state.loading
-                        ? this.renderTopPicksDetails()
-                        : <LoaderComponent />
-                    }
-                </Grid>
-            </SGrid>
+            <React.Fragment>
+                <DailyContestCreateMeta />
+                <Media 
+                    query="(max-width: 600px)"
+                    render={() => <TopPicksLayoutMobile {...props}/>}
+                />
+                <Media 
+                    query="(min-width: 601px)"
+                    render={() => <TopPicksLayoutDesktop {...props} onDateChange={this.handleDateChange} />}
+                />
+            </React.Fragment>
         );
     }
 }
@@ -198,23 +152,6 @@ const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
                     <TimerComponent date={endDate} />
                 </Grid>
             }
-        </Grid>
-    );
-}
-
-const ContestWillStartView = ({startDate}) => {
-    return (
-        <Grid container style={{marginTop: '15%'}}>
-            <Grid item xs={12}>
-                <h3 style={{fontSize: '14px', color: '#4B4B4B', fontWeight: 300}}>
-                    Contest will start in
-                </h3>
-            </Grid>
-            <Grid item xs={12}>
-                <TimerComponent 
-                        date={startDate} 
-                />
-            </Grid>
         </Grid>
     );
 }

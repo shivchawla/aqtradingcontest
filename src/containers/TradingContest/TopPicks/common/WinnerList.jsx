@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import WinnerListItem from './WinnerListItem';
+import WinnerListItem from '../mobile/WinnerListItem';
 
 export default class WinnerList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {

@@ -256,7 +256,6 @@ export default class CreateEntry extends React.Component {
 
     updateContestStatusOnDateChange = (selectedDate) => {
         return new Promise((resolve, reject) => {
-            
             this.getContestStatus(this.state.selectedDate)
             .then(contestStatus => {
                 resolve(contestStatus)
@@ -277,7 +276,7 @@ export default class CreateEntry extends React.Component {
                 contestEndDate,
                 contestResultDate
             });
-        }) 
+        }); 
     }
 
     updateContestEntryStatusOnDateChange = (selectedDate) => {
@@ -299,7 +298,6 @@ export default class CreateEntry extends React.Component {
         })
         .then(contestEntryData => {
             const {positions = [], sellPositions = [], pnlStats, weeklyPnlStats} = contestEntryData;
-            console.log('Sell Positions', sellPositions);
 
             return this.setState({
                 noEntryFound: positions.length === 0,
@@ -314,7 +312,7 @@ export default class CreateEntry extends React.Component {
         })
     }
 
-    handleContestDateChange = _.throttle((selectedDate) => {
+    handleContestDateChange = (selectedDate) => {
         this.setState({loading: true});
         return this.updateContestStatusOnDateChange(selectedDate)
         .then(contestStatus => {
@@ -323,7 +321,7 @@ export default class CreateEntry extends React.Component {
         .finally(() => {
             this.setState({loading: false});
         }) 
-    }, 500)
+    }
 
     onSegmentValueChange = value => {
         this.setState({listView: value});
@@ -375,8 +373,7 @@ export default class CreateEntry extends React.Component {
     } 
 
     handleDesktopDateChange = date => {
-        this.setState({selectedDate: date});
-        this.handleContestDateChange(date);
+        this.setState({selectedDate: date}, () => this.handleContestDateChange(date));
     }
 
     renderPortfolioPicksDetail = () => {
@@ -398,7 +395,8 @@ export default class CreateEntry extends React.Component {
             submissionLoading: this.state.submissionLoading,
             getRequiredMetrics: this.getRequiredMetrics,
             previousSellPositions: this.state.previousSellPositions,
-            onStockItemChange: this.onStockItemChange
+            onStockItemChange: this.onStockItemChange,
+            loading: this.state.loading
         }
         return (
             <React.Fragment>
@@ -408,7 +406,7 @@ export default class CreateEntry extends React.Component {
                 />
                 <Media 
                     query="(min-width: 601px)"
-                    render={() => <CreateEntryLayoutDesktop {...props}/>}
+                    render={() => <CreateEntryLayoutDesktop {...props} onDateChange={this.handleDesktopDateChange} />}
                 />
             </React.Fragment>
         );
@@ -432,11 +430,7 @@ export default class CreateEntry extends React.Component {
                         onClose={() => this.setState({snackbarOpenStatus: false})}
                     />
                     {this.renderSearchStocksBottomSheet()}
-                    {
-                        this.state.loading
-                        ? <LoaderComponent />
-                        : this.renderPortfolioPicksDetail()
-                    }
+                    {this.renderPortfolioPicksDetail()}
                 </SGrid>
             </React.Fragment>
         );
