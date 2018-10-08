@@ -2,9 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../constants';
-import {getRankMedal} from '../utils';
-import {Utils} from '../../../utils';
+import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../../constants';
+import {getRankMedal} from '../../utils';
+import {Utils} from '../../../../utils';
 
 export default class ParticipantListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {

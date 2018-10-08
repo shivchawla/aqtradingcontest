@@ -21,8 +21,6 @@ export default class AqDesktopLayout extends React.Component {
             <ContainerGrid container>
                 <Grid item xs={12}>
                     <DesktopHeader header={this.props.header} handleDateChange={this.props.handleDateChange}/>
-                </Grid>
-                <Grid item xs={12}>
                     {
                         loading ? <LoaderComponent /> : this.props.children
                     }

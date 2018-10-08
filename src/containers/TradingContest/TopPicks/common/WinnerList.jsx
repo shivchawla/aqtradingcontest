@@ -2,7 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import WinnerListItem from '../mobile/WinnerListItem';
+import WinnerListItemMobile from '../mobile/WinnerListItem';
+import WinnerListItemDesktop from '../desktop/WinnerListItem';
 
 export default class WinnerList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -15,6 +16,7 @@ export default class WinnerList extends React.Component {
 
     renderWinners = () => {
         const {winners = []} = this.props;
+        const WinnerListItem = global.screen.width < 600 ? WinnerListItemMobile : WinnerListItemDesktop;
         
         return winners.map((winner, index) => (
             <WinnerListItem {...winner} key={index} />

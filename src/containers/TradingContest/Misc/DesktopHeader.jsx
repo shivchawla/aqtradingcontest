@@ -19,7 +19,7 @@ export default class DesktopHeader extends React.Component {
         const {header = 'Page Header', selectedDate = moment()} = this.props;
 
         return (
-            <Grid container justify='space-between' alignItems='center'>
+            <Container container justify='space-between' alignItems='center'>
                 <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
                     <Header>{header}</Header>
                 </Grid>
@@ -30,7 +30,7 @@ export default class DesktopHeader extends React.Component {
                         onDateChange={this.props.handleDateChange}
                     />
                 </Grid>
-            </Grid>
+            </Container>
         );
     }
 }
@@ -39,4 +39,8 @@ const Header = styled.h3`
     font-size: 34px;
     font-weight: 500px;
     color: #4B4B4B;
+`;
+
+const Container = styled(Grid)`
+    padding-left: 3%;
 `;

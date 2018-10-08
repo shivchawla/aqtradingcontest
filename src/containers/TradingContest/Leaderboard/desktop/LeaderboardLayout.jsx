@@ -3,7 +3,7 @@ import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import AqDesktopLayout from '../../../../components/ui/AqDesktopLayout';
-import TopPicksTable from './TopPicksTable';
+import LeaderboardTable from './LeaderboardTable';
 import MultiSegmentedControl from '../../../../components/ui/MultiSegmentedControl';
 import TimerComponent from '../../Misc/TimerComponent';
 import {verticalBox} from '../../../../constants';
@@ -31,10 +31,11 @@ export default class TopPicksLayout extends React.Component {
     }
 
     renderContent() {
-        const contestEnded = moment().isAfter(moment(this.props.endDate));
-        const contestRunning = moment().isSameOrAfter(moment(this.props.startDate)) && !contestEnded;
-        const winnerStocks = this.props.winnerStocks;
-        const winnerStocksWeekly = this.props.winnerStocksWeekly;
+        const contestEnded = moment().isAfter(this.props.endDate);
+        const contestRunning = moment().isSameOrAfter(this.props.startDate) && !contestEnded;
+        const winners = this.props.winners;
+        const winnersWeekly = this.props.winnersWeekly;
+        const contestActive = this.props.contestActive;
 
         return (
             <SGrid container>
@@ -43,21 +44,21 @@ export default class TopPicksLayout extends React.Component {
                     ?   <ContestNotPresentView />
                     :   <Grid item xs={12}>
                             {
-                                this.props.winnerStocks.length === 0 &&
-                                    <ContestStartedView 
-                                        endDate={
-                                            contestEnded 
-                                            ? this.props.resultDate 
-                                            : contestRunning 
-                                                ? this.props.endDate 
-                                                :  this.props.startDate
-                                        }
-                                        contestEnded={contestEnded}
-                                        contestRunning={contestRunning}
-                                    />
+                                this.props.contestActive &&
+                                <ContestStartedView 
+                                    endDate={
+                                        contestEnded 
+                                        ? this.props.resultDate 
+                                        : contestRunning 
+                                            ? this.props.endDate 
+                                            :  this.props.startDate
+                                    }
+                                    contestEnded={contestEnded}
+                                    contestRunning={contestRunning}
+                                />
                             }     
                             {
-                                this.props.winnerStocks.length > 0 &&
+                                this.props.winners.length > 0 && 
                                 <div>
                                     <MultiSegmentedControl 
                                         onChange={this.handleSegmentControlChange}
@@ -66,13 +67,17 @@ export default class TopPicksLayout extends React.Component {
                                 </div>
                             }                       
                             {
-                                contestEnded &&
+                                !contestActive && 
                                 <div style={{marginLeft: '3%', marginRight: '3%'}}>
-                                    <TopPicksTable 
-                                        winnerStocks={winnerStocks}
-                                        winnerStocksWeekly={winnerStocksWeekly}
-                                        timelineView={this.state.timelineView}
-                                    />
+                                    {
+                                        winners.length == 0 
+                                        ?   <ContestNotPresentView /> 
+                                        :   <LeaderboardTable 
+                                                winnersWeekly={winnersWeekly}
+                                                winners={winners}
+                                                timelineView={this.state.timelineView}
+                                            />
+                                    }
                                 </div>
                             }
                         </Grid>
@@ -85,7 +90,7 @@ export default class TopPicksLayout extends React.Component {
     render() {
         return (
             <AqDesktopLayout 
-                    header="Top Picks"
+                    header="Leaderboard"
                     loading={this.props.loading} 
                     handleDateChange={this.props.onDateChange}
             >
@@ -111,26 +116,23 @@ const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
             <Grid item xs={12}>
                 <h3 style={{fontSize: '18px', color: '#4B4B4B', fontWeight: 300}}>
                     {
-                        contestEnded ? 'Results will be declared soon' : contestRunning ? 'Contest submission ends in' : 'New Contest will start in'
+                        contestEnded ? 'Results to be declared in' : contestRunning ? 'Contest submission ends in' : 'New Contest will start in'
                     }
                 </h3>
             </Grid>
-            {
-                !contestEnded &&
-                <Grid item xs={12}>
-                    <TimerComponent date={endDate} />
-                </Grid>
-            }
+            <Grid item xs={12}>
+                <TimerComponent date={endDate} />
+            </Grid>
         </Grid>
     );
 }
-
-const SGrid = styled(Grid)`
-    background-color: #fff;
-`;
 
 const ContestNotAvailableText = styled.h3`
     font-size: 18px;
     font-weight: 400;
     color: primaryColor;
+`;
+
+const SGrid = styled(Grid)`
+    background-color: #fff;
 `;
