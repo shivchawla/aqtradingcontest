@@ -47,7 +47,13 @@ class MultiSegmentedControl extends React.Component {
 
         return (
             <Grid container style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                <Paper style={{margin: '10px 0', overflow: 'hidden', transform: 'scale(0.7, 0.7)'}}>
+                <Paper style={{
+                        margin: '10px 0', 
+                        overflow: 'hidden', 
+                        transform: 'scale(0.7, 0.7)', 
+                        ...this.props.paperStyle
+                    }}
+                >
                     <Tabs
                             value={this.state.selectedView}
                             onChange={this.handleChange}

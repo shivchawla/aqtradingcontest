@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import Media from 'react-media';
-import Grid from '@material-ui/core/Grid'
+import Grid from '@material-ui/core/Grid';
 import StockEditListItemMobile from '../mobile/StockEditListItem';
 import StockEditListItemDesktop from '../desktop/StockEditListItem';
 
@@ -29,7 +28,17 @@ export default class StockList extends React.Component {
         const StockEditListItem = global.screen.height < 599 ? StockEditListItemMobile : StockEditListItemDesktop;
 
         return (
-            <Grid item className='stock-list' xs={12} style={{paddingTop: '20px', padding: '0 5px', paddingBottom: '80px'}}>
+            <Grid 
+                    item className='stock-list' 
+                    xs={12} 
+                    style={{
+                        paddingTop: '20px', 
+                        padding: '0 5px', 
+                        paddingBottom: '80px',
+                        paddingLeft: '3%',
+                        paddingRight: '3%'
+                    }}
+            >
                 {
                     positions.map((position, index) => {
                         return (

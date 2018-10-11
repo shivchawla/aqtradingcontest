@@ -6,6 +6,7 @@ import Chip from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import ActionIcon from '../../../Misc/ActionIcons';
+import Tag from './Tag';
 import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
 
@@ -71,21 +72,34 @@ export default class StockEditListItem extends React.Component {
         const changeColor = chgPct >= 0 ? metricColor.positive : metricColor.negative;
 
         return (
-            <SGrid container style={{padding: '0 10px', paddingBottom: '0px'}}>
-                
+            <SGrid container style={{padding: '0 10px', paddingBottom: '0px'}} alignItems="center" justify="center">
                 <SGridCol item xs={4} style={colStyle}>
                     <Symbol>
                         {symbol}
-                        <p style={{...nameEllipsisStyle, width: '170px', color: '#6A6A6A', textAlign: 'start', marginTop:'0px'}}>{name}</p>
+                        <p 
+                                style={{
+                                    ...nameEllipsisStyle, 
+                                    width: '250px', 
+                                    color: '#6A6A6A', 
+                                    textAlign: 'start', 
+                                    marginTop:'0px',
+                                    fontSize: '16px',
+                                    fontWeight: 400,
+                                    marginBottom: 0
+                                }}
+                                
+                        >
+                            {name}
+                        </p>
                     </Symbol>
                 </SGridCol>
                 <SGridCol item xs={1}>
-                    <Chip label={direction} />
+                    <Tag>{direction}</Tag>
                 </SGridCol>
                 <SGridCol item xs={4}>
-                    <SecondayText style={{fontSize: '16px'}}>
+                    <SecondayText style={{fontSize: '18px'}}>
                         ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)} 
-                        <span style={{fontSize:'12px', color: changeColor, marginLeft: '2px'}}>
+                        <span style={{fontSize:'17px', color: changeColor, marginLeft: '2px'}}>
                             {chg} ({(chgPct * 100).toFixed(2)}%)
                         </span>
                     </SecondayText>
@@ -102,10 +116,10 @@ export default class StockEditListItem extends React.Component {
                         }}
                 >
                     <IconButton onClick={this.onAddClick}>
-                        <Icon style={{color: metricColor.positive}}>expand_less</Icon>
+                        <Icon style={{color: metricColor.positive, fontSize: '18px'}}>expand_less</Icon>
                     </IconButton>
                     <IconButton onClick={this.onReduceClick}>
-                        <Icon style={{color: metricColor.negative}}>expand_more</Icon>
+                        <Icon style={{color: metricColor.negative, fontSize: '18px'}}>expand_more</Icon>
                     </IconButton>
                 </SGridCol>
             </SGrid>
@@ -134,8 +148,10 @@ const SliderMetric = ({label, value, style}) => {
 const SGrid = styled(Grid)`
     background-color: #FAFCFF;
     border: 1px solid #F2F5FF;
-    border-radius: 3px;
+    border-radius: 4px;
     margin-bottom: 10px;
+    width: 60%;
+    box-shadow: 0 3px 5px #C3E0F9;
 `;
 
 const SGridCol = styled(Grid)`
@@ -144,8 +160,8 @@ const SGridCol = styled(Grid)`
 
 const Symbol = styled.div`
     text-align: start;
-    font-weight: 400;
-    font-size: 17px;
+    font-weight: 500;
+    font-size: 20px;
     color: #6A6A6A;
 `;
 

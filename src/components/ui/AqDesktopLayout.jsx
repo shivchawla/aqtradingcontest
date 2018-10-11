@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import StockPreviewListItem from '../../containers/TradingContest/CreateEntry/components/desktop/StockPreviewListItem';
 import LoaderComponent from '../../containers/TradingContest/Misc/Loader';
 import DesktopHeader from '../../containers/TradingContest/Misc/DesktopHeader';
 

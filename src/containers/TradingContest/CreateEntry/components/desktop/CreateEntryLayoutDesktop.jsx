@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimerComponent from '../../../Misc/TimerComponent';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
+import StockPreviewListItem from '../desktop/StockPreviewListItem';
 import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
 import AqLayoutDesktop from '../../../../../components/ui/AqDesktopLayout';
@@ -154,6 +155,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
                                 <MultiSegmentedControl 
                                     onChange={this.handleSegmentControlChange} 
                                     labels={['BUY', 'SELL', 'ALL']}
+                                    paperStyle={{marginLeft: '-6%'}}
                                 />
                             </Grid>
                         </Grid>

@@ -13,6 +13,7 @@ import Icon from '@material-ui/core/Icon';
 import TopPicks from './TopPicks';
 import Leaderboard from './Leaderboard';
 import CreateEntry from './CreateEntry';
+import Home from './CreateEntry/components/desktop/Home';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import {primaryColor} from '../../constants';
@@ -22,7 +23,7 @@ export default class TradingContest extends React.Component {
     createEntryComponent = null;
     state = {
         selectedTab: 0,
-        selectedDate: moment().subtract(11, 'days'),
+        selectedDate: moment(),
         bottomSheetOpen: false
     };
 
@@ -143,6 +144,11 @@ export default class TradingContest extends React.Component {
                     exact={true} 
                     path={`${this.props.match.url}/leaderboard`} 
                     render={props => <Leaderboard {...props}/>} 
+                />
+                <Route 
+                    exact={true} 
+                    path={`${this.props.match.url}/home`} 
+                    render={props => <Home {...props}/>} 
                 />
             </Switch>
         );
