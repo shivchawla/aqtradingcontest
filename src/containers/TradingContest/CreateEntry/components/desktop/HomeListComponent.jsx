@@ -26,6 +26,7 @@ class HomeListComponent extends React.Component {
 
     onChange = type => {
         this.setState({selected: type});
+        this.props.onChange && this.props.onChange(type);
     }
 
     render() {

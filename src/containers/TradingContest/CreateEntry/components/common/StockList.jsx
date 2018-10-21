@@ -36,7 +36,7 @@ export default class StockList extends React.Component {
                         padding: '0 5px', 
                         paddingBottom: '80px',
                         paddingLeft: '3%',
-                        paddingRight: '3%'
+                        paddingRight: '3%',
                     }}
             >
                 {

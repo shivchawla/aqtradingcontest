@@ -72,7 +72,16 @@ export default class StockEditListItem extends React.Component {
         const changeColor = chgPct >= 0 ? metricColor.positive : metricColor.negative;
 
         return (
-            <SGrid container style={{padding: '0 10px', paddingBottom: '0px'}} alignItems="center" justify="center">
+            <SGrid 
+                    container 
+                    style={{
+                        padding: '0 10px', 
+                        paddingBottom: '0px', 
+                        paddingRight: 0,
+                    }} 
+                    alignItems="center" 
+                    justify="center"
+            >
                 <SGridCol item xs={4} style={colStyle}>
                     <Symbol>
                         {symbol}
@@ -80,9 +89,9 @@ export default class StockEditListItem extends React.Component {
                                 style={{
                                     ...nameEllipsisStyle, 
                                     width: '250px', 
-                                    color: '#6A6A6A', 
+                                    color: '#464646', 
                                     textAlign: 'start', 
-                                    marginTop:'0px',
+                                    marginTop:'7px',
                                     fontSize: '16px',
                                     fontWeight: 400,
                                     marginBottom: 0
@@ -98,8 +107,9 @@ export default class StockEditListItem extends React.Component {
                 </SGridCol>
                 <SGridCol item xs={4}>
                     <SecondayText style={{fontSize: '18px'}}>
-                        ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)} 
-                        <span style={{fontSize:'17px', color: changeColor, marginLeft: '2px'}}>
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
+                        <HorizontalDivider>|</HorizontalDivider>
+                        <span style={{fontSize:'17px', color: changeColor, marginLeft: 13}}>
                             {chg} ({(chgPct * 100).toFixed(2)}%)
                         </span>
                     </SecondayText>
@@ -116,10 +126,10 @@ export default class StockEditListItem extends React.Component {
                         }}
                 >
                     <IconButton onClick={this.onAddClick}>
-                        <Icon style={{color: metricColor.positive, fontSize: '18px'}}>expand_less</Icon>
+                        <Icon style={{color: metricColor.positive, fontSize: '22px'}}>expand_less</Icon>
                     </IconButton>
                     <IconButton onClick={this.onReduceClick}>
-                        <Icon style={{color: metricColor.negative, fontSize: '18px'}}>expand_more</Icon>
+                        <Icon style={{color: metricColor.negative, fontSize: '22px'}}>expand_more</Icon>
                     </IconButton>
                 </SGridCol>
             </SGrid>
@@ -127,31 +137,21 @@ export default class StockEditListItem extends React.Component {
     }
 }
 
-const PointsComponent = ({points, onAddClick, onReduceClick}) => {
-    return (
-        <div style={{...horizontalBox, justifyContent: 'center', marginRight: '-10px', marginTop:'-10px'}}>
-            <ActionIcon color="red" type='remove_circle_outline' onClick={onReduceClick} />
-            <SecondayText><span style={{fontSize: '20px', marginRight: '2px'}}>{points}</span>K</SecondayText>
-            <ActionIcon color="green" type='add_circle_outline' onClick={onAddClick} />
-        </div>
-    );
-}
-
-const SliderMetric = ({label, value, style}) => {
-    return (
-        <div style={{...horizontalBox, justifyContent: 'flex-start', ...style}}>
-            <SliderMetricText>{label} <span style={{fontSize:'16px'}}>{value}</span></SliderMetricText>
-        </div>
-    );
-}
-
 const SGrid = styled(Grid)`
     background-color: #FAFCFF;
     border: 1px solid #F2F5FF;
     border-radius: 4px;
-    margin-bottom: 10px;
-    width: 60%;
+    margin-bottom: 30px;
     box-shadow: 0 3px 5px #C3E0F9;
+`;
+
+const HorizontalDivider = styled.span`
+    font-size: 24px;
+    position: absolute;
+    margin: 0 3px;
+    margin-top: -5px;
+    font-weight: 300;
+    color: #C6C6C6;
 `;
 
 const SGridCol = styled(Grid)`
@@ -160,21 +160,15 @@ const SGridCol = styled(Grid)`
 
 const Symbol = styled.div`
     text-align: start;
-    font-weight: 500;
-    font-size: 20px;
-    color: #6A6A6A;
+    font-weight: 700;
+    font-size: 22px;
+    color: #464646;
 `;
 
 const SecondayText = styled.div`
     font-size: 18px;
     font-weight: 400;
     color: ${props => props.color || '#6A6A6A'} 
-`;
-
-const SliderMetricText = styled.h3`
-    font-size: 12px;
-    font-weight: 400;
-    color: #296E5A;
 `;
 
 const Points = styled.h3`

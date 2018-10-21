@@ -102,7 +102,7 @@ export default class TopPicksLayout extends React.Component {
 
 const ContestNotPresentView = () => {
     return (
-        <Grid container>
+        <Grid container style={{height: '100vh', width: '100%'}}>
             <Grid item xs={12} style={verticalBox}>
                 <ContestNotAvailableText>No contest avaiable for selected date</ContestNotAvailableText>
             </Grid>
@@ -112,15 +112,13 @@ const ContestNotPresentView = () => {
 
 const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
     return (
-        <Grid container style={{marginTop: '0%'}}>
-            <Grid item xs={12}>
+        <Grid container style={{marginTop: '0%', height: '100vh', width: '100%'}}>
+            <Grid item xs={12} style={verticalBox}>
                 <h3 style={{fontSize: '18px', color: '#4B4B4B', fontWeight: 300}}>
                     {
                         contestEnded ? 'Results to be declared in' : contestRunning ? 'Contest submission ends in' : 'New Contest will start in'
                     }
                 </h3>
-            </Grid>
-            <Grid item xs={12}>
                 <TimerComponent date={endDate} />
             </Grid>
         </Grid>

@@ -142,7 +142,7 @@ export default class StockPerformance extends React.Component {
         return (
             <Grid container type="flex" align="middle" style={{height: global.screen.height - 200}}>
                 <Grid item xs={12} style={{textAlign: 'center'}}>
-                    <h3 style={{fontSize: '18px', fontWeight: '700'}}>
+                    <h3 style={{fontSize: '18px', fontWeight: '400'}}>
                         Please select a stock to view the performance
                     </h3>
                 </Grid>
@@ -229,7 +229,7 @@ export default class StockPerformance extends React.Component {
             <Grid item xs={12} style={{padding:'0px 20px', alignItems:'center'}}>
                 <Grid container style={{margin: '10px 0 20px 0'}}>
                     <Grid item xs={12} style={{textAlign: 'center'}}>
-                        <h3 style={{fontSize: '16px', fontWeight: '700'}}>{this.props.stock.symbol}: {this.props.stock.name}</h3>
+                        <h3 style={{fontSize: '16px', fontWeight: '400'}}>{this.props.stock.symbol}: {this.props.stock.name}</h3>
                     </Grid>
                 </Grid>
                 {

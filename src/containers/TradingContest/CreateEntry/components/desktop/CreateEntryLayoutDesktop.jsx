@@ -19,7 +19,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: 'all'
+            listView: 'buy'
         };
     }
 
@@ -82,6 +82,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
                                 onClick={this.props.toggleSearchStockBottomSheet}
                         >
                             ADD STOCKS
+                            <Icon style={{marginLeft: '10px'}}>add_circle</Icon>
                         </Button>
                     </React.Fragment>
                 }
@@ -151,8 +152,9 @@ export default class CreateEntryLayoutMobile extends React.Component {
             :   <Grid container>
                     <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-start'}}>
                         <Grid container>
-                            <Grid item xs={4}>
+                            <Grid item xs={8}>
                                 <MultiSegmentedControl 
+                                    defaultSelected={0}
                                     onChange={this.handleSegmentControlChange} 
                                     labels={['BUY', 'SELL', 'ALL']}
                                     paperStyle={{marginLeft: '-6%'}}
@@ -161,7 +163,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
                         </Grid>
                         {
                             !contestSubmissionOver &&
-                            <Grid item xs={8} 
+                            <Grid item xs={4} 
                                     style={{
                                         ...fabContainerStyle,
                                         justifyContent: 'flex-end'
@@ -224,20 +226,19 @@ export default class CreateEntryLayoutMobile extends React.Component {
 
 const emptyPortfolioButtonStyle = {
     backgroundColor: primaryColor,
-    color: '#fff',
+    color: primaryColor,
     borderRadius: '4px',
-    width: '50%',
     border: 'none',
-    position: 'fixed',
-    bottom: '25px',
-    left:'25%'
+    marginTop: '20px',
+    fontSize: '16px',
+    fontWeight: 400,
+    backgroundColor: '#F0F0F0',
+    height: '65px'
 };
 
 const fabContainerStyle = {
     display: 'flex', 
-    width: '95%', 
     padding:'0 10px', 
-    position: 'absolute', 
     zIndex:2, 
     right: '20px', 
 };

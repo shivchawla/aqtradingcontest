@@ -13,8 +13,8 @@ export default class Tag extends React.Component {
 
 const Container = styled.div`
     border-radius: 2px;
-    width: 100px;
-    height: 30px;
+    width: 70px;
+    height: 35px;
     background-color: ${props => props.color || '#7AED95'};
     display: flex;
     flex-direction: row;
@@ -24,6 +24,6 @@ const Container = styled.div`
 
 const Text = styled.h3`
     color: #373737;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
 `;
