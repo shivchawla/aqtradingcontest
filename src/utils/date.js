@@ -2,10 +2,11 @@
 * @Author: Shiv Chawla
 * @Date:   2018-03-31 19:38:33
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-09-22 12:54:45
+* @Last Modified time: 2018-10-20 14:02:00
 */
 "use strict";
-const moment = require('moment');
+const moment = require('moment-timezone');
+const indiaTimeZone = "Asia/Kolkata";
 
 const holidays = [
     "2018-08-22",
@@ -17,7 +18,7 @@ const holidays = [
     "2018-11-08",
     "2018-11-23",
     "2018-12-25"
-].map(item => moment(item));
+].map(item => moment(item).tz(indiaTimeZone));
 
 module.exports.compareDates = function(date1, date2) {
 	var t1 = module.exports.getDate(date1).getTime();
@@ -59,10 +60,10 @@ module.exports.getLocalDate = function(dateTime, offset) {
 	return _od;
 };
 
-//Return dateTime formatted to Current Date and Time as 5:30AM IST
+//Return dateTime formatted to Current Date and Time as 00:00:00 IST
 module.exports.getDate = function(dateTime) {
-	
-	return module.exports.getLocalDate(dateTime, 0);
+	return (dateTime ? moment(dateTime) : moment()).tz(indiaTimeZone).toDate();
+	//return module.exports.getLocalDate(dateTime, 0);
 };
 
 //Return dateTime formatted to Current Date and Time as 5:30AM IST
@@ -180,7 +181,7 @@ module.exports.nextNonHolidayWeekday = function(date, today=false) {
 	
 	let isWeekend = module.exports.isWeekend(nextWeekday);
 	let isHoliday = !isWeekend ? module.exports.isHoliday(nextWeekday) : true;
-	
+
 	return isHoliday ? module.exports.nextNonHolidayWeekday(nextWeekday) : nextWeekday;
 };
 

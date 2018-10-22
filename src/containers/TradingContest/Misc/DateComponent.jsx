@@ -34,8 +34,9 @@ export default class DateComponent extends React.Component {
         this.props.onDateChange && this.props.onDateChange(this.state.selectedDate);
     }
 
-    navigateToNexDate = () => {
+    navigateToNextDate = () => {
         const date = moment(DateHelper.nextNonHolidayWeekday(this.state.selectedDate.toDate()));
+        //WHY IS THERE A LAG in FE?
         this.setState({selectedDate: date}, () => this.onDateChange());
     }
 
@@ -84,7 +85,7 @@ export default class DateComponent extends React.Component {
                         color={color}
                     />
                 </Grid>
-                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}} onClick={this.navigateToNexDate}> 
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}} onClick={this.navigateToNextDate}> 
                     <ActionIcon size={30} color={color} type='chevron_right' />
                 </Grid>
                 {
