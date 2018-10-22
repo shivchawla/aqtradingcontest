@@ -6,13 +6,15 @@ import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
 import LoaderComponent from '../../containers/TradingContest/Misc/Loader';
 import DesktopHeader from '../../containers/TradingContest/Misc/DesktopHeader';
+import MultiSegmentControl from '../../components/ui/MultiSegmentedControl';
+import RadioGroup from '../../components/selections/RadioGroup';
 import {horizontalBox, verticalBox, primaryColor} from '../../constants';
 
 class AqDesktopLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activePage: 'create'
+            activeSegment: 0
         };
     }
 
@@ -27,7 +29,39 @@ class AqDesktopLayout extends React.Component {
     componentWillMount() {
         const location = this.props.location.pathname;
         const locationArray = location.split('/');
-        this.setState({activePage: locationArray[locationArray.length - 1]});
+        this.setState({activeSegment: this.getDefaultSegment(locationArray[locationArray.length - 1])});
+    }
+
+    getDefaultSegment = (page = 'create') => {
+        switch(page) {
+            case 'create':
+                return 0;
+            case 'toppicks':
+                return 1;
+            case 'leaderboard':
+                return 2;
+            default:
+                return 0;
+        }
+    }
+
+    handleSegmentChange = value => {
+        const selectedDate = this.props.selectedDate || moment();
+        const date = selectedDate.format('YYYY-MM-DD');
+
+        switch(value) {
+            case 0:
+                this.props.history.push(`/dailycontest/create?date=${date}`);
+                break;
+            case 1:
+                this.props.history.push(`/dailycontest/toppicks?date=${date}`);
+                break;
+            case 2:
+                this.props.history.push(`/dailycontest/leaderboard?date=${date}`);
+                break;
+            default:
+                break;
+        }   
     }
 
     render() {
@@ -44,10 +78,11 @@ class AqDesktopLayout extends React.Component {
                             padding: '0 10px'
                         }}
                 >
-                    <ContestUrls 
-                        activePage={this.state.activePage} 
-                        history={this.props.history}
-                        selectedDate={this.props.selectedDate || moment()}
+                    <MultiSegmentControl 
+                        labels={['Create', 'Top Picks', 'Leaderboard']}
+                        paperStyle={{marginLeft: '-5%'}}
+                        onChange={this.handleSegmentChange}
+                        defaultSelected={this.state.activeSegment}
                     />
                     <DesktopHeader 
                         header={this.props.header} 
@@ -106,7 +141,7 @@ const ContainerGrid = styled(Grid)`
     height: 100vh;
     width: 100%; 
     justify-content: 'center';
-    padding-top: 30px;
+    padding-top: 10px;
     margin-bottom: 10px;
 `;
 

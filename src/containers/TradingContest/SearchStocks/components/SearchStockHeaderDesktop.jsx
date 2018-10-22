@@ -41,11 +41,12 @@ export default class SearchStockHeaderDesktop extends React.Component {
                     this.props.selectedStocks.length > 0 &&
                     <React.Fragment>
                         <Button 
+                                size="small"
                                 onClick={this.props.addSelectedStocksToPortfolio} 
                                 type="primary" 
                                 loading={this.props.portfolioLoading}
                                 variant="extendedFab"
-                                style={{backgroundColor: primaryColor, color: '#fff'}}
+                                style={{backgroundColor: primaryColor, color: '#fff', paddingLeft: '5px'}}
                         >
                             SELECTED
                             <CounterTag 

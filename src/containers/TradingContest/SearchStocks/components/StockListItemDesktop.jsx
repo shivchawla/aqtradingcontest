@@ -93,7 +93,6 @@ export default class StockListItem extends React.Component {
         const detailContainerStyle = {
             ...verticalBox,
             alignItems: 'flex-end',
-            paddingRight: '10px'
         };
 
         const leftContainerStyle = {
@@ -117,15 +116,15 @@ export default class StockListItem extends React.Component {
                 </Grid>
                 <Grid item xs={4} style={detailContainerStyle} onClick={() => onClick({symbol, name})}>
                     <div style={horizontalBox}>
-                        <h3 style={{fontSize: '18px', fontWeight: '500', color: '#464646'}}>
+                        <h3 style={{fontSize: '16px', fontWeight: '500', color: '#464646'}}>
                             {Utils.formatMoneyValueMaxTwoDecimals(current)}
                         </h3>
                     </div>
                     <div style={horizontalBox}>
-                        <h3 style={{color: changeColor, fontSize: '14px', marginLeft: '10px', fontWeight: 400}}>
+                        <h3 style={{color: changeColor, fontSize: '12px', marginLeft: '10px', fontWeight: 400}}>
                             {change > 0 && '+'} {Utils.formatMoneyValueMaxTwoDecimals(change)}
                         </h3>
-                        <h3 style={{color: changeColor, marginLeft: '5px', fontSize: '14px', fontWeight: 400}}>
+                        <h3 style={{color: changeColor, marginLeft: '5px', fontSize: '12px', fontWeight: 400}}>
                             ({change > 0 && '+'} {Utils.formatMoneyValueMaxTwoDecimals(nChangePct)} %)
                         </h3>
                     </div>
@@ -135,9 +134,7 @@ export default class StockListItem extends React.Component {
                         xs={4} 
                         style={{
                             ...horizontalBox,
-                            justifyContent: 'flex-start',
-                            paddingRight: '10px',
-                            paddingLeft: '18px'
+                            justifyContent: 'flex-end',
                         }}
                 >
                     {this.renderActionButtons()}

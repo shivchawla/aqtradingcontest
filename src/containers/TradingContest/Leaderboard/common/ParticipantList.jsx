@@ -44,4 +44,5 @@ const Error = styled.h3`
     color: #717171;
     font-weight: 500;
     font-size: 15px;
+    margin-top: ${global.screen.width > 600 ? '20%' : 0}
 `;

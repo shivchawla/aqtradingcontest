@@ -79,7 +79,14 @@ export default class StockFilter extends React.Component {
                         return (
                             <ExpansionPanel>
                                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-                                    <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                                    <Grid 
+                                            item xs={12} 
+                                            style={{
+                                                ...horizontalBox, 
+                                                justifyContent: 'flex-start',
+                                                width: '180px'
+                                            }}
+                                    >
                                         <Checkbox 
                                             checked={sector.checked === 1}
                                             indeterminate = {sector.checked === 0}

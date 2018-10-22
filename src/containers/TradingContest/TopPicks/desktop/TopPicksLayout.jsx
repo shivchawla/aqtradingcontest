@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import AqDesktopLayout from '../../../../components/ui/AqDesktopLayout';
 import TopPicksTable from './TopPicksTable';
-import MultiSegmentedControl from '../../../../components/ui/MultiSegmentedControl';
+import RadioGroup from '../../../../components/selections/RadioGroup';
 import TimerComponent from '../../Misc/TimerComponent';
-import {verticalBox} from '../../../../constants';
+import {verticalBox, horizontalBox} from '../../../../constants';
 
 export default class TopPicksLayout extends React.Component {
     constructor(props) {
@@ -58,10 +58,13 @@ export default class TopPicksLayout extends React.Component {
                             }     
                             {
                                 this.props.winnerStocks.length > 0 &&
-                                <div>
-                                    <MultiSegmentedControl 
+                                <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                                    <RadioGroup 
                                         onChange={this.handleSegmentControlChange}
-                                        labels={['DAILY', 'WEEKLY']}
+                                        items={['DAILY', 'WEEKLY']}
+                                        style={{
+                                            marginRight: '2%'
+                                        }}
                                     />
                                 </div>
                             }                       

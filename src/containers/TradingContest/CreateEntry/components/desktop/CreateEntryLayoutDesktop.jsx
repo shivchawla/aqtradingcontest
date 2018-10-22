@@ -13,6 +13,7 @@ import AqLayoutDesktop from '../../../../../components/ui/AqDesktopLayout';
 import {getTotalInvestment} from '../../../utils';
 import {verticalBox, primaryColor, secondaryColor, horizontalBox} from '../../../../../constants';
 import MultiSegmentedControl from '../../../../../components/ui/MultiSegmentedControl';
+import RadioGroup from '../../../../../components/selections/RadioGroup';
 
 export default class CreateEntryLayoutDesktop extends React.Component {
     constructor(props) {
@@ -151,12 +152,11 @@ export default class CreateEntryLayoutDesktop extends React.Component {
             :   <Grid container>
                     <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-start'}}>
                         <Grid container>
-                            <Grid item xs={8}>
-                                <MultiSegmentedControl 
-                                    defaultSelected={0}
+                            <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                                <RadioGroup 
+                                    items={['BUY', 'SELL', 'ALL']}
                                     onChange={this.handleSegmentControlChange} 
-                                    labels={['BUY', 'SELL', 'ALL']}
-                                    paperStyle={{marginLeft: '-6%'}}
+                                    style={{marginRight: '2%'}}
                                 />
                             </Grid>
                         </Grid>
