@@ -1,5 +1,6 @@
 import * as React from 'react';
 import _ from 'lodash';
+import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
@@ -55,7 +56,11 @@ export default class StockListItem extends React.Component {
                         color="secondary" 
                         onClick={() => onSellIconClick(symbol)}
                         variant={sellChecked ? 'contained': 'outlined'}
-                        style={{boxShadow: 'none', ...(sellChecked ? styles.sellButton.contained : styles.sellButton.outlined)}}
+                        style={{
+                            boxShadow: 'none', 
+                            ...(sellChecked ? styles.sellButton.contained : styles.sellButton.outlined),
+                            marginRight: '10px'
+                        }}
                     >
                         Sell
                     </Button>
@@ -65,7 +70,7 @@ export default class StockListItem extends React.Component {
                         color="primary" 
                         onClick={() => onAddIconClick(symbol)}
                         variant={checked ? 'contained' : 'outlined'}
-                        style={{boxShadow: 'none', marginLeft: '10px',
+                        style={{boxShadow: 'none',
                             ...(checked ? styles.buyButton.contained : styles.buyButton.outlined)
                         }}
                 >
@@ -80,7 +85,6 @@ export default class StockListItem extends React.Component {
         const containerStyle = {
             borderBottom: '1px solid #eaeaea',
             color: textColor,
-            // marginTop: '20px',
             cursor: 'pointer',
             backgroundColor: selected ? '#CFD8DC' : '#fff',
             paddingRight: '3px',
@@ -106,24 +110,35 @@ export default class StockListItem extends React.Component {
             <Grid container className='stock-row' style={containerStyle} alignItems="center">
                 <Grid item xs={4} style={leftContainerStyle} onClick={() => onClick({symbol, name})}>
                     <div style={horizontalBox}>
-                        <h3 style={{fontSize: '16px', fontWeight: '700'}}>{symbol}</h3>
+                        <h3 style={{fontSize: '16px', fontWeight: '600', color: '#464646'}}>{symbol}</h3>
                         <Icon style={{color: changeColor, marginLeft: '10px'}} type={changeIcon} />
                     </div>
-                    <h3 style={{fontSize: '12px', ...nameEllipsisStyle, textAlign: 'start'}}>{name}</h3>
+                    <h3 style={nameStyle}>{name}</h3>
                 </Grid>
                 <Grid item xs={4} style={detailContainerStyle} onClick={() => onClick({symbol, name})}>
                     <div style={horizontalBox}>
-                        <h3 style={{fontSize: '18px', fontWeight: '700'}}>{Utils.formatMoneyValueMaxTwoDecimals(current)}</h3>
+                        <h3 style={{fontSize: '18px', fontWeight: '500', color: '#464646'}}>
+                            {Utils.formatMoneyValueMaxTwoDecimals(current)}
+                        </h3>
                     </div>
                     <div style={horizontalBox}>
-                        <h3 style={{color: changeColor, fontSize: '14px', marginLeft: '10px'}}>{change > 0 && '+'} {Utils.formatMoneyValueMaxTwoDecimals(change)}</h3>
-                        <h3 style={{color: changeColor, marginLeft: '5px', fontSize: '14px'}}>({change > 0 && '+'} {Utils.formatMoneyValueMaxTwoDecimals(nChangePct)} %)</h3>
+                        <h3 style={{color: changeColor, fontSize: '14px', marginLeft: '10px', fontWeight: 400}}>
+                            {change > 0 && '+'} {Utils.formatMoneyValueMaxTwoDecimals(change)}
+                        </h3>
+                        <h3 style={{color: changeColor, marginLeft: '5px', fontSize: '14px', fontWeight: 400}}>
+                            ({change > 0 && '+'} {Utils.formatMoneyValueMaxTwoDecimals(nChangePct)} %)
+                        </h3>
                     </div>
                 </Grid>
                 <Grid
                         item
                         xs={4} 
-                        style={{paddingRight: '10px'}}
+                        style={{
+                            ...horizontalBox,
+                            justifyContent: 'flex-start',
+                            paddingRight: '10px',
+                            paddingLeft: '18px'
+                        }}
                 >
                     {this.renderActionButtons()}
                 </Grid>
@@ -141,4 +156,12 @@ export const AddIcon = ({checked = false, size = '20px', onClick}) => {
             <Icon style={{fontSize: size, color}}>{type}</Icon>
         </IconButton>
     )
+}
+
+const nameStyle = {
+    ...nameEllipsisStyle,
+    fontSize: '13px',
+    textAlign: 'start',
+    color: '#464646',
+    fontWeight: 400
 }

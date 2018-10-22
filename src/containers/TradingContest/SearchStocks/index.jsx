@@ -13,6 +13,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import StockPerformance from './components/StockPerformance';
 import StockFilter from './components/StockFilter';
 import {screenSize} from '../constants';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import SelectedStocksDialog from './components/SelectedStocksDialog';
 import SearchStockHeaderMobile from './components/StockSearchHeaderMobile';
 import SearchStockHeaderDesktop from './components/SearchStockHeaderDesktop';
@@ -55,16 +56,29 @@ export class SearchStocks extends React.Component {
     renderSearchStocksList = () => {
         return (
             <SGrid container>
-                <Grid item xs={12} style={horizontalBox}>
+                <Grid item xs={11} style={horizontalBox}>
                     {/* <Search placeholder="Search Stocks" onChange={this.handleSearchInputChange}/> */}
                     <TextField
                         id="search"
-                        label="Search Stocks"
+                        label="Search"
+                        placeholder="Search Stocks"
                         type="search"
                         margin="normal"
+                        style={{ margin: 8 }}
                         onChange={this.handleSearchInputChange}
+                        fullWidth
+                        variant="outlined"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
                     />
                     {/* <Button shape="circle" icon="filter" /> */}
+                </Grid>
+                <Grid item xs={1} style={{paddingTop: '8px'}}>
+                    {
+                        this.state.loadingStocks &&
+                        <CircularProgress />
+                    }
                 </Grid>
                 {/* <SectorItems sectors={this.getSectors()}/> */}
                 <Grid 

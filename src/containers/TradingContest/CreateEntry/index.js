@@ -151,6 +151,7 @@ export default class CreateEntry extends React.Component {
                                 pageUrl={this.props.match.url}
                                 isUpdate={false}
                                 benchmark='NIFTY_50'
+                                maxLimit={10}
                             />
                         </SwipeableBottomSheet>
                     )}

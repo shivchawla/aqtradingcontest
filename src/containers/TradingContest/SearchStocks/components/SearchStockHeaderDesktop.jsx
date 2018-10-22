@@ -33,9 +33,11 @@ export default class SearchStockHeaderDesktop extends React.Component {
                     <div style={{...horizontalBox}}>
                         <h3 
                                 style={{
-                                    fontSize: '24px', 
+                                    fontSize: '16px', 
                                     marginRight: '10px',
-                                    transition: 'all 0.4s ease-in-out'
+                                    transition: 'all 0.4s ease-in-out',
+                                    fontWeight: 400,
+                                    marginTop: '3px'
                                 }}
                         >
                             Add Stocks to your Portfolio
@@ -44,28 +46,48 @@ export default class SearchStockHeaderDesktop extends React.Component {
                 </Grid>
                 {
                     this.props.selectedStocks.length > 0 &&
-                    <Button 
-                            onClick={this.props.addSelectedStocksToPortfolio} 
-                            type="primary" 
-                            loading={this.props.portfolioLoading}
-                    >
-                        SELECTED
-                        {/* <Badge 
-                            style={{
-                                backgroundColor: '#fff', 
-                                color: primaryColor, 
-                                fontSize: '14px', 
-                                marginLeft: '5px'
-                            }} 
-                            count={this.props.selectedStocks.length}
-                        /> */}
-                    </Button>
+                    <React.Fragment>
+                        <Button 
+                                onClick={this.props.addSelectedStocksToPortfolio} 
+                                type="primary" 
+                                loading={this.props.portfolioLoading}
+                        >
+                            SELECTED
+                            {/* <Badge 
+                                style={{
+                                    backgroundColor: '#fff', 
+                                    color: primaryColor, 
+                                    fontSize: '14px', 
+                                    marginLeft: '5px'
+                                }} 
+                                count={this.props.selectedStocks.length}
+                            /> */}
+                        </Button>
+                        <CounterTag count={this.props.selectedStocks.length} />
+                    </React.Fragment>
                 }
             </Grid>
         );
     }
 }
 
+const CounterTag = ({count}) => {
+    const style = {
+        ...horizontalBox,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '35px',
+        height: '30px',
+        borderRadius: '50px',
+        backgroundColor: primaryColor
+    };
+
+    return (
+        <div style={style}>
+            <h3 style={{color: '#fff', fontWeight: 400, fontSize: 16}}>{count}</h3>
+        </div>
+    );
+}
 
 const topHeaderContainer = {
     ...horizontalBox,

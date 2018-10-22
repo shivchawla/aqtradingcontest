@@ -77,21 +77,6 @@ export default class StockFilter extends React.Component {
                         )
 
                         return (
-                            // <SelectedPanel 
-                            //         style={customPanelStyle} 
-                            //         header={sectorPanelHeader} 
-                            //         key={(index + 1).toString()}
-                            // >
-                                // <Grid container>
-                                //     <Grid item xs={24}>
-                                //         <SectorItem 
-                                //                 key={index} 
-                                //                 sector={sector} 
-                                //                 onChange={this.handleIndustryClick}
-                                //         />
-                                //     </Grid>
-                                // </Grid>
-                            // </SelectedPanel>
                             <ExpansionPanel>
                                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                                     <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-start'}}>
@@ -260,8 +245,8 @@ export default class StockFilter extends React.Component {
                         <Grid item xs={24}>
                             <h3 
                                 style={{
-                                    fontSize: '15px', 
-                                    fontWeight: 700,
+                                    fontSize: '22px', 
+                                    fontWeight: 500,
                                     margin: '10px 0px',
                                     marginLeft: '20px'
                                 }}
@@ -314,6 +299,7 @@ const IndustryItem = ({checked, text, onChange, sector}) => {
                             margin: '0', 
                             marginLeft: '20px', 
                             marginBottom: '5px', 
+                            fontWeight: 400,
                             fontSize: global.screen.width > 600 ? '13px' : '15px'
                         }}
                 />
@@ -327,4 +313,5 @@ const CheckboxLabel = styled.h3`
     font-size: 14px;
     color: #444;
     text-align: start;
+    font-weight: 500
 `;

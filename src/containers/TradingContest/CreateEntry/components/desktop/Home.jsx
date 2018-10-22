@@ -6,21 +6,51 @@ import Icon from '@material-ui/core/Icon';
 import NavigationList from './HomeListComponent';
 import {verticalBox} from '../../../../../constants';
 import how_image from '../../../../../assets/how_image.svg';
-
-const howList = [
-    {header: 'Submit Stocks', text: 'Select upto 10 stocks to Buy and Sell, and submit it to the contest. Entries are evaluated at the end of next trading day at market close.'},
-    {header: 'Submit Stocks', text: 'Select upto 10 stocks to Buy and Sell, and submit it to the contest. Entries are evaluated at the end of next trading day at market close.'},
-    {header: 'Submit Stocks', text: 'Select upto 10 stocks to Buy and Sell, and submit it to the contest. Entries are evaluated at the end of next trading day at market close.'},
-];
+import * as homeData from '../../constants/home';
 
 export default class HOme extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selected: 'how'
+        };
+    }
+
+    onChange = type => {
+        console.log('Hello World');
+        this.setState({selected: type});
+    }
+
+    getConstants = () => {
+        const type = this.state.selected;
+        switch(type) {
+            case "how":
+                return {type: 'list', data: homeData.how};
+            case "prizes":
+                return {type: 'text', data: homeData.prizeText};
+            case "requirements":
+                return {type: 'list', data: homeData.requirements};
+            case "scoring":
+                return {type: 'text', data: homeData.scoringText};
+            case "faq":
+                return {type: 'list', data: homeData.faq};
+            default:
+                return {type: 'list', data: homeData.how};
+        }
+    }
+
     render() {
+        const content = this.getConstants();
+
         return (
             <Grid container>
                 <LeftContainer item xs={6}>
                     <PageHeader>Daily Trading Contest</PageHeader>
                     <PageSubHeader>Pick the best stocks and win prizes everyday</PageSubHeader>
-                    <NavigationList style={{position: 'absolute', left: '20px'}}/>
+                    <NavigationList 
+                        style={{position: 'absolute', left: '20px'}}
+                        onChange={this.onChange}
+                    />
                     <Button 
                             style={{
                                 backgroundColor: '#3B45B2', 
@@ -36,25 +66,46 @@ export default class HOme extends React.Component {
                 </LeftContainer>
                 <RightContainer item xs={6}>
                     <SImg src={how_image} />
-                    <ListComponent list={howList}/>
+                    <ListComponent 
+                        list={content.type === 'list' ? content.data : []}
+                        type={content.type}
+                        text={content.type === 'text' ? content.data : ''}
+                    />
                 </RightContainer>
             </Grid>
         );
     }
 }
 
-const ListComponent = ({list}) => {
+const ListComponent = ({type = 'list', list = [], text = ''}) => {
     return (
         <div style={{...verticalBox, alignItems: 'flex-start'}}>
             {
-                list.map(item => (
-                    <div style={{...verticalBox, alignItems: 'flex-start', marginBottom: '50px'}}>
-                        <ListItemHeader>{item.header}</ListItemHeader>
-                        <ListItemText>{item.text}</ListItemText>
-                    </div>
-                ))
+                type === 'list'
+                ?   list.map(item => (
+                        <div style={{...verticalBox, alignItems: 'flex-start', marginBottom: '50px'}}>
+                            <ListItemHeader>{item.header}</ListItemHeader>
+                            <ListItemText>{item.text}</ListItemText>
+                        </div>
+                    ))
+                :   <TextComponent text={text}/>
             }
         </div>
+    );
+}
+
+const TextComponent = ({text}) => {
+    return (
+        <h3 
+                style={{
+                    fontSize: '16px',
+                    color: '#00418C',
+                    fontWeight: 400,
+                    lineHeight: '25px'
+                }}
+        >
+            {text}
+        </h3>
     );
 }
 
@@ -75,8 +126,9 @@ const ListItemHeader = styled.h3`
 const ListItemText = styled.h5`
     font-weight: 500;
     color: #6E6E6E;
-    font-size: 18px;
+    font-size: 16px;
     text-align: start;
+    margin-top: 6px;
 `;
 
 const LeftContainer = styled(Grid)`

@@ -40,7 +40,7 @@ export default class StockPreviewListItem extends React.Component {
             change = chg;
             changePct = chgPct * 100;
         }
-        const colStyle = {...horizontalBox, justifyContent: 'space-between'};
+        const colStyle = {...horizontalBox, justifyContent: 'space-between', paddingLeft: '5px'};
         const changeColor = change > 0 ? metricColor.positive : metricColor.negative;
         const pointsChange = (type === 'buy' ? 1 : -1) * ((changePct * points) / 100);
         const changedPoints = Number((points + pointsChange).toFixed(2));
@@ -51,7 +51,7 @@ export default class StockPreviewListItem extends React.Component {
 
         return (
             <SGrid container style={{padding: '10px'}} alignItems="center" justify="center">
-                <Grid item  xs={2} style={colStyle}>
+                <Grid item  xs={3} style={colStyle}>
                     <Symbol>
                         {symbol} 
                     </Symbol>
@@ -59,18 +59,18 @@ export default class StockPreviewListItem extends React.Component {
                 <Grid item xs={2}>
                     <Tag>{direction}</Tag>
                 </Grid>
-                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'center'}}>
                     <SecondayText style={{fontSize:'18px', marginTop:'-4px'}}>
                         ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                     </SecondayText>
                 </Grid>
-                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'center'}}>
                     <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={changeColor}>
                         {change.toFixed(2)}
                     </ChangeText>
                     <ChangeText style={{marginLeft: '2px'}} color={changeColor}>{changePct}</ChangeText>
                 </Grid>
-                <Grid item xs={3} style={{...horizontalBox}}>
+                <Grid item xs={3} style={{...horizontalBox, justifyContent: 'center'}}>
                     <SecondayText style={{fontSize: '22px'}}>{points}K</SecondayText>
                         <Icon style={{color: pointsChangeColor}}>arrow_right_alt</Icon>
                     <SecondayText style={{fontSize: '22px', color: pointsChangeColor}}>{changedPoints}K</SecondayText>
@@ -84,9 +84,9 @@ const SGrid = styled(Grid)`
     background-color: #FAFCFF;
     border: 1px solid #F2F5FF;
     border-radius: 3px;
-    margin-bottom: 10px;
-    width: 60%;
+    margin-bottom: 30px;
     box-shadow: 0 3px 5px #C3E0F9;
+    height: 95px;
 `;
 
 const Symbol = styled.h3`

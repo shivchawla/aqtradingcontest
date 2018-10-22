@@ -22,7 +22,7 @@ export default class TableHeader extends React.Component {
                     <TableHeaderText>Profit Factor</TableHeaderText>
                 </Grid>
                 <Grid item xs={2}>
-                    <TableHeaderText>Ivestment</TableHeaderText>
+                    <TableHeaderText>Investment</TableHeaderText>
                 </Grid>
             </Grid>
         );

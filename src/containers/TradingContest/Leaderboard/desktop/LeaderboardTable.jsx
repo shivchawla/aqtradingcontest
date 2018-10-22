@@ -14,17 +14,14 @@ export default class LeaderboardTable extends React.Component {
     }
 
     render() {
+        const winners = this.props.timelineView === 'daily' ? this.props.winners : this.props.winnersWeekly;
+
         return (
             <Grid item xs={12} style={{padding: '10px', marginTop: '60px'}}>
-                {
-                    this.props.winners.length > 0 && 
-                    <React.Fragment>
-                        <TableHeader />
-                        <ParticipantList 
-                            winners={this.props.timelineView === 'daily' ? this.props.winners : this.props.winnersWeekly}
-                        />
-                    </React.Fragment>
-                }
+                {winners.length > 0 && <TableHeader />}
+                <ParticipantList 
+                    winners={winners}
+                />
             </Grid>
         );
     }
