@@ -4,6 +4,7 @@ import Media from 'react-media';
 import {Route, Switch} from 'react-router-dom';
 import moment from 'moment';
 import styled from 'styled-components';
+import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -16,10 +17,11 @@ import CreateEntry from './CreateEntry';
 import Home from './CreateEntry/components/desktop/Home';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
+import Header from '../Header';
 import {primaryColor} from '../../constants';
 import {Utils} from '../../utils';
 
-export default class TradingContest extends React.Component {
+class TradingContest extends React.Component {
     createEntryComponent = null;
     state = {
         selectedTab: 0,
@@ -128,29 +130,36 @@ export default class TradingContest extends React.Component {
     }
 
     renderDesktop = () => {
+        const {classes} = this.props;
+
         return (
-            <Switch>
-                <Route 
-                    exact={true} 
-                    path={`${this.props.match.url}/create`} 
-                    render={props => <CreateEntry {...props}/>} 
-                />
-                <Route 
-                    exact={true} 
-                    path={`${this.props.match.url}/toppicks`} 
-                    render={props => <TopPicks {...props}/>} 
-                />
-                <Route 
-                    exact={true} 
-                    path={`${this.props.match.url}/leaderboard`} 
-                    render={props => <Leaderboard {...props}/>} 
-                />
-                <Route 
-                    exact={true} 
-                    path={`${this.props.match.url}/home`} 
-                    render={props => <Home {...props}/>} 
-                />
-            </Switch>
+            <div className={classes.root}>
+                <Header />
+                <div>
+                    <Switch>
+                        <Route 
+                            exact={true} 
+                            path={`${this.props.match.url}/create`} 
+                            render={props => <CreateEntry {...props}/>} 
+                        />
+                        <Route 
+                            exact={true} 
+                            path={`${this.props.match.url}/toppicks`} 
+                            render={props => <TopPicks {...props}/>} 
+                        />
+                        <Route 
+                            exact={true} 
+                            path={`${this.props.match.url}/leaderboard`} 
+                            render={props => <Leaderboard {...props}/>} 
+                        />
+                        <Route 
+                            exact={true} 
+                            path={`${this.props.match.url}/home`} 
+                            render={props => <Home {...props}/>} 
+                        />
+                    </Switch>
+                </div>
+            </div>
         );
     }
 
@@ -170,6 +179,8 @@ export default class TradingContest extends React.Component {
     }
 }
 
+export default withStyles(desktopStyles)(TradingContest);
+
 const STabs = styled(Tabs)`
     background-color: ${primaryColor};
     color: #fff;
@@ -178,3 +189,12 @@ const STabs = styled(Tabs)`
 const STab = styled(Tab)`
     font-weight: 400;
 `;
+
+const desktopStyles = {
+    root: {
+        flexGrow: 1
+    },
+    content: {
+        marginTop: 100
+    }
+}

@@ -74,8 +74,9 @@ const ListIcon = ({selected}) => {
         color: selected ? '#00418C' : '#747474',
         transition: 'all 0.2s ease-in-out'
     };
+    const iconType = selected ? 'fiber_manual_record' : 'panorama_fish_eye';
 
-    return <Icon style={style}>panorama_fish_eye</Icon>
+    return <Icon style={style}>{iconType}</Icon>
 }
 
 const SListItem = styled(ListItem)`

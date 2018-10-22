@@ -1,23 +1,16 @@
 import * as React from 'react';
 import _ from 'lodash';
-import Media from 'react-media';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import {verticalBox, horizontalBox, primaryColor} from '../../../../constants';
+import {horizontalBox, primaryColor} from '../../../../constants';
 
 const textColor = '#757575';
 
 export default class SearchStockHeaderDesktop extends React.Component {
     render() {
-
-        const universe = _.get(this.props, 'filters.universe', null);
-        const sector = _.get(this.props, 'filters.sector', null);
-        const industry = _.get(this.props, 'filters.industry', null);
         const toggleIconColor = this.props.selectedStocks.length === 0 ? textColor : primaryColor;
-        const stockPerformanceOpen = _.get(this.props, 'stockPerformanceOpen', false);
 
         return (
             <Grid item xs={12} style={{...topHeaderContainer, borderBottom: '1px solid #DFDFDF'}}>
@@ -51,19 +44,14 @@ export default class SearchStockHeaderDesktop extends React.Component {
                                 onClick={this.props.addSelectedStocksToPortfolio} 
                                 type="primary" 
                                 loading={this.props.portfolioLoading}
+                                variant="extendedFab"
+                                style={{backgroundColor: primaryColor, color: '#fff'}}
                         >
                             SELECTED
-                            {/* <Badge 
-                                style={{
-                                    backgroundColor: '#fff', 
-                                    color: primaryColor, 
-                                    fontSize: '14px', 
-                                    marginLeft: '5px'
-                                }} 
-                                count={this.props.selectedStocks.length}
-                            /> */}
+                            <CounterTag 
+                                count={this.props.selectedStocks.length} 
+                            />
                         </Button>
-                        <CounterTag count={this.props.selectedStocks.length} />
                     </React.Fragment>
                 }
             </Grid>
@@ -76,15 +64,16 @@ const CounterTag = ({count}) => {
         ...horizontalBox,
         justifyContent: 'center',
         alignItems: 'center',
-        width: '35px',
+        width: '42px',
         height: '30px',
         borderRadius: '50px',
-        backgroundColor: primaryColor
+        backgroundColor: '#fff',
+        marginLeft: '10px'
     };
 
     return (
         <div style={style}>
-            <h3 style={{color: '#fff', fontWeight: 400, fontSize: 16}}>{count}</h3>
+            <h3 style={{color: primaryColor, fontWeight: 400, fontSize: 14}}>{count}</h3>
         </div>
     );
 }

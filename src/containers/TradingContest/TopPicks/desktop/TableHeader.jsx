@@ -24,7 +24,7 @@ export default class TableHeader extends React.Component {
 }
 
 const TableHeaderText = styled.h3`
-    font-size: 18px;
+    font-size: 16px;
     color: #6F6F6F;
     font-weight: 400;
     text-align: start;

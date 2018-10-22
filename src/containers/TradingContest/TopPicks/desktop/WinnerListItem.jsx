@@ -41,7 +41,8 @@ export default class WinnerListItem extends React.Component {
                                 textAlign: 'start',
                                 color: '#464646',
                                 fontWeight: 400,
-                                marginTop: '3px'
+                                marginTop: '3px',
+                                fontSize: '13px'
                             }}
                     >
                         {name}
@@ -52,7 +53,7 @@ export default class WinnerListItem extends React.Component {
                             style={{
                                 color: '#464646',
                                 fontWeight: 400,
-                                fontSize: '16px'
+                                fontSize: '14px'
                             }}
                     >
                         ₹{lastPrice} 
@@ -65,7 +66,7 @@ export default class WinnerListItem extends React.Component {
                 <Grid item xs={2}>
                     <SecondaryText
                             style={{
-                                fontSize: '18px',
+                                fontSize: '16px',
                                 color: '#373737',
                                 fontWeight: 500
                             }}
@@ -95,13 +96,13 @@ const SGrid = styled(Grid)`
 `;
 
 const Symbol = styled.h3`
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: #464646;
 `;
 
 const SecondaryText = styled.div`
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 300;
     color:'black';
     text-align: start;

@@ -9,6 +9,7 @@ import {DailyContestCreateMeta} from '../metas';
 import {getContestSummary, processParticipants} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
+const URLSearchParamsPoly = require('url-search-params');
 
 class Participants extends React.Component {
     constructor(props) {
@@ -34,7 +35,7 @@ class Participants extends React.Component {
 
     getContestRankings = selectedDate => {
         const date = moment(selectedDate).format(dateFormat);
-        this.setState({selectedDate: date, loading: true});
+        this.setState({loading: true});
         const errorCallback = err => {
             this.setState({winners: [], contestActive: false});
         }
@@ -67,7 +68,14 @@ class Participants extends React.Component {
     }
 
     componentWillMount() {
-        this.getContestRankings(this.state.selectedDate);
+        const queryParams = new URLSearchParamsPoly(this.props.location.search);
+        const date = queryParams.get('date');
+        let selectedDate = moment();
+        if (date !== null) {
+            selectedDate = moment(date, dateFormat);
+        }
+        this.setState({selectedDate});
+        this.getContestRankings(selectedDate);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -99,7 +107,7 @@ class Participants extends React.Component {
             handleTimelineChange: this.handleTimelineChange,
             timelineView: this.state.timelineView,
             resultDate: this.state.resultDate,
-
+            selectedDate: this.state.selectedDate
         };
 
         return (

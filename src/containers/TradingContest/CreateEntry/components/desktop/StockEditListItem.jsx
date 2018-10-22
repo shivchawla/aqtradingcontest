@@ -92,7 +92,7 @@ export default class StockEditListItem extends React.Component {
                                     color: '#464646', 
                                     textAlign: 'start', 
                                     marginTop:'7px',
-                                    fontSize: '16px',
+                                    fontSize: '13px',
                                     fontWeight: 400,
                                     marginBottom: 0
                                 }}
@@ -103,13 +103,13 @@ export default class StockEditListItem extends React.Component {
                     </Symbol>
                 </SGridCol>
                 <SGridCol item xs={1}>
-                    <Tag>{direction}</Tag>
+                    <Tag type={type}>{direction}</Tag>
                 </SGridCol>
                 <SGridCol item xs={4}>
-                    <SecondayText style={{fontSize: '18px'}}>
+                    <SecondayText style={{fontSize: '14px'}}>
                         ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                         <HorizontalDivider>|</HorizontalDivider>
-                        <span style={{fontSize:'17px', color: changeColor, marginLeft: 13}}>
+                        <span style={{fontSize:'14px', color: changeColor, marginLeft: 13}}>
                             {chg} ({(chgPct * 100).toFixed(2)}%)
                         </span>
                     </SecondayText>
@@ -126,10 +126,10 @@ export default class StockEditListItem extends React.Component {
                         }}
                 >
                     <IconButton onClick={this.onAddClick}>
-                        <Icon style={{color: metricColor.positive, fontSize: '22px'}}>expand_less</Icon>
+                        <Icon style={{color: metricColor.positive, fontSize: '18px'}}>expand_less</Icon>
                     </IconButton>
                     <IconButton onClick={this.onReduceClick}>
-                        <Icon style={{color: metricColor.negative, fontSize: '22px'}}>expand_more</Icon>
+                        <Icon style={{color: metricColor.negative, fontSize: '18px'}}>expand_more</Icon>
                     </IconButton>
                 </SGridCol>
             </SGrid>
@@ -141,12 +141,12 @@ const SGrid = styled(Grid)`
     background-color: #FAFCFF;
     border: 1px solid #F2F5FF;
     border-radius: 4px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     box-shadow: 0 3px 5px #C3E0F9;
 `;
 
 const HorizontalDivider = styled.span`
-    font-size: 24px;
+    font-size: 21px;
     position: absolute;
     margin: 0 3px;
     margin-top: -5px;
@@ -161,18 +161,18 @@ const SGridCol = styled(Grid)`
 const Symbol = styled.div`
     text-align: start;
     font-weight: 700;
-    font-size: 22px;
+    font-size: 18px;
     color: #464646;
 `;
 
 const SecondayText = styled.div`
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 400;
     color: ${props => props.color || '#6A6A6A'} 
 `;
 
 const Points = styled.h3`
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 400;
     color: #373737;
 `;

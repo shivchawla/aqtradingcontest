@@ -13,6 +13,7 @@ import {DailyContestCreateMeta} from '../metas';
 import {getContestSummary} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
+const URLSearchParamsPoly = require('url-search-params');
 
 class Winners extends React.Component {
     constructor(props) {
@@ -40,7 +41,7 @@ class Winners extends React.Component {
 
     getContestRankings = selectedDate => {
         const date = moment(selectedDate).format(dateFormat);
-        this.setState({selectedDate: date, loading: true});
+        this.setState({loading: true});
         const errorCallback = err => {
             this.setState({winnerStocks: [], contestActive: false, noContestFound: true});
         }
@@ -74,7 +75,14 @@ class Winners extends React.Component {
     }
 
     componentWillMount() {
-        this.getContestRankings(this.state.selectedDate);
+        const queryParams = new URLSearchParamsPoly(this.props.location.search);
+        const date = queryParams.get('date');
+        let selectedDate = moment();
+        if (date !== null) {
+            selectedDate = moment(date, dateFormat);
+        }
+        this.setState({selectedDate});
+        this.getContestRankings(selectedDate);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -90,6 +98,7 @@ class Winners extends React.Component {
     }
 
     handleDateChange = date => {
+        console.log('Date', date);
         this.setState({selectedDate: date});
         this.getContestRankings(date);
     }
@@ -105,7 +114,8 @@ class Winners extends React.Component {
             resultDate: this.state.resultDate,
             handleTimeLineChange: this.handleTimeLineChange,
             timelineView: this.state.timelineView,
-            loading: this.state.loading
+            loading: this.state.loading,
+            selectedDate: this.state.selectedDate
         };
 
         return (

@@ -12,12 +12,12 @@ import {SearchStocks} from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
 import CreateEntryLayoutMobile from './components/mobile/CreateEntryLayoutMobile';
 import CreateEntryLayoutDesktop from './components/desktop/CreateEntryLayoutDesktop';
-import LoaderComponent from '../Misc/Loader';
 import {DailyContestCreateMeta} from '../metas';
 import {handleCreateAjaxError} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
+const URLSearchParamsPoly = require('url-search-params');
 const CancelToken = axios.CancelToken;
 
 export default class CreateEntry extends React.Component {
@@ -309,6 +309,8 @@ export default class CreateEntry extends React.Component {
                 showPreviousPositions: true,
                 pnlStats,
                 weeklyPnlStats
+            }, () => {
+                this.searchStockComponent.initializeSelectedStocks()
             });
         })
     }
@@ -364,7 +366,14 @@ export default class CreateEntry extends React.Component {
     }
 
     componentWillMount = () => {
-        this.handleContestDateChange(this.state.selectedDate);
+        const queryParams = new URLSearchParamsPoly(this.props.location.search);
+        const date = queryParams.get('date');
+        let selectedDate = moment();
+        if (date !== null) {
+            selectedDate = moment(date, dateFormat);
+        }
+        this.setState({selectedDate});
+        this.handleContestDateChange(selectedDate);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -382,6 +391,7 @@ export default class CreateEntry extends React.Component {
             contestStartDate: this.state.contestStartDate,
             contestEndDate: this.state.contestEndDate,
             contestActive: this.state.contestActive,
+            selectedDate: this.state.selectedDate,
             positions: this.state.positions,
             sellPositions: this.state.sellPositions,
             contestFound: this.state.contestFound,
@@ -398,7 +408,8 @@ export default class CreateEntry extends React.Component {
             previousSellPositions: this.state.previousSellPositions,
             onStockItemChange: this.onStockItemChange,
             loading: this.state.loading
-        }
+        };
+
         return (
             <React.Fragment>
                 <Media 

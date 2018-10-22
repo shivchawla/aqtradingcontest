@@ -67,7 +67,13 @@ export default class TopPicksLayout extends React.Component {
                             }                       
                             {
                                 contestEnded &&
-                                <div style={{marginLeft: '3%', marginRight: '3%'}}>
+                                <div 
+                                        style={{
+                                            marginLeft: '3%', 
+                                            marginRight: '3%',
+                                            marginTop: '-50px'
+                                        }}
+                                >
                                     <TopPicksTable 
                                         winnerStocks={winnerStocks}
                                         winnerStocksWeekly={winnerStocksWeekly}
@@ -88,6 +94,7 @@ export default class TopPicksLayout extends React.Component {
                     header="Top Picks"
                     loading={this.props.loading} 
                     handleDateChange={this.props.onDateChange}
+                    selectedDate={this.props.selectedDate}
             >
                 {this.renderContent()}
             </AqDesktopLayout>

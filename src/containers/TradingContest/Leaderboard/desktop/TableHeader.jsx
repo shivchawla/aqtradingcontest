@@ -9,7 +9,7 @@ export default class TableHeader extends React.Component {
                 <Grid item xs={1} style={{paddingLeft: '10px'}}>
                     <TableHeaderText>Rank</TableHeaderText>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={2} style={{paddingLeft: '10px'}}>
                     <TableHeaderText>Name</TableHeaderText>
                 </Grid>
                 <Grid item xs={2}>
@@ -30,7 +30,7 @@ export default class TableHeader extends React.Component {
 }
 
 const TableHeaderText = styled.h3`
-    font-size: 18px;
+    font-size: 16px;
     color: #6F6F6F;
     font-weight: 400;
     text-align: start;

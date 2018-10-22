@@ -36,7 +36,7 @@ export default class DesktopHeader extends React.Component {
 }
 
 const Header = styled.h3`
-    font-size: 34px;
+    font-size: 28px;
     font-weight: 500px;
     color: #4B4B4B;
 `;

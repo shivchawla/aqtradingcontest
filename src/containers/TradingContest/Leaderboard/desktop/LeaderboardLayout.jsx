@@ -68,7 +68,13 @@ export default class TopPicksLayout extends React.Component {
                             }                       
                             {
                                 !contestActive && 
-                                <div style={{marginLeft: '3%', marginRight: '3%'}}>
+                                <div 
+                                        style={{
+                                            marginLeft: '3%', 
+                                            marginRight: '3%',
+                                            marginTop: '-50px'
+                                        }}
+                                >
                                     {
                                         winners.length == 0 
                                         ?   <ContestNotPresentView /> 
@@ -93,6 +99,7 @@ export default class TopPicksLayout extends React.Component {
                     header="Leaderboard"
                     loading={this.props.loading} 
                     handleDateChange={this.props.onDateChange}
+                    selectedDate={this.props.selectedDate}
             >
                 {this.renderContent()}
             </AqDesktopLayout>

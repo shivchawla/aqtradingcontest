@@ -438,6 +438,7 @@ export class SearchStocks extends React.Component {
 
     processPositionsForPortfolio = (type = 'buy') => {
         let localStocks = [...this.localStocks];
+        console.log('Local Stocks', localStocks);
         if (type === 'buy') {
             localStocks = localStocks.filter(stock => stock.checked === true);
         } else {
@@ -472,6 +473,8 @@ export class SearchStocks extends React.Component {
     syncStockListWithPortfolio = (props = this.props) => {
         const positions = _.get(props, 'portfolioPositions', []);
         const sellPositions = _.get(props, 'portfolioSellPositions', []);
+        console.log('Buy Positions', positions);
+        console.log('Sell Positions', sellPositions);
 
         const selectedStocks = positions.map(position => position.symbol);
         const sellSelectedStocks = sellPositions.map(position => position.symbol);
@@ -503,6 +506,8 @@ export class SearchStocks extends React.Component {
     initializeSelectedStocks = async () => {
         const positions = [...this.props.portfolioPositions];
         const sellPositions = [...this.props.portfolioSellPositions];
+        console.log('Buy Positions', positions);
+        console.log('Sell Positions', sellPositions);
         const processedBuySelectedStocks = await this.getLocalStocksFromPortfolio(positions, 'buy');
         const processedSellSelectedStocks = await this.getLocalStocksFromPortfolio(sellPositions, 'sell');
         this.localStocks = [...processedBuySelectedStocks, ...processedSellSelectedStocks];
@@ -930,7 +935,7 @@ export class SearchStocks extends React.Component {
                         render={() => 
                             <SearchStockHeaderDesktop
                                 filters={this.props.filters}
-                                selectedStocks={this.state.selectedStocks}
+                                selectedStocks={selectedStocks}
                                 stockPerformanceOpen={this.state.stockPerformanceOpen}
                                 toggleBottomSheet={this.props.toggleBottomSheet}
                                 addSelectedStocksToPortfolio={this.addSelectedStocksToPortfolio}

@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TimerComponent from '../../../Misc/TimerComponent';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
-import StockPreviewListItem from '../desktop/StockPreviewListItem';
 import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
 import AqLayoutDesktop from '../../../../../components/ui/AqDesktopLayout';
@@ -15,7 +14,7 @@ import {getTotalInvestment} from '../../../utils';
 import {verticalBox, primaryColor, secondaryColor, horizontalBox} from '../../../../../constants';
 import MultiSegmentedControl from '../../../../../components/ui/MultiSegmentedControl';
 
-export default class CreateEntryLayoutMobile extends React.Component {
+export default class CreateEntryLayoutDesktop extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -82,7 +81,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
                                 onClick={this.props.toggleSearchStockBottomSheet}
                         >
                             ADD STOCKS
-                            <Icon style={{marginLeft: '10px'}}>add_circle</Icon>
+                            <Icon style={{marginLeft: '10px', color: '#fff'}}>add_circle</Icon>
                         </Button>
                     </React.Fragment>
                 }
@@ -107,7 +106,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
         return (
             !this.props.showPreviousPositions
             ? <StockList positions={positions} onStockItemChange={this.props.onStockItemChange} />
-            : <StockPreviewList positions={previewPositions} />
+            : <StockPreviewList type={this.state.listView} positions={previewPositions} />
         )
     }
 
@@ -166,7 +165,10 @@ export default class CreateEntryLayoutMobile extends React.Component {
                             <Grid item xs={4} 
                                     style={{
                                         ...fabContainerStyle,
-                                        justifyContent: 'flex-end'
+                                        justifyContent: showPreviousPositions 
+                                            ? 'flex-end'
+                                            : 'space-between',
+                                        paddingRight: '30px'
                                     }}
                             >
                                 <Button 
@@ -217,6 +219,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
                     header='My Picks'
                     handleDateChange={this.props.onDateChange}
                     loading={this.props.loading}
+                    selectedDate={this.props.selectedDate}
             >
                 {this.renderContent()}
             </AqLayoutDesktop>
@@ -226,14 +229,13 @@ export default class CreateEntryLayoutMobile extends React.Component {
 
 const emptyPortfolioButtonStyle = {
     backgroundColor: primaryColor,
-    color: primaryColor,
+    color: '#fff',
     borderRadius: '4px',
     border: 'none',
     marginTop: '20px',
-    fontSize: '16px',
+    fontSize: '14px',
     fontWeight: 400,
-    backgroundColor: '#F0F0F0',
-    height: '65px'
+    height: '50px'
 };
 
 const fabContainerStyle = {
@@ -247,7 +249,7 @@ const fabContainerStyle = {
 const addStocksStyle = {
     backgroundColor: secondaryColor,
     color: '#fff',
-    marginRight: '20px'
+    // marginRight: '20px'
 };
 
 const submitButtonStyle = {

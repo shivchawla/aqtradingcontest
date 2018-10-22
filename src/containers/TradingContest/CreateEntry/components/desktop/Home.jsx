@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import NavigationList from './HomeListComponent';
-import {verticalBox} from '../../../../../constants';
+import {verticalBox, horizontalBox} from '../../../../../constants';
 import how_image from '../../../../../assets/how_image.svg';
 import * as homeData from '../../constants/home';
 
@@ -48,7 +48,7 @@ export default class HOme extends React.Component {
                     <PageHeader>Daily Trading Contest</PageHeader>
                     <PageSubHeader>Pick the best stocks and win prizes everyday</PageSubHeader>
                     <NavigationList 
-                        style={{position: 'absolute', left: '20px'}}
+                        style={{position: 'absolute', left: '20px', marginTop: '-5%'}}
                         onChange={this.onChange}
                     />
                     <Button 
@@ -59,6 +59,7 @@ export default class HOme extends React.Component {
                                 position: 'absolute',
                                 bottom: '100px'
                             }}
+                            onClick={() => this.props.history.push('/dailycontest/create')}
                     >
                         Enter Contest
                         <Icon style={{color: '#fff'}}>chevron_right</Icon>
@@ -79,13 +80,21 @@ export default class HOme extends React.Component {
 
 const ListComponent = ({type = 'list', list = [], text = ''}) => {
     return (
-        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+        <div 
+                style={{
+                    ...verticalBox, 
+                    alignItems: 'flex-start', 
+                    justifyContent: 'flex-start',
+                    width: '80%',
+                    marginTop: '-5%'
+                }}
+        >
             {
                 type === 'list'
                 ?   list.map(item => (
-                        <div style={{...verticalBox, alignItems: 'flex-start', marginBottom: '50px'}}>
-                            <ListItemHeader>{item.header}</ListItemHeader>
-                            <ListItemText>{item.text}</ListItemText>
+                        <div style={{...horizontalBox, alignItems: 'flex-start'}}>
+                            <Icon style={{marginRight: '5px', color: '#3B3B3B'}}>fiber_manual_record</Icon>
+                            <ListItem {...item} />
                         </div>
                     ))
                 :   <TextComponent text={text}/>
@@ -94,14 +103,30 @@ const ListComponent = ({type = 'list', list = [], text = ''}) => {
     );
 }
 
+const ListItem = ({header, text}) => {
+    return (
+        <div 
+                style={{
+                    ...verticalBox, 
+                    alignItems: 'flex-start', 
+                    marginBottom: '50px',
+                    justifyContent: 'flex-start'
+                }}
+            >
+            <ListItemHeader>{header}</ListItemHeader>
+            <ListItemText>{text}</ListItemText>
+        </div>
+    );
+}
+
 const TextComponent = ({text}) => {
     return (
         <h3 
                 style={{
-                    fontSize: '16px',
+                    fontSize: '18px',
                     color: '#00418C',
                     fontWeight: 400,
-                    lineHeight: '25px'
+                    lineHeight: '28px'
                 }}
         >
             {text}
@@ -112,14 +137,14 @@ const TextComponent = ({text}) => {
 const SImg = styled.img `
     position: absolute;
     right: 10px;
-    top: 10px;
+    top: 80px;
     width: 80px;
 `;
 
 const ListItemHeader = styled.h3`
     font-weight: 500;
     color: #3B3B3B;
-    font-size: 20px;
+    font-size: 18px;
     text-align: start;
 `;
 
@@ -156,7 +181,7 @@ const PageHeader = styled.h1`
     color: #00418C;
     font-size: 500;
     position: absolute;
-    top: 10px;
+    top: 80px;
     left: 20px;
 `;
 
@@ -165,6 +190,6 @@ const PageSubHeader = styled.h5`
     color: #666666;
     font-weight: 400;
     position: absolute;
-    top: 70px;
+    top: 140px;
     left: 20px;
 `;

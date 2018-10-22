@@ -57,10 +57,10 @@ export default class StockPreviewListItem extends React.Component {
                     </Symbol>
                 </Grid>
                 <Grid item xs={2}>
-                    <Tag>{direction}</Tag>
+                    <Tag type={type}>{direction}</Tag>
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'center'}}>
-                    <SecondayText style={{fontSize:'18px', marginTop:'-4px'}}>
+                    <SecondayText style={{fontSize:'16px', marginTop:'-4px'}}>
                         ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                     </SecondayText>
                 </Grid>
@@ -71,9 +71,9 @@ export default class StockPreviewListItem extends React.Component {
                     <ChangeText style={{marginLeft: '2px'}} color={changeColor}>{changePct}</ChangeText>
                 </Grid>
                 <Grid item xs={3} style={{...horizontalBox, justifyContent: 'center'}}>
-                    <SecondayText style={{fontSize: '22px'}}>{points}K</SecondayText>
+                    <SecondayText style={{fontSize: '16px'}}>{points}K</SecondayText>
                         <Icon style={{color: pointsChangeColor}}>arrow_right_alt</Icon>
-                    <SecondayText style={{fontSize: '22px', color: pointsChangeColor}}>{changedPoints}K</SecondayText>
+                    <SecondayText style={{fontSize: '16px', color: pointsChangeColor}}>{changedPoints}K</SecondayText>
                 </Grid>
             </SGrid>
         );
@@ -84,32 +84,25 @@ const SGrid = styled(Grid)`
     background-color: #FAFCFF;
     border: 1px solid #F2F5FF;
     border-radius: 3px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     box-shadow: 0 3px 5px #C3E0F9;
-    height: 95px;
+    height: 75px;
 `;
 
 const Symbol = styled.h3`
     font-weight: 600;
-    font-size: 20px;
+    font-size: 16px;
     color: #6A6A6A;
 `;
 
 const SecondayText = styled.h3`
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 400;
     color: ${props => props.color || '#6A6A6A'} 
 `;
 
 const ChangeText = styled.h5`
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 400;
     color: ${props => props.color || '#6A6A6A'}
-`;
-
-const ChangeDivider = styled.h3`
-    font-weight: 300;
-    color: #717171;
-    font-size: 12px;
-    margin-top: -2px;
 `;
