@@ -18,8 +18,8 @@ export default class StockPreviewList extends React.Component {
     render() {
         const {positions = [], type='buy'} = this.props;
         const StockPreviewListItem = global.screen.width < 600 ? StockPreviewListItemMobile : StockPreviewListItemDesktop;
-        const sellErrorText = 'No Short positions in “SELL” has no entries';
-        const buyErrorText = 'No Long positions in BUY has no entries';
+        const sellErrorText = 'No Short positions.';
+        const buyErrorText = 'No Long positions.';
 
         return (
             <Grid 
