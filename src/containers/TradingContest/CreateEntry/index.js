@@ -366,7 +366,8 @@ export default class CreateEntry extends React.Component {
     }
 
     componentWillMount = () => {
-        const queryParams = new URLSearchParamsPoly(this.props.location.search);
+        const search = _.get(this.props, 'location.search', {});
+        const queryParams = new URLSearchParamsPoly(search);
         const date = queryParams.get('date');
         let selectedDate = moment();
         if (date !== null) {

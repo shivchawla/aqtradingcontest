@@ -46,7 +46,7 @@ export default class SearchStockHeaderDesktop extends React.Component {
                                 type="primary" 
                                 loading={this.props.portfolioLoading}
                                 variant="extendedFab"
-                                style={{backgroundColor: primaryColor, color: '#fff', paddingLeft: '5px'}}
+                                style={{backgroundColor: primaryColor, color: '#fff', paddingLeft: '15px'}}
                         >
                             SELECTED
                             <CounterTag 
