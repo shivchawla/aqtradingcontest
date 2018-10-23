@@ -25,7 +25,7 @@ export default class StockList extends React.Component {
 
     render() {
         const {positions = []} = this.props;
-        const StockEditListItem = global.screen.height < 599 ? StockEditListItemMobile : StockEditListItemDesktop;
+        const StockEditListItem = global.screen.width < 600 ? StockEditListItemMobile : StockEditListItemDesktop;
 
         return (
             <Grid 
