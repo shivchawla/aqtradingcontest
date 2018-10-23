@@ -26,6 +26,7 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/create' component={TradingContest} /> 
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHome} /> 
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
+                                    <Route exact={true} path='/dailycontest' component={TradingContestHome} /> 
                                 </Switch>
                             );
                         }}
@@ -36,7 +37,6 @@ class App extends Component {
                             return (
                                 <Switch>
                                     <Route path='/dailycontest' component={TradingContest} /> 
-                                    <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
                                     <Route component={UnderDevelopment} />
                                 </Switch>
                             );

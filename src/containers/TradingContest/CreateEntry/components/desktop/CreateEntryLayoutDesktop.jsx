@@ -123,6 +123,7 @@ export default class CreateEntryLayoutDesktop extends React.Component {
         }
 
         this.setState({listView: nValue});
+        this.props.handleStockTypeRadioChange(nValue);
     }
 
     renderContent() {

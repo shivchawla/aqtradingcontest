@@ -77,7 +77,7 @@ class Winners extends React.Component {
     componentWillMount() {
         const queryParams = new URLSearchParamsPoly(this.props.location.search);
         const date = queryParams.get('date');
-        let selectedDate = moment();
+        let selectedDate = this.props.selectedDate || moment();
         if (date !== null) {
             selectedDate = moment(date, dateFormat);
         }

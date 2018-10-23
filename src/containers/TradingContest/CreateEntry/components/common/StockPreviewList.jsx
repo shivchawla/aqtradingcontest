@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid'
 import StockPreviewListItemMobile from '../mobile/StockPreviewListItem';
 import StockPreviewListItemDesktop from '../desktop/StockPreviewListItem';
+import StockPreviewListHeaderDesktop from '../desktop/StockPreviewListHeader';
 import {primaryColor} from '../../../../../constants';
 
 export default class StockPreviewList extends React.Component {
@@ -38,6 +39,10 @@ export default class StockPreviewList extends React.Component {
                     <EmptyPositionsText>
                         {type === 'buy' ? buyErrorText : sellErrorText}
                     </EmptyPositionsText>
+                }
+                {
+                    positions.length > 0 && global.screen.width > 600 &&
+                    <StockPreviewListHeaderDesktop />
                 }
                 {
                     positions.map((position, index) => {

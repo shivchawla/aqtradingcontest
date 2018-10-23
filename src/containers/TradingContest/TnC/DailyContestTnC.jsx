@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Media from 'react-media';
 import {primaryColor} from '../../../constants';
 import AqLayout from '../../../components/ui/AqLayout';
 
@@ -71,12 +72,27 @@ export default class DailyContestTnC extends React.Component {
 
     render() {
         return (
-            <AqLayout>
-                {this.renderPageContent()}
-            </AqLayout>
+            <React.Fragment>
+                <Media 
+                    query="(max-width: 599px)"
+                    render={() => {
+                        return (
+                            <AqLayout>
+                                {this.renderPageContent()}
+                            </AqLayout>
+                        );
+                    }}
+                />
+                <Media 
+                    query="(min-width: 600px)"
+                    render={() => {
+                        return this.renderPageContent();
+                    }}
+                />
+            </React.Fragment>
         );
     }
-};
+}
 
 const h3Style = {
     fontSize: '18px',

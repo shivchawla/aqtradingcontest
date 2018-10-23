@@ -85,19 +85,7 @@ export default class StockEditListItem extends React.Component {
                 <SGridCol item xs={4} style={colStyle}>
                     <Symbol>
                         {symbol}
-                        <p 
-                                style={{
-                                    ...nameEllipsisStyle, 
-                                    width: '250px', 
-                                    color: '#464646', 
-                                    textAlign: 'start', 
-                                    marginTop:'7px',
-                                    fontSize: '13px',
-                                    fontWeight: 400,
-                                    marginBottom: 0
-                                }}
-                                
-                        >
+                        <p style={nameStyle}>
                             {name}
                         </p>
                     </Symbol>
@@ -136,6 +124,17 @@ export default class StockEditListItem extends React.Component {
         );
     }
 }
+
+const nameStyle = {
+    ...nameEllipsisStyle, 
+    width: '250px', 
+    color: '#464646', 
+    textAlign: 'start', 
+    marginTop:'7px',
+    fontSize: '13px',
+    fontWeight: 400,
+    marginBottom: 0
+};
 
 const SGrid = styled(Grid)`
     background-color: #FAFCFF;

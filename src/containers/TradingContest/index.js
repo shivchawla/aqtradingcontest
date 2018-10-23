@@ -15,6 +15,7 @@ import TopPicks from './TopPicks';
 import Leaderboard from './Leaderboard';
 import CreateEntry from './CreateEntry';
 import Home from './CreateEntry/components/desktop/Home';
+import DailyContestTnc from '../TradingContest/TnC/DailyContestTnC';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import Header from '../Header';
@@ -154,7 +155,22 @@ class TradingContest extends React.Component {
                         />
                         <Route 
                             exact={true} 
+                            path={`${this.props.match.url}/tnc`} 
+                            render={props => <DailyContestTnc {...props}/>} 
+                        />
+                        <Route 
+                            exact={true} 
                             path={`${this.props.match.url}/home`} 
+                            render={props => <Home {...props}/>} 
+                        />
+                        <Route 
+                            exact={true} 
+                            path={`${this.props.match.url}/home`} 
+                            render={props => <Home {...props}/>} 
+                        />
+                        <Route 
+                            exact={true} 
+                            path={`${this.props.match.url}`} 
                             render={props => <Home {...props}/>} 
                         />
                     </Switch>

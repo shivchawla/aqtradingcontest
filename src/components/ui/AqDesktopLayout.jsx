@@ -79,19 +79,19 @@ class AqDesktopLayout extends React.Component {
                             position: 'relative'
                         }}
                 >
-                    <AbsoluteContainer>
+                    <AbsoluteContainer style={{paddingLeft: '1.5%'}}>
+                        <MultiSegmentControl 
+                            labels={['My Picks', 'Top Picks', 'Leaderboard']}
+                            paperStyle={{marginLeft: '-5%'}}
+                            onChange={this.handleSegmentChange}
+                            defaultSelected={this.state.activeSegment}
+                        />
+                    </AbsoluteContainer>
+                    <AbsoluteContainer top='60px' >
                         <DesktopHeader 
                             header={this.props.header} 
                             handleDateChange={this.props.handleDateChange}
                             selectedDate={this.props.selectedDate || moment()}
-                        />
-                    </AbsoluteContainer>
-                    <AbsoluteContainer top='40px' style={{paddingLeft: '1.5%'}}>
-                        <MultiSegmentControl 
-                            labels={['Create', 'Top Picks', 'Leaderboard']}
-                            paperStyle={{marginLeft: '-5%'}}
-                            onChange={this.handleSegmentChange}
-                            defaultSelected={this.state.activeSegment}
                         />
                     </AbsoluteContainer>
                     <AbsoluteContainer top='100px'>
