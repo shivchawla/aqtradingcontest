@@ -24,7 +24,7 @@ export default class WinnerListItem extends React.Component {
         const change = Utils.formatMoneyValueMaxTwoDecimals(_.get(lastDetail, 'Change', 0));
         const changePct = `(${(_.get(lastDetail, 'ChangePct', 0.0)*100).toFixed(2)}%)`;
         
-        const changeColor = change > 0 ? metricColor.positive : metricColor.negative;
+        const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
 
         const medal = getRankMedal(rank);
 

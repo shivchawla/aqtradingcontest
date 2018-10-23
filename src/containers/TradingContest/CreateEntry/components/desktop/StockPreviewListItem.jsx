@@ -45,8 +45,8 @@ export default class StockPreviewListItem extends React.Component {
         const pointsChange = (type === 'buy' ? 1 : -1) * ((changePct * points) / 100);
         const changedPoints = Number((points + pointsChange).toFixed(2));
         const pointsChangeColor = type === 'buy'
-                ? change > 0 ? metricColor.positive : metricColor.negative
-                : change < 0 ? metricColor.positive : metricColor.negative;
+                ? change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative
+                : change < 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
         changePct = `(${changePct.toFixed(2)}%)`;
 
         return (

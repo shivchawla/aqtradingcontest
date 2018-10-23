@@ -371,18 +371,18 @@ export class SearchStocks extends React.Component {
 
     conditionallyAddItemToSellSelectedArray = (symbol, addToPortfolio = false) => {
         const {maxLimit = 5} = this.props;
-        const selectedStocks = _.map([...this.state.sellSelectedStocks], _.cloneDeep);
-        const buySelectedStocks = _.map([...this.state.selectedStocks], _.cloneDeep);
+        const selectedStocks = _.map([...this.state.sellSelectedStocks], _.cloneDeep); // stocks to sell
+        const buySelectedStocks = _.map([...this.state.selectedStocks], _.cloneDeep); // stocks to buy
         const localStocks = _.map([...this.localStocks], _.cloneDeep);
         const stocks = _.map([...this.state.stocks], _.cloneDeep);
 
         const selectedStockIndex = selectedStocks.indexOf(symbol);
         const buySelectedStockIndex = buySelectedStocks.indexOf(symbol);
 
-        const targetIndex = _.findIndex(stocks, stock => stock.symbol === symbol);
+        const targetIndex = _.findIndex(stocks, stock => stock.symbol === symbol); // Getting the index of the stocks to be added
         const targetStock = stocks[targetIndex];
         const targetLocalStock = localStocks.filter(stock => stock.symbol === symbol)[0];
-        if (targetStock !== undefined) {
+        if (targetStock !== undefined && targetLocalStock !== undefined) {
             if (selectedStockIndex === -1) {
                 if (this.state.sellSelectedStocks.length >= maxLimit) {
                     this.setState({snackbar: {open: true, message: `You can't sell more than ${maxLimit} stocks`}});

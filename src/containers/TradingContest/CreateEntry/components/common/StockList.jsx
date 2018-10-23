@@ -1,8 +1,10 @@
 import React from 'react';
+import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import StockEditListItemMobile from '../mobile/StockEditListItem';
 import StockEditListItemDesktop from '../desktop/StockEditListItem';
+import {primaryColor} from '../../../../../constants';
 
 export default class StockList extends React.Component {
     calculateMax = (stockItem) => {
@@ -40,6 +42,10 @@ export default class StockList extends React.Component {
                     }}
             >
                 {
+                    positions.length === 0 &&
+                    <EmptyPositionsText>No Data Found</EmptyPositionsText>
+                }
+                {
                     positions.map((position, index) => {
                         return (
                             <StockEditListItem 
@@ -57,3 +63,10 @@ export default class StockList extends React.Component {
         );
     }
 }
+
+const EmptyPositionsText = styled.h3`
+    font-size: 20px;
+    color: ${primaryColor};
+    font-weight: 400;
+    margin-top: 20%;
+`;

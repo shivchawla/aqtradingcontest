@@ -43,6 +43,6 @@ export default class ParticipantList extends React.Component {
 const Error = styled.h3`
     color: #717171;
     font-weight: 500;
-    font-size: 15px;
+    font-size: ${global.screen.width < 600 ? '15px' : '20px'};
     margin-top: ${global.screen.width > 600 ? '20%' : 0}
 `;

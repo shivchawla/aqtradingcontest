@@ -25,7 +25,7 @@ export default class WinnerListItem extends React.Component {
         const changePct = `(${(_.get(lastDetail, 'ChangePct', 0.0)*100).toFixed(2)}%)`;
         
         const colStyle = {...horizontalBox, justifyContent: 'space-between'};
-        const changeColor = change > 0 ? metricColor.positive : metricColor.negative;
+        const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
 
         const medal = getRankMedal(rank);
 

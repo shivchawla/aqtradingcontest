@@ -12,7 +12,6 @@ import StockPreviewList from '../common/StockPreviewList';
 import AqLayoutDesktop from '../../../../../components/ui/AqDesktopLayout';
 import {getTotalInvestment} from '../../../utils';
 import {verticalBox, primaryColor, secondaryColor, horizontalBox} from '../../../../../constants';
-import MultiSegmentedControl from '../../../../../components/ui/MultiSegmentedControl';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 
 export default class CreateEntryLayoutDesktop extends React.Component {

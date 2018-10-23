@@ -69,7 +69,7 @@ export default class StockEditListItem extends React.Component {
         const {points = 10} = this.state;
         const colStyle = {...horizontalBox, justifyContent: 'space-between'};
         const rowStyle = {...verticalBox, };
-        const changeColor = chgPct >= 0 ? metricColor.positive : metricColor.negative;
+        const changeColor = chgPct > 0 ? metricColor.positive : chgPct === 0 ? metricColor.neutral :  metricColor.negative;
 
         return (
             <SGrid 
