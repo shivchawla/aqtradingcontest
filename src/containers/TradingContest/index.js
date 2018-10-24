@@ -18,6 +18,7 @@ import Home from './CreateEntry/components/desktop/Home';
 import DailyContestTnc from '../TradingContest/TnC/DailyContestTnC';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
+import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
 import Header from '../Header';
 import {primaryColor} from '../../constants';
 import {Utils} from '../../utils';
@@ -27,12 +28,16 @@ class TradingContest extends React.Component {
     state = {
         selectedTab: 0,
         selectedDate: moment(),
-        bottomSheetOpen: false
+        bottomSheetOpen: false,
     };
 
     handleChange = (event, selectedTab) => {
         this.setState({selectedTab});
     };
+
+    handleDesktopTabChange = selectedTab => {
+        this.setState({selectedTab, desktopLoading: false});
+    }
 
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
@@ -138,7 +143,33 @@ class TradingContest extends React.Component {
                 <Header />
                 <div>
                     <Switch>
-                        <Route 
+                        <AqLayoutDesktop
+                                handleDateChange={this.updateDate}
+                                handleTabChange={this.handleDesktopTabChange}
+                        >
+                            {
+                                this.state.selectedTab === 0 &&
+                                <CreateEntry 
+                                    selectedDate={this.state.selectedDate} 
+                                    setLoading={this.setLoading}
+                                />
+                            }
+                            {
+                                this.state.selectedTab === 1 &&
+                                <TopPicks 
+                                    selectedDate={this.state.selectedDate} 
+                                    setLoading={this.setLoading}
+                                />
+                            }
+                            {
+                                this.state.selectedTab === 2 &&
+                                <Leaderboard 
+                                    selectedDate={this.state.selectedDate} 
+                                    setLoading={this.setLoading}
+                                />
+                            }
+                        </AqLayoutDesktop>
+                        {/* <Route 
                             exact={true} 
                             path={`${this.props.match.url}/create`} 
                             render={props => <CreateEntry {...props}/>} 
@@ -172,7 +203,7 @@ class TradingContest extends React.Component {
                             exact={true} 
                             path={`${this.props.match.url}`} 
                             render={props => <Home {...props}/>} 
-                        />
+                        /> */}
                     </Switch>
                 </div>
             </div>

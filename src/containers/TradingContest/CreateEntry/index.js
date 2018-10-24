@@ -8,6 +8,7 @@ import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
 import Snackbar from '@material-ui/core/Snackbar';
 import {Motion, spring} from 'react-motion';
+import {withRouter} from 'react-router';
 import {SearchStocks} from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
 import CreateEntryLayoutMobile from './components/mobile/CreateEntryLayoutMobile';
@@ -20,7 +21,7 @@ const dateFormat = 'YYYY-MM-DD';
 const URLSearchParamsPoly = require('url-search-params');
 const CancelToken = axios.CancelToken;
 
-export default class CreateEntry extends React.Component {
+class CreateEntry extends React.Component {
     constructor(props) {
         super(props);
         this.searchStockComponent = null;
@@ -366,15 +367,7 @@ export default class CreateEntry extends React.Component {
     }
 
     componentWillMount = () => {
-        const search = _.get(this.props, 'location.search', {});
-        const queryParams = new URLSearchParamsPoly(search);
-        const date = queryParams.get('date');
-        let selectedDate = this.props.selectedDate || moment();
-        if (date !== null) {
-            selectedDate = moment(date, dateFormat);
-        }
-        this.setState({selectedDate});
-        this.handleContestDateChange(selectedDate);
+        this.handleContestDateChange(this.state.selectedDate);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -449,6 +442,8 @@ export default class CreateEntry extends React.Component {
         );
     }
 }
+
+export default withRouter(CreateEntry);
 
 const SnackbarComponent = ({openStatus = false, message = 'Snackbar Data', onClose}) => {
     return (

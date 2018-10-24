@@ -7,7 +7,7 @@ export default class RadioGroup extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selected: 0
+            selected: props.defaultSelected || 0
         };
     }
 

@@ -75,14 +75,7 @@ class Winners extends React.Component {
     }
 
     componentWillMount() {
-        const queryParams = new URLSearchParamsPoly(this.props.location.search);
-        const date = queryParams.get('date');
-        let selectedDate = this.props.selectedDate || moment();
-        if (date !== null) {
-            selectedDate = moment(date, dateFormat);
-        }
-        this.setState({selectedDate});
-        this.getContestRankings(selectedDate);
+        this.getContestRankings(this.state.selectedDate);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -98,7 +91,6 @@ class Winners extends React.Component {
     }
 
     handleDateChange = date => {
-        console.log('Date', date);
         this.setState({selectedDate: date});
         this.getContestRankings(date);
     }

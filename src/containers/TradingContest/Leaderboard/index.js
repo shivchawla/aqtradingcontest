@@ -68,14 +68,7 @@ class Participants extends React.Component {
     }
 
     componentWillMount() {
-        const queryParams = new URLSearchParamsPoly(this.props.location.search);
-        const date = queryParams.get('date');
-        let selectedDate = this.props.selectedDate || moment();
-        if (date !== null) {
-            selectedDate = moment(date, dateFormat);
-        }
-        this.setState({selectedDate});
-        this.getContestRankings(selectedDate);
+        this.getContestRankings(this.state.selectedDate);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -107,7 +100,8 @@ class Participants extends React.Component {
             handleTimelineChange: this.handleTimelineChange,
             timelineView: this.state.timelineView,
             resultDate: this.state.resultDate,
-            selectedDate: this.state.selectedDate
+            selectedDate: this.state.selectedDate,
+            loading: this.state.loading
         };
 
         return (

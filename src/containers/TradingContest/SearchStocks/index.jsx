@@ -526,7 +526,7 @@ export class SearchStocks extends React.Component {
                 current: _.get(position, 'lastPrice', 0),
                 high: 0,
                 low: 0,
-                name: '',
+                name: _.get(position, 'name', ''),
                 open: 0,
                 sector: _.get(position, 'sector', ''),
                 symbol: _.get(position, 'symbol', '')

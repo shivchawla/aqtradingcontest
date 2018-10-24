@@ -9,7 +9,7 @@ import TimerComponent from '../../../Misc/TimerComponent';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
-import AqLayoutDesktop from '../../../../../components/ui/AqDesktopLayout';
+import LoaderComponent from '../../../Misc/Loader';
 import {getTotalInvestment} from '../../../utils';
 import {verticalBox, primaryColor, secondaryColor, horizontalBox} from '../../../../../constants';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
@@ -18,7 +18,7 @@ export default class CreateEntryLayoutDesktop extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: 'buy'
+            listView: 'all'
         };
     }
 
@@ -143,8 +143,6 @@ export default class CreateEntryLayoutDesktop extends React.Component {
         } = this.props;
         const contestSubmissionOver = moment().isAfter(contestEndDate);
         const fabButtonStyle = {borderRadius:'5px', padding: '0 10px'};
-        const longInvestmentTotal = getTotalInvestment(positions);
-        const shortInvestmentTotal = getTotalInvestment(sellPositions);
 
         return (
             !contestFound || (noEntryFound && positions.length === 0 && previousPositions.length == 0)
@@ -157,6 +155,7 @@ export default class CreateEntryLayoutDesktop extends React.Component {
                                     items={['BUY', 'SELL', 'ALL']}
                                     onChange={this.handleSegmentControlChange} 
                                     style={{marginRight: '2%'}}
+                                    defaultSelected={2}
                                 />
                             </Grid>
                         </Grid>
@@ -214,16 +213,17 @@ export default class CreateEntryLayoutDesktop extends React.Component {
     }
 
     render() {
-        return (
-            <AqLayoutDesktop 
-                    header='My Picks'
-                    handleDateChange={this.props.onDateChange}
-                    loading={this.props.loading}
-                    selectedDate={this.props.selectedDate}
-            >
-                {this.renderContent()}
-            </AqLayoutDesktop>
-        );
+        // return (
+        //     <AqLayoutDesktop 
+        //             header='My Picks'
+        //             handleDateChange={this.props.onDateChange}
+        //             loading={this.props.loading}
+        //             selectedDate={this.props.selectedDate}
+        //     >
+        //         {this.renderContent()}
+        //     </AqLayoutDesktop>
+        // );
+        return this.props.loading ? <LoaderComponent /> : this.renderContent();
     }
 }
 

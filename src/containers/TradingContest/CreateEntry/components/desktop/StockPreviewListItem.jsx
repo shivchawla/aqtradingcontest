@@ -76,10 +76,10 @@ export default class StockPreviewListItem extends React.Component {
                     >
                         |
                     </SecondayText>
-                    <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={changeColor}>
+                    <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={pointsChangeColor}>
                         {change.toFixed(2)}
                     </ChangeText>
-                    <ChangeText style={{marginLeft: '2px'}} color={changeColor}>{changePct}</ChangeText>
+                    <ChangeText style={{marginLeft: '2px'}} color={pointsChangeColor}>{changePct}</ChangeText>
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
                     <SecondayText style={{fontSize: '16px'}}>{points}K</SecondayText>

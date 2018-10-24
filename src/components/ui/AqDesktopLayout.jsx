@@ -7,8 +7,7 @@ import {withRouter} from 'react-router-dom';
 import LoaderComponent from '../../containers/TradingContest/Misc/Loader';
 import DesktopHeader from '../../containers/TradingContest/Misc/DesktopHeader';
 import MultiSegmentControl from '../../components/ui/MultiSegmentedControl';
-import RadioGroup from '../../components/selections/RadioGroup';
-import {horizontalBox, verticalBox, primaryColor} from '../../constants';
+import {verticalBox} from '../../constants';
 
 class AqDesktopLayout extends React.Component {
     constructor(props) {
@@ -46,18 +45,15 @@ class AqDesktopLayout extends React.Component {
     }
 
     handleSegmentChange = value => {
-        const selectedDate = this.props.selectedDate || moment();
-        const date = selectedDate.format('YYYY-MM-DD');
-
         switch(value) {
             case 0:
-                this.props.history.push(`/dailycontest/create?date=${date}`);
+                this.props.history.push(`/dailycontest/create`);
                 break;
             case 1:
-                this.props.history.push(`/dailycontest/toppicks?date=${date}`);
+                this.props.history.push(`/dailycontest/toppicks`);
                 break;
             case 2:
-                this.props.history.push(`/dailycontest/leaderboard?date=${date}`);
+                this.props.history.push(`/dailycontest/leaderboard`);
                 break;
             default:
                 break;
@@ -83,18 +79,19 @@ class AqDesktopLayout extends React.Component {
                         <MultiSegmentControl 
                             labels={['My Picks', 'Top Picks', 'Leaderboard']}
                             paperStyle={{marginLeft: '-5%'}}
-                            onChange={this.handleSegmentChange}
+                            // onChange={this.handleSegmentChange}
+                            onChange={value => { this.props.handleTabChange &&  this.props.handleTabChange(value)}}
                             defaultSelected={this.state.activeSegment}
                         />
                     </AbsoluteContainer>
-                    <AbsoluteContainer top='60px' >
+                    <AbsoluteContainer top='60px' style={{zIndex: 200}}>
                         <DesktopHeader 
                             header={this.props.header} 
                             handleDateChange={this.props.handleDateChange}
                             selectedDate={this.props.selectedDate || moment()}
                         />
                     </AbsoluteContainer>
-                    <AbsoluteContainer top='100px'>
+                    <AbsoluteContainer top='100px' style={{marginTop: '10px'}}>
                         {
                             loading ? <LoaderComponent /> : this.props.children
                         }

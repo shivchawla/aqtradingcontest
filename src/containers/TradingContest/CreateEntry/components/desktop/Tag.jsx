@@ -4,12 +4,11 @@ import styled from 'styled-components';
 export default class Tag extends React.Component {
     render() {
         const {type = 'buy'} = this.props;
-        const tagColor = type === 'buy' ? '#7AED95' : '#607D8B';
-        const textColor = type === 'buy' ? '#373737' : '#fff';
+        const tagColor = type === 'buy' ? '#2fd256' : '#F44336';
 
         return (
             <Container color={tagColor}>
-                <Text color={textColor}>{this.props.children}</Text>
+                <Text color='#fff'>{this.props.children}</Text>
             </Container>
         );
     }

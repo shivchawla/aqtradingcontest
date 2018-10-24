@@ -68,10 +68,10 @@ export default class StockPreviewListItem extends React.Component {
                         <SecondayText style={{fontSize:'14px', marginTop:'-4px'}}>
                             ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                         </SecondayText>
-                        <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={changeColor}>
+                        <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={pointsChangeColor}>
                             {change.toFixed(2)}
                         </ChangeText>
-                        <ChangeText style={{marginLeft: '2px'}} color={changeColor}>{changePct}</ChangeText>
+                        <ChangeText style={{marginLeft: '2px'}} color={pointsChangeColor}>{changePct}</ChangeText>
                     </div>
                 </Grid>
             </SGrid>

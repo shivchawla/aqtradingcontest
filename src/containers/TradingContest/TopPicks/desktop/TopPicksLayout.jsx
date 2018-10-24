@@ -2,7 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import AqDesktopLayout from '../../../../components/ui/AqDesktopLayout';
+import LoaderComponent from '../../Misc/Loader';
 import TopPicksTable from './TopPicksTable';
 import RadioGroup from '../../../../components/selections/RadioGroup';
 import TimerComponent from '../../Misc/TimerComponent';
@@ -92,16 +92,17 @@ export default class TopPicksLayout extends React.Component {
     }
 
     render() {
-        return (
-            <AqDesktopLayout 
-                    header="Top Picks"
-                    loading={this.props.loading} 
-                    handleDateChange={this.props.onDateChange}
-                    selectedDate={this.props.selectedDate}
-            >
-                {this.renderContent()}
-            </AqDesktopLayout>
-        );
+        // return (
+        //     <AqDesktopLayout 
+        //             header="Top Picks"
+        //             loading={this.props.loading} 
+        //             handleDateChange={this.props.onDateChange}
+        //             selectedDate={this.props.selectedDate}
+        //     >
+        //         {this.renderContent()}
+        //     </AqDesktopLayout>
+        // );
+        return this.props.loading ? <LoaderComponent /> : this.renderContent();
     }
 }
 

@@ -18,6 +18,7 @@ export default class ParticipantListItem extends React.Component {
     render() {
         const {userName = 'Saurav Biswas', cost = 99.5, pnl = -55.1, rank = 5, pnlPct = 0, profitFactor}  = this.props;
         const medal = getRankMedal(rank);
+        const changeColor = pnl > 0 ? metricColor.positive : metricColor === 0 ? metricColor.neutral : metricColor.negative;
 
         return (
             <SGrid container>
@@ -28,12 +29,12 @@ export default class ParticipantListItem extends React.Component {
                     <Name>{userName}</Name>
                 </Grid>
                 <Grid item xs={2}>
-                    <SecondaryText color={metricColor.negative}>
+                    <SecondaryText color={changeColor}>
                         ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl * 1000)}
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2}>
-                    <SecondaryText color={metricColor.negative}>
+                    <SecondaryText color={changeColor}>
                         {(pnlPct * 100).toFixed(2)}%
                     </SecondaryText>
                 </Grid>
