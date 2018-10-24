@@ -79,7 +79,6 @@ class AqDesktopLayout extends React.Component {
                         <MultiSegmentControl 
                             labels={['My Picks', 'Top Picks', 'Leaderboard']}
                             paperStyle={{marginLeft: '-5%'}}
-                            // onChange={this.handleSegmentChange}
                             onChange={value => { this.props.handleTabChange &&  this.props.handleTabChange(value)}}
                             defaultSelected={this.state.activeSegment}
                         />

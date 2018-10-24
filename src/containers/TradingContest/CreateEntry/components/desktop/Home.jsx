@@ -3,12 +3,14 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
+import {withStyles} from '@material-ui/core/styles';
 import NavigationList from './HomeListComponent';
+import Header from '../../../../Header';
 import {verticalBox, horizontalBox} from '../../../../../constants';
 import how_image from '../../../../../assets/how_image.svg';
 import * as homeData from '../../constants/home';
 
-export default class HOme extends React.Component {
+class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -41,42 +43,48 @@ export default class HOme extends React.Component {
 
     render() {
         const content = this.getConstants();
+        const {classes} = this.props;
 
         return (
-            <Grid container>
-                <LeftContainer item xs={6}>
-                    <PageHeader>Daily Trading Contest</PageHeader>
-                    <PageSubHeader>Pick the best stocks and win prizes everyday</PageSubHeader>
-                    <NavigationList 
-                        style={{position: 'absolute', left: '20px', marginTop: '-5%'}}
-                        onChange={this.onChange}
-                    />
-                    <Button 
-                            style={{
-                                backgroundColor: '#3B45B2', 
-                                color: '#fff', 
-                                width: '180px',
-                                position: 'absolute',
-                                bottom: '100px'
-                            }}
-                            onClick={() => this.props.history.push('/dailycontest/create')}
-                    >
-                        Enter Contest
-                        <Icon style={{color: '#fff'}}>chevron_right</Icon>
-                    </Button>
-                </LeftContainer>
-                <RightContainer item xs={6}>
-                    <SImg src={how_image} />
-                    <ListComponent 
-                        list={content.type === 'list' ? content.data : []}
-                        type={content.type}
-                        text={content.type === 'text' ? content.data : ''}
-                    />
-                </RightContainer>
-            </Grid>
+            <div className={classes.root}>
+                <Header />
+                <Grid container>
+                    <LeftContainer item xs={6}>
+                        <PageHeader>Daily Trading Contest</PageHeader>
+                        <PageSubHeader>Pick the best stocks and win prizes everyday</PageSubHeader>
+                        <NavigationList 
+                            style={{position: 'absolute', left: '20px', marginTop: '-5%'}}
+                            onChange={this.onChange}
+                        />
+                        <Button 
+                                style={{
+                                    backgroundColor: '#3B45B2', 
+                                    color: '#fff', 
+                                    width: '180px',
+                                    position: 'absolute',
+                                    bottom: '100px'
+                                }}
+                                onClick={() => this.props.history.push('/dailycontest/create')}
+                        >
+                            Enter Contest
+                            <Icon style={{color: '#fff'}}>chevron_right</Icon>
+                        </Button>
+                    </LeftContainer>
+                    <RightContainer item xs={6}>
+                        <SImg src={how_image} />
+                        <ListComponent 
+                            list={content.type === 'list' ? content.data : []}
+                            type={content.type}
+                            text={content.type === 'text' ? content.data : ''}
+                        />
+                    </RightContainer>
+                </Grid>
+            </div>
         );
     }
 }
+
+export default withStyles(desktopStyles)(Home);
 
 const ListComponent = ({type = 'list', list = [], text = ''}) => {
     return (
@@ -132,6 +140,16 @@ const TextComponent = ({text}) => {
             {text}
         </h3>
     );
+}
+
+
+const desktopStyles = {
+    root: {
+        flexGrow: 1
+    },
+    content: {
+        marginTop: 100
+    }
 }
 
 const SImg = styled.img `

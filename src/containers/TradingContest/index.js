@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
 import Media from 'react-media';
-import {Route, Switch} from 'react-router-dom';
 import moment from 'moment';
 import styled from 'styled-components';
 import {withStyles} from '@material-ui/core/styles';
@@ -14,8 +13,6 @@ import Icon from '@material-ui/core/Icon';
 import TopPicks from './TopPicks';
 import Leaderboard from './Leaderboard';
 import CreateEntry from './CreateEntry';
-import Home from './CreateEntry/components/desktop/Home';
-import DailyContestTnc from '../TradingContest/TnC/DailyContestTnC';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
@@ -36,7 +33,7 @@ class TradingContest extends React.Component {
     };
 
     handleDesktopTabChange = selectedTab => {
-        this.setState({selectedTab, desktopLoading: false});
+        this.setState({selectedTab});
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -135,77 +132,52 @@ class TradingContest extends React.Component {
         );
     }
 
+    getDesktopHeader = () => {
+        switch(this.state.selectedTab) {
+            case 0:
+                return 'My Picks';
+            case 1:
+                return 'Top Picks';
+            case 2:
+                return 'Leaderboard';
+            default:
+                return 'My Picks'
+        };
+    }
+
     renderDesktop = () => {
         const {classes} = this.props;
 
         return (
             <div className={classes.root}>
                 <Header />
-                <div>
-                    <Switch>
-                        <AqLayoutDesktop
-                                handleDateChange={this.updateDate}
-                                handleTabChange={this.handleDesktopTabChange}
-                        >
-                            {
-                                this.state.selectedTab === 0 &&
-                                <CreateEntry 
-                                    selectedDate={this.state.selectedDate} 
-                                    setLoading={this.setLoading}
-                                />
-                            }
-                            {
-                                this.state.selectedTab === 1 &&
-                                <TopPicks 
-                                    selectedDate={this.state.selectedDate} 
-                                    setLoading={this.setLoading}
-                                />
-                            }
-                            {
-                                this.state.selectedTab === 2 &&
-                                <Leaderboard 
-                                    selectedDate={this.state.selectedDate} 
-                                    setLoading={this.setLoading}
-                                />
-                            }
-                        </AqLayoutDesktop>
-                        {/* <Route 
-                            exact={true} 
-                            path={`${this.props.match.url}/create`} 
-                            render={props => <CreateEntry {...props}/>} 
+                <AqLayoutDesktop
+                        handleDateChange={this.updateDate}
+                        handleTabChange={this.handleDesktopTabChange}
+                        header={this.getDesktopHeader()}
+                >
+                    {
+                        this.state.selectedTab === 0 &&
+                        <CreateEntry 
+                            selectedDate={this.state.selectedDate} 
+                            setLoading={this.setLoading}
                         />
-                        <Route 
-                            exact={true} 
-                            path={`${this.props.match.url}/toppicks`} 
-                            render={props => <TopPicks {...props}/>} 
+                    }
+                    {
+                        this.state.selectedTab === 1 &&
+                        <TopPicks 
+                            selectedDate={this.state.selectedDate} 
+                            setLoading={this.setLoading}
                         />
-                        <Route 
-                            exact={true} 
-                            path={`${this.props.match.url}/leaderboard`} 
-                            render={props => <Leaderboard {...props}/>} 
+                    }
+                    {
+                        this.state.selectedTab === 2 &&
+                        <Leaderboard 
+                            selectedDate={this.state.selectedDate} 
+                            setLoading={this.setLoading}
                         />
-                        <Route 
-                            exact={true} 
-                            path={`${this.props.match.url}/tnc`} 
-                            render={props => <DailyContestTnc {...props}/>} 
-                        />
-                        <Route 
-                            exact={true} 
-                            path={`${this.props.match.url}/home`} 
-                            render={props => <Home {...props}/>} 
-                        />
-                        <Route 
-                            exact={true} 
-                            path={`${this.props.match.url}/home`} 
-                            render={props => <Home {...props}/>} 
-                        />
-                        <Route 
-                            exact={true} 
-                            path={`${this.props.match.url}`} 
-                            render={props => <Home {...props}/>} 
-                        /> */}
-                    </Switch>
-                </div>
+                    }
+                </AqLayoutDesktop>
             </div>
         );
     }
