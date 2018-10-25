@@ -93,7 +93,8 @@ export default class StockEditListItem extends React.Component {
                 <SGridCol item xs={1}>
                     <Tag type={type}>{direction}</Tag>
                 </SGridCol>
-                <SGridCol item xs={4}>
+                <SGridCol xs={1}></SGridCol>
+                <SGridCol item xs={3}>
                     <SecondayText style={{fontSize: '14px'}}>
                         ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                         <HorizontalDivider>|</HorizontalDivider>
@@ -167,11 +168,13 @@ const Symbol = styled.div`
 const SecondayText = styled.div`
     font-size: 14px;
     font-weight: 400;
-    color: ${props => props.color || '#6A6A6A'} 
+    color: ${props => props.color || '#6A6A6A'};
+    text-align: start;
 `;
 
 const Points = styled.h3`
     font-size: 18px;
     font-weight: 400;
     color: #373737;
+    text-align: start;
 `;

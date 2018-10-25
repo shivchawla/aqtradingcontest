@@ -13,7 +13,7 @@ export default class TableHeader extends React.Component {
                     <TableHeaderText>Stock</TableHeaderText>
                 </Grid>
                 <Grid item xs={4}>
-                    <TableHeaderText>Price Metrics</TableHeaderText>
+                    <TableHeaderText>Last Price</TableHeaderText>
                 </Grid>
                 <Grid item xs={2}>
                     <TableHeaderText>Votes</TableHeaderText>

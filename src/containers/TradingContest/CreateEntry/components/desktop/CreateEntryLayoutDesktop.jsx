@@ -41,7 +41,7 @@ export default class CreateEntryLayoutDesktop extends React.Component {
         const contestEndDate = this.props.contestEndDate.toDate();
 
         return (
-            <Grid container style={{...verticalBox, marginTop: '30%'}}>
+            <Grid container style={{...verticalBox, marginTop: '25%'}}>
                 {
 
                     (contestActive && contestNotStarted) ?

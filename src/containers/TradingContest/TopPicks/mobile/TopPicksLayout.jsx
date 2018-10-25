@@ -3,10 +3,9 @@ import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import WinnerList from '../common/WinnerList';
-import TimelineSegment from '../../Misc/TimelineSegment';
 import LoaderComponent from '../../Misc/Loader';
 import TimerComponent from '../../Misc/TimerComponent';
-import {primaryColor, verticalBox} from '../../../../constants';
+import {verticalBox} from '../../../../constants';
 
 export default class TopPicksLayout extends React.Component {
     renderContent() {
@@ -14,7 +13,6 @@ export default class TopPicksLayout extends React.Component {
         const contestRunning = moment().isSameOrAfter(moment(this.props.startDate)) && !contestEnded;
         const winnerStocks = this.props.winnerStocks;
         const winnerStocksWeekly = this.props.winnerStocksWeekly;
-        const contestActive  = this.props.contestActive;
 
         return (
             <SGrid container>
@@ -47,17 +45,8 @@ export default class TopPicksLayout extends React.Component {
                                 </Grid>
                             }     
                             {
-                                this.props.winnerStocks.length > 0 &&
-                                <Grid item xs={12} style={{position: 'absolute', top: '0px', width: '100%'}}>
-                                    <TimelineSegment 
-                                        onChange={this.props.handleTimeLineChange}
-                                        selectedView={this.props.timelineView}
-                                    />
-                                </Grid>
-                            }                       
-                            {
                                 contestEnded &&
-                                <Grid item xs={12} style={{padding: '10px', marginTop: '60px'}}>
+                                <Grid item xs={12} style={{padding: '10px'}}>
                                     {
                                         (winnerStocks.length > 0 || winnerStocksWeekly.length > 0) && 
                                         <WinnerList 

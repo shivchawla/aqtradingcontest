@@ -12,5 +12,6 @@ export const bottomSheetStyle = {
     zIndex: '2000',
     overflow: 'hidden',
     overflowY: 'scroll',
-    height: '100vh'
+    height: '100vh',
+    marginLeft: '-20px'
 }

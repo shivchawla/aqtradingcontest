@@ -15,30 +15,37 @@ export default class StockPreviewListHeader extends React.Component {
     
     render() {
         return (
-            <Grid 
+            <SGrid 
                     container 
-                    style={{padding: '10px', marginTop: '20px'}} 
+                    style={{
+                        padding: '0 10px', 
+                        paddingBottom: '0px', 
+                        paddingRight: 0,
+                        marginTop: '30px'
+                    }} 
                     alignItems="center" 
                     justify="center"
             >
-                <Grid item  xs={4} style={colStyle}>
+                <SGridCol item  xs={4}>
                     <HeaderText>SYMBOL</HeaderText>
-                </Grid>
-                <Grid item xs={2}>
+                </SGridCol>
+                <SGridCol item xs={1}>
                     <HeaderText>TYPE</HeaderText>
-                </Grid>
-                <Grid item xs={4} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                </SGridCol>
+                <SGridCol xs={1}></SGridCol>
+                <SGridCol item xs={3}>
                     <HeaderText>LAST PRICE</HeaderText>
-                </Grid>
-                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                </SGridCol>
+                <SGridCol item xs={2}>
                     <HeaderText>INVESTMENT</HeaderText>
-                </Grid>
-            </Grid>
+                </SGridCol>
+                <SGridCol item xs={1}>
+                    <HeaderText>ACTION</HeaderText>
+                </SGridCol>
+            </SGrid>
         );
     }
 }
-
-const colStyle = {...horizontalBox, justifyContent: 'space-between', paddingLeft: '5px'};
 
 const HeaderText = styled.h3`
     color: #6F6F6F;
@@ -46,3 +53,12 @@ const HeaderText = styled.h3`
     font-size: 14px;
     text-align: start;
 `;
+
+const SGrid = styled(Grid)`
+    margin-bottom: 20px;
+`;
+
+const SGridCol = styled(Grid)`
+    width: 100%;
+`;
+

@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import StockEditListItemMobile from '../mobile/StockEditListItem';
 import StockEditListItemDesktop from '../desktop/StockEditListItem';
+import StockEditListHeaderDesktop from '../desktop/StockEditListHeader';
 import {primaryColor} from '../../../../../constants';
 
 export default class StockList extends React.Component {
@@ -44,6 +45,10 @@ export default class StockList extends React.Component {
                 {
                     positions.length === 0 &&
                     <EmptyPositionsText>No Data Found</EmptyPositionsText>
+                }
+                {
+                    positions.length > 0 && global.screen.width > 600 &&
+                    <StockEditListHeaderDesktop />
                 }
                 {
                     positions.map((position, index) => {

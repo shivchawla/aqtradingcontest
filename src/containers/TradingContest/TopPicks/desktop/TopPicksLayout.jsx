@@ -4,9 +4,8 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import LoaderComponent from '../../Misc/Loader';
 import TopPicksTable from './TopPicksTable';
-import RadioGroup from '../../../../components/selections/RadioGroup';
 import TimerComponent from '../../Misc/TimerComponent';
-import {verticalBox, horizontalBox} from '../../../../constants';
+import {verticalBox} from '../../../../constants';
 
 export default class TopPicksLayout extends React.Component {
     constructor(props) {
@@ -14,20 +13,6 @@ export default class TopPicksLayout extends React.Component {
         this.state = {
             timelineView: 'daily'
         };
-    }
-
-    handleSegmentControlChange = value => {
-        let timelineView = 'daily';
-        switch(value) {
-            case 0:
-                timelineView = 'daily';
-                break;
-            case 1:
-                timelineView = 'weekly';
-            default:
-                break;
-        };
-        this.setState({timelineView});
     }
 
     renderContent() {
@@ -57,18 +42,6 @@ export default class TopPicksLayout extends React.Component {
                                     />
                             }     
                             {
-                                this.props.winnerStocks.length > 0 &&
-                                <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                                    <RadioGroup 
-                                        onChange={this.handleSegmentControlChange}
-                                        items={['DAILY', 'WEEKLY']}
-                                        style={{
-                                            marginRight: '2%'
-                                        }}
-                                    />
-                                </div>
-                            }                       
-                            {
                                 contestEnded &&
                                 <div 
                                         style={{
@@ -92,23 +65,13 @@ export default class TopPicksLayout extends React.Component {
     }
 
     render() {
-        // return (
-        //     <AqDesktopLayout 
-        //             header="Top Picks"
-        //             loading={this.props.loading} 
-        //             handleDateChange={this.props.onDateChange}
-        //             selectedDate={this.props.selectedDate}
-        //     >
-        //         {this.renderContent()}
-        //     </AqDesktopLayout>
-        // );
         return this.props.loading ? <LoaderComponent /> : this.renderContent();
     }
 }
 
 const ContestNotPresentView = () => {
     return (
-        <Grid container style={{height: '100vh', width: '100%'}}>
+        <Grid container style={{height: '85vh', width: '100%'}}>
             <Grid item xs={12} style={verticalBox}>
                 <ContestNotAvailableText>No contest avaiable for selected date</ContestNotAvailableText>
             </Grid>
@@ -118,7 +81,7 @@ const ContestNotPresentView = () => {
 
 const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
     return (
-        <Grid container style={{marginTop: '0%', height: '100vh', width: '100%'}}>
+        <Grid container style={{marginTop: '0%', height: '85vh', width: '100%'}}>
             <Grid item xs={12} style={{...verticalBox}}>
                 <h3 style={{fontSize: '18px', color: '#4B4B4B', fontWeight: 300}}>
                     {

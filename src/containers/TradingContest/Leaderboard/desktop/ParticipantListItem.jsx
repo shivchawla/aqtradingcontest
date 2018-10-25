@@ -44,7 +44,7 @@ export default class ParticipantListItem extends React.Component {
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <Score>{cost}K</Score>
+                    <SecondaryText color={primaryColor}>{cost}K</SecondaryText>
                 </Grid>
             </SGrid>
         ); 

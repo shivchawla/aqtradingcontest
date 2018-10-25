@@ -52,12 +52,6 @@ export default class EntryDetailBottomSheet extends React.Component {
                                         <Icon style={{color: metricColor.negative}}>highlight_off</Icon>
                                     </IconButton>
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <SegmentedControl 
-                                        labels={['Daily', 'Weekly']}
-                                        onChange={this.handleSegmentChange}
-                                    />
-                                </Grid>
                                 <Grid item xs={12} style={verticalBox}>
                                     <MetricsHeader>Total</MetricsHeader>
                                     <SelectionMetrics {...metrics.total} bordered/>

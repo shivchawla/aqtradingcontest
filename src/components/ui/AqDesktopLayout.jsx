@@ -110,7 +110,7 @@ const ContainerGrid = styled(Grid)`
     width: 100%; 
     justify-content: 'center';
     padding-top: 10px;
-    margin-bottom: 200px;
+    margin-bottom: 20px;
     padding-left: 20px;
 `;
 
