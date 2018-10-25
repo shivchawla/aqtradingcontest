@@ -15,7 +15,7 @@ import CreateEntryLayoutMobile from './components/mobile/CreateEntryLayoutMobile
 import CreateEntryLayoutDesktop from './components/desktop/CreateEntryLayoutDesktop';
 import {DailyContestCreateMeta} from '../metas';
 import {handleCreateAjaxError} from '../../../utils';
-import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary} from '../utils';
+import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getMultiStockData} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
 const CancelToken = axios.CancelToken;
@@ -313,11 +313,67 @@ class CreateEntry extends React.Component {
     }
 
     handleContestDateChange = (selectedDate) => {
+        console.log('Date Change Called');
         this.setState({loading: true});
         return this.updateContestStatusOnDateChange(selectedDate)
         .then(contestStatus => {
             return this.updateContestEntryStatusOnDateChange(selectedDate)
         })
+        .then(() => {
+            const currentDate = moment().format('YYYY-MM-DD');
+            const formattedSelectedDate = selectedDate.format('YYYY-MM-DD');
+            if (moment(currentDate).isSame(formattedSelectedDate)) {
+                const positions = [...this.state.positions, ...this.state.sellPositions].map(position => position.symbol);
+                return getMultiStockData(positions)
+            }
+        })
+        .then(stocks => {
+            return Promise.map(stocks, stock => {
+                const change = _.get(stock, 'latestDetailRT.change', null) !== null 
+                    ?  _.get(stock, 'latestDetailRT.change', 0)
+                    :  _.get(stock, 'latestDetail.values.Change', 0);
+
+                const changePct = _.get(stock, 'latestDetailRT.changePct', null) !== null 
+                        ?  _.get(stock, 'latestDetailRT.changePct', 0)
+                        :  _.get(stock, 'latestDetail.values.ChangePct', 0);
+                const symbol = _.get(stock, 'security.ticker', '');
+
+                return {symbol, change, changePct};
+            });
+        })
+        .then(changeData => {
+            let clonedBuyPositions = _.map(this.state.positions, _.cloneDeep);
+            let clonedSellPositions = _.map(this.state.sellPositions, _.cloneDeep);
+
+            // Updating buy positions with change and changePct
+            clonedBuyPositions = clonedBuyPositions.map(position => {
+                const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
+                if (positionWithChangeData !== undefined) {
+                    return {
+                        ...position,
+                        change: positionWithChangeData.change,
+                        changePct: positionWithChangeData.changePct
+                    }
+                }
+            });
+
+            // Updating buy positions with change and changePct
+            clonedSellPositions = clonedSellPositions.map(position => {
+                const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
+                if (positionWithChangeData !== undefined) {
+                    return {
+                        ...position,
+                        change: positionWithChangeData.change,
+                        changePct: positionWithChangeData.changePct
+                    }
+                }
+            });
+
+            this.setState({positions: clonedBuyPositions, sellPositions: clonedSellPositions}, () => {
+                this.searchStockComponent.initializeSelectedStocks();
+            });
+        }) 
+        .catch(err => console.log('Error Occured', err))
         .finally(() => {
             this.setState({loading: false});
         }) 

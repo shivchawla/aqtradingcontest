@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import axios from 'axios';
-import {Utils, fetchAjax} from '../../../utils';
+import {Utils, fetchAjax, getStockData} from '../../../utils';
 import gold from '../../../assets/gold.svg';
 import silver from '../../../assets/silver.svg';
 import bronze from '../../../assets/bronze.svg';
@@ -70,6 +70,7 @@ export const convertBackendPositions = positions => {
 export const processSelectedPosition = (oldPositions = [], selectedPositions = []) => {
     const clonedOldPositions = _.map(oldPositions, _.cloneDeep);
     const clonedSelectedPositions = _.map(selectedPositions, _.cloneDeep);
+    console.log('Selected Positions', selectedPositions);
 
     return Promise.map(clonedSelectedPositions, selectedPosition => {
         // Check if position was previously present, if present use the points from the previous position
@@ -144,4 +145,13 @@ export const setEndTimeToDate = (date, hourToAdd = 15) => {
 
 export const getTotalInvestment = (positions = []) => {
     return _.sum(positions.map(position => position.points));
+}
+
+export const getMultiStockData = (stocks = []) => {
+    return Promise.all(
+        stocks.map(stock => getStockData(stock, 'latestDetail'))
+    )
+    .then(response => {
+        return Promise.map(response, responseItem => responseItem.data);
+    });
 }

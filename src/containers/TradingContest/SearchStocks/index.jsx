@@ -323,7 +323,7 @@ export class SearchStocks extends React.Component {
         const targetIndex = _.findIndex(stocks, stock => stock.symbol === symbol);
         const targetStock = stocks[targetIndex];
         const targetLocalStock = localStocks.filter(stock => stock.symbol === symbol)[0];
-        if (targetStock !== undefined) {
+        if (targetStock !== undefined && targetLocalStock !== undefined) {
             if (selectedStockIndex === -1) {
 
                 if (this.state.selectedStocks.length >= maxLimit) {
@@ -337,6 +337,7 @@ export class SearchStocks extends React.Component {
                     targetStock.sellChecked = false;
                     targetLocalStock.sellChecked = false;
                 }
+                console.log(targetLocalStock);
                 targetStock.checked = true;
                 targetLocalStock.checked = true;
             } else {
@@ -502,11 +503,19 @@ export class SearchStocks extends React.Component {
     }
 
     initializeSelectedStocks = async () => {
+        const stocks = [...this.state.stocks];
         const positions = [...this.props.portfolioPositions];
         const sellPositions = [...this.props.portfolioSellPositions];
         const processedBuySelectedStocks = await this.getLocalStocksFromPortfolio(positions, 'buy');
         const processedSellSelectedStocks = await this.getLocalStocksFromPortfolio(sellPositions, 'sell');
         this.localStocks = [...processedBuySelectedStocks, ...processedSellSelectedStocks];
+        stocks.map(stock => {
+            const localStock = this.localStocks.filter(item => item.symbol === stock.symbol)[0];
+            if (localStock === undefined) {
+                this.localStocks.push(stock);
+            }
+        });
+        console.log('Local Stocks', this.localStocks);
     }
 
     /**
@@ -514,9 +523,10 @@ export class SearchStocks extends React.Component {
      */
     getLocalStocksFromPortfolio = (positions = [], type = 'buy') => {
         return Promise.map(positions, position => {
+            console.log("Position", position);
             return {
-                change: 0,
-                changePct: 0,
+                change: _.get(position, 'change', 0),
+                changePct: _.get(position, 'changePct', 0),
                 [type === 'buy' ? 'checked' : 'sellChecked']: true,
                 close: _.get(position, 'lastPrice', 0),
                 current: _.get(position, 'lastPrice', 0),
