@@ -126,6 +126,19 @@ export default class CreateEntryLayoutDesktop extends React.Component {
         this.props.handleStockTypeRadioChange(nValue);
     }
 
+    getDefaultSelectedRadioButton = () => {
+        switch(this.state.listView) {
+            case 'all':
+                return 2;
+            case 'sell':
+                return 1;
+            case 'buy':
+                return 0;
+            default:
+                return 0;
+        }
+    }
+
     renderContent() {
         const {
             contestEndDate, 
@@ -155,7 +168,7 @@ export default class CreateEntryLayoutDesktop extends React.Component {
                                     items={['BUY', 'SELL', 'ALL']}
                                     onChange={this.handleSegmentControlChange} 
                                     style={{marginRight: '2%'}}
-                                    defaultSelected={2}
+                                    defaultSelected={this.getDefaultSelectedRadioButton()}
                                 />
                             </Grid>
                         </Grid>
@@ -213,16 +226,6 @@ export default class CreateEntryLayoutDesktop extends React.Component {
     }
 
     render() {
-        // return (
-        //     <AqLayoutDesktop 
-        //             header='My Picks'
-        //             handleDateChange={this.props.onDateChange}
-        //             loading={this.props.loading}
-        //             selectedDate={this.props.selectedDate}
-        //     >
-        //         {this.renderContent()}
-        //     </AqLayoutDesktop>
-        // );
         return this.props.loading ? <LoaderComponent /> : this.renderContent();
     }
 }

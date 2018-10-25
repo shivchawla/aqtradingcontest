@@ -473,9 +473,6 @@ export class SearchStocks extends React.Component {
     syncStockListWithPortfolio = (props = this.props) => {
         const positions = _.get(props, 'portfolioPositions', []);
         const sellPositions = _.get(props, 'portfolioSellPositions', []);
-        console.log('Buy Positions', positions);
-        console.log('Sell Positions', sellPositions);
-
         const selectedStocks = positions.map(position => position.symbol);
         const sellSelectedStocks = sellPositions.map(position => position.symbol);
 
@@ -506,8 +503,6 @@ export class SearchStocks extends React.Component {
     initializeSelectedStocks = async () => {
         const positions = [...this.props.portfolioPositions];
         const sellPositions = [...this.props.portfolioSellPositions];
-        console.log('Buy Positions', positions);
-        console.log('Sell Positions', sellPositions);
         const processedBuySelectedStocks = await this.getLocalStocksFromPortfolio(positions, 'buy');
         const processedSellSelectedStocks = await this.getLocalStocksFromPortfolio(sellPositions, 'sell');
         this.localStocks = [...processedBuySelectedStocks, ...processedSellSelectedStocks];

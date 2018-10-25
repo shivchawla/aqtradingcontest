@@ -18,7 +18,6 @@ import {handleCreateAjaxError} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
-const URLSearchParamsPoly = require('url-search-params');
 const CancelToken = axios.CancelToken;
 
 class CreateEntry extends React.Component {
@@ -162,12 +161,10 @@ class CreateEntry extends React.Component {
     }
 
     getRecentContestEntry = (requiredDate = moment()) => new Promise((resolve, reject) => {
-        //this.setState({loading: true});
         const errorCallback = (err) => {
             const errorData = _.get(err, 'response.data', null);
             reject(errorData);
         };
-
         getContestEntry(requiredDate.format(dateFormat), this.props.history, this.props.match.url, errorCallback, this.source)
         .then(async response => {
             const positions = _.get(response, 'data.positions', []);
@@ -177,7 +174,6 @@ class CreateEntry extends React.Component {
             const sellPositions = positions.filter(position => _.get(position, 'investment', 10) < 0);
             const processedBuyPositions = await convertBackendPositions(buyPositions);
             const processedSellPositions = await convertBackendPositions(sellPositions);
-            
             resolve({
                 positions: processedBuyPositions, 
                 sellPositions: processedSellPositions, 
@@ -372,7 +368,9 @@ class CreateEntry extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (this.props.selectedDate !== nextProps.selectedDate) {
-            this.setState({selectedDate: nextProps.selectedDate}, () => this.handleContestDateChange(nextProps.selectedDate));
+            this.setState({selectedDate: nextProps.selectedDate}, () => {
+                this.handleContestDateChange(nextProps.selectedDate)
+            });
         }
     } 
 

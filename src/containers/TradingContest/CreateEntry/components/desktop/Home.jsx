@@ -19,7 +19,6 @@ class Home extends React.Component {
     }
 
     onChange = type => {
-        console.log('Hello World');
         this.setState({selected: type});
     }
 

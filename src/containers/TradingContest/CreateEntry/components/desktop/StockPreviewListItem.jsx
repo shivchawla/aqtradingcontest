@@ -40,12 +40,10 @@ export default class StockPreviewListItem extends React.Component {
             changePct = chgPct * 100;
         }
         const colStyle = {...horizontalBox, justifyContent: 'space-between', paddingLeft: '5px'};
-        const changeColor = change > 0 ? metricColor.positive : metricColor.negative;
         const pointsChange = (type === 'buy' ? 1 : -1) * ((changePct * points) / 100);
         const changedPoints = Number((points + pointsChange).toFixed(2));
-        const pointsChangeColor = type === 'buy'
-                ? change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative
-                : change < 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
+        const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative
+        const pointsChangeColor = changedPoints > points ? metricColor.positive : changedPoints === points ? metricColor.neutral : metricColor.negative;
         changePct = `(${changePct.toFixed(2)}%)`;
 
         return (
@@ -76,10 +74,10 @@ export default class StockPreviewListItem extends React.Component {
                     >
                         |
                     </SecondayText>
-                    <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={pointsChangeColor}>
+                    <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={changeColor}>
                         {change.toFixed(2)}
                     </ChangeText>
-                    <ChangeText style={{marginLeft: '2px'}} color={pointsChangeColor}>{changePct}</ChangeText>
+                    <ChangeText style={{marginLeft: '2px'}} color={changeColor}>{changePct}</ChangeText>
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
                     <SecondayText style={{fontSize: '16px'}}>{points}K</SecondayText>
