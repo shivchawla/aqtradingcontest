@@ -25,7 +25,7 @@ export default class SelectionMetricsMini extends React.Component {
                     <Grid container spacing={8}>
                         {
                             global.screen.width > 600 &&
-                            <MetricItem label='Investment' value={cost} />
+                            <MetricItem label='Investment' value={`${cost}K`} />
                         }
                         <MetricItem label='Profit Factor' value={(profitFactor || 0).toFixed(2)} />
                         <MetricItem money coloured label='Total PnL' value={((pnl || 0) * 1000)} />
