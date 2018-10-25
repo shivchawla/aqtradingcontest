@@ -8,7 +8,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../constants';
+import {horizontalBox} from '../../../../constants';
 import {sectorData} from '../constants';
 
 
@@ -16,15 +16,15 @@ export default class StockFilter extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            filterData: this.getSectors(),
+            filterData: [],
         }
     }
 
-    getSectors = () => {
+    getSectors = () => new Promise((resolve) => {
         let uniqueSectors = _.uniq(sectorData.map(item => item.Sector));
         // Removing sectors that are blank
         uniqueSectors = uniqueSectors.filter(sector => sector.length > 0);
-        return uniqueSectors.map(sector => {
+        resolve (uniqueSectors.map(sector => {
             const uniqueSectorData = _.uniqWith(sectorData.filter(item => item.Sector === sector), _.isEqual);
             const industries = uniqueSectorData.map(item => {
                 return {
@@ -35,8 +35,8 @@ export default class StockFilter extends React.Component {
             });
 
             return {sector, industries, checked: -1}
-        });
-    }
+        }));
+    }) 
 
     renderSectors = () => {
         let data = this.state.filterData;
@@ -64,18 +64,6 @@ export default class StockFilter extends React.Component {
             >
                 {
                     data.map((sector, index) => {
-                        const sectorPanelHeader = (
-                            <div style={horizontalBox}>
-                                <Checkbox 
-                                        checked={sector.checked === 1}
-                                        indeterminate = {sector.checked === 0}
-                                        onChange={() => this.handleSectorClick(sector)}
-                                        style={{marginRight: '5px'}}
-                                />
-                                <span style={{fontSize: '14px'}}>{sector.sector}</span>
-                            </div>
-                        )
-
                         return (
                             <ExpansionPanel>
                                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
@@ -98,7 +86,7 @@ export default class StockFilter extends React.Component {
                                 </ExpansionPanelSummary>
                                 <ExpansionPanelDetails>
                                     <Grid container>
-                                        <Grid item xs={24}>
+                                        <Grid item xs={12}>
                                             <SectorItem 
                                                     key={index} 
                                                     sector={sector} 
@@ -113,22 +101,6 @@ export default class StockFilter extends React.Component {
                 }
                 <Grid container style={{height: '100px'}}></Grid>
             </Grid> 
-        );
-    }
-
-    renderIndustries = () => {
-        const filterData = [...this.state.filterData];
-        const selectedSectors = filterData.filter(item => item.checked === true);
-        let industries = [];
-        selectedSectors.map(sector => {
-            industries = [...industries, ...sector.industries]
-        });
-
-        return (
-            <IndustryItemGroup 
-                    industries={industries} 
-                    onChange={this.handleIndustryClick}
-            />
         );
     }
 
@@ -225,7 +197,13 @@ export default class StockFilter extends React.Component {
         this.props.onFilterChange(this.getIndividualSectorsAndIndustries(filterData));
     }
 
+    componentWillMount() {
+        this.getSectors()
+        .then(data => this.setState({filterData: data}));
+    }
+
     render() {
+        console.log('Stock Filter Updated');
         return(
             <Grid container>
                 <Media 
@@ -249,7 +227,7 @@ export default class StockFilter extends React.Component {
                 <Media 
                     query="(min-width: 601px)"
                     render={() => 
-                        <Grid item xs={24}>
+                        <Grid item xs={12}>
                             <h3 
                                 style={{
                                     fontSize: '22px', 
@@ -279,7 +257,7 @@ const SectorItem = ({sector, onChange}) => {
 
 const IndustryItemGroup = ({industries, onChange}) => {
     return (
-        <Grid item xs={24}>
+        <Grid item xs={12}>
             {
                 industries.map((item, index) => (
                     <IndustryItem 
@@ -295,25 +273,38 @@ const IndustryItemGroup = ({industries, onChange}) => {
     );
 }
 
-const IndustryItem = ({checked, text, onChange, sector}) => {
-    return (
-        <Grid container>
-            <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px', justifyContent: 'flex-start'}}>
-                <Checkbox 
-                        checked={checked} 
-                        onChange={value => onChange(value, text, sector)}
-                        style={{
-                            margin: '0', 
-                            marginLeft: '20px', 
-                            marginBottom: '5px', 
-                            fontWeight: 400,
-                            fontSize: global.screen.width > 600 ? '13px' : '15px'
-                        }}
-                />
-                <CheckboxLabel>{text}</CheckboxLabel>
+class IndustryItem extends React.Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(nextProps, this.props) || (!_.isEqual(nextState, this.state))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    render() {
+        console.log('Industry Item Rendered');
+        const {checked, text, onChange, sector} = this.props;
+
+        return (
+            <Grid container>
+                <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px', justifyContent: 'flex-start'}}>
+                    <Checkbox 
+                            checked={checked} 
+                            onChange={value => onChange(value, text, sector)}
+                            style={{
+                                margin: '0', 
+                                marginLeft: '20px', 
+                                marginBottom: '5px', 
+                                fontWeight: 400,
+                                fontSize: global.screen.width > 600 ? '13px' : '15px'
+                            }}
+                    />
+                    <CheckboxLabel>{text}</CheckboxLabel>
+                </Grid>
             </Grid>
-        </Grid>
-    );
+        );
+    }
 }
 
 const CheckboxLabel = styled.h3`

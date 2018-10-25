@@ -63,6 +63,7 @@ const ListHeader = styled.h3`
 `;
 
 const ListItemText = styled.h3`
+    cursor: pointer;
     font-size: 14px;
     color: #fff;
     font-weight: 400;

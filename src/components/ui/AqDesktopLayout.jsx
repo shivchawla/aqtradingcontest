@@ -2,12 +2,12 @@ import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import styled from 'styled-components';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
-import LoaderComponent from '../../containers/TradingContest/Misc/Loader';
-import DesktopHeader from '../../containers/TradingContest/Misc/DesktopHeader';
+import DateComponent from '../../containers/TradingContest/Misc/DateComponent';
 import MultiSegmentControl from '../../components/ui/MultiSegmentedControl';
-import {verticalBox} from '../../constants';
 
 class AqDesktopLayout extends React.Component {
     constructor(props) {
@@ -25,12 +25,6 @@ class AqDesktopLayout extends React.Component {
         return false;
     }
 
-    componentWillMount() {
-        const location = this.props.location.pathname;
-        const locationArray = location.split('/');
-        this.setState({activeSegment: this.getDefaultSegment(locationArray[locationArray.length - 1])});
-    }
-
     getDefaultSegment = (page = 'create') => {
         switch(page) {
             case 'create':
@@ -44,20 +38,10 @@ class AqDesktopLayout extends React.Component {
         }
     }
 
-    handleSegmentChange = value => {
-        switch(value) {
-            case 0:
-                this.props.history.push(`/dailycontest/create`);
-                break;
-            case 1:
-                this.props.history.push(`/dailycontest/toppicks`);
-                break;
-            case 2:
-                this.props.history.push(`/dailycontest/leaderboard`);
-                break;
-            default:
-                break;
-        }   
+    handleTabChange = (e, value) => {
+        console.log(value);
+        this.setState({activeSegment: value});
+        this.props.handleTabChange && this.props.handleTabChange(value);
     }
 
     render() {
@@ -65,37 +49,53 @@ class AqDesktopLayout extends React.Component {
 
         return (
             <ContainerGrid container>
-                <Grid 
-                        item xs={9} 
-                        style={{
-                            ...verticalBox,
-                            alignItems: 'flex-start',
-                            justifyContent: 'flex-start', 
-                            padding: '0 10px',
-                            position: 'relative'
-                        }}
-                >
-                    <AbsoluteContainer style={{paddingLeft: '1.5%'}}>
-                        <MultiSegmentControl 
-                            labels={['My Picks', 'Top Picks', 'Leaderboard']}
-                            paperStyle={{marginLeft: '-5%'}}
-                            onChange={value => { this.props.handleTabChange &&  this.props.handleTabChange(value)}}
-                            defaultSelected={this.state.activeSegment}
-                        />
+                <LeftContainer item xs={9} style={{marginTop: '20px'}}>
+                    {/* <AbsoluteContainer top='-35px'>
+                        <MultiSegmentControl centered labels={['Daily', 'Weekly']} />
+                    </AbsoluteContainer> */}
+                    <AbsoluteContainer 
+                            style={{
+                                top: '10px',
+                                zIndex: 200
+                            }}
+                    >
+                        <Grid 
+                                container 
+                                justify='space-between' 
+                                alignItems='center'
+                                style={{width: '98%'}}
+                        >
+                            <Grid item xs={6}>
+                                <Tabs 
+                                        value={this.state.activeSegment} 
+                                        onChange={this.handleTabChange}
+                                        indicatorColor="primary"
+                                >
+                                    <Tab label="My Picks" />
+                                    <Tab label="Top Picks" />
+                                    <Tab label="Leaderboard" />
+                                </Tabs>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <DateComponent 
+                                    selectedDate={this.props.selectedDate || moment()}
+                                    color='#737373'
+                                    onDateChange={this.props.handleDateChange}
+                                />
+                            </Grid>
+                        </Grid>
                     </AbsoluteContainer>
-                    <AbsoluteContainer top='60px' style={{zIndex: 200}}>
-                        <DesktopHeader 
-                            header={this.props.header} 
-                            handleDateChange={this.props.handleDateChange}
-                            selectedDate={this.props.selectedDate || moment()}
-                        />
+                    <AbsoluteContainer 
+                            top='90px' 
+                            style={{
+                                width: '98%',
+                                position: 'relative',
+                                marginBottom: '100px'
+                            }}
+                    >
+                        {this.props.children}
                     </AbsoluteContainer>
-                    <AbsoluteContainer top='100px' style={{marginTop: '10px'}}>
-                        {
-                            loading ? <LoaderComponent /> : this.props.children
-                        }
-                    </AbsoluteContainer>
-                </Grid>
+                </LeftContainer>
                 <Grid item xs={3}></Grid> 
             </ContainerGrid>
         );
@@ -105,11 +105,25 @@ class AqDesktopLayout extends React.Component {
 export default withRouter(AqDesktopLayout);
 
 const ContainerGrid = styled(Grid)`
-    height: 100vh;
+    height: 100%;
+    min-height: 100vh;
     width: 100%; 
     justify-content: 'center';
     padding-top: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 200px;
+    padding-left: 20px;
+`;
+
+const LeftContainer = styled(Grid)`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;                    
+    padding: 0 10px;
+    position: relative;
+    background-color: #fff;
+    border-color: #F1F1F1;
+    box-shadow: 0 4px 13px #DEE3FF;
 `;
 
 const AbsoluteContainer = styled.div`

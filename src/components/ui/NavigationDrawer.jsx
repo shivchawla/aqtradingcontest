@@ -193,18 +193,10 @@ const listItemTextStyle = {
 
 const menuCategories = [
     {
-        name: "Stock Picks Contest", icon:'bubble_chart', children: [
-            {name: "Contest Home", url: '/dailycontest/home', icon:'explore'},
-            {name: "Top Picks", url: '/dailycontest/create', icon: 'grade_outline'},
-        ]
+        name: "Daily Contest", icon:'bubble_chart', url: '/dailycontest'
     },
-
     {
-        name: "Investment Idea Contest", icon:'card_travel', children: [
-            {name: "Contest Home", url: '/contest', href:true, icon:'explore'},
-            {name: "Leaderboard", url: '/contest/leaderboard', href:true, icon: 'grade_outline'},
-            {name: "How", url: '/contest/how', href:true, icon: 'help_outline'},
-        ]
+        name: "Create Entry", icon:'create', url: '/createentry'
     },
     {
         name: "Home", url:'/home', href:true, icon:'home_outline'

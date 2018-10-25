@@ -6,9 +6,11 @@ import Icon from '@material-ui/core/Icon';
 import {withStyles} from '@material-ui/core/styles';
 import NavigationList from './HomeListComponent';
 import Header from '../../../../Header';
+import Footer from '../../../../Footer';
 import {verticalBox, horizontalBox} from '../../../../../constants';
 import how_image from '../../../../../assets/how_image.svg';
-import * as homeData from '../../constants/home';
+// import * as homeData from '../../constants/home';
+import * as homeData from '../../../constants/dailycontestconstants';
 
 class Home extends React.Component {
     constructor(props) {
@@ -26,7 +28,7 @@ class Home extends React.Component {
         const type = this.state.selected;
         switch(type) {
             case "how":
-                return {type: 'list', data: homeData.how};
+                return {type: 'list', data: homeData.howItWorksContents};
             case "prizes":
                 return {type: 'text', data: homeData.prizeText};
             case "requirements":
@@ -34,9 +36,9 @@ class Home extends React.Component {
             case "scoring":
                 return {type: 'text', data: homeData.scoringText};
             case "faq":
-                return {type: 'list', data: homeData.faq};
+                return {type: 'list', data: homeData.faqs};
             default:
-                return {type: 'list', data: homeData.how};
+                return {type: 'list', data: homeData.howItWorksContents};
         }
     }
 
@@ -69,7 +71,7 @@ class Home extends React.Component {
                             <Icon style={{color: '#fff'}}>chevron_right</Icon>
                         </Button>
                     </LeftContainer>
-                    <RightContainer item xs={6}>
+                    <RightContainer item xs={6} style={{...verticalBox, justifyContent: 'flex-start', position: 'relative'}}>
                         <SImg src={how_image} />
                         <ListComponent 
                             list={content.type === 'list' ? content.data : []}
@@ -77,6 +79,9 @@ class Home extends React.Component {
                             text={content.type === 'text' ? content.data : ''}
                         />
                     </RightContainer>
+                    <Grid item xs={12} style={{marginTop: '400px'}}>
+                        <Footer />
+                    </Grid>
                 </Grid>
             </div>
         );
@@ -93,13 +98,20 @@ const ListComponent = ({type = 'list', list = [], text = ''}) => {
                     alignItems: 'flex-start', 
                     justifyContent: 'flex-start',
                     width: '80%',
-                    marginTop: '-5%'
+                    position: 'absolute',
+                    top: type === 'list' ? '120px' : '40%',
                 }}
         >
             {
                 type === 'list'
                 ?   list.map(item => (
-                        <div style={{...horizontalBox, alignItems: 'flex-start'}}>
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    alignItems: 'flex-start',
+                                    minHeight: '110px'
+                                }}
+                        >
                             <Icon style={{marginRight: '5px', color: '#3B3B3B'}}>fiber_manual_record</Icon>
                             <ListItem {...item} />
                         </div>
@@ -110,7 +122,7 @@ const ListComponent = ({type = 'list', list = [], text = ''}) => {
     );
 }
 
-const ListItem = ({header, text}) => {
+const ListItem = ({header, content}) => {
     return (
         <div 
                 style={{
@@ -121,7 +133,7 @@ const ListItem = ({header, text}) => {
                 }}
             >
             <ListItemHeader>{header}</ListItemHeader>
-            <ListItemText>{text}</ListItemText>
+            <ListItemText>{content}</ListItemText>
         </div>
     );
 }
@@ -154,7 +166,7 @@ const desktopStyles = {
 const SImg = styled.img `
     position: absolute;
     right: 10px;
-    top: 80px;
+    top: 10px;
     width: 80px;
 `;
 
@@ -184,13 +196,15 @@ const LeftContainer = styled(Grid)`
 `;
 
 const RightContainer = styled(Grid)`
-    height: 100vh;
+    height: calc(100vh - 65px);
     display: flex;
     flex-direction: column;
     background-color: #F9FAFF;
     padding: 20px;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    overflow-y: scroll;
 `;
 
 const PageHeader = styled.h1`

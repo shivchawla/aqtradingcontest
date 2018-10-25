@@ -17,12 +17,16 @@ export default class SelectionMetricsMini extends React.Component {
     }
 
     render() {
-        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0} = this.props;
+        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, cost = 0} = this.props;
 
         return (
             <SGrid container justify="center" alignItems="center">
                 <Grid item xs={10}>
                     <Grid container spacing={8}>
+                        {
+                            global.screen.width > 600 &&
+                            <MetricItem label='Investment' value={cost} />
+                        }
                         <MetricItem label='Profit Factor' value={(profitFactor || 0).toFixed(2)} />
                         <MetricItem money coloured label='Total PnL' value={((pnl || 0) * 1000)} />
                         <MetricItem percentage coloured label='Total PnL Pct' value={((pnlPct || 0) * 100).toFixed(2)} />
@@ -42,9 +46,10 @@ const MetricItem = ({label, value, percentage = false, coloured = false, money =
     const color = coloured ? value < 0 ? metricColor.negative : metricColor.positive : '#4B4B4B';
     let nValue = money ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(value)}` : value;
     nValue = percentage ? `${nValue} %` : nValue;
+    const xs = global.screen.width > 600 ? 3 : 4;
 
     return (
-        <PaperGrid item xs={4}>
+        <PaperGrid item xs={xs}>
             <Grid container>
                 <Grid item xs={12}>
                     <MetricValueText color={color}>{nValue}</MetricValueText>

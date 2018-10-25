@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -37,16 +38,24 @@ class MultiSegmentedControl extends React.Component {
         this.props.onChange && this.props.onChange(value);
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
+            return true;
+        }
+
+        return false;
+    }
+
     componentWillMount() {
         const {defaultSelected = 0} = this.props;
         this.setState({selectedView: defaultSelected});
     }
 
     render() {
-        const {classes, labels = ['Segment 1', 'Segment 2']} = this.props;
+        const {classes, labels = ['Segment 1', 'Segment 2'], centered = false} = this.props;
 
         return (
-            <Grid container style={{...horizontalBox, justifyContent: 'flex-start'}}>
+            <Grid container style={{...horizontalBox, justifyContent: centered ? 'center' : 'flex-start'}}>
                 <Paper style={{
                         margin: '10px 0', 
                         overflow: 'hidden', 

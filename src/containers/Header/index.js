@@ -74,15 +74,16 @@ export default withStyles(styles)(withRouter(Header));
 
 const HeaderLinks = ({menuOpenStatus = false, onClick}) => {
     const urls = [
-        {name: 'Dashboard', url: '/dashboard'},
+        {name: 'Daily Contest', url: '/dailycontest'},
         {name: 'Stock Research', url: '/stockresearch'},
     ];
     return (
         <React.Fragment>
-            <ContestMenuLinks/>
+            {/* <ContestMenuLinks/> */}
             {
-                urls.map(item => (
+                urls.map((item, index) => (
                     <NavLink
+                        active={index === 0}
                         onClick={() => {window.location.href = item.url}}
                     >
                         {item.name}

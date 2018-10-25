@@ -46,6 +46,7 @@ class TradingContest extends React.Component {
 
     updateDate = (date) => {
         // this.createEntryComponent && this.createEntryComponent.cancelGetContestEntryCall();
+        console.log(date.format('YYYY-MM-DD'));
         this.setState({selectedDate: date});
     }
 

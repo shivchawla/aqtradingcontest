@@ -51,6 +51,7 @@ export class SearchStocks extends React.Component {
         };
         this.localStocks = []; // Used to get the list of all stocks obtained from N/W calls
         this.stockListComponent = null;
+        showFilter: false
     }
 
     renderSearchStocksList = () => {
@@ -758,10 +759,13 @@ export class SearchStocks extends React.Component {
                                             borderRight: '1px solid #eaeaea'
                                         }}
                                 >
-                                    <StockFilter 
-                                        onFilterChange={this.onFilterChange}
-                                        filters={this.props.filters}
-                                    />
+                                    {
+                                        this.state.showFilter && 
+                                        <StockFilter 
+                                            onFilterChange={this.onFilterChange}
+                                            filters={this.props.filters}
+                                        />
+                                    }
                                 </Grid>
                             }
                             <Grid 
@@ -870,6 +874,12 @@ export class SearchStocks extends React.Component {
 
     toggleSelectedStocksDialogClose = () => {
         this.setState({selectedStocksDialogOpen: !this.state.selectedStocksDialogOpen});
+    }
+
+    componentDidMount() {
+        setTimeout(() => {
+            this.setState({showFilter: true});
+        }, 400)
     }
 
     render() { 
