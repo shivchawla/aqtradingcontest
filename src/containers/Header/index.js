@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
 import {withStyles} from '@material-ui/core/styles';
 import {NavLink} from './components/NavLink';
-import ContestMenuLinks from './components/ContestMenuLinks'
+import {Utils} from '../../utils';
 import {horizontalBox} from '../../constants';
 import logo from '../../assets/logo-advq-new.png';
 
@@ -90,6 +90,17 @@ const HeaderLinks = ({menuOpenStatus = false, onClick}) => {
                     </NavLink>
                 ))
             }
+            {
+                Utils.isLoggedIn() &&
+                <NavLink
+                    onClick={() => {
+                        Utils.logoutUser();
+                        window.location.href='/login';
+                    }}
+                >
+                    Logout
+                </NavLink>
+            } 
         </React.Fragment>
     );
 }
