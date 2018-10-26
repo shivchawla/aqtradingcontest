@@ -219,21 +219,24 @@ class CreateEntry extends React.Component {
             this.setState({snackbarOpenStatus: true, snackbarMessage: 'Please add at-least 5 trades'});
             return; 
         }
-        this.cancelGetContestEntryCall();
         this.setState({submissionLoading: true});
         submitEntry(positions, this.state.previousPositions.length > 0)
-        .then(response => {
+        .then(response => { 
+            // Do the network call for fetching the contest entry after submitting based on the current date
+            return this.updateContestEntryStatusOnDateChange(moment());
+        })
+        .then(() => {
+            return this.updateSearchStocksWithChange(moment());
+        })
+        .then(() => {
             this.setState({
-                previousPositions: this.state.positions,
-                previousSellPositions: this.state.sellPositions, 
-                showPreviousPositions: true, 
                 snackbarOpenStatus: true, 
                 snackbarMessage: 'Contest entry submitted successFully'
             });
         })
         .catch(error => {
             const errorMessage = _.get(error, 'response.data.message', 'Error Occured :(');
-            this.setState({showPreviousPositions: true, snackbarOpenStatus: true, snackbarMessage: errorMessage});
+            this.setState({snackbarOpenStatus: true, snackbarMessage: errorMessage});
             return handleCreateAjaxError(error, this.props.history, this.props.match.url)
         })
         .finally(() => {
@@ -278,7 +281,6 @@ class CreateEntry extends React.Component {
     }
 
     updateContestEntryStatusOnDateChange = (selectedDate) => {
-        
         return new Promise((resolve, reject) => {
             this.getRecentContestEntry(selectedDate)
             .then(contestEntryData => {
@@ -312,67 +314,71 @@ class CreateEntry extends React.Component {
         })
     }
 
+    updateSearchStocksWithChange = (selectedDate) => {
+        console.log('updateSearchStocksWithChange called');
+        const currentDate = moment().format('YYYY-MM-DD');
+        const formattedSelectedDate = selectedDate.format('YYYY-MM-DD');
+        if (moment(currentDate).isSame(formattedSelectedDate)) {
+            const positions = [...this.state.positions, ...this.state.sellPositions].map(position => position.symbol);
+            return getMultiStockData(positions)
+                .then(stocks => {
+                    return Promise.map(stocks, stock => {
+                        const change = _.get(stock, 'latestDetailRT.change', null) !== null 
+                            ?  _.get(stock, 'latestDetailRT.change', 0)
+                            :  _.get(stock, 'latestDetail.values.Change', 0);
+        
+                        const changePct = _.get(stock, 'latestDetailRT.changePct', null) !== null 
+                                ?  _.get(stock, 'latestDetailRT.changePct', 0)
+                                :  _.get(stock, 'latestDetail.values.ChangePct', 0);
+                        const symbol = _.get(stock, 'security.ticker', '');
+        
+                        return {symbol, change, changePct};
+                    });
+                })
+                .then(changeData => {
+                    let clonedBuyPositions = _.map(this.state.positions, _.cloneDeep);
+                    let clonedSellPositions = _.map(this.state.sellPositions, _.cloneDeep);
+        
+                    // Updating buy positions with change and changePct
+                    clonedBuyPositions = clonedBuyPositions.map(position => {
+                        const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
+                        if (positionWithChangeData !== undefined) {
+                            return {
+                                ...position,
+                                change: positionWithChangeData.change,
+                                changePct: positionWithChangeData.changePct
+                            }
+                        }
+                    });
+        
+                    // Updating buy positions with change and changePct
+                    clonedSellPositions = clonedSellPositions.map(position => {
+                        const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
+                        if (positionWithChangeData !== undefined) {
+                            return {
+                                ...position,
+                                change: positionWithChangeData.change,
+                                changePct: positionWithChangeData.changePct
+                            }
+                        }
+                    });
+        
+                    this.setState({positions: clonedBuyPositions, sellPositions: clonedSellPositions}, () => {
+                        this.searchStockComponent.initializeSelectedStocks();
+                    });
+                })
+        }
+
+        return null;
+    }
+
     handleContestDateChange = (selectedDate) => {
-        console.log('Date Change Called');
         this.setState({loading: true});
         return this.updateContestStatusOnDateChange(selectedDate)
         .then(contestStatus => {
             return this.updateContestEntryStatusOnDateChange(selectedDate)
         })
-        .then(() => {
-            const currentDate = moment().format('YYYY-MM-DD');
-            const formattedSelectedDate = selectedDate.format('YYYY-MM-DD');
-            if (moment(currentDate).isSame(formattedSelectedDate)) {
-                const positions = [...this.state.positions, ...this.state.sellPositions].map(position => position.symbol);
-                return getMultiStockData(positions)
-            }
-        })
-        .then(stocks => {
-            return Promise.map(stocks, stock => {
-                const change = _.get(stock, 'latestDetailRT.change', null) !== null 
-                    ?  _.get(stock, 'latestDetailRT.change', 0)
-                    :  _.get(stock, 'latestDetail.values.Change', 0);
-
-                const changePct = _.get(stock, 'latestDetailRT.changePct', null) !== null 
-                        ?  _.get(stock, 'latestDetailRT.changePct', 0)
-                        :  _.get(stock, 'latestDetail.values.ChangePct', 0);
-                const symbol = _.get(stock, 'security.ticker', '');
-
-                return {symbol, change, changePct};
-            });
-        })
-        .then(changeData => {
-            let clonedBuyPositions = _.map(this.state.positions, _.cloneDeep);
-            let clonedSellPositions = _.map(this.state.sellPositions, _.cloneDeep);
-
-            // Updating buy positions with change and changePct
-            clonedBuyPositions = clonedBuyPositions.map(position => {
-                const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
-                if (positionWithChangeData !== undefined) {
-                    return {
-                        ...position,
-                        change: positionWithChangeData.change,
-                        changePct: positionWithChangeData.changePct
-                    }
-                }
-            });
-
-            // Updating buy positions with change and changePct
-            clonedSellPositions = clonedSellPositions.map(position => {
-                const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
-                if (positionWithChangeData !== undefined) {
-                    return {
-                        ...position,
-                        change: positionWithChangeData.change,
-                        changePct: positionWithChangeData.changePct
-                    }
-                }
-            });
-
-            this.setState({positions: clonedBuyPositions, sellPositions: clonedSellPositions}, () => {
-                this.searchStockComponent.initializeSelectedStocks();
-            });
-        }) 
+        .then(() => this.updateSearchStocksWithChange(selectedDate))
         .catch(err => console.log('Error Occured', err))
         .finally(() => {
             this.setState({loading: false});
@@ -423,7 +429,10 @@ class CreateEntry extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.selectedDate !== nextProps.selectedDate) {
+        const currentSelectedDate = this.props.selectedDate.format(dateFormat);
+        const nextSelectedDate = nextProps.selectedDate.format(dateFormat);
+
+        if (!_.isEqual(currentSelectedDate, nextSelectedDate)) {
             this.setState({selectedDate: nextProps.selectedDate}, () => {
                 this.handleContestDateChange(nextProps.selectedDate)
             });

@@ -166,7 +166,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
                                     >
                                         <Icon style={{marginRight: '5px'}}>update</Icon>
                                         SUBMIT
-                                        {submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
+                                        {submissionLoading && <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />}
                                     </Button>
                                 </div>
                             }

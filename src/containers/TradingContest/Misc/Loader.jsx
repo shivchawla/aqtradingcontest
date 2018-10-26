@@ -2,8 +2,6 @@ import React from 'react';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {PacmanLoader} from 'react-spinners';
-import {primaryColor} from '../../../constants';
 
 export default class LoaderComponent extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -19,18 +17,11 @@ export default class LoaderComponent extends React.Component {
             <Grid 
                     container
                     className='loader-container' 
-                    style={{height: global.screen.height, width: '100%', backgroundColor: '#fff'}} 
+                    style={{height: 'calc(100vh - 300px)', width: '100%', backgroundColor: '#fff'}} 
                     alignItems="center" 
                     justify="center"
             >
                 <CircularProgress/>
-                {/* <PacmanLoader
-                    sizeUnit={"px"}
-                    size={15}
-                    color={primaryColor}
-                    loading={true}
-                /> */}
-
             </Grid>
         );
     }

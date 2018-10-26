@@ -148,10 +148,7 @@ export const getTotalInvestment = (positions = []) => {
 }
 
 export const getMultiStockData = (stocks = []) => {
-    return Promise.all(
-        stocks.map(stock => getStockData(stock, 'latestDetail'))
-    )
-    .then(response => {
-        return Promise.map(response, responseItem => responseItem.data);
+    return Promise.map(stocks, stock => {
+        return getStockData(stock, 'latestDetail').then(response => response.data);
     });
 }

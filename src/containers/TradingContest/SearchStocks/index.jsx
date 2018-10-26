@@ -337,7 +337,6 @@ export class SearchStocks extends React.Component {
                     targetStock.sellChecked = false;
                     targetLocalStock.sellChecked = false;
                 }
-                console.log(targetLocalStock);
                 targetStock.checked = true;
                 targetLocalStock.checked = true;
             } else {
@@ -440,7 +439,6 @@ export class SearchStocks extends React.Component {
 
     processPositionsForPortfolio = (type = 'buy') => {
         let localStocks = [...this.localStocks];
-        console.log('Local Stocks', localStocks);
         if (type === 'buy') {
             localStocks = localStocks.filter(stock => stock.checked === true);
         } else {
@@ -515,7 +513,6 @@ export class SearchStocks extends React.Component {
                 this.localStocks.push(stock);
             }
         });
-        console.log('Local Stocks', this.localStocks);
     }
 
     /**
@@ -523,7 +520,6 @@ export class SearchStocks extends React.Component {
      */
     getLocalStocksFromPortfolio = (positions = [], type = 'buy') => {
         return Promise.map(positions, position => {
-            console.log("Position", position);
             return {
                 change: _.get(position, 'change', 0),
                 changePct: _.get(position, 'changePct', 0),

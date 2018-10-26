@@ -36,11 +36,9 @@ export default class StockPreviewListHeader extends React.Component {
                 <SGridCol item xs={3}>
                     <HeaderText>LAST PRICE</HeaderText>
                 </SGridCol>
+                <SGridCol item xs={1}></SGridCol>
                 <SGridCol item xs={2}>
                     <HeaderText>INVESTMENT</HeaderText>
-                </SGridCol>
-                <SGridCol item xs={1}>
-                    <HeaderText>ACTION</HeaderText>
                 </SGridCol>
             </SGrid>
         );

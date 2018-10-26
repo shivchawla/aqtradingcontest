@@ -103,23 +103,23 @@ export default class StockEditListItem extends React.Component {
                         </span>
                     </SecondayText>
                 </SGridCol>
-                <SGridCol item xs={2}>
+                <SGridCol item xs={1}></SGridCol>
+                <SGridCol item xs={2} style={{...horizontalBox, justifyContent: 'space-between'}}>
                     <Points>{points}K</Points>
-                </SGridCol>
-                <SGridCol 
-                        item xs={1} 
-                        style={{
-                            ...verticalBox, 
-                            justifyContent: 'space-between',
-                            backgroundColor: '#EFFFFA'
-                        }}
-                >
-                    <IconButton onClick={this.onAddClick}>
-                        <Icon style={{color: metricColor.positive, fontSize: '18px'}}>expand_less</Icon>
-                    </IconButton>
-                    <IconButton onClick={this.onReduceClick}>
-                        <Icon style={{color: metricColor.negative, fontSize: '18px'}}>expand_more</Icon>
-                    </IconButton>
+                    <div
+                            style={{
+                                ...verticalBox, 
+                                justifyContent: 'space-between',
+                                backgroundColor: '#EFFFFA',
+                            }}
+                    >
+                        <IconButton onClick={this.onAddClick}>
+                            <Icon style={{color: metricColor.positive, fontSize: '18px'}}>expand_less</Icon>
+                        </IconButton>
+                        <IconButton onClick={this.onReduceClick}>
+                            <Icon style={{color: metricColor.negative, fontSize: '18px'}}>expand_more</Icon>
+                        </IconButton>
+                    </div>
                 </SGridCol>
             </SGrid>
         );

@@ -206,7 +206,13 @@ export default class CreateEntryLayoutDesktop extends React.Component {
                                         >
                                             <Icon style={{marginRight: '5px'}}>update</Icon>
                                             SUBMIT
-                                            {submissionLoading && <CircularProgress style={{marginLeft: '5px'}} size={24} />}
+                                            {
+                                                submissionLoading && 
+                                                <CircularProgress 
+                                                    style={{marginLeft: '5px', color: '#fff'}} 
+                                                    size={18} 
+                                                />
+                                            }
                                         </Button>
                                     </div>
                                 }
@@ -257,5 +263,6 @@ const addStocksStyle = {
 
 const submitButtonStyle = {
     backgroundColor: primaryColor,
-    color: '#fff'
+    color: '#fff',
+    marginLeft: '20px'
 };

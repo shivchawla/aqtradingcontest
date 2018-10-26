@@ -106,7 +106,7 @@ export default withRouter(AqDesktopLayout);
 
 const ContainerGrid = styled(Grid)`
     height: 100%;
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
     width: 100%; 
     justify-content: 'center';
     padding-top: 10px;
