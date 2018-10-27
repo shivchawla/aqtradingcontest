@@ -1,10 +1,10 @@
 import * as React from 'react';
 import _ from 'lodash';
-import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
+import ActionIcon from '../../Misc/ActionIcons';
 import {Utils} from '../../../../utils';
 import {metricColor, primaryColor, horizontalBox, verticalBox, nameEllipsisStyle} from '../../../../constants';
 
@@ -80,6 +80,21 @@ export default class StockListItem extends React.Component {
         );
     }
 
+    renderBuyActionButton = () => {
+        const {symbol, checked = false, onAddIconClick} = this.props;
+        const iconType = checked ? 'remove_circle' : 'add_circle';
+        const iconColor = checked ? metricColor.negative : primaryColor;
+
+        return (
+            <ActionIcon 
+                color={iconColor} 
+                size={30} 
+                type={iconType} 
+                onClick={() => onAddIconClick(symbol)}
+            />
+        );
+    }
+
     render() {
         const {symbol, name, change, changePct, close, open, current, onClick, checked = false, onAddIconClick, selected = false} = this.props;
         const containerStyle = {
@@ -93,6 +108,7 @@ export default class StockListItem extends React.Component {
         const detailContainerStyle = {
             ...verticalBox,
             alignItems: 'flex-end',
+            paddingRight: '20px'
         };
 
         const leftContainerStyle = {
@@ -114,10 +130,14 @@ export default class StockListItem extends React.Component {
                     </div>
                     <h3 style={nameStyle}>{name}</h3>
                 </Grid>
-                <Grid item xs={4} style={detailContainerStyle} onClick={() => onClick({symbol, name})}>
+                <Grid 
+                        item xs={7} 
+                        style={detailContainerStyle} 
+                        onClick={() => onClick({symbol, name})}
+                >
                     <div style={horizontalBox}>
                         <h3 style={{fontSize: '16px', fontWeight: '500', color: '#464646'}}>
-                            {Utils.formatMoneyValueMaxTwoDecimals(current)}
+                            ₹{Utils.formatMoneyValueMaxTwoDecimals(current)}
                         </h3>
                     </div>
                     <div style={horizontalBox}>
@@ -131,13 +151,13 @@ export default class StockListItem extends React.Component {
                 </Grid>
                 <Grid
                         item
-                        xs={4} 
+                        xs={1} 
                         style={{
                             ...horizontalBox,
                             justifyContent: 'flex-end',
                         }}
                 >
-                    {this.renderActionButtons()}
+                    {this.renderBuyActionButton()}
                 </Grid>
             </Grid>
         );

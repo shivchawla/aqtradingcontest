@@ -70,15 +70,17 @@ export const convertBackendPositions = positions => {
 export const processSelectedPosition = (oldPositions = [], selectedPositions = []) => {
     const clonedOldPositions = _.map(oldPositions, _.cloneDeep);
     const clonedSelectedPositions = _.map(selectedPositions, _.cloneDeep);
-    console.log('Selected Positions', selectedPositions);
 
     return Promise.map(clonedSelectedPositions, selectedPosition => {
-        // Check if position was previously present, if present use the points from the previous position
+        // Check if position was previously present, if present 
+        // 1. Use points from the previous position
+        // 2. Use predictions from the previous positions
         const oldPositionIndex = _.findIndex(clonedOldPositions, oldPosition => oldPosition.symbol === selectedPosition.symbol);
         if (oldPositionIndex > -1) {
             return {
                 ...selectedPosition,
-                points: Math.abs(_.get(clonedOldPositions[oldPositionIndex], 'points', 10))
+                points: Math.abs(_.get(clonedOldPositions[oldPositionIndex], 'points', 10)),
+                predictions: _.get(clonedOldPositions[oldPositionIndex], 'predictions', {})
             }
         } else {
             return {

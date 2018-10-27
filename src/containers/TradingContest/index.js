@@ -12,7 +12,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import TopPicks from './TopPicks';
 import Leaderboard from './Leaderboard';
-import CreateEntry from './CreateEntry';
+import CreateEntry from './MultiHorizonCreateEntry';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';

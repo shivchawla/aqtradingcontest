@@ -15,10 +15,15 @@ export default class ActionIcons extends React.Component {
     }
     
     render() {
-        const {type = 'chevron_left', onClick = null} = this.props;
+        const {type = 'chevron_left', onClick = null, style = {}, iconButtonProps = {}} = this.props;
 
         return (
-            <IconButton aria-label="Delete" onClick={() => onClick && onClick()}>
+            <IconButton 
+                    aria-label="Delete" 
+                    onClick={() => onClick && onClick()}
+                    style={style}
+                    {...iconButtonProps}
+            >
                 <SIcon style={{color: this.props.color || primaryColor, fontSize: this.props.size || 20}} fontSize='inherit'>{type}</SIcon>
             </IconButton>
         );

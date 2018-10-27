@@ -459,7 +459,8 @@ export class SearchStocks extends React.Component {
                 chg: stock.change,
                 chgPct: stock.changePct,
                 points: type === 'buy' ? 10 : -10,
-                type
+                type,
+                predictions: []
             };
         });
     }

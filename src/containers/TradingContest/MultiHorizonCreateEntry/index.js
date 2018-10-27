@@ -16,6 +16,7 @@ import CreateEntryLayoutDesktop from './components/desktop/CreateEntryLayoutDesk
 import {DailyContestCreateMeta} from '../metas';
 import {handleCreateAjaxError} from '../../../utils';
 import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getMultiStockData} from '../utils';
+import {maxPredictionLimit} from './constants';
 
 const dateFormat = 'YYYY-MM-DD';
 const CancelToken = axios.CancelToken;
@@ -395,6 +396,67 @@ class CreateEntry extends React.Component {
         }) 
     }
 
+    addPredictionForPosition = symbol => {
+        const clonedPositions = _.map(this.state.positions, _.cloneDeep);
+        const selectedPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
+        if (selectedPositionIndex > -1) {
+            const selectedPosition = clonedPositions[selectedPositionIndex];
+            const predictions = selectedPosition.predictions;
+            if (predictions.length >= maxPredictionLimit) {
+                this.setState({
+                    snackbarOpenStatus: true, 
+                    snackbarMessage: `You can only add ${maxPredictionLimit} predictions for a particular position`
+                });
+                return;
+            }
+            predictions.push({
+                key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+                symbol: _.get(selectedPosition, 'symbol', ''),
+                target: 5,
+                type: 'buy',
+                horizon: 1,
+                investment: 100
+            });
+            selectedPosition.predictions = predictions;
+            clonedPositions[selectedPositionIndex] = selectedPosition;
+            this.setState({positions: clonedPositions});
+        }
+    }
+
+    modifyPrediction = (symbol, key, prediction) => {
+        const clonedPositions = _.map(this.state.positions, _.cloneDeep);
+        const selectedPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
+
+        if (selectedPositionIndex > -1) { // position to be modified found
+            const selectedPosition = clonedPositions[selectedPositionIndex];
+            const selectedPredictionIndex = _.findIndex(selectedPosition.predictions, prediction => prediction.key === key);
+
+            if (selectedPredictionIndex > -1) {
+                // Prediction to be modified found
+                selectedPosition.predictions[selectedPredictionIndex] = prediction;
+                clonedPositions[selectedPositionIndex] = selectedPosition;
+                this.setState({positions: clonedPositions});
+            }
+        }
+    }
+
+    deletePrediction = (symbol, key) => {
+        const clonedPositions = _.map(this.state.positions, _.cloneDeep);
+        const selectedPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
+
+        if (selectedPositionIndex > -1) { // positions to be modified found
+            const selectedPosition = clonedPositions[selectedPositionIndex];
+            const selectedPredictionIndex = _.findIndex(selectedPosition.predictions, prediction => prediction.key === key);
+
+            if (selectedPredictionIndex > -1) {
+                // Prediction to be deleted found
+                selectedPosition.predictions.splice(selectedPredictionIndex, 1);
+                clonedPositions[selectedPositionIndex] = selectedPosition;
+                this.setState({positions: clonedPositions});
+            }
+        }
+    }
+
     onSegmentValueChange = value => {
         this.setState({listView: value});
     }
@@ -474,7 +536,10 @@ class CreateEntry extends React.Component {
             getRequiredMetrics: this.getRequiredMetrics,
             previousSellPositions: this.state.previousSellPositions,
             onStockItemChange: this.onStockItemChange,
-            loading: this.state.loading
+            loading: this.state.loading,
+            addPrediction: this.addPredictionForPosition,
+            modifyPrediction: this.modifyPrediction,
+            deletePrediction: this.deletePrediction
         };
 
         return (
