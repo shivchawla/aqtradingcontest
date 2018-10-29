@@ -460,7 +460,8 @@ export class SearchStocks extends React.Component {
                 chgPct: stock.changePct,
                 points: type === 'buy' ? 10 : -10,
                 type,
-                predictions: []
+                predictions: [],
+                expanded: false
             };
         });
     }
@@ -501,10 +502,8 @@ export class SearchStocks extends React.Component {
         this.setState({stocks, selectedStocks, sellSelectedStocks});
     }
 
-    initializeSelectedStocks = async () => {
+    initializeSelectedStocks = async (positions = [...this.props.portfolioPositions], sellPositions= [...this.props.portfolioSellPositions]) => {
         const stocks = [...this.state.stocks];
-        const positions = [...this.props.portfolioPositions];
-        const sellPositions = [...this.props.portfolioSellPositions];
         const processedBuySelectedStocks = await this.getLocalStocksFromPortfolio(positions, 'buy');
         const processedSellSelectedStocks = await this.getLocalStocksFromPortfolio(sellPositions, 'sell');
         this.localStocks = [...processedBuySelectedStocks, ...processedSellSelectedStocks];

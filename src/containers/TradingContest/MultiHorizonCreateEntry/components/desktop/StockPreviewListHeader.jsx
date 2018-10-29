@@ -21,17 +21,23 @@ export default class StockPreviewListHeader extends React.Component {
                     alignItems="center" 
                     justify="center"
             >
-                <Grid item  xs={4} style={colStyle}>
+                <Grid item  xs={2} style={colStyle}>
                     <HeaderText>SYMBOL</HeaderText>
                 </Grid>
-                <Grid item xs={2}>
-                    <HeaderText>TYPE</HeaderText>
-                </Grid>
-                <Grid item xs={4} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                <Grid item xs={3}>
                     <HeaderText>LAST PRICE</HeaderText>
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                    <HeaderText>INVESTMENT</HeaderText>
+                    <HeaderText>AVG. PRICE</HeaderText>
+                </Grid>
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                    <HeaderText>TARGET</HeaderText>
+                </Grid>
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                    <HeaderText>CURRENT</HeaderText>
+                </Grid>
+                <Grid item xs={1} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                    <HeaderText>HORIZON</HeaderText>
                 </Grid>
             </Grid>
         );

@@ -1,10 +1,11 @@
 import React from 'react';
+import _ from 'lodash';
 import InputBase from '@material-ui/core/InputBase';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import {MuiThemeProvider, createMuiTheme, withStyles} from '@material-ui/core/styles';
 import ActionIcon from '../../../containers/TradingContest/Misc/ActionIcons';
 import styles from './styles';
-import {horizontalBox} from '../../../constants';
+import {horizontalBox, metricColor} from '../../../constants';
 
 const customTheme = createMuiTheme({
     palette: {
@@ -12,16 +13,18 @@ const customTheme = createMuiTheme({
             main: '#3f50b5',
             light: '#fff'
         }
-    }
+    },
 });
 
 class NumberInput extends React.Component {
     max = 5;
     min = -5;
+    stepSize = 0.5;
+
     constructor(props) {
         super(props);
         this.state = {
-            value: 1
+            value: this.props.value || 1
         };
     }
 
@@ -36,19 +39,39 @@ class NumberInput extends React.Component {
 
     onActionButtonChange = (type = 'add') => {
         let value = Number(this.state.value);
+        const max = _.get(this.props, 'max', this.max);
+        const min = _.get(this.props, 'min', this.min);
+
         value = type === 'add' 
-            ? value + 1 > this.max
-                ? this.max : value + 1
-            : value - 1 < this.min
-                ? this.min : value - 1;
+            ? value + this.stepSize > max
+                ? max : value + this.stepSize
+            : value - this.stepSize < min
+                ? min : value - this.stepSize;
         this.setState({value}, () => {
             this.props.onChange && this.props.onChange(value);
         });
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({value: nextProps.value});
+    }
+
     render() {
         const { classes } = this.props;
-        const actionIconStyle = {padding: '6px'}
+        const actionIconStyle = {padding: '6px'};
+        const inputClass = this.state.value > 0 
+            ?   classes.bootstrapInputPositive
+            :   this.state.value === 0
+                ?   classes.bootstrapInputNeutral
+                :   classes.bootstrapInputNegative;
 
         return (
             <MuiThemeProvider theme={customTheme}>
@@ -64,7 +87,7 @@ class NumberInput extends React.Component {
                         value={this.state.value}
                         onChange={this.onChange}
                         classes={{
-                            input: classes.bootstrapInput,
+                            input: inputClass,
                         }}
                         type="number"
                         endAdornment={

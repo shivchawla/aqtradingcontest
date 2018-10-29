@@ -8,13 +8,13 @@ export default class StockEditPredictionListHeader extends React.Component {
             <Grid container style={{marginTop: '20px', marginBottom: '20px'}}>
                 <Grid item xs={1}></Grid>
                 <Grid item xs={3}>
-                    <HeaderText>TARGET</HeaderText>
-                </Grid>
-                <Grid item xs={3}>
                     <HeaderText>TYPE</HeaderText>
                 </Grid>
                 <Grid item xs={3}>
                     <HeaderText>HORIZON</HeaderText>
+                </Grid>
+                <Grid item xs={3}>
+                    <HeaderText>TARGET</HeaderText>
                 </Grid>
                 <Grid item xs={2}>
                     <HeaderText>INVESTMENT</HeaderText>

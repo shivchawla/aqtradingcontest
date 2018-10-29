@@ -10,15 +10,15 @@ import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
-import {getTotalInvestment} from '../../../utils';
-import {verticalBox, primaryColor, secondaryColor, horizontalBox} from '../../../../../constants';
+import ActionIcon from '../../../Misc/ActionIcons';
+import {verticalBox, primaryColor, secondaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 
 export default class CreateEntryLayoutDesktop extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: 'all'
+            listView: 'all',
         };
     }
 
@@ -42,7 +42,7 @@ export default class CreateEntryLayoutDesktop extends React.Component {
 
         return (
             <Grid container style={{...verticalBox, marginTop: '25%'}}>
-                {
+                {/* {
 
                     (contestActive && contestNotStarted) ?
                         <TimerComponent 
@@ -84,7 +84,22 @@ export default class CreateEntryLayoutDesktop extends React.Component {
                             <Icon style={{marginLeft: '10px', color: '#fff'}}>add_circle</Icon>
                         </Button>
                     </React.Fragment>
-                }
+                } */}
+                <React.Fragment>
+                    <TimerComponent 
+                        date={contestEndDate}  
+                        contestStarted={true}
+                        tag="Please add 5 stocks to participate in today’s contest" /> 
+                    
+                    
+                    <Button 
+                            style={emptyPortfolioButtonStyle}
+                            onClick={this.props.toggleSearchStockBottomSheet}
+                    >
+                        ADD STOCKS
+                        <Icon style={{marginLeft: '10px', color: '#fff'}}>add_circle</Icon>
+                    </Button>
+                </React.Fragment>
             </Grid>
         );
     }
@@ -111,8 +126,10 @@ export default class CreateEntryLayoutDesktop extends React.Component {
                     addPrediction={this.props.addPrediction}
                     modifyPrediction={this.props.modifyPrediction}
                     deletePrediction={this.props.deletePrediction}
+                    onExpansionChanged={this.props.onExpansionChanged}
                 />
-            : <StockPreviewList type={this.state.listView} positions={previewPositions} />
+            : <StockPreviewList type={this.state.listView} positions={positions} />
+            // <StockPreviewList type={this.state.listView} positions={this.props.predictions} />
         )
     }
 
@@ -158,82 +175,92 @@ export default class CreateEntryLayoutDesktop extends React.Component {
             showPreviousPositions,
             submitPositions,
             submissionLoading,
-            getRequiredMetrics
+            getRequiredMetrics,
+            positionsWithDuplicateHorizons = []
         } = this.props;
         const contestSubmissionOver = moment().isAfter(contestEndDate);
-        const fabButtonStyle = {borderRadius:'5px', padding: '0 10px'};
+        const allPositionsExpanded = this.props.checkIfAllExpanded();
 
         return (
-            !contestFound || (noEntryFound && positions.length === 0 && previousPositions.length == 0)
+            // !contestFound || (noEntryFound && positions.length === 0 && previousPositions.length == 0)
+            (positions.length === 0 && previousPositions.length === 0)
             ?   this.renderEmptySelections()
-            :   <Grid container>
-                    <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                        <Grid container>
-                            <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                                <RadioGroup 
-                                    items={['BUY', 'SELL', 'ALL']}
-                                    onChange={this.handleSegmentControlChange} 
-                                    style={{marginRight: '2%'}}
-                                    defaultSelected={this.getDefaultSelectedRadioButton()}
-                                />
-                            </Grid>
-                        </Grid>
-                        {
-                            !contestSubmissionOver &&
-                            <Grid item xs={4} 
-                                    style={{
-                                        ...fabContainerStyle,
-                                        justifyContent: showPreviousPositions 
-                                            ? 'flex-end'
-                                            : 'space-between',
-                                        paddingRight: '30px'
-                                    }}
-                            >
-                                <Button 
-                                        style={{...fabButtonStyle, ...addStocksStyle}} 
-                                        size='small' 
-                                        variant="contained" 
-                                        aria-label="Delete" 
-                                        onClick={toggleSearchStockBottomSheet}
-                                >
-                                    <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                    UPDATE
-                                </Button>
-                                {
-                                    !showPreviousPositions &&
-                                    <div>
-                                        <Button 
-                                                style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                                size='small' 
-                                                variant="contained" 
-                                                aria-label="Edit" 
-                                                onClick={submitPositions}
-                                                disabled={submissionLoading}
-                                        >
-                                            <Icon style={{marginRight: '5px'}}>update</Icon>
-                                            SUBMIT
-                                            {
-                                                submissionLoading && 
-                                                <CircularProgress 
-                                                    style={{marginLeft: '5px', color: '#fff'}} 
-                                                    size={18} 
-                                                />
-                                            }
-                                        </Button>
-                                    </div>
-                                }
-                            </Grid>
-                        }
+            :   <Grid container justify="space-between">
+                    <Grid 
+                            item 
+                            xs={4} 
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'flex-start',
+                                marginBottom: '20px'
+                            }}
+                    >
+                        <Button 
+                                variant='contained' 
+                                style={collapseButtonStyle}
+                                size='small'
+                                onClick={this.props.toggleExpansionAll}
+                        >
+                            {allPositionsExpanded ? 'COLLAPSE ALL' : 'EXPAND ALL'}
+                            <Icon>{allPositionsExpanded ? 'unfold_less' : 'unfold_more'}</Icon>
+                        </Button>
                     </Grid>
                     {
-                        contestSubmissionOver &&
-                        <SelectionMetricsMini 
-                            {...getRequiredMetrics()}
-                            onClick={toggleEntryDetailBottomSheet}
-                        />
+                        // !contestSubmissionOver &&
+                        <Grid item xs={4} 
+                                style={{
+                                    ...fabContainerStyle,
+                                    justifyContent: showPreviousPositions 
+                                        ? 'flex-end'
+                                        : 'space-between',
+                                    paddingRight: '30px',
+                                    marginBottom: '20px'
+                                }}
+                        >
+                            <Button 
+                                    style={{...fabButtonStyle, ...addStocksStyle}} 
+                                    size='small' 
+                                    variant="contained" 
+                                    aria-label="Delete" 
+                                    onClick={toggleSearchStockBottomSheet}
+                            >
+                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
+                                UPDATE
+                            </Button>
+                            {
+                                positionsWithDuplicateHorizons.length > 0 &&
+                                <ActionIcon 
+                                    onClick={this.props.toggleDuplicateHorizonDialog}
+                                    type='error' 
+                                    color={metricColor.negative}
+                                    size={30}
+                                />
+                            }
+                            {
+                                positionsWithDuplicateHorizons.length === 0 && !showPreviousPositions &&
+                                <Button 
+                                        style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                        size='small' 
+                                        variant="contained" 
+                                        aria-label="Edit" 
+                                        onClick={submitPositions}
+                                        disabled={submissionLoading}
+                                >
+                                    <Icon style={{marginRight: '5px'}}>update</Icon>
+                                    SUBMIT
+                                    {
+                                        submissionLoading && 
+                                        <CircularProgress 
+                                            style={{marginLeft: '5px', color: '#fff'}} 
+                                            size={18} 
+                                        />
+                                    }
+                                </Button>
+                            }
+                        </Grid>
                     }
-                    {this.renderStockList()}
-                </Grid>
+                {this.renderStockList()}
+            </Grid>
         );
     }
 
@@ -260,6 +287,17 @@ const fabContainerStyle = {
     right: '20px', 
 };
 
+const collapseButtonStyle = {
+    boxShadow: 'none',
+    backgroundColor: '#ECEFF1',
+    color: '#676767',
+    fontSize: '14px',
+    fontWeight: 400,
+    transition: 'all 0.4s ease-in-out',
+    padding: '0 10px',
+    marginLeft: '9%',
+    width: '142px'
+}
 
 const addStocksStyle = {
     backgroundColor: secondaryColor,
@@ -270,5 +308,9 @@ const addStocksStyle = {
 const submitButtonStyle = {
     backgroundColor: primaryColor,
     color: '#fff',
-    marginLeft: '20px'
+};
+
+const fabButtonStyle = {
+    padding: '0 10px',
+    boxShadow: 'none'
 };

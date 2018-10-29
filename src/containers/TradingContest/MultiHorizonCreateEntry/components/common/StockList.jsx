@@ -47,10 +47,6 @@ export default class StockList extends React.Component {
                     <EmptyPositionsText>No Data Found</EmptyPositionsText>
                 }
                 {
-                    positions.length > 0 && global.screen.width > 600 &&
-                    <StockEditListHeaderDesktop />
-                }
-                {
                     positions.map((position, index) => {
                         return (
                             <StockEditListItem 
@@ -60,6 +56,7 @@ export default class StockList extends React.Component {
                                 }} 
                                 key={index}
                                 onStockItemChange={this.props.onStockItemChange}
+                                onExpansionChanged={this.props.onExpansionChanged}
                                 addPrediction={this.props.addPrediction}
                                 modifyPrediction={this.props.modifyPrediction}
                                 deletePrediction={this.props.deletePrediction}

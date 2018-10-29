@@ -28,6 +28,25 @@ export const fetchAjax = (url, history, redirectUrl = '/advice', header=undefine
     })
 };
 
+
+export const fetchAjaxPromise = (url, history, redirectUrl = '/advice', handleError=false, header=undefined, source = null) => {
+    return new Promise((resolve, reject) => {
+        return axios.get(url, {
+            cancelToken: _.get(source, 'token', null),
+            headers: header ? header : Utils.getAuthTokenHeader()
+        })
+        .then(response => resolve(response))
+        .catch(error => {
+            const status = _.get(error, 'response.status', 400);
+            if (status === 403 || handleError) {
+                reject(handleGetError(error, history, redirectUrl));
+            } else {
+                reject(error);
+            }
+        });
+    });
+}
+
 /*
 requestDetail should be in the following format
 {

@@ -3,6 +3,7 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
@@ -10,6 +11,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {withStyles} from '@material-ui/core/styles';
 import StockEditPredictionList from './StockEditPredictionList';
 import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../../constants';
+import {checkHorizonDuplicationStatus} from '../../utils';
 import {Utils} from '../../../../../utils';
 
 const styles = theme => ({
@@ -33,33 +35,13 @@ class StockEditListItem extends React.Component {
         super(props);
         this.state = {
             points: _.get(props, 'stockItem.points', 10),
-            expanded: false
+            expanded: _.get(props, 'stockItem.expanded', false)
         }
     }
 
     componentWillReceiveProps(nextProps, nextState) {
-        const points = _.get(nextProps, 'stockItem.points', this.state.points);
-        this.setState({points});
-    }
-
-    onAddClick = () => {
-        const {max = 60 , symbol = 'LT', type = 'buy'} = this.props.stockItem;
-        let {points = 10} = this.state;
-        if (points < max) {
-            points += 10;
-            this.setState({points});
-            this.props.onStockItemChange(symbol, points, type);
-        }
-    }
-
-    onReduceClick = () => {
-        const {min = 10, symbol = 'LT', type = 'buy'} = this.props.stockItem;
-        let {points = 10} = this.state;
-        if (points > min) {
-            points -= 10;
-            this.setState({points});
-            this.props.onStockItemChange(symbol, points, type);
-        }
+        const expanded = _.get(nextProps, 'stockItem.expanded', this.state.expanded);
+        this.setState({expanded});
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -73,14 +55,16 @@ class StockEditListItem extends React.Component {
     onAddPredictionsClicked = (e) => {
         const {symbol = 'LT'} = this.props.stockItem;
         if (this.state.expanded) {
-            // console.log('Should be expanded');
             e.stopPropagation();
         }
         this.props.addPrediction(symbol);
     }
 
     toggleExpansion = () => {
-        this.setState({expanded: !this.state.expanded});
+        const symbol = _.get(this.props, 'stockItem.symbol', null);
+        this.setState({expanded: !this.state.expanded}, () => {
+            this.props.onExpansionChanged(symbol, this.state.expanded);
+        });
     }
 
     render() {
@@ -96,7 +80,7 @@ class StockEditListItem extends React.Component {
             type = 'buy',
             predictions = []
         } = this.props.stockItem;
-
+        
         return (
             <ExpansionPanel
                     classes={{
@@ -109,7 +93,31 @@ class StockEditListItem extends React.Component {
                         expandIcon={<ExpandMoreIcon />}
                 >
                     <Grid container alignItems="center">
-                        <Grid item xs={4}>
+                        <Grid 
+                                item xs={4} 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'flex-start', 
+                                    alignItems: 'flex-start'
+                                }}
+                        >
+                            {
+                                checkHorizonDuplicationStatus(predictions) &&
+                                <Tooltip
+                                        title="2 more predictions can't have the same horizon"
+                                >
+                                    <div 
+                                            style={{
+                                                width: 10, 
+                                                height: 10, 
+                                                borderRadius: '50%', 
+                                                backgroundColor: 'red',
+                                                marginRight: '4px',
+                                                marginTop: '3px'
+                                            }}
+                                    ></div>
+                                </Tooltip>
+                            }
                             <SymbolComponent symbol={symbol} name={name} />
                         </Grid>
                         <Grid item xs={4}>

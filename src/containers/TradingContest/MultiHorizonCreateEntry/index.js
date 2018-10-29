@@ -13,9 +13,11 @@ import {SearchStocks} from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
 import CreateEntryLayoutMobile from './components/mobile/CreateEntryLayoutMobile';
 import CreateEntryLayoutDesktop from './components/desktop/CreateEntryLayoutDesktop';
+import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import {DailyContestCreateMeta} from '../metas';
+import {getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getMultiStockData} from '../utils';
+import {getPredictionsFromPositions, createPredictions, checkHorizonDuplicationStatus, getDailyContestPredictions, convertPredictionsToPositions, processPredictions} from './utils';
 import {handleCreateAjaxError} from '../../../utils';
-import {submitEntry, getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getMultiStockData} from '../utils';
 import {maxPredictionLimit} from './constants';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -30,6 +32,7 @@ class CreateEntry extends React.Component {
             pnlStats: {}, // Daily PnL stats for the selected entry obtained due to date change
             weeklyPnlStats: {}, // Weekly PnL stats
             positions: [], // Positions to buy
+            predictions: [],
             sellPositions: [], // Positions to sell
             previousPositions: [], // contains the positions for the previous entry in the current contest for buy,
             previousSellPositions: [], // contains the positions for the previous entry in the current contest for sell,
@@ -46,7 +49,9 @@ class CreateEntry extends React.Component {
             submissionLoading: false,
             snackbarOpenStatus: false,
             snackbarMessage: 'N/A',
-            entryDetailBottomSheetOpenStatus: false
+            entryDetailBottomSheetOpenStatus: false,
+            positionsWithDuplicateHorizons: [],
+            duplicateHorizonDialogOpenStaus: false
         };
         this.source = CancelToken.source();
     }
@@ -90,6 +95,41 @@ class CreateEntry extends React.Component {
                 this.setState({sellPositions: clonedPositions});
             }
         }
+    }
+
+    onExpansionChanged = (symbol, expansionStatus) => {
+        const clonedPositions =_.map(this.state.positions, _.cloneDeep);
+        const requiredPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
+        try {
+            if (requiredPositionIndex >= 0 ) {
+                let requiredPosition = clonedPositions[requiredPositionIndex];
+                requiredPosition = {
+                    ...requiredPosition,
+                    expanded: expansionStatus
+                };
+                clonedPositions[requiredPositionIndex] = requiredPosition;
+                this.setState({positions: clonedPositions});
+            }
+        } catch(err) {
+            console.log(err);
+        }
+    }
+
+    toggleExpansionAll = () => {
+        const clonedPositions = _.map(this.state.positions, _.cloneDeep);
+        const expansionStatus = this.checkIfAllExpanded();
+        Promise.map(clonedPositions, position => ({
+            ...position,
+            expanded: !expansionStatus
+        }))
+        .then(positions => {
+            this.setState({positions});
+        })
+    }
+
+    checkIfAllExpanded = () => {
+        const numExpanded = this.state.positions.filter(position => position.expanded === true).length;
+        return numExpanded === this.state.positions.length;
     }
 
     renderSearchStocksBottomSheet = () => {
@@ -212,33 +252,23 @@ class CreateEntry extends React.Component {
     })
 
     submitPositions = async () => {
-        const processedSellPositions = await this.processSellPositions();
-        const positions = [...this.state.positions, ...processedSellPositions];
-        
-        //Added FE check for at-least 5 trades
-        if (positions.length < 5) {
-            this.setState({snackbarOpenStatus: true, snackbarMessage: 'Please add at-least 5 trades'});
-            return; 
-        }
+        const shouldCreate = this.state.noEntryFound ? true : false;
+        const allPredictions = await getPredictionsFromPositions(this.state.positions);
         this.setState({submissionLoading: true});
-        submitEntry(positions, this.state.previousPositions.length > 0)
-        .then(response => { 
-            // Do the network call for fetching the contest entry after submitting based on the current date
-            return this.updateContestEntryStatusOnDateChange(moment());
-        })
-        .then(() => {
-            return this.updateSearchStocksWithChange(moment());
+        createPredictions(allPredictions, shouldCreate)
+        .then(response => {
+            return this.updateDailyPredictionsOnDateChange();
         })
         .then(() => {
             this.setState({
                 snackbarOpenStatus: true, 
-                snackbarMessage: 'Contest entry submitted successFully'
+                snackbarMessage: 'Predicions successfully created'
             });
         })
         .catch(error => {
             const errorMessage = _.get(error, 'response.data.message', 'Error Occured :(');
             this.setState({snackbarOpenStatus: true, snackbarMessage: errorMessage});
-            return handleCreateAjaxError(error, this.props.history, this.props.match.url)
+            return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
         .finally(() => {
             this.setState({submissionLoading: false});
@@ -281,6 +311,35 @@ class CreateEntry extends React.Component {
         }); 
     }
 
+    updateDailyPredictionsOnDateChange = (selectedDate = moment()) => {
+        let predictions = [];
+        return getDailyContestPredictions(
+            selectedDate, 
+            'started', 
+            false, 
+            this.props.history, 
+            this.props.match.url,
+            true
+        )
+        .then(async response => {
+            predictions = response.data;
+            const formattedPredictions = await processPredictions(predictions);
+            const positions = convertPredictionsToPositions(predictions);
+            this.setState({predictions: formattedPredictions});
+            return this.updateSearchStocksWithChange(positions);
+        })
+        .then(positions => {
+            this.setState({
+                positions,
+                noEntryFound: predictions.length === 0
+            });
+        })
+        .catch(err => {
+            console.log('Error', err)
+            this.setState({noEntryFound: true});
+        })
+    }
+
     updateContestEntryStatusOnDateChange = (selectedDate) => {
         return new Promise((resolve, reject) => {
             this.getRecentContestEntry(selectedDate)
@@ -315,85 +374,49 @@ class CreateEntry extends React.Component {
         })
     }
 
-    updateSearchStocksWithChange = (selectedDate) => {
-        const currentDate = moment().format('YYYY-MM-DD');
-        const formattedSelectedDate = selectedDate.format('YYYY-MM-DD');
-        const resultDeclared = moment().isAfter(this.state.contestResultDate);
-        /**
-         * Update the change and changePct for the 2 conditions
-         * 1. If the selectedDate === current date, then the user needs to view the stock edit screen where change is required
-         * 2. If result is not published then we show the change from the stock network call
-         */
-        if (moment(currentDate).isSame(formattedSelectedDate) || !resultDeclared) {
-            const positions = [...this.state.positions, ...this.state.sellPositions].map(position => position.symbol);
-            return getMultiStockData(positions)
-                .then(stocks => {
-                    return Promise.map(stocks, stock => {
-                        const change = _.get(stock, 'latestDetailRT.change', null) !== null 
-                            ?  _.get(stock, 'latestDetailRT.change', 0)
-                            :  _.get(stock, 'latestDetail.values.Change', 0);
-        
-                        const changePct = _.get(stock, 'latestDetailRT.changePct', null) !== null 
-                                ?  _.get(stock, 'latestDetailRT.changePct', 0)
-                                :  _.get(stock, 'latestDetail.values.ChangePct', 0);
-                        const symbol = _.get(stock, 'security.ticker', '');
-        
-                        return {symbol, change, changePct};
-                    });
-                })
-                .then(changeData => {
-                    let clonedBuyPositions = _.map(this.state.positions, _.cloneDeep);
-                    let clonedSellPositions = _.map(this.state.sellPositions, _.cloneDeep);
-        
-                    // Updating buy positions with change and changePct
-                    clonedBuyPositions = clonedBuyPositions.map(position => {
-                        const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
-                        if (positionWithChangeData !== undefined) {
-                            return {
-                                ...position,
-                                change: positionWithChangeData.change,
-                                changePct: positionWithChangeData.changePct
-                            }
+    updateSearchStocksWithChange = (positions = [...this.state.positions]) => {
+        const stockSymbols = positions.map(position => position.symbol);
+        return getMultiStockData(stockSymbols)
+            .then(stocks => {
+                return Promise.map(stocks, stock => {
+                    const change = _.get(stock, 'latestDetailRT.change', null) !== null 
+                        ?  _.get(stock, 'latestDetailRT.change', 0)
+                        :  _.get(stock, 'latestDetail.values.Change', 0);
+    
+                    const changePct = _.get(stock, 'latestDetailRT.changePct', null) !== null 
+                            ?  _.get(stock, 'latestDetailRT.changePct', 0)
+                            :  _.get(stock, 'latestDetail.values.ChangePct', 0);
+                    const symbol = _.get(stock, 'security.ticker', '');
+    
+                    return {symbol, change, changePct};
+                });
+            })
+            .then(changeData => {
+                let clonedPositions = _.map(positions, _.cloneDeep);
+    
+                // Updating buy positions with change and changePct
+                clonedPositions = clonedPositions.map(position => {
+                    const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
+                    if (positionWithChangeData !== undefined) {
+                        return {
+                            ...position,
+                            chg: positionWithChangeData.change,
+                            chgPct: positionWithChangeData.changePct
                         }
-                    });
-        
-                    // Updating buy positions with change and changePct
-                    clonedSellPositions = clonedSellPositions.map(position => {
-                        const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
-                        if (positionWithChangeData !== undefined) {
-                            return {
-                                ...position,
-                                change: positionWithChangeData.change,
-                                changePct: positionWithChangeData.changePct
-                            }
-                        }
-                    });
-        
-                    this.setState({
-                        positions: clonedBuyPositions, 
-                        sellPositions: clonedSellPositions,
-                        buyPositions: clonedBuyPositions,
-                        sellPositions: clonedSellPositions
-                    }, () => {
-                        this.searchStockComponent.initializeSelectedStocks();
-                    });
-                })
-        }
+                    }
+                });                
+                this.searchStockComponent.initializeSelectedStocks(positions);
 
-        return null;
+                return clonedPositions;    
+            });
     }
 
-    handleContestDateChange = (selectedDate) => {
+    handleContestDateChange = (selectedDate = moment()) => {
         this.setState({loading: true});
-        return this.updateContestStatusOnDateChange(selectedDate)
-        .then(contestStatus => {
-            return this.updateContestEntryStatusOnDateChange(selectedDate)
-        })
-        .then(() => this.updateSearchStocksWithChange(selectedDate))
-        .catch(err => console.log('Error Occured', err))
+        this.updateDailyPredictionsOnDateChange(selectedDate)
         .finally(() => {
             this.setState({loading: false});
-        }) 
+        });
     }
 
     addPredictionForPosition = symbol => {
@@ -402,6 +425,9 @@ class CreateEntry extends React.Component {
         if (selectedPositionIndex > -1) {
             const selectedPosition = clonedPositions[selectedPositionIndex];
             const predictions = selectedPosition.predictions;
+            // Setting the horizon in incremental order, if it is the first prediction then setting horizon to 1
+            let horizon = predictions.length > 0 ? predictions[predictions.length - 1].horizon + 1 : 1;
+
             if (predictions.length >= maxPredictionLimit) {
                 this.setState({
                     snackbarOpenStatus: true, 
@@ -409,17 +435,20 @@ class CreateEntry extends React.Component {
                 });
                 return;
             }
+
             predictions.push({
                 key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
                 symbol: _.get(selectedPosition, 'symbol', ''),
-                target: 5,
+                target: 2,
                 type: 'buy',
-                horizon: 1,
+                horizon,
                 investment: 100
             });
             selectedPosition.predictions = predictions;
             clonedPositions[selectedPositionIndex] = selectedPosition;
-            this.setState({positions: clonedPositions});
+            this.setState({positions: clonedPositions}, () => {
+                this.checkForDuplicateHorizon();
+            });
         }
     }
 
@@ -433,9 +462,16 @@ class CreateEntry extends React.Component {
 
             if (selectedPredictionIndex > -1) {
                 // Prediction to be modified found
-                selectedPosition.predictions[selectedPredictionIndex] = prediction;
+                // If type == buy make target positive else make target negative
+                const nPrediction = {
+                    ...prediction,
+                    target: (prediction.type === 'buy' ? 1 : -1) * Math.abs(prediction.target)
+                };
+                selectedPosition.predictions[selectedPredictionIndex] = nPrediction;
                 clonedPositions[selectedPositionIndex] = selectedPosition;
-                this.setState({positions: clonedPositions});
+                this.setState({positions: clonedPositions}, () => {
+                    this.checkForDuplicateHorizon();
+                });
             }
         }
     }
@@ -452,9 +488,26 @@ class CreateEntry extends React.Component {
                 // Prediction to be deleted found
                 selectedPosition.predictions.splice(selectedPredictionIndex, 1);
                 clonedPositions[selectedPositionIndex] = selectedPosition;
-                this.setState({positions: clonedPositions});
+                this.setState({positions: clonedPositions}, () => {
+                    this.checkForDuplicateHorizon();
+                });
             }
         }
+    }
+
+    checkForDuplicateHorizon = () => {
+        const {positions = []} = this.state;
+        let positionsWithDuplicateHorizons = [];
+
+        Promise.map(positions, position => {
+            const hasDuplicates = checkHorizonDuplicationStatus(position.predictions);
+            if (hasDuplicates) {
+                positionsWithDuplicateHorizons.push(position);
+            }
+        })
+        .then(() => {
+            this.setState({positionsWithDuplicateHorizons});
+        });
     }
 
     onSegmentValueChange = value => {
@@ -536,10 +589,16 @@ class CreateEntry extends React.Component {
             getRequiredMetrics: this.getRequiredMetrics,
             previousSellPositions: this.state.previousSellPositions,
             onStockItemChange: this.onStockItemChange,
+            onExpansionChanged: this.onExpansionChanged,
             loading: this.state.loading,
             addPrediction: this.addPredictionForPosition,
             modifyPrediction: this.modifyPrediction,
-            deletePrediction: this.deletePrediction
+            deletePrediction: this.deletePrediction,
+            positionsWithDuplicateHorizons: this.state.positionsWithDuplicateHorizons,
+            toggleDuplicateHorizonDialog: this.toggleDuplicateHorizonDialog,
+            checkIfAllExpanded: this.checkIfAllExpanded,
+            toggleExpansionAll: this.toggleExpansionAll,
+            predictions: this.state.predictions
         };
 
         return (
@@ -556,11 +615,20 @@ class CreateEntry extends React.Component {
         );
     }
 
+    toggleDuplicateHorizonDialog = () => {
+        this.setState({duplicateHorizonDialogOpenStaus: !this.state.duplicateHorizonDialogOpenStaus});
+    }
+
     render() {
         return (
             <React.Fragment>
                 <DailyContestCreateMeta />
                 <SGrid container>
+                    <DuplicatePredictionsDialog 
+                        open={this.state.duplicateHorizonDialogOpenStaus}
+                        positionsWithDuplicateHorizons={this.state.positionsWithDuplicateHorizons}
+                        onClose={this.toggleDuplicateHorizonDialog}
+                    />
                     <EntryDetailBottomSheet 
                         open={this.state.entryDetailBottomSheetOpenStatus}
                         toggle={this.toggleEntryDetailBottomSheet}

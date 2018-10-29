@@ -153,6 +153,8 @@ class StockEditPredictionListItem extends React.Component {
         const buyButtonClass = type === 'buy' ? classes.buyButtonActive : classes.inActiveButton;
         const sellButtonClass = type === 'sell' ? classes.sellButtonActive : classes.inActiveButton;
         const horizonOptions = [1, 2, 3, 4, 5];
+        const max = type === 'buy' ? 5 : 0;
+        const min = type === 'buy' ? 0 : -5;
 
         return (
             <Container 
@@ -165,9 +167,6 @@ class StockEditPredictionListItem extends React.Component {
                         color='#FE6662' 
                         onClick={this.deletePrediction}
                     />
-                </Grid>
-                <Grid item xs={3}>
-                    <NumberInput onChange={this.onTargetChange}/>
                 </Grid>
                 <Grid item xs={3} style={typeContainerStyle}>
                     <Button 
@@ -220,6 +219,14 @@ class StockEditPredictionListItem extends React.Component {
                             ))
                         }
                     </Menu>
+                </Grid>
+                <Grid item xs={3}>
+                    <NumberInput 
+                        onChange={this.onTargetChange} 
+                        value={target}
+                        max={max}
+                        min={min}
+                    />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'space-between'}}>
                     <Points>{investment}K</Points>

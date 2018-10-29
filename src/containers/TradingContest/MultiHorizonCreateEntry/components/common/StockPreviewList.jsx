@@ -47,7 +47,7 @@ export default class StockPreviewList extends React.Component {
                 {
                     positions.map((position, index) => {
                         return (
-                            <StockPreviewListItem position={position} key={index} edit />
+                            <StockPreviewListItem prediction={position} key={index} edit />
                         );
                     })
                 }
