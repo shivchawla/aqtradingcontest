@@ -9,6 +9,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {withStyles} from '@material-ui/core/styles';
+import ActionIcon from '../../../Misc/ActionIcons';
 import StockEditPredictionList from './StockEditPredictionList';
 import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../../constants';
 import {checkHorizonDuplicationStatus} from '../../utils';
@@ -91,6 +92,7 @@ class StockEditListItem extends React.Component {
             >
                 <ExpansionPanelSummary 
                         expandIcon={<ExpandMoreIcon />}
+                        style={{paddingLeft: '5px'}}
                 >
                     <Grid container alignItems="center">
                         <Grid 
@@ -101,6 +103,11 @@ class StockEditListItem extends React.Component {
                                     alignItems: 'flex-start'
                                 }}
                         >
+                            <ActionIcon 
+                                type='remove_circle_outline' 
+                                color='#FE6662' 
+                                onClick={() => this.props.deletePosition(symbol)}
+                            />
                             {
                                 checkHorizonDuplicationStatus(predictions) &&
                                 <Tooltip

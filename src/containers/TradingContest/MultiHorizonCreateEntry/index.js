@@ -452,6 +452,17 @@ class CreateEntry extends React.Component {
         }
     }
 
+    deletePosition = symbol => {
+        let clonedPositions = _.map(this.state.positions, _.cloneDeep);
+        const selectedPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
+        console.log('Selected Position Index', selectedPositionIndex, symbol);
+        if (selectedPositionIndex > -1) { // Item to be deleted found
+            console.log('Item to be deleted', clonedPositions[selectedPositionIndex]);
+            clonedPositions.splice(selectedPositionIndex, 1);
+            this.setState({positions: clonedPositions});
+        }
+    }
+
     modifyPrediction = (symbol, key, prediction) => {
         const clonedPositions = _.map(this.state.positions, _.cloneDeep);
         const selectedPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
@@ -598,7 +609,8 @@ class CreateEntry extends React.Component {
             toggleDuplicateHorizonDialog: this.toggleDuplicateHorizonDialog,
             checkIfAllExpanded: this.checkIfAllExpanded,
             toggleExpansionAll: this.toggleExpansionAll,
-            predictions: this.state.predictions
+            predictions: this.state.predictions,
+            deletePosition: this.deletePosition
         };
 
         return (

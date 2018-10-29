@@ -127,6 +127,7 @@ export default class CreateEntryLayoutDesktop extends React.Component {
                     modifyPrediction={this.props.modifyPrediction}
                     deletePrediction={this.props.deletePrediction}
                     onExpansionChanged={this.props.onExpansionChanged}
+                    deletePosition={this.props.deletePosition}
                 />
             : <StockPreviewList type={this.state.listView} positions={positions} />
             // <StockPreviewList type={this.state.listView} positions={this.props.predictions} />

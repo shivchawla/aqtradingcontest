@@ -85,7 +85,17 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
         } else {
             return {
                 ...selectedPosition,
-                points: Math.abs(_.get(selectedPosition, 'points', 10))
+                points: Math.abs(_.get(selectedPosition, 'points', 10)),
+                predictions: [
+                    {
+                        key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+                        symbol: _.get(selectedPosition, 'symbol', ''),
+                        target: 2,
+                        type: 'buy',
+                        horizon: 1,
+                        investment: 100
+                    }
+                ]
             };
         }
     });
