@@ -29,7 +29,7 @@ export const fetchAjax = (url, history, redirectUrl = '/advice', header=undefine
 };
 
 
-export const fetchAjaxPromise = (url, history, redirectUrl = '/advice', handleError=false, header=undefined, source = null) => {
+export const fetchAjaxPromise = (url, history, redirectUrl = '/advice', handleError=true, header=undefined, source = null) => {
     return new Promise((resolve, reject) => {
         return axios.get(url, {
             cancelToken: _.get(source, 'token', null),
@@ -39,9 +39,10 @@ export const fetchAjaxPromise = (url, history, redirectUrl = '/advice', handleEr
         .catch(error => {
             const status = _.get(error, 'response.status', 400);
             if (status === 403 || handleError) {
-                reject(handleGetError(error, history, redirectUrl));
-            } else {
+                handleGetError(error, history, redirectUrl);
                 reject(error);
+            } else {
+                reject(error) ;
             }
         });
     });
