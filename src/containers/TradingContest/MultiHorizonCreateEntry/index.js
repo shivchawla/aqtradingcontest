@@ -226,9 +226,9 @@ class CreateEntry extends React.Component {
     updateDailyPredictionsOnDateChange = (selectedDate = moment()) => {
         let predictions = [];
         return Promise.all([
-            getDailyContestPredictions(selectedDate, 'started', false, this.props.history, this.props.match.url, true),
-            getDailyContestPredictions(selectedDate, 'active', false, this.props.history, this.props.match.url, true),
-            getDailyContestPredictions(selectedDate, 'ended', false, this.props.history, this.props.match.url, true),
+            getDailyContestPredictions(selectedDate, 'started', false, this.props.history, this.props.match.url, false),
+            getDailyContestPredictions(selectedDate, 'active', false, this.props.history, this.props.match.url, false),
+            getDailyContestPredictions(selectedDate, 'ended', false, this.props.history, this.props.match.url, false),
         ])
         .then(async ([responseStartedToday, responseActive, responsEnded]) => {
             predictions = responseStartedToday.data;
