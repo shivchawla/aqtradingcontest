@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-09-11 20:06:27
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-09-20 18:55:08
+* @Last Modified time: 2018-10-25 19:27:06
 */
 
 import React, {Fragment} from 'react'
@@ -49,7 +49,7 @@ export const faqs = [
     },
     {
         header: 'Do I have to re-enter in new daily contests?',
-        content: 'Yes. Your entry are NOT rolled into next contest.'
+        content: 'Yes. Your entry is NOT rolled into next contest.'
     },
     {
         header: 'When are winners declared?',
