@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import axios from 'axios';
-import {Utils, fetchAjax, getStockData} from '../../../utils';
+import {Utils, fetchAjax, getStockData, fetchAjaxPromise} from '../../../utils';
 import gold from '../../../assets/gold.svg';
 import silver from '../../../assets/silver.svg';
 import bronze from '../../../assets/bronze.svg';
@@ -93,7 +93,7 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
                         target: 2,
                         type: 'buy',
                         horizon: 1,
-                        investment: 100,
+                        investment: 10,
                         locked: false,
                         new: true
                     }
@@ -177,4 +177,11 @@ export const isMarketOpen = (currentTime = moment()) => {
     } else {
         return {status: false, type: 'after'}
     }    
+}
+
+export const getTopStocks = (selectedDate = moment(), history, currentUrl, handleError = true) => {
+    const requiredDate = selectedDate.format(dateFormat);
+    const url = `${requestUrl}/dailycontest/topstocks?date=${requiredDate}`;
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError)
 }

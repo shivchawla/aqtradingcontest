@@ -153,7 +153,7 @@ class StockEditListItem extends React.Component {
                             deletePrediction={this.props.deletePrediction}
                         />
                         {
-                            marketOpen.status && predictions.length < maxPredictionLimit &&
+                            marketOpen.status &&
                             <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
                                 <Button 
                                         style={predictionButtonStyle}
