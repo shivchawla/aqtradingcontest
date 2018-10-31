@@ -19,8 +19,7 @@ export default class StockPreviewList extends React.Component {
     render() {
         const {positions = [], type='buy'} = this.props;
         const StockPreviewListItem = global.screen.width < 600 ? StockPreviewListItemMobile : StockPreviewListItemDesktop;
-        const sellErrorText = 'No Short positions.';
-        const buyErrorText = 'No Long positions.';
+        const errorText = 'No predictions found';
 
         return (
             <Grid 
@@ -37,7 +36,7 @@ export default class StockPreviewList extends React.Component {
                 {
                     positions.length === 0 &&
                     <EmptyPositionsText>
-                        {type === 'buy' ? buyErrorText : sellErrorText}
+                        No Predictions Found. :(
                     </EmptyPositionsText>
                 }
                 {
@@ -58,7 +57,7 @@ export default class StockPreviewList extends React.Component {
 
 const EmptyPositionsText = styled.h3`
     font-size: 20px;
-    color: ${primaryColor};
+    color: #979797;
     font-weight: 400;
-    margin-top: 20%;
+    margin-top: 5%;
 `;

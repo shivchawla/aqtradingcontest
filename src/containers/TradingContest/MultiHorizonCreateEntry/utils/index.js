@@ -69,7 +69,7 @@ export const getDailyContestPredictions = (date = null, category='started', popu
 }
 
 // converts predictions to positions obtained from the backend
-export const convertPredictionsToPositions = (predictions = []) => {
+export const convertPredictionsToPositions = (predictions = [], lockPredictions = false, newPrediction = true) => {
     let positions = [];
     predictions.map((prediction, index) => {
         const symbol = _.get(prediction, 'position.security.ticker', null);
@@ -84,7 +84,9 @@ export const convertPredictionsToPositions = (predictions = []) => {
             key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
             symbol,
             target: _.get(prediction, 'target', 0),
-            type: investment > 0 ? 'buy' : 'sell'
+            type: investment > 0 ? 'buy' : 'sell',
+            locked: lockPredictions,
+            new: newPrediction
         };
 
         const positionIndex = _.findIndex(positions, position => position.symbol === symbol);
@@ -116,7 +118,7 @@ export const convertPredictionsToPositions = (predictions = []) => {
 }
 
 // formats predictions obtained from the backend
-export const processPredictions = (predictions = []) => {
+export const processPredictions = (predictions = [], locked = false) => {
     return Promise.map(predictions, prediction => ({
         symbol: _.get(prediction, 'position.security.ticker', null),
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),
@@ -126,6 +128,20 @@ export const processPredictions = (predictions = []) => {
         startDate: _.get(prediction, 'startDate', null),
         endDate: _.get(prediction, 'endDate', null),
         targetAchieved: _.get(prediction, 'success.status', false),
-        target: _.get(prediction, 'target', 0)
+        target: _.get(prediction, 'target', 0),
+        locked,
+        new: false
     }))
+}
+
+// compare positions and static positions to check if they are identical
+export const checkPositionsEquality = (positions = [], staticPositions = []) => {
+    let clonedPositions = _.map(positions, _.cloneDeep);
+    let clonedStaticPositions = _.map(staticPositions, _.cloneDeep);
+    const keysToCompare = ['symbol', 'ticker', 'predictions'];
+
+    clonedPositions = clonedPositions.map(position => _.pick(position, keysToCompare));
+    clonedStaticPositions = clonedStaticPositions.map(position => _.pick(position, keysToCompare));
+
+    return _.isEqual(clonedPositions, clonedStaticPositions);
 }

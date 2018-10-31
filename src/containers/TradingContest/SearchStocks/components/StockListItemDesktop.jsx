@@ -96,7 +96,7 @@ export default class StockListItem extends React.Component {
     }
 
     render() {
-        const {symbol, name, change, changePct, close, open, current, onClick, checked = false, onAddIconClick, selected = false} = this.props;
+        const {symbol, name, change, changePct, close, open, current, onClick, checked = false, onAddIconClick, selected = false, hideActions = false} = this.props;
         const containerStyle = {
             borderBottom: '1px solid #eaeaea',
             color: textColor,
@@ -149,16 +149,19 @@ export default class StockListItem extends React.Component {
                         </h3>
                     </div>
                 </Grid>
-                <Grid
-                        item
-                        xs={1} 
-                        style={{
-                            ...horizontalBox,
-                            justifyContent: 'flex-end',
-                        }}
-                >
-                    {this.renderBuyActionButton()}
-                </Grid>
+                {
+                    !hideActions &&
+                    <Grid
+                            item
+                            xs={1} 
+                            style={{
+                                ...horizontalBox,
+                                justifyContent: 'flex-end',
+                            }}
+                    >
+                        {this.renderBuyActionButton()}
+                    </Grid>
+                }
             </Grid>
         );
     }

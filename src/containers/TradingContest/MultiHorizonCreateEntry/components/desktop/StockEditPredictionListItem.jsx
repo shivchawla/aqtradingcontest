@@ -148,7 +148,7 @@ class StockEditPredictionListItem extends React.Component {
     render() {
         const {anchorEl} = this.state;
         const open = Boolean(anchorEl);
-        const {horizon = 1, investment = 0, target = 1, type = 'buy', symbol = ''} = this.props.prediction;
+        const {horizon = 1, investment = 0, target = 1, type = 'buy', symbol = '', locked = false} = this.props.prediction;
         const {classes} = this.props;
         const buyButtonClass = type === 'buy' ? classes.buyButtonActive : classes.inActiveButton;
         const sellButtonClass = type === 'sell' ? classes.sellButtonActive : classes.inActiveButton;
@@ -164,38 +164,51 @@ class StockEditPredictionListItem extends React.Component {
                 <Grid item xs={1}>
                     <ActionIcon 
                         type='remove_circle_outline' 
-                        color='#FE6662' 
+                        color={locked ? 'transparent' : '#FE6662'} 
                         onClick={this.deletePrediction}
+                        disabled={locked}
                     />
                 </Grid>
                 <Grid item xs={3} style={typeContainerStyle}>
-                    <Button 
-                        className={[classes.button, sellButtonClass]}
-                        variant='contained'
-                        onClick={() => this.onActionButtonClicked('sell')}
-                    >
-                        SELL
-                    </Button>
-                    <Button
-                        className={[classes.button, buyButtonClass]}
-                        style={{marginLeft: '20px'}}
-                        variant='contained'
-                        onClick={() => this.onActionButtonClicked('buy')}
-                    >
-                        BUY
-                    </Button>
+                    {
+                        (!locked || type === 'sell') &&
+                        <Button 
+                            className={[classes.button, sellButtonClass]}
+                            variant='contained'
+                            onClick={() => !locked && this.onActionButtonClicked('sell')}
+                            style={{marginRight: '20px'}}
+                        >
+                            SELL
+                        </Button>
+                    }
+                    {
+                        (!locked || type === 'buy') && 
+                        <Button
+                            className={[classes.button, buyButtonClass]}
+                            variant='contained'
+                            onClick={() => !locked && this.onActionButtonClicked('buy')}
+                        >
+                            BUY
+                        </Button>
+                    }
                 </Grid>
                 <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                    <PredictionText>{horizon} {horizon > 1 ? 'Days' : 'Day'}</PredictionText>
-                    <ActionIcon 
-                        type='edit' 
-                        color='#4B4A4A'
-                        iconButtonProps = {{
-                            'aria-owns': open ? 'long-menu' : null,
-                            'aria-haspopup': 'true',
-                            onClick: this.handleHorizonEditClick
-                        }}
-                    />
+                    <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                        <PredictionText>{horizon} {horizon > 1 ? 'Days' : 'Day'}</PredictionText>
+                        <DateText>{moment().add(horizon, 'days').format("Do MMM 'YY")}</DateText>
+                    </div>
+                    {
+                        !locked &&
+                        <ActionIcon 
+                            type='edit' 
+                            color='#4B4A4A'
+                            iconButtonProps = {{
+                                'aria-owns': open ? 'long-menu' : null,
+                                'aria-haspopup': 'true',
+                                onClick: this.handleHorizonEditClick
+                            }}
+                        />
+                    }
                     <Menu
                             id="long-menu"
                             anchorEl={anchorEl}
@@ -226,6 +239,7 @@ class StockEditPredictionListItem extends React.Component {
                         value={target}
                         max={max}
                         min={min}
+                        disabled={locked}
                     />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'space-between'}}>
@@ -239,15 +253,15 @@ class StockEditPredictionListItem extends React.Component {
                     >
                         <ActionIcon 
                             size={18} 
-                            color={metricColor.positive} 
+                            color={locked ? '#D0D0D0' : metricColor.positive} 
                             type='expand_less'
-                            onClick={() => this.onInvestmentChange('add')}
+                            onClick={() => !locked && this.onInvestmentChange('add')}
                         />
                         <ActionIcon 
                             size={18} 
-                            color={metricColor.negative} 
+                            color={locked ? '#D0D0D0' : metricColor.negative} 
                             type='expand_more'
-                            onClick={() => this.onInvestmentChange('minus')}
+                            onClick={() => !locked && this.onInvestmentChange('minus')}
                         />
                     </div>
                 </Grid>
@@ -268,6 +282,7 @@ const Container = styled(Grid)`
     border-radius: 4px;
     margin-bottom: 20px;
     border: 1px solid #F3F3F3;
+    min-height: 84px;
 `;
 
 const PredictionText = styled.h3`
@@ -280,4 +295,10 @@ const Points = styled.h3`
     font-size: 18px;
     font-weight: 400;
     color: #4B4A4A;
+`;
+
+const DateText = styled.h3`
+    font-size: 14px;
+    color: #747272;
+    font-weight: 400;
 `;

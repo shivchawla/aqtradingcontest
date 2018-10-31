@@ -305,7 +305,8 @@ export class SearchStocks extends React.Component {
                 sellChecked: sellSelectedStocks.indexOf(symbol) >= 0,
                 sector: _.get(stock, 'security.detail.Sector', null),
                 industry: _.get(stock, 'security.detail.Industry', null),
-                shortable
+                shortable,
+                hideActions: false
             };
         }).filter(stock => stock.name !== null);
     }
@@ -316,6 +317,17 @@ export class SearchStocks extends React.Component {
         const sellSelectedStocks = _.map(this.state.sellSelectedStocks, _.cloneDeep);
         const localStocks = _.map([...this.localStocks], _.cloneDeep);
         const stocks = _.map([...this.state.stocks], _.cloneDeep);
+        const selectedPositions = this.props.portfolioPositions;
+        const selectedPosition = selectedPositions.filter(position => position.symbol === symbol)[0];
+        
+        // if the position has predictions that are locked then it can't be added or removed
+        if (selectedPosition !== undefined) {
+            const predictions = _.get(selectedPosition, 'predictions', []);
+            const lockedPredictions = predictions.filter(prediction => prediction.locked === true);
+            if (lockedPredictions.length > 0) {
+                return;
+            }
+        }
 
         const selectedStockIndex = selectedStocks.indexOf(symbol);
         const sellSelectedStockIndex = sellSelectedStocks.indexOf(symbol);
@@ -430,9 +442,7 @@ export class SearchStocks extends React.Component {
     }
 
     addSelectedStocksToPortfolio = async () => {
-        const buyPositions = await this.processPositionsForPortfolio('buy');
-        const sellPositions = await this.processPositionsForPortfolio('sell');
-        const positions = [...buyPositions, ...sellPositions];
+        const positions = await this.processPositionsForPortfolio('buy');
         this.props.addPositions(positions);
         this.props.toggleBottomSheet();
     }
@@ -486,8 +496,9 @@ export class SearchStocks extends React.Component {
             const sellStockIndex = _.findIndex(sellPositions, sellPosition => sellPosition.symbol === stock.symbol);
             const checked = stockIndex !== -1 ? true : false;
             const sellChecked = sellStockIndex !== -1 ? true : false;
+            const hideActions = this.checkForLockedPredictionsInPosition(stock.symbol, positions);
 
-            return {...stock, checked, sellChecked};
+            return {...stock, checked, sellChecked, hideActions};
         });
         localStocks = localStocks.map(stock => {
             // If stock is present in the portfolio mark checked as true else false
@@ -495,11 +506,24 @@ export class SearchStocks extends React.Component {
             const sellStockIndex = _.findIndex(sellPositions, sellPosition => sellPosition.symbol === stock.symbol);
             const checked = stockIndex !== -1 ? true : false;
             const sellChecked = sellStockIndex !== -1 ? true : false;
+            const hideActions = this.checkForLockedPredictionsInPosition(stock.symbol, positions);
 
-            return {...stock, checked, sellChecked};
+            return {...stock, checked, sellChecked, hideActions};
         })
         this.localStocks = localStocks;
         this.setState({stocks, selectedStocks, sellSelectedStocks});
+    }
+
+    checkForLockedPredictionsInPosition = (symbol, positions = this.props.portfolioPositions) => {
+        const selectedPosition = positions.filter(position => position.symbol === symbol)[0];
+        if (selectedPosition !== undefined) {
+            const predictions = _.get(selectedPosition, 'predictions', []);
+            const lockedPredictions = predictions.filter(prediction => prediction.locked === true);
+
+            return lockedPredictions.length > 0 ? true : false;
+        }
+
+        return false;
     }
 
     initializeSelectedStocks = async (positions = [...this.props.portfolioPositions], sellPositions= [...this.props.portfolioSellPositions]) => {
@@ -521,8 +545,8 @@ export class SearchStocks extends React.Component {
     getLocalStocksFromPortfolio = (positions = [], type = 'buy') => {
         return Promise.map(positions, position => {
             return {
-                change: _.get(position, 'change', 0),
-                changePct: _.get(position, 'changePct', 0),
+                change: _.get(position, 'chg', 0),
+                changePct: _.get(position, 'chgPct', 0),
                 [type === 'buy' ? 'checked' : 'sellChecked']: true,
                 close: _.get(position, 'lastPrice', 0),
                 current: _.get(position, 'lastPrice', 0),

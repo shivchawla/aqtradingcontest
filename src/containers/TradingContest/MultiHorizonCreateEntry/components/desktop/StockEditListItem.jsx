@@ -14,6 +14,8 @@ import StockEditPredictionList from './StockEditPredictionList';
 import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../../constants';
 import {checkHorizonDuplicationStatus} from '../../utils';
 import {Utils} from '../../../../../utils';
+import {isMarketOpen} from '../../../utils';
+import {maxPredictionLimit} from '../../constants';
 
 const styles = theme => ({
     expansionPanelRoot: {
@@ -81,7 +83,9 @@ class StockEditListItem extends React.Component {
             type = 'buy',
             predictions = []
         } = this.props.stockItem;
-        
+        const numLockedPositions = predictions.filter(prediction => prediction.locked === true);
+        const marketOpen = isMarketOpen();
+
         return (
             <ExpansionPanel
                     classes={{
@@ -96,18 +100,20 @@ class StockEditListItem extends React.Component {
                 >
                     <Grid container alignItems="center">
                         <Grid 
-                                item xs={4} 
+                                item xs={5} 
                                 style={{
                                     ...horizontalBox, 
                                     justifyContent: 'flex-start', 
                                     alignItems: 'flex-start'
                                 }}
                         >
+                            {/* If should not be deleted setting icon color to disabled and making it disabled */}
                             <ActionIcon 
                                 type='remove_circle_outline' 
-                                color='#FE6662' 
+                                color={numLockedPositions.length > 0 ? 'transparent' : '#FE6662'} 
+                                disabled={numLockedPositions.length > 0}
                                 onClick={() => this.props.deletePosition(symbol)}
-                            />
+                            />  
                             {
                                 checkHorizonDuplicationStatus(predictions) &&
                                 <Tooltip
@@ -127,7 +133,7 @@ class StockEditListItem extends React.Component {
                             }
                             <SymbolComponent symbol={symbol} name={name} />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={5}>
                             <ChangeComponent 
                                 lastPrice={lastPrice}
                                 change={chg}
@@ -136,16 +142,6 @@ class StockEditListItem extends React.Component {
                         </Grid>
                         <Grid item xs={2}>
                             <Prediction prediction={predictions.length} />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <Button 
-                                    style={predictionButtonStyle}
-                                    variant="contained" 
-                                    size="small"
-                                    onClick={this.onAddPredictionsClicked}
-                            >
-                                ADD PREDICTION
-                            </Button>
                         </Grid>
                     </Grid>
                 </ExpansionPanelSummary>
@@ -156,6 +152,19 @@ class StockEditListItem extends React.Component {
                             modifyPrediction={this.props.modifyPrediction}
                             deletePrediction={this.props.deletePrediction}
                         />
+                        {
+                            marketOpen.status && predictions.length < maxPredictionLimit &&
+                            <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                                <Button 
+                                        style={predictionButtonStyle}
+                                        variant="contained" 
+                                        size="small"
+                                        onClick={this.onAddPredictionsClicked}
+                                >
+                                    ADD PREDICTION
+                                </Button>
+                            </Grid>
+                        }
                     </Grid>
                 </ExpansionPanelDetails>
             </ExpansionPanel>
@@ -179,10 +188,13 @@ const ChangeComponent = ({lastPrice, change, changePct}) => {
     let formattedChangePct = (changePct * 100).toFixed(2);
 
     return (
-        <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
-            <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
-            <ChangeDivider>|</ChangeDivider>
-            <Change color={changeColor}>{change} ({formattedChangePct}%)</Change>
+        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+            <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
+                <ChangeDivider>|</ChangeDivider>
+                <Change color={changeColor}>₹{change} ({formattedChangePct}%)</Change>
+            </div>
+            <LastPriceLabel>Last Price</LastPriceLabel>
         </div>
     );
 }
@@ -200,11 +212,18 @@ const Prediction = ({prediction = 0}) => {
                         marginBottom: '2px'
                     }}
             >
-                Predictions
+                {prediction === 1 ? 'Prediction' : 'Predictions'}
             </h3>
         </div>
     );
 }
+
+const SectionHeader = styled.h3`
+    font-size: 12px;
+    color: #4B4A4A;
+    font-weight: 400;
+    text-align: center;
+`;
 
 const predictionButtonStyle = {
     backgroundColor: '#6B83E1',
@@ -228,7 +247,7 @@ const nameStyle = {
 const Symbol = styled.div`
     text-align: start;
     font-weight: 600;
-    font-size: 20px;
+    font-size: 18px;
     color: #535353;
 `;
 
@@ -238,18 +257,25 @@ const LastPrice = styled.h3`
     font-weight: 400;
 `;
 
+const LastPriceLabel = styled.h3`
+    font-size: 14px;
+    color: #747272;
+    font-weight: 400;
+`;
+
 const Change = styled.h1`
     font-size: 16px;
     color: ${props => props.color || '#535353'};
     font-weight: 400;
+    margin-top: 1px;
 `;
 
 const ChangeDivider = styled.span`
-    font-size: 25px;
-    color: #757575;
-    font-weight: 300;
+    font-size: 16px;
+    color: #B6B6B6;
+    font-weight: 200;
     margin: 0 4px;
-    margin-top: -5px
+    margin-top: -1px
 `;
 
 const PredictionText = styled.h3`

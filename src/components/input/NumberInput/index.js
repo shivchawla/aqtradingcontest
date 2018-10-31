@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import styled from 'styled-components';
 import InputBase from '@material-ui/core/InputBase';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import {MuiThemeProvider, createMuiTheme, withStyles} from '@material-ui/core/styles';
@@ -64,8 +65,8 @@ class NumberInput extends React.Component {
         this.setState({value: nextProps.value});
     }
 
-    render() {
-        const { classes } = this.props;
+    renderInput = () => {
+        const {classes, disabled = false} = this.props;
         const actionIconStyle = {padding: '6px'};
         const inputClass = this.state.value > 0 
             ?   classes.bootstrapInputPositive
@@ -74,46 +75,79 @@ class NumberInput extends React.Component {
                 :   classes.bootstrapInputNegative;
 
         return (
-            <MuiThemeProvider theme={customTheme}>
-                <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+            <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                {
+                    !disabled &&
                     <ActionIcon 
                         style={actionIconStyle} 
                         size={16} color='#444' 
                         type='remove'
                         onClick={() => this.onActionButtonChange('minus')}
+                        disabled={disabled}
                     />
-                    <InputBase
-                        id="bootstrap-input"
-                        value={this.state.value}
-                        onChange={this.onChange}
-                        classes={{
-                            input: inputClass,
-                        }}
-                        type="number"
-                        endAdornment={
-                            <InputAdornment>
-                                <span 
-                                        style={{
-                                            marginLeft: '-20px',
-                                            zIndex: 20
-                                        }}
-                                >
-                                    %
-                                </span>
-                            </InputAdornment>
-                        }
-                    />
+                }
+                <InputBase
+                    id="bootstrap-input"
+                    value={this.state.value}
+                    onChange={this.onChange}
+                    classes={{
+                        input: inputClass,
+                    }}
+                    disabled={disabled}
+                    type="number"
+                    endAdornment={
+                        <InputAdornment>
+                            <span 
+                                    style={{
+                                        marginLeft: '-20px',
+                                        zIndex: 20
+                                    }}
+                            >
+                                %
+                            </span>
+                        </InputAdornment>
+                    }
+                />
+                {
+                    !disabled &&
                     <ActionIcon 
                         style={actionIconStyle} 
                         size={16} 
                         color='#444' 
                         type='add'
                         onClick={() => this.onActionButtonChange('add')}
+                        disabled={disabled}
                     />
-                </div>
+                }
+            </div>
+        );
+    }
+
+    render() {
+        const {disabled = false} = this.props;  
+        const disabledTextColor = this.state.value > 0 
+            ?   metricColor.positive
+            :   this.state.value === 0
+                ?   '#4B4A4A'
+                :   metricColor.negative
+        
+        return (
+            <MuiThemeProvider theme={customTheme}>
+                {
+                    disabled
+                    ?   <DisabledText color={disabledTextColor}>{this.state.value} %</DisabledText>
+                    :   this.renderInput()
+                }
             </MuiThemeProvider>
         );
     }
 }
 
 export default withStyles(styles)(NumberInput);
+
+const DisabledText = styled.h3`
+    font-size: 18px;
+    color: ${props => props.color || '#4B4A4A'};
+    font-weight: 500;
+    text-align: start;
+`;

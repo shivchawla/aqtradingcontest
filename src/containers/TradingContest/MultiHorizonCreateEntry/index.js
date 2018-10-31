@@ -12,10 +12,11 @@ import {withRouter} from 'react-router';
 import {SearchStocks} from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
 import CreateEntryLayoutMobile from './components/mobile/CreateEntryLayoutMobile';
-import CreateEntryLayoutDesktop from './components/desktop/CreateEntryLayoutDesktop';
+import CreateEntryEdit from './components/desktop/CreateEntryEditScreen';
+import CreateEntryPreview from './components/desktop/CreateEntryPreviewScreen';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import {DailyContestCreateMeta} from '../metas';
-import {getContestEntry, convertBackendPositions, processSelectedPosition, getContestSummary, getMultiStockData} from '../utils';
+import {processSelectedPosition, getMultiStockData} from '../utils';
 import {getPredictionsFromPositions, createPredictions, checkHorizonDuplicationStatus, getDailyContestPredictions, convertPredictionsToPositions, processPredictions} from './utils';
 import {handleCreateAjaxError} from '../../../utils';
 import {maxPredictionLimit} from './constants';
@@ -31,8 +32,11 @@ class CreateEntry extends React.Component {
             bottomSheetOpenStatus: false,
             pnlStats: {}, // Daily PnL stats for the selected entry obtained due to date change
             weeklyPnlStats: {}, // Weekly PnL stats
+            staticPositions: [], // This is used to compare the modified positions and the positions obtained from B.E this should be set only once
             positions: [], // Positions to buy
-            predictions: [],
+            predictions: [], // Predictions started that day
+            activePredictions: [], // Predictions that are active that day
+            stalePredictions: [], // Predictions that ended that day
             sellPositions: [], // Positions to sell
             previousPositions: [], // contains the positions for the previous entry in the current contest for buy,
             previousSellPositions: [], // contains the positions for the previous entry in the current contest for sell,
@@ -62,15 +66,9 @@ class CreateEntry extends React.Component {
 
     conditionallyAddPosition = async selectedPositions => {
         try {
-            const positionsToSell = selectedPositions.filter(position => position.points < 0);
-            const positionsToBuy = selectedPositions.filter(position => position.points >= 0);
-            const processedPositionsToBuy = await processSelectedPosition(this.state.positions, positionsToBuy);
-            const processedPositionsToSell = await processSelectedPosition(this.state.sellPositions, positionsToSell);
-            this.setState({
-                positions: processedPositionsToBuy, 
-                sellPositions: processedPositionsToSell,
-                showPreviousPositions: false
-            });
+            const positions = selectedPositions.filter(position => position.points >= 0);
+            const processedPositions = await processSelectedPosition(this.state.positions, positions);
+            this.setState({positions: processedPositions});
         } catch(err) {
             console.log(err);
         }
@@ -201,56 +199,6 @@ class CreateEntry extends React.Component {
         )
     }
 
-    getRecentContestEntry = (requiredDate = moment()) => new Promise((resolve, reject) => {
-        const errorCallback = (err) => {
-            const errorData = _.get(err, 'response.data', null);
-            reject(errorData);
-        };
-        getContestEntry(requiredDate.format(dateFormat), this.props.history, this.props.match.url, errorCallback, this.source)
-        .then(async response => {
-            const positions = _.get(response, 'data.positions', []);
-            const pnlStats = _.get(response, 'data.pnlStats.daily', {});
-            const weeklyPnlStats = _.get(response, 'data.pnlStats.weekly', {});
-            const buyPositions = positions.filter(position => _.get(position, 'investment', 10) >= 0);
-            const sellPositions = positions.filter(position => _.get(position, 'investment', 10) < 0);
-            const processedBuyPositions = await convertBackendPositions(buyPositions);
-            const processedSellPositions = await convertBackendPositions(sellPositions);
-            resolve({
-                positions: processedBuyPositions, 
-                sellPositions: processedSellPositions, 
-                pnlStats,
-                weeklyPnlStats
-            });
-        });
-    })
-
-    cancelGetContestEntryCall = () => {
-        this.source.cancel();
-    }
-
-    getContestStatus = selectedDate =>  new Promise((resolve, reject) => {
-        const date = this.state.selectedDate.format(dateFormat);
-        const errorCallback = err => {
-            reject(err); 
-        }
-
-        return getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
-        .then(async response => {
-            const contestActive = _.get(response.data, 'active', false);
-            const contestStartDate = moment(_.get(response.data, 'startDate', null)); 
-            const contestEndDate = moment(_.get(response.data, 'endDate', null));
-            const contestResultDate = moment(_.get(response.data, 'resultDate', null));
-            
-            resolve({
-                contestActive,
-                contestStartDate, 
-                contestEndDate,
-                contestResultDate
-            });
-
-        });
-    })
-
     submitPositions = async () => {
         const shouldCreate = this.state.noEntryFound ? true : false;
         const allPredictions = await getPredictionsFromPositions(this.state.positions);
@@ -262,7 +210,7 @@ class CreateEntry extends React.Component {
         .then(() => {
             this.setState({
                 snackbarOpenStatus: true, 
-                snackbarMessage: 'Predicions successfully created'
+                snackbarMessage: `Predictions successfully ${shouldCreate ? 'created' : 'updated'} :)`
             });
         })
         .catch(error => {
@@ -275,61 +223,27 @@ class CreateEntry extends React.Component {
         });
     }
 
-    processSellPositions = () => {
-        const sellPositions = _.map(this.state.sellPositions, _.cloneDeep);
-
-        return Promise.map(sellPositions, position => {
-            return {
-                ...position,
-                points: -(_.get(position, 'points', 10))
-            }
-        })
-    }
-
-    updateContestStatusOnDateChange = (selectedDate) => {
-        return new Promise((resolve, reject) => {
-            this.getContestStatus(this.state.selectedDate)
-            .then(contestStatus => {
-                resolve(contestStatus)
-            })
-            .catch(err => {
-                return this.setState({
-                    contestFound: false, contestActive: false},
-                    () => reject(err));
-                
-            })
-        })
-        .then(contestStatus => {
-            const {contestActive, contestStartDate, contestEndDate, contestResultDate} = contestStatus;
-
-            return this.setState({contestFound: true,
-                contestActive,
-                contestStartDate, 
-                contestEndDate,
-                contestResultDate
-            });
-        }); 
-    }
-
     updateDailyPredictionsOnDateChange = (selectedDate = moment()) => {
         let predictions = [];
-        return getDailyContestPredictions(
-            selectedDate, 
-            'started', 
-            false, 
-            this.props.history, 
-            this.props.match.url,
-            true
-        )
-        .then(async response => {
-            predictions = response.data;
-            const formattedPredictions = await processPredictions(predictions);
-            const positions = convertPredictionsToPositions(predictions);
-            this.setState({predictions: formattedPredictions});
+        return Promise.all([
+            getDailyContestPredictions(selectedDate, 'started', false, this.props.history, this.props.match.url, true),
+            getDailyContestPredictions(selectedDate, 'active', false, this.props.history, this.props.match.url, true),
+            getDailyContestPredictions(selectedDate, 'ended', false, this.props.history, this.props.match.url, true),
+        ])
+        .then(async ([responseStartedToday, responseActive, responsEnded]) => {
+            predictions = responseStartedToday.data;
+            const rawActivePredictions = responseActive.data;
+            const rawStalePredictions = responsEnded.data;
+            const formattedPredictions = await processPredictions(predictions, true);
+            const activePredictions = await processPredictions(rawActivePredictions);
+            const stalePredictions = await processPredictions(rawStalePredictions);
+            const positions = convertPredictionsToPositions(predictions, true, false);
+            this.setState({predictions: formattedPredictions, activePredictions, stalePredictions});
             return this.updateSearchStocksWithChange(positions);
         })
         .then(positions => {
             this.setState({
+                staticPositions: positions,
                 positions,
                 noEntryFound: predictions.length === 0
             });
@@ -337,40 +251,6 @@ class CreateEntry extends React.Component {
         .catch(err => {
             console.log('Error', err)
             this.setState({noEntryFound: true});
-        })
-    }
-
-    updateContestEntryStatusOnDateChange = (selectedDate) => {
-        return new Promise((resolve, reject) => {
-            this.getRecentContestEntry(selectedDate)
-            .then(contestEntryData => {
-                resolve(contestEntryData);
-            })
-            .catch(err => {
-                this.setState({
-                    noEntryFound: true, 
-                    positions: [], 
-                    previousPositions: [],
-                    sellPositions: [],
-                    previousSellPositions: []
-                },() => reject(err));
-            })
-        })
-        .then(contestEntryData => {
-            const {positions = [], sellPositions = [], pnlStats, weeklyPnlStats} = contestEntryData;
-
-            return this.setState({
-                noEntryFound: positions.length === 0,
-                positions,
-                sellPositions,
-                previousPositions: positions,
-                previousSellPositions: sellPositions,
-                showPreviousPositions: true,
-                pnlStats,
-                weeklyPnlStats
-            }, () => {
-                this.searchStockComponent.initializeSelectedStocks()
-            });
         })
     }
 
@@ -405,13 +285,13 @@ class CreateEntry extends React.Component {
                         }
                     }
                 });                
-                this.searchStockComponent.initializeSelectedStocks(positions);
+                this.searchStockComponent.initializeSelectedStocks(clonedPositions);
 
                 return clonedPositions;    
             });
     }
 
-    handleContestDateChange = (selectedDate = moment()) => {
+    fetchPredictions = (selectedDate = moment()) => {
         this.setState({loading: true});
         this.updateDailyPredictionsOnDateChange(selectedDate)
         .finally(() => {
@@ -442,7 +322,9 @@ class CreateEntry extends React.Component {
                 target: 2,
                 type: 'buy',
                 horizon,
-                investment: 100
+                investment: 100,
+                locked: false,
+                new: true
             });
             selectedPosition.predictions = predictions;
             clonedPositions[selectedPositionIndex] = selectedPosition;
@@ -455,9 +337,7 @@ class CreateEntry extends React.Component {
     deletePosition = symbol => {
         let clonedPositions = _.map(this.state.positions, _.cloneDeep);
         const selectedPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
-        console.log('Selected Position Index', selectedPositionIndex, symbol);
         if (selectedPositionIndex > -1) { // Item to be deleted found
-            console.log('Item to be deleted', clonedPositions[selectedPositionIndex]);
             clonedPositions.splice(selectedPositionIndex, 1);
             this.setState({positions: clonedPositions});
         }
@@ -498,7 +378,12 @@ class CreateEntry extends React.Component {
             if (selectedPredictionIndex > -1) {
                 // Prediction to be deleted found
                 selectedPosition.predictions.splice(selectedPredictionIndex, 1);
-                clonedPositions[selectedPositionIndex] = selectedPosition;
+                // Delete the position if all the predictions are deleted
+                if (selectedPosition.predictions.length === 0) {
+                    clonedPositions.splice(selectedPositionIndex, 1);
+                } else {
+                    clonedPositions[selectedPositionIndex] = selectedPosition;
+                }
                 this.setState({positions: clonedPositions}, () => {
                     this.checkForDuplicateHorizon();
                 });
@@ -519,10 +404,6 @@ class CreateEntry extends React.Component {
         .then(() => {
             this.setState({positionsWithDuplicateHorizons});
         });
-    }
-
-    onSegmentValueChange = value => {
-        this.setState({listView: value});
     }
 
     handleStockTypeRadioChange = value => {
@@ -561,7 +442,7 @@ class CreateEntry extends React.Component {
     }
 
     componentWillMount = () => {
-        this.handleContestDateChange(this.state.selectedDate);
+        this.fetchPredictions(this.state.selectedDate);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -570,13 +451,17 @@ class CreateEntry extends React.Component {
 
         if (!_.isEqual(currentSelectedDate, nextSelectedDate)) {
             this.setState({selectedDate: nextProps.selectedDate}, () => {
-                this.handleContestDateChange(nextProps.selectedDate)
+                this.fetchPredictions(nextProps.selectedDate)
             });
         }
     } 
 
-    handleDesktopDateChange = date => {
-        this.setState({selectedDate: date}, () => this.handleContestDateChange(date));
+    renderDesktopLayout = (props) => {
+        const currentDate = moment().format(dateFormat);
+        const selectedDate = this.state.selectedDate.format(dateFormat);
+        const shouldRenderEdit = currentDate === selectedDate;
+
+        return shouldRenderEdit ? <CreateEntryEdit {...props} /> : <CreateEntryPreview {...props} />
     }
 
     renderPortfolioPicksDetail = () => {
@@ -610,7 +495,10 @@ class CreateEntry extends React.Component {
             checkIfAllExpanded: this.checkIfAllExpanded,
             toggleExpansionAll: this.toggleExpansionAll,
             predictions: this.state.predictions,
-            deletePosition: this.deletePosition
+            activePredictions: this.state.activePredictions,
+            stalePredictions: this.state.stalePredictions,
+            deletePosition: this.deletePosition,
+            staticPositions: this.state.staticPositions
         };
 
         return (
@@ -621,7 +509,7 @@ class CreateEntry extends React.Component {
                 />
                 <Media 
                     query="(min-width: 601px)"
-                    render={() => <CreateEntryLayoutDesktop {...props} onDateChange={this.handleDesktopDateChange} />}
+                    render={() => this.renderDesktopLayout(props)}
                 />
             </React.Fragment>
         );

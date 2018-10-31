@@ -17,7 +17,7 @@ export default class StockPreviewListHeader extends React.Component {
         return (
             <Grid 
                     container 
-                    style={{padding: '10px', marginTop: '20px'}} 
+                    style={{padding: '10px'}} 
                     alignItems="center" 
                     justify="center"
             >

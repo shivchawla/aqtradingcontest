@@ -93,7 +93,9 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
                         target: 2,
                         type: 'buy',
                         horizon: 1,
-                        investment: 100
+                        investment: 100,
+                        locked: false,
+                        new: true
                     }
                 ]
             };
@@ -163,4 +165,16 @@ export const getMultiStockData = (stocks = []) => {
     return Promise.map(stocks, stock => {
         return getStockData(stock, 'latestDetail').then(response => response.data);
     });
+}
+
+export const isMarketOpen = (currentTime = moment()) => {
+    const marketOpenTime = moment().hours(9).minutes(15);
+    const marketCloseTime = moment().hours(21).minutes(30);
+    if (currentTime.isSameOrAfter(marketOpenTime) && currentTime.isSameOrBefore(marketCloseTime)) {
+        return {status: true};
+    } else if (currentTime.isBefore(marketOpenTime)) {
+        return {status: false, type: 'before'};
+    } else {
+        return {status: false, type: 'after'}
+    }    
 }
