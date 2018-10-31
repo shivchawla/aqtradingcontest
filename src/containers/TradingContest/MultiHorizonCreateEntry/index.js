@@ -322,7 +322,7 @@ class CreateEntry extends React.Component {
                 target: 2,
                 type: 'buy',
                 horizon,
-                investment: 100,
+                investment: 10,
                 locked: false,
                 new: true
             });

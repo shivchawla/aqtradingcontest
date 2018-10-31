@@ -10,7 +10,9 @@ export const getPredictionsFromPositions = (positions = []) => {
     const clonedPositions = _.map(positions, _.cloneDeep);
     let allPredictions = [];
     clonedPositions.map(position => {
-        allPredictions = [...allPredictions, ...position.predictions];
+        const positionPredictions = _.get(position, 'predictions', []);
+        const newPredictions = positionPredictions.filter(prediction => prediction.new === true);
+        allPredictions = [...allPredictions, ...newPredictions];
     });
 
     return Promise.map(allPredictions, prediction => ({
@@ -33,8 +35,8 @@ export const getPredictionsFromPositions = (positions = []) => {
 }
 
 export const createPredictions = (predictions = [], create = true) => {
-    const operation = create ? 'insert' : 'update';
-    // const operation = 'insert';
+    // const operation = create ? 'insert' : 'update';
+    const operation = 'insert';
     const url = `${requestUrl}/dailycontest/prediction?operation=${operation}`;
 
     return axios({
