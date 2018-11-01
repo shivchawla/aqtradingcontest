@@ -233,10 +233,10 @@ export default class CreateEntryEditScreen extends React.Component {
     }
 
     renderContent() {
-        const {positions = []} = this.props;
+        const {positions = [], activePredictions = []} = this.props;
         
         return (
-            positions.length === 0
+            (positions === 0 && activePredictions.length === 0)
             ?   this.renderEmptySelections()
             :   <Grid container justify="space-between">
                     {this.renderPredictedTodayStockList()}
