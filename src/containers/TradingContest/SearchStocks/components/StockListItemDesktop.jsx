@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import ActionIcon from '../../Misc/ActionIcons';
 import {Utils} from '../../../../utils';
 import {metricColor, primaryColor, horizontalBox, verticalBox, nameEllipsisStyle} from '../../../../constants';
+import {maxPredictionLimit} from '../../MultiHorizonCreateEntry/constants';
 
 const textColor = '#757575';
 const styles = {
@@ -43,47 +44,34 @@ export default class StockListItem extends React.Component {
         return false;
     }
 
-    renderActionButtons = () => {
-        const {symbol, checked = false, onAddIconClick, onSellIconClick, sellChecked = false, shortable = false} = this.props;
-        const { classes } = this.props;
-
-        return (
-            <React.Fragment>
-                {
-                    shortable &&
-                    <Button
-                        size='small' 
-                        color="secondary" 
-                        onClick={() => onSellIconClick(symbol)}
-                        variant={sellChecked ? 'contained': 'outlined'}
-                        style={{
-                            boxShadow: 'none', 
-                            ...(sellChecked ? styles.sellButton.contained : styles.sellButton.outlined),
-                            marginRight: '10px'
-                        }}
-                    >
-                        Sell
-                    </Button>
-                }
-                <Button 
-                        size='small' 
-                        color="primary" 
-                        onClick={() => onAddIconClick(symbol)}
-                        variant={checked ? 'contained' : 'outlined'}
-                        style={{boxShadow: 'none',
-                            ...(checked ? styles.buyButton.contained : styles.buyButton.outlined)
-                        }}
-                >
-                    Buy
-                </Button>
-            </React.Fragment>
-        );
-    }
-
     renderBuyActionButton = () => {
-        const {symbol, checked = false, onAddIconClick} = this.props;
-        const iconType = checked ? 'remove_circle' : 'add_circle';
-        const iconColor = checked ? metricColor.negative : primaryColor;
+        const {symbol, checked = false, onAddIconClick, predictions = []} = this.props;
+        // const iconType = checked ? 'remove_circle' : 'add_circle';
+        // const iconColor = checked ? metricColor.negative : primaryColor;
+        let iconType = 'remove_circle';
+        let iconColor = metricColor.negative;
+
+        const lockedPredictions = predictions.filter(prediction => prediction.locked === true);
+        const newPredictions = predictions.filter(prediction => prediction.new === true);
+        if (predictions.length === 0) {
+            if (checked) {
+                iconType = 'remove_circle';
+                iconColor = metricColor.negative;
+            } else {
+                iconType = 'add_circle';
+                iconColor = metricColor.neutral;
+            }
+        } else if (lockedPredictions.length < maxPredictionLimit) {
+            if (newPredictions.length === 0) {
+                iconType = 'add_circle';
+                iconColor = metricColor.neutral;
+            } else {
+                iconType = 'remove_circle';
+                iconColor = metricColor.negative;
+            }
+        } else {
+            return null;
+        }
 
         return (
             <ActionIcon 
@@ -150,7 +138,7 @@ export default class StockListItem extends React.Component {
                     </div>
                 </Grid>
                 {
-                    !hideActions &&
+                    // !hideActions &&
                     <Grid
                             item
                             xs={1} 

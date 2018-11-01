@@ -19,6 +19,7 @@ import SearchStockHeaderMobile from './components/StockSearchHeaderMobile';
 import SearchStockHeaderDesktop from './components/SearchStockHeaderDesktop';
 import StockList from './components/StockList';
 import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
+import {maxPredictionLimit} from '../MultiHorizonCreateEntry/constants'
 import {fetchAjax} from '../../../utils';
 import './css/searchStocks.css';
 
@@ -194,6 +195,9 @@ export class SearchStocks extends React.Component {
             this.pushStocksToLocalArray(processedStocks);
             resolve(true);
         })
+        .then(() => {
+            this.syncStockListWithPortfolio();
+        })
         .catch(err => {
             console.log(err);
         })
@@ -306,7 +310,10 @@ export class SearchStocks extends React.Component {
                 sector: _.get(stock, 'security.detail.Sector', null),
                 industry: _.get(stock, 'security.detail.Industry', null),
                 shortable,
-                hideActions: false
+                hideActions: false,
+                predictions: [],
+                addPrediction: false,
+                deletePrediction: false
             };
         }).filter(stock => stock.name !== null);
     }
@@ -318,15 +325,14 @@ export class SearchStocks extends React.Component {
         const localStocks = _.map([...this.localStocks], _.cloneDeep);
         const stocks = _.map([...this.state.stocks], _.cloneDeep);
         const selectedPositions = this.props.portfolioPositions;
+        // Position that refers to the selected stock
         const selectedPosition = selectedPositions.filter(position => position.symbol === symbol)[0];
-        
-        // if the position has predictions that are locked then it can't be added or removed
-        if (selectedPosition !== undefined) {
-            const predictions = _.get(selectedPosition, 'predictions', []);
-            const lockedPredictions = predictions.filter(prediction => prediction.locked === true);
-            if (lockedPredictions.length > 0) {
-                return;
-            }
+        let lockedPredictions = [];
+        let newPredictions = [];
+
+        // Max prediction limit no more prediction can be added
+        if (lockedPredictions.length >= maxPredictionLimit) {
+            return;
         }
 
         const selectedStockIndex = selectedStocks.indexOf(symbol);
@@ -334,6 +340,10 @@ export class SearchStocks extends React.Component {
 
         const targetIndex = _.findIndex(stocks, stock => stock.symbol === symbol);
         const targetStock = stocks[targetIndex];
+        if (targetStock !== undefined) {
+            lockedPredictions = targetStock.predictions.filter(prediction => prediction.locked === true);
+            newPredictions = targetStock.predictions.filter(prediction => prediction.new === true);
+        }
         const targetLocalStock = localStocks.filter(stock => stock.symbol === symbol)[0];
         if (targetStock !== undefined && targetLocalStock !== undefined) {
             if (selectedStockIndex === -1) {
@@ -352,32 +362,25 @@ export class SearchStocks extends React.Component {
                 targetStock.checked = true;
                 targetLocalStock.checked = true;
             } else {
-                selectedStocks.splice(selectedStockIndex, 1);
-                targetStock.checked = false;
-                targetLocalStock.checked = false;
+                if (lockedPredictions.length === 0) {
+                    console.log('Enter locked positions change');
+                    selectedStocks.splice(selectedStockIndex, 1);
+                    targetStock.checked = false;
+                    targetLocalStock.checked = false;
+                    targetStock.predictions = [];
+                }
+                else if (lockedPredictions.length < maxPredictionLimit && newPredictions.length === 0) {
+                    targetLocalStock.addPrediction = true;
+                    targetLocalStock.deletePrediction = false
+                    targetStock.predictions.push({new: true}); // pushing a dummy prediction to toggle action icon
+                } else {
+                    targetLocalStock.addPrediction = false;
+                    targetLocalStock.deletePrediction = true;
+                    targetStock.predictions = targetStock.predictions.filter(prediction => prediction.new === false);
+                }
             }
             stocks[targetIndex] = targetStock;
             this.setState({selectedStocks, stocks, sellSelectedStocks});
-            this.localStocks = localStocks;
-        } else {
-            if (selectedStockIndex === -1) {
-                if (this.state.selectedStocks.length >= maxLimit) {
-                    this.setState({snackbar: {open: true, message: `You can't buy more than ${maxLimit} stocks`}});
-                    return;
-                }
-                // Checking if it is present in the be sold array, if present delete it
-                if (sellSelectedStockIndex >= 0) {
-                    sellSelectedStocks.splice(sellSelectedStockIndex, 1);
-                    targetStock.sellChecked = false;
-                    targetLocalStock.sellChecked = false;
-                }
-                selectedStocks.push(symbol);
-                targetLocalStock.checked = true;
-            } else {
-                selectedStocks.splice(selectedStockIndex, 1);
-                targetLocalStock.checked = false;
-            }
-            this.setState({selectedStocks, sellSelectedStocks});
             this.localStocks = localStocks;
         }
     }
@@ -443,8 +446,17 @@ export class SearchStocks extends React.Component {
 
     addSelectedStocksToPortfolio = async () => {
         const positions = await this.processPositionsForPortfolio('buy');
-        this.props.addPositions(positions);
+        this.props.addPositions(positions, this.initilizeAddDeletePredictions);
         this.props.toggleBottomSheet();
+    }
+
+    // initializes add delete predictions to false
+    initilizeAddDeletePredictions = () => {
+        this.localStocks = this.localStocks.map(stock => ({
+            ...stock,
+            addPrediction: false,
+            deletePrediction: false
+        }))
     }
 
     processPositionsForPortfolio = (type = 'buy') => {
@@ -454,6 +466,7 @@ export class SearchStocks extends React.Component {
         } else {
             localStocks = localStocks.filter(stock => stock.sellChecked === true);
         }
+        // console.log(localStocks);
 
         return Promise.map(localStocks, stock => {
             return {
@@ -470,8 +483,10 @@ export class SearchStocks extends React.Component {
                 chgPct: stock.changePct,
                 points: type === 'buy' ? 10 : -10,
                 type,
-                predictions: [],
-                expanded: false
+                predictions: _.get(stock, 'predictions', []),
+                expanded: false,
+                addPrediction: _.get(stock, 'addPrediction', false),
+                deletePrediction: _.get(stock, 'deletePrediction', false)
             };
         });
     }
@@ -496,9 +511,9 @@ export class SearchStocks extends React.Component {
             const sellStockIndex = _.findIndex(sellPositions, sellPosition => sellPosition.symbol === stock.symbol);
             const checked = stockIndex !== -1 ? true : false;
             const sellChecked = sellStockIndex !== -1 ? true : false;
-            const hideActions = this.checkForLockedPredictionsInPosition(stock.symbol, positions);
+            const predictions = _.get(positions, `[${stockIndex}].predictions`, []);
 
-            return {...stock, checked, sellChecked, hideActions};
+            return {...stock, checked, sellChecked, predictions};
         });
         localStocks = localStocks.map(stock => {
             // If stock is present in the portfolio mark checked as true else false
@@ -506,9 +521,9 @@ export class SearchStocks extends React.Component {
             const sellStockIndex = _.findIndex(sellPositions, sellPosition => sellPosition.symbol === stock.symbol);
             const checked = stockIndex !== -1 ? true : false;
             const sellChecked = sellStockIndex !== -1 ? true : false;
-            const hideActions = this.checkForLockedPredictionsInPosition(stock.symbol, positions);
+            const predictions = _.get(positions, `[${stockIndex}].predictions`, []);
 
-            return {...stock, checked, sellChecked, hideActions};
+            return {...stock, checked, sellChecked, predictions};
         })
         this.localStocks = localStocks;
         this.setState({stocks, selectedStocks, sellSelectedStocks});
@@ -543,7 +558,10 @@ export class SearchStocks extends React.Component {
      * Processes positions obtained from CreateEntry to add in localStocks
      */
     getLocalStocksFromPortfolio = (positions = [], type = 'buy') => {
+        const localStocks = this.localStocks;
         return Promise.map(positions, position => {
+            const localStock = localStocks.filter(stock => stock.symbol === position.symbol)[0];
+
             return {
                 change: _.get(position, 'chg', 0),
                 changePct: _.get(position, 'chgPct', 0),
@@ -555,7 +573,10 @@ export class SearchStocks extends React.Component {
                 name: _.get(position, 'name', ''),
                 open: 0,
                 sector: _.get(position, 'sector', ''),
-                symbol: _.get(position, 'symbol', '')
+                symbol: _.get(position, 'symbol', ''),
+                predictions: _.get(position, 'predictions', []),
+                addPrediction: _.get(localStock, 'addPrediction', false),
+                deletePrediction: _.get(localStock, 'deletePrediction', false)
             }
         })
     }
@@ -563,7 +584,6 @@ export class SearchStocks extends React.Component {
     componentWillMount() {
         this.fetchStocks('');
         this.initializeSelectedStocks();
-        this.syncStockListWithPortfolio();
     }
 
     handlePagination = type => {
