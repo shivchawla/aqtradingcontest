@@ -17,7 +17,7 @@ import CreateEntryPreview from './components/desktop/CreateEntryPreviewScreen';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import {DailyContestCreateMeta} from '../metas';
 import {processSelectedPosition, getMultiStockData} from '../utils';
-import {getPredictionsFromPositions, createPredictions, checkHorizonDuplicationStatus, getDailyContestPredictions, convertPredictionsToPositions, processPredictions} from './utils';
+import {getPredictionsFromPositions, createPredictions, checkHorizonDuplicationStatus, getDailyContestPredictions, convertPredictionsToPositions, processPredictions, getPnlStats, getPercentageModifiedValue} from './utils';
 import {handleCreateAjaxError} from '../../../utils';
 import {maxPredictionLimit} from './constants';
 
@@ -34,6 +34,9 @@ class CreateEntry extends React.Component {
             weeklyPnlStats: {}, // Weekly PnL stats
             staticPositions: [], // This is used to compare the modified positions and the positions obtained from B.E this should be set only once
             positions: [], // Positions to buy
+            activePositions: [], // Positions that are active for selected day
+            stalePositions: [], // Positions that are stale
+            startedTodayPositions: [],
             predictions: [], // Predictions started that day
             activePredictions: [], // Predictions that are active that day
             stalePredictions: [], // Predictions that ended that day
@@ -237,13 +240,20 @@ class CreateEntry extends React.Component {
             const rawActivePredictions = responseActive.data;
             const rawStalePredictions = responsEnded.data;
             const formattedPredictions = await processPredictions(predictions, true);
-            const activePredictions = await processPredictions(rawActivePredictions);
-            const stalePredictions = await processPredictions(rawStalePredictions);
             const positions = convertPredictionsToPositions(predictions, true, false);
-            this.setState({predictions: formattedPredictions, activePredictions, stalePredictions});
+            const activePositions = convertPredictionsToPositions(rawActivePredictions, true, false, true);
+            const stalePositions = convertPredictionsToPositions(rawStalePredictions, true, false);
+            const startedTodayPositions = convertPredictionsToPositions(predictions, true, false, true);
+            this.setState({
+                predictions: formattedPredictions, 
+                activePositions, 
+                stalePositions,
+                startedTodayPositions
+            });
             return this.updateSearchStocksWithChange(positions);
         })
         .then(positions => {
+            console.log('Positions', positions);
             this.setState({
                 staticPositions: positions,
                 positions,
@@ -269,8 +279,11 @@ class CreateEntry extends React.Component {
                             ?  _.get(stock, 'latestDetailRT.changePct', 0)
                             :  _.get(stock, 'latestDetail.values.ChangePct', 0);
                     const symbol = _.get(stock, 'security.ticker', '');
+                    const lastPrice = _.get(stock, 'latestDetailRT.close', null) !== null
+                        ?   _.get(stock, 'latestDetailRT.close', null)
+                        :   _.get(stock, 'latestDetail.values.Close', null);
     
-                    return {symbol, change, changePct};
+                    return {symbol, change, changePct, lastPrice};
                 });
             })
             .then(changeData => {
@@ -283,19 +296,37 @@ class CreateEntry extends React.Component {
                         return {
                             ...position,
                             chg: positionWithChangeData.change,
-                            chgPct: positionWithChangeData.changePct
+                            chgPct: positionWithChangeData.changePct,
+                            lastPrice: positionWithChangeData.lastPrice
                         }
                     }
                 });                
                 this.searchStockComponent.initializeSelectedStocks(clonedPositions);
 
                 return clonedPositions;    
-            });
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
 
-    fetchPredictions = (selectedDate = moment()) => {
+    updateDailyPnlStats = (selectedDate = moment()) => {
+        return getPnlStats(selectedDate, this.props, this.props.match.url, false)
+        .then(response => {
+            const pnlStats = response.data;
+            this.setState({pnlStats: pnlStats});
+        }) 
+        .catch(err => {
+            console.log(err);
+        })       
+    }
+
+    fetchPredictionsAndPnl = (selectedDate = moment()) => {
         this.setState({loading: true});
-        this.updateDailyPredictionsOnDateChange(selectedDate)
+        Promise.all([
+            this.updateDailyPredictionsOnDateChange(selectedDate),
+            this.updateDailyPnlStats(selectedDate)
+        ])
         .finally(() => {
             this.setState({loading: false});
         });
@@ -307,6 +338,7 @@ class CreateEntry extends React.Component {
         if (selectedPositionIndex > -1) {
             const selectedPosition = clonedPositions[selectedPositionIndex];
             const predictions = selectedPosition.predictions;
+            const lastPrice = _.get(selectedPosition, 'lastPrice', 0);
             // Setting the horizon in incremental order, if it is the first prediction then setting horizon to 1
             let horizon = predictions.length > 0 ? predictions[predictions.length - 1].horizon + 1 : 1;
 
@@ -321,12 +353,14 @@ class CreateEntry extends React.Component {
             predictions.push({
                 key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
                 symbol: _.get(selectedPosition, 'symbol', ''),
-                target: 2,
+                target: getPercentageModifiedValue(2, lastPrice),
                 type: 'buy',
                 horizon,
                 investment: 10,
                 locked: false,
-                new: true
+                new: true,
+                lastPrice: _.get(selectedPosition, 'lastPrice', null),
+                avgPrice: _.get(selectedPosition, 'avgPrice', null),
             });
             selectedPosition.predictions = predictions;
             clonedPositions[selectedPositionIndex] = selectedPosition;
@@ -358,7 +392,8 @@ class CreateEntry extends React.Component {
                 // If type == buy make target positive else make target negative
                 const nPrediction = {
                     ...prediction,
-                    target: (prediction.type === 'buy' ? 1 : -1) * Math.abs(prediction.target)
+                    // target: (prediction.type === 'buy' ? 1 : -1) * Math.abs(prediction.target),
+                    target: this.adjustPriceDifference(prediction.lastPrice, prediction.target, prediction.type)
                 };
                 selectedPosition.predictions[selectedPredictionIndex] = nPrediction;
                 clonedPositions[selectedPositionIndex] = selectedPosition;
@@ -368,6 +403,16 @@ class CreateEntry extends React.Component {
             }
         }
     }
+
+    adjustPriceDifference = (lastPrice, target, type = 'buy') => {
+        const difference = lastPrice > target ? lastPrice - target : target - lastPrice;
+
+        if (type === 'buy') {
+            return lastPrice + difference;
+        }
+
+        return lastPrice - difference;
+    }   
 
     deletePrediction = (symbol, key) => {
         const clonedPositions = _.map(this.state.positions, _.cloneDeep);
@@ -444,7 +489,7 @@ class CreateEntry extends React.Component {
     }
 
     componentWillMount = () => {
-        this.fetchPredictions(this.state.selectedDate);
+        this.fetchPredictionsAndPnl(this.state.selectedDate);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -453,7 +498,7 @@ class CreateEntry extends React.Component {
 
         if (!_.isEqual(currentSelectedDate, nextSelectedDate)) {
             this.setState({selectedDate: nextProps.selectedDate}, () => {
-                this.fetchPredictions(nextProps.selectedDate)
+                this.fetchPredictionsAndPnl(nextProps.selectedDate)
             });
         }
     } 
@@ -500,7 +545,10 @@ class CreateEntry extends React.Component {
             activePredictions: this.state.activePredictions,
             stalePredictions: this.state.stalePredictions,
             deletePosition: this.deletePosition,
-            staticPositions: this.state.staticPositions
+            staticPositions: this.state.staticPositions,
+            activePositions: this.state.activePositions,
+            stalePositions: this.state.stalePositions,
+            startedTodayPositions: this.state.startedTodayPositions
         };
 
         return (

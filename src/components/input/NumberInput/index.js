@@ -20,7 +20,7 @@ const customTheme = createMuiTheme({
 class NumberInput extends React.Component {
     max = 5;
     min = -5;
-    stepSize = 0.5;
+    stepSize = 100;
 
     constructor(props) {
         super(props);
@@ -68,9 +68,10 @@ class NumberInput extends React.Component {
     renderInput = () => {
         const {classes, disabled = false} = this.props;
         const actionIconStyle = {padding: '6px'};
-        const inputClass = this.state.value > 0 
+        const basePrice = _.get(this.props, 'base', 0);
+        const inputClass = this.state.value > basePrice
             ?   classes.bootstrapInputPositive
-            :   this.state.value === 0
+            :   this.state.value === basePrice
                 ?   classes.bootstrapInputNeutral
                 :   classes.bootstrapInputNegative;
 
@@ -95,18 +96,6 @@ class NumberInput extends React.Component {
                     }}
                     disabled={disabled}
                     type="number"
-                    endAdornment={
-                        <InputAdornment>
-                            <span 
-                                    style={{
-                                        marginLeft: '-20px',
-                                        zIndex: 20
-                                    }}
-                            >
-                                %
-                            </span>
-                        </InputAdornment>
-                    }
                 />
                 {
                     !disabled &&

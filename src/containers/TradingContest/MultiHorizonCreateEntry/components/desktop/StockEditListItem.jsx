@@ -15,7 +15,6 @@ import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../
 import {checkHorizonDuplicationStatus} from '../../utils';
 import {Utils} from '../../../../../utils';
 import {isMarketOpen} from '../../../utils';
-import {maxPredictionLimit} from '../../constants';
 
 const styles = theme => ({
     expansionPanelRoot: {
@@ -217,13 +216,6 @@ const Prediction = ({prediction = 0}) => {
         </div>
     );
 }
-
-const SectionHeader = styled.h3`
-    font-size: 12px;
-    color: #4B4A4A;
-    font-weight: 400;
-    text-align: center;
-`;
 
 const predictionButtonStyle = {
     backgroundColor: '#6B83E1',

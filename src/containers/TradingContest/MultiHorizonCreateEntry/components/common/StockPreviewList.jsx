@@ -40,13 +40,9 @@ export default class StockPreviewList extends React.Component {
                     </EmptyPositionsText>
                 }
                 {
-                    positions.length > 0 && global.screen.width > 600 &&
-                    <StockPreviewListHeaderDesktop />
-                }
-                {
                     positions.map((position, index) => {
                         return (
-                            <StockPreviewListItem prediction={position} key={index} edit />
+                            <StockPreviewListItem position={position} key={index} edit />
                         );
                     })
                 }

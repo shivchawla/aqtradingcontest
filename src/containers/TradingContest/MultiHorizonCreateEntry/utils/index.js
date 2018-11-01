@@ -70,8 +70,15 @@ export const getDailyContestPredictions = (date = null, category='started', popu
     return fetchAjaxPromise(url, history, currentUrl, handleError)
 }
 
+export const getPnlStats = (date = moment(), history, currentUrl, handleError = true) => {
+    const requiredDate = date.format(dateFormat);
+    const url =`${requestUrl}/dailycontest/pnl?date=${requiredDate}&category=total`;
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError);
+}
+
 // converts predictions to positions obtained from the backend
-export const convertPredictionsToPositions = (predictions = [], lockPredictions = false, newPrediction = true) => {
+export const convertPredictionsToPositions = (predictions = [], lockPredictions = false, newPrediction = true, active = false) => {
     let positions = [];
     predictions.map((prediction, index) => {
         const symbol = _.get(prediction, 'position.security.ticker', null);
@@ -88,7 +95,13 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
             target: _.get(prediction, 'target', 0),
             type: investment > 0 ? 'buy' : 'sell',
             locked: lockPredictions,
-            new: newPrediction
+            new: newPrediction,
+            lastPrice: _.get(prediction, 'position.lastPrice', null),
+            avgPrice: _.get(prediction, 'position.avgPrice', null),
+            startDate: moment(startDate).format(dateFormat),
+            endDate: moment(endDate).format(dateFormat),
+            targetAchieved: _.get(prediction, 'success.status', false),
+            active
         };
 
         const positionIndex = _.findIndex(positions, position => position.symbol === symbol);
@@ -155,4 +168,13 @@ export const getPositionsWithNewPredictions = (positions = []) => {
         const newPredictions = predictions.filter(prediction => prediction.new === true);
         return newPredictions.length > 0;
     });
+}
+
+// gives 2% of a number
+export const getPercentageModifiedValue = (percentage, value, add = true) => {
+    if (add === true) {
+        return value + ((percentage * value) / 100);
+    }
+
+    return value - ((percentage * value) / 100);
 }

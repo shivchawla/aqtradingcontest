@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
 import {verticalBox} from '../../../../../constants';
@@ -53,13 +54,16 @@ export default class CreateEntryPreviewScreen extends React.Component {
             getRequiredMetrics,
             predictions = [],
             activePredictions = [],
+            activePositions = [],
+            startedTodayPositions = [],
+            stalePositions = [],
             stalePredictions = []
         } = this.props;
-        const otherPredictions = [...activePredictions, ...stalePredictions];
+        const otherPositions = [...activePositions, ...stalePositions];
 
-        return (predictions.length === 0 && otherPredictions.length === 0) 
+        return (startedTodayPositions.length === 0 && otherPositions.length === 0) 
             ? this.renderEmptyPredictions() 
-            : this.renderPredictionList(predictions, otherPredictions);
+            : this.renderPredictionList(startedTodayPositions, otherPositions);
     }
 
     render() {

@@ -11,6 +11,7 @@ import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
 import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
+import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import {isMarketOpen} from '../../../utils';
 import {checkPositionsEquality, getPositionsWithNewPredictions} from '../../utils';
@@ -44,17 +45,17 @@ export default class CreateEntryEditScreen extends React.Component {
         this.setState({anchorEl: null, listView});
     }
 
-    getPredictions = (type = 'startedToday') => {
+    getPositions = (type = 'startedToday') => {
         let predictions = [];
         switch(type) {
             case "startedToday":
-                predictions = this.props.predictions;
+                predictions = this.props.startedTodayPositions;
                 break;
             case "activeToday":
-                predictions = this.props.activePredictions;
+                predictions = this.props.activePositions;
                 break;
             case "endedToday":
-                predictions = this.props.stalePredictions;
+                predictions = this.props.stalePositions;
                 break;
         }
 
@@ -207,7 +208,11 @@ export default class CreateEntryEditScreen extends React.Component {
 
     renderOtherStocksList = () => {
         // const allPredictions = [...this.props.activePredictions, ...this.props.stalePredictions];
-        let predictions = this.getPredictions(this.state.listView);
+        let positions = this.getPositions(this.state.listView);
+        const {
+            toggleEntryDetailBottomSheet,
+            getRequiredMetrics,
+        } = this.props;
 
         return (
             <Grid item xs={12}>
@@ -227,7 +232,11 @@ export default class CreateEntryEditScreen extends React.Component {
                         onMenuItemClicked={this.onPredictionTypeMenuItemClicked}
                     />
                 </div>
-                <StockPreviewList positions={predictions} />
+                <SelectionMetricsMini 
+                    {...getRequiredMetrics()}
+                    onClick={toggleEntryDetailBottomSheet}
+                />
+                <StockPreviewList positions={positions} />
             </Grid>
         );
     }

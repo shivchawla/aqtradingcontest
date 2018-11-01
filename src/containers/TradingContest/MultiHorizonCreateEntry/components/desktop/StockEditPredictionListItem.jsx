@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import {getPercentageModifiedValue} from '../../utils';
 import {withStyles} from '@material-ui/core/styles';
 import ActionIcon from '../../../Misc/ActionIcons';
 import NumberInput from '../../../../../components/input/NumberInput';
@@ -148,13 +149,13 @@ class StockEditPredictionListItem extends React.Component {
     render() {
         const {anchorEl} = this.state;
         const open = Boolean(anchorEl);
-        const {horizon = 1, investment = 0, target = 1, type = 'buy', symbol = '', locked = false} = this.props.prediction;
+        const {horizon = 1, investment = 0, target = 1, type = 'buy', symbol = '', locked = false, lastPrice = 0} = this.props.prediction;
         const {classes} = this.props;
         const buyButtonClass = type === 'buy' ? classes.buyButtonActive : classes.inActiveButton;
         const sellButtonClass = type === 'sell' ? classes.sellButtonActive : classes.inActiveButton;
         const horizonOptions = [1, 2, 3, 4, 5];
-        const max = type === 'buy' ? 5 : 0;
-        const min = type === 'buy' ? 0 : -5;
+        const max = type === 'buy' ? getPercentageModifiedValue(50, lastPrice) : getPercentageModifiedValue(2, lastPrice, 'minus');
+        const min = type === 'buy' ? getPercentageModifiedValue(2, lastPrice) : getPercentageModifiedValue(50, lastPrice, 'minus');
 
         return (
             <Container 
@@ -240,6 +241,7 @@ class StockEditPredictionListItem extends React.Component {
                         max={max}
                         min={min}
                         disabled={locked}
+                        base={lastPrice}
                     />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'space-between'}}>
