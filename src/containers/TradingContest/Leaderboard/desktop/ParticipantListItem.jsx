@@ -16,9 +16,17 @@ export default class ParticipantListItem extends React.Component {
     }
     
     render() {
-        const {userName = 'Saurav Biswas', cost = 99.5, pnl = -55.1, rank = 5, pnlPct = 0, profitFactor}  = this.props;
+        const {
+            userName = 'Saurav Biswas', 
+            cost = {}, 
+            pnl = {}, 
+            rank = {}, 
+            pnlPct = {}, 
+            profitFactor = {},
+            listType='long'
+        }  = this.props;
         const medal = getRankMedal(rank);
-        const changeColor = pnl > 0 ? metricColor.positive : metricColor === 0 ? metricColor.neutral : metricColor.negative;
+        const changeColor = pnl[listType] > 0 ? metricColor.positive : pnl[listType] === 0 ? metricColor.neutral : metricColor.negative;
 
         return (
             <SGrid container>
@@ -30,21 +38,21 @@ export default class ParticipantListItem extends React.Component {
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={changeColor}>
-                        ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl * 1000)}
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl[listType] * 1000)}
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={changeColor}>
-                        {(pnlPct * 100).toFixed(2)}%
+                        {(pnlPct[listType] * 100).toFixed(2)}%
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={3}>
                     <SecondaryText color='#464646' fontWeight='500'>
-                        {(profitFactor).toFixed(2)}
+                        {(profitFactor[listType] || 0).toFixed(2)}
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <SecondaryText color={primaryColor}>{cost}K</SecondaryText>
+                    <SecondaryText color={primaryColor}>{cost[listType]}K</SecondaryText>
                 </Grid>
             </SGrid>
         ); 

@@ -10,18 +10,17 @@ import TopPicksLayoutDesktop from './desktop/TopPicksLayout';
 import {verticalBox} from '../../../constants';
 import TimerComponent from '../Misc/TimerComponent';
 import {DailyContestCreateMeta} from '../metas';
-import {getContestSummary} from '../utils';
+import {getContestSummary, getTopStocks} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
-const URLSearchParamsPoly = require('url-search-params');
 
 class Winners extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             selectedDate: props.selectedDate || moment(),
-            winnerStocks: [],
-            winnerStocksWeekly: [],
+            winnerStocksByInvestment: [],
+            winnerStocksByUsers: [],
             contestActive: false,
             startDate: moment(),
             endDate: moment().add(1, 'days'),
@@ -34,40 +33,25 @@ class Winners extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.selectedDate !== nextProps.selectedDate) {
-            this.setState({selectedDate: nextProps.selectedDate}, this.getContestRankings(nextProps.selectedDate));
+        if (this.props.selectedDate.format(dateFormat) !== nextProps.selectedDate.format(dateFormat)) {
+            this.setState({
+                selectedDate: nextProps.selectedDate
+            }, this.fetchTopStocks(nextProps.selectedDate));
         }
     }
 
-    getContestRankings = selectedDate => {
-        const date = moment(selectedDate).format(dateFormat);
+    fetchTopStocks = selectedDate => {
         this.setState({loading: true});
-        const errorCallback = err => {
-            this.setState({winnerStocks: [], contestActive: false, noContestFound: true});
-        }
-        getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
-        .then(async response => {
-            const topStocks = _.get(response.data, 'topStocks', []);
-            const topStocksWeekly = _.get(response.data, 'topStocks_weekly', []);
-            const contestActive = _.get(response.data, 'active', false);
-            const startDate = moment(_.get(response.data, 'startDate', null));
-            const endDate = moment(_.get(response.data, 'endDate', null));
-            const resultDate = moment(_.get(response.data, 'resultDate', null));
-            const contestEnded = moment().isAfter(endDate);
+        getTopStocks(selectedDate, this.props.history, this.props.match.url, false)
+        .then(response => {
+            const winnerStocksByInvestment = _.get(response, 'data.topStocks.byInvesment', []);
+            const winnerStocksByUsers = _.get(response, 'data.topStocks.byUsers', []);
             
-            this.setState({
-                winnerStocks: topStocks.map((item, index) => {item.rank = index+1; return item;}), 
-                winnerStocksWeekly: topStocksWeekly.map((item, index) => {item.rank = index+1; return item;}),
-                contestActive,
-                startDate, 
-                endDate,
-                contestEnded,
-                resultDate,
-                noContestFound: false
-            });
+            this.setState({winnerStocksByInvestment, winnerStocksByUsers});
         })
         .catch(err => {
-            this.setState({contestActive: false, contestEnded: true});
+            console.log(err);
+            this.setState({winnerStocksByInvestment: [], winnerStocksByUsers: []});
         })
         .finally(() => {
             this.setState({loading: false});
@@ -75,7 +59,7 @@ class Winners extends React.Component {
     }
 
     componentWillMount() {
-        this.getContestRankings(this.state.selectedDate);
+        this.fetchTopStocks(this.state.selectedDate);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -90,17 +74,12 @@ class Winners extends React.Component {
         this.setState({timelineView: view});
     }
 
-    handleDateChange = date => {
-        this.setState({selectedDate: date});
-        this.getContestRankings(date);
-    }
-
     render() {
         const props = {
             endDate: this.state.endDate,
             startDate: this.state.startDate,
-            winnerStocks: this.state.winnerStocks,
-            winnerStocksWeekly: this.state.winnerStocksWeekly,
+            winnerStocksByInvestment: this.state.winnerStocksByInvestment,
+            winnerStocksByUsers: this.state.winnerStocksByUsers,
             contestActive: this.state.contestActive,
             noContestFound: this.state.noContestFound,
             resultDate: this.state.resultDate,
@@ -119,7 +98,7 @@ class Winners extends React.Component {
                 />
                 <Media 
                     query="(min-width: 601px)"
-                    render={() => <TopPicksLayoutDesktop {...props} onDateChange={this.handleDateChange} />}
+                    render={() => <TopPicksLayoutDesktop {...props} />}
                 />
             </React.Fragment>
         );
@@ -127,53 +106,3 @@ class Winners extends React.Component {
 }
 
 export default withRouter(Winners);
-
-const ContestNotPresentView = () => {
-    return (
-        <Grid container>
-            <Grid item xs={12} style={verticalBox}>
-                <ContestNotAvailableText>No contest avaiable for selected date</ContestNotAvailableText>
-            </Grid>
-        </Grid>
-    );
-}
-
-const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
-    return (
-        <Grid container style={{marginTop: '0%'}}>
-            <Grid item xs={12}>
-                <h3 style={{fontSize: '18px', color: '#4B4B4B', fontWeight: 300}}>
-                    {
-                        contestEnded ? 'Results will be declared soon' : contestRunning ? 'Contest submission ends in' : 'New Contest will start in'
-                    }
-                </h3>
-            </Grid>
-            {
-                !contestEnded &&
-                <Grid item xs={12}>
-                    <TimerComponent date={endDate} />
-                </Grid>
-            }
-        </Grid>
-    );
-}
-
-const SGrid = styled(Grid)`
-    background-color: #fff;
-`;
-
-const topPicksDetailStyle = {
-    height: 'calc(100vh - 180px)',
-    minHeight: '480px',
-    justifyContent: 'center',
-    margin: '10px auto',
-    width:'95%',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-    backgroundColor:'#fff'
-};
-
-const ContestNotAvailableText = styled.h3`
-    font-size: 18px;
-    font-weight: 400;
-    color: primaryColor;
-`;

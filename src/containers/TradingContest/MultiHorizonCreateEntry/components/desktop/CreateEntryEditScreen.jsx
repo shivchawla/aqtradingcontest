@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
@@ -11,13 +13,14 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import {isMarketOpen} from '../../../utils';
-import {checkPositionsEquality} from '../../utils';
+import {checkPositionsEquality, getPositionsForNewPredictions, getPositionsWithNewPredictions} from '../../utils';
 
 export default class CreateEntryEditScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: 'all',
+            listView: 'startedToday',
+            anchorEl: null
         };
     }
 
@@ -27,6 +30,18 @@ export default class CreateEntryEditScreen extends React.Component {
         }
 
         return false;
+    }
+
+    onPredictionTypeMenuClicked = event => {
+        this.setState({ anchorEl: event.currentTarget });
+    }
+
+    onPredictionTypeMenuClose = event => {
+        this.setState({ anchorEl: null });
+    }
+
+    onPredictionTypeMenuItemClicked = (event, listView) => {
+        this.setState({anchorEl: null, listView});
     }
 
     renderEmptySelections = () => {
@@ -58,31 +73,6 @@ export default class CreateEntryEditScreen extends React.Component {
     }
 
     renderPredictedTodayStockList = () => {
-        return (
-            <StockList 
-                positions={this.props.positions} 
-                onStockItemChange={this.props.onStockItemChange} 
-                addPrediction={this.props.addPrediction}
-                modifyPrediction={this.props.modifyPrediction}
-                deletePrediction={this.props.deletePrediction}
-                onExpansionChanged={this.props.onExpansionChanged}
-                deletePosition={this.props.deletePosition}
-            />
-        );
-    }
-
-    renderOtherStocksList = () => {
-        const allPredictions = [...this.props.activePredictions, ...this.props.stalePredictions];
-
-        return (
-            <React.Fragment>
-                <SectionHeader style={{marginTop: '20px'}}>Others</SectionHeader>
-                <StockPreviewList positions={allPredictions} />
-            </React.Fragment>
-        );
-    }
-
-    renderContent() {
         const marketOpen = isMarketOpen();
         const {
             positions = [], 
@@ -96,14 +86,16 @@ export default class CreateEntryEditScreen extends React.Component {
             positionsWithDuplicateHorizons = []
         } = this.props;
         const allPositionsExpanded = this.props.checkIfAllExpanded();
-        
+        const positionsWithNewPredictions = getPositionsWithNewPredictions(positions);
+
         return (
-            positions.length === 0
-            ?   this.renderEmptySelections()
-            :   <Grid container justify="space-between">
-                    <Grid item xs={12} style={{marginBottom: '20px'}}>
-                        <SectionHeader>Predicted Today</SectionHeader>
-                    </Grid>
+            <React.Fragment>
+                <Grid item xs={12} style={{marginBottom: '20px'}}>
+                    <SectionHeader>Predicted Today</SectionHeader>
+                </Grid>
+                {
+                    // if there are predictions that are newly added show the collapse button
+                    positionsWithNewPredictions.length > 0 &&
                     <Grid 
                             item 
                             xs={4} 
@@ -123,59 +115,136 @@ export default class CreateEntryEditScreen extends React.Component {
                             <Icon>{allPositionsExpanded ? 'unfold_less' : 'unfold_more'}</Icon>
                         </Button>
                     </Grid>
-                    {
-                        marketOpen.status && 
-                        <Grid item xs={4} 
-                                style={{
-                                    ...fabContainerStyle,
-                                    justifyContent: 'flex-end',
-                                    paddingRight: '30px',
-                                    marginBottom: '20px'
-                                }}
+                }
+                {
+                    marketOpen.status && 
+                    <Grid item xs={4} 
+                            style={{
+                                ...fabContainerStyle,
+                                justifyContent: 'flex-end',
+                                paddingRight: '30px',
+                                marginBottom: '20px'
+                            }}
+                    >
+                        <Button 
+                                style={{...fabButtonStyle, ...addStocksStyle}} 
+                                size='small' 
+                                variant="contained" 
+                                aria-label="Delete" 
+                                onClick={toggleSearchStockBottomSheet}
                         >
+                            <Icon style={{marginRight: '5px'}}>add_circle</Icon>
+                            PREDICTION
+                        </Button>
+                        {
+                            positionsWithDuplicateHorizons.length > 0 &&
+                            <ActionIcon 
+                                onClick={this.props.toggleDuplicateHorizonDialog}
+                                type='error' 
+                                color={metricColor.negative}
+                                size={22}
+                            />
+                        }
+                        {
+                            positionsWithDuplicateHorizons.length === 0 
+                            && !checkPositionsEquality(positions, staticPositions) &&
                             <Button 
-                                    style={{...fabButtonStyle, ...addStocksStyle}} 
+                                    style={{...fabButtonStyle, ...submitButtonStyle}} 
                                     size='small' 
                                     variant="contained" 
-                                    aria-label="Delete" 
-                                    onClick={toggleSearchStockBottomSheet}
+                                    aria-label="Edit" 
+                                    onClick={submitPositions}
+                                    disabled={submissionLoading}
                             >
-                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                PREDICTION
+                                <Icon style={{marginRight: '5px'}}>check_circle</Icon>
+                                SUBMIT
+                                {
+                                    submissionLoading && 
+                                    <CircularProgress 
+                                        style={{marginLeft: '5px', color: '#fff'}} 
+                                        size={18} 
+                                    />
+                                }
                             </Button>
-                            {
-                                positionsWithDuplicateHorizons.length > 0 &&
-                                <ActionIcon 
-                                    onClick={this.props.toggleDuplicateHorizonDialog}
-                                    type='error' 
-                                    color={metricColor.negative}
-                                    size={22}
-                                />
-                            }
-                            {
-                                positionsWithDuplicateHorizons.length === 0 
-                                && !checkPositionsEquality(positions, staticPositions) &&
-                                <Button 
-                                        style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                        size='small' 
-                                        variant="contained" 
-                                        aria-label="Edit" 
-                                        onClick={submitPositions}
-                                        disabled={submissionLoading}
-                                >
-                                    <Icon style={{marginRight: '5px'}}>check_circle</Icon>
-                                    SUBMIT
-                                    {
-                                        submissionLoading && 
-                                        <CircularProgress 
-                                            style={{marginLeft: '5px', color: '#fff'}} 
-                                            size={18} 
-                                        />
-                                    }
-                                </Button>
-                            }
-                        </Grid>
-                    }
+                        }
+                    </Grid>
+                }
+                {
+                    // If there are predictions that are newly added then render the stocklist
+                    positionsWithNewPredictions.length > 0 &&
+                    <StockList 
+                        positions={positionsWithNewPredictions} 
+                        onStockItemChange={this.props.onStockItemChange} 
+                        addPrediction={this.props.addPrediction}
+                        modifyPrediction={this.props.modifyPrediction}
+                        deletePrediction={this.props.deletePrediction}
+                        onExpansionChanged={this.props.onExpansionChanged}
+                        deletePosition={this.props.deletePosition}
+                    />
+                }
+            </React.Fragment>
+        );
+    }
+
+    renderOtherStocksList = () => {
+        let positions = this.getPredictions(this.state.listView);
+
+        return (
+            <React.Fragment>
+                <div 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'space-between',
+                            width: '100%'
+                        }}
+                >
+                    <SectionHeader style={{marginTop: '20px'}}>Others</SectionHeader>
+                    <PredictionTypeMenu 
+                        type={this.state.listView}
+                        anchorEl={this.state.anchorEl}
+                        onClick={this.onPredictionTypeMenuClicked}
+                        onClose={this.onPredictionTypeMenuClose}
+                        onMenuItemClicked={this.onPredictionTypeMenuItemClicked}
+                    />
+                </div>
+                {/* <StockPreviewList positions={predictions} /> */}
+                <StockList 
+                    positions={positions} 
+                    onStockItemChange={this.props.onStockItemChange} 
+                    addPrediction={this.props.addPrediction}
+                    modifyPrediction={this.props.modifyPrediction}
+                    deletePrediction={this.props.deletePrediction}
+                    onExpansionChanged={this.props.onExpansionChanged}
+                    deletePosition={this.props.deletePosition}
+                />
+            </React.Fragment>
+        );
+    }
+
+    getPredictions = (type = 'startedToday') => {
+        let predictions = [];
+        switch(type) {
+            case "startedToday":
+                predictions = this.props.positions;
+                break;
+            case "activeToday":
+                predictions = this.props.activePositions;
+                break;
+            case "endedToday":
+                predictions = this.props.stalePositions;
+                break;
+        }
+
+        return predictions;
+    }
+
+    renderContent() {
+        const {positions = [], } = this.props;
+        
+        return (
+            positions.length === 0
+            ?   this.renderEmptySelections()
+            :   <Grid container justify="space-between">
                     {this.renderPredictedTodayStockList()}
                     {this.renderOtherStocksList()}
                 </Grid>
@@ -185,6 +254,62 @@ export default class CreateEntryEditScreen extends React.Component {
     render() {
         return this.props.loading ? <LoaderComponent /> : this.renderContent();
     }
+}
+
+const PredictionTypeMenu = ({anchorEl, type = 'startedToday', onClick , onClose, onMenuItemClicked}) => {
+    let buttonText = 'Started Today';
+    switch(type) {
+        case "startedToday":
+            buttonText = "Started Today";
+            break;
+        case "activeToday":
+            buttonText = "Active Today";
+            break;
+        case "endedToday":
+            buttonText = "Ended Today";
+            break;
+        default:
+            buttonText = "Started Today";
+            break;
+    }
+
+    return (
+        <div>
+            <Button
+                aria-owns={anchorEl ? 'simple-menu' : undefined}
+                aria-haspopup="true"
+                onClick={onClick}
+            >
+                {buttonText}
+                <Icon style={{color: '#444'}}>chevron_right</Icon>
+            </Button>
+            <Menu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={onClose}
+            >
+                <MenuItem 
+                        onClick={e => onMenuItemClicked(e, 'startedToday')}
+                        selected={type === 'startedToday'}
+                >
+                    Started Today
+                </MenuItem>
+                <MenuItem 
+                        onClick={e => onMenuItemClicked(e, 'activeToday')}
+                        selected={type === 'activeToday'}
+                >
+                    Active
+                </MenuItem>
+                <MenuItem 
+                        onClick={e => onMenuItemClicked(e, 'endedToday')}
+                        selected={type === 'endedToday'}
+                >
+                    Ended Today
+                </MenuItem>
+            </Menu>
+        </div>
+    );
 }
 
 const emptyPortfolioButtonStyle = {

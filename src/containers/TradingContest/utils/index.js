@@ -2,6 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import axios from 'axios';
 import {Utils, fetchAjax, getStockData, fetchAjaxPromise} from '../../../utils';
+import {maxPredictionLimit} from '../MultiHorizonCreateEntry/constants';
 import gold from '../../../assets/gold.svg';
 import silver from '../../../assets/silver.svg';
 import bronze from '../../../assets/bronze.svg';
@@ -77,10 +78,37 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
         // 2. Use predictions from the previous positions
         const oldPositionIndex = _.findIndex(clonedOldPositions, oldPosition => oldPosition.symbol === selectedPosition.symbol);
         if (oldPositionIndex > -1) {
+            // If old predictions are present and no. of predictions less than maxPrediction limit then add a prediction
+            let predictions = _.get(clonedOldPositions[oldPositionIndex], 'predictions', []);
+            const newPredictions = predictions.filter(prediction => prediction.new === true);
+            if (
+                predictions.length < maxPredictionLimit 
+                && newPredictions.length == 0
+                && selectedPosition.addPrediction === true
+            ) {
+                // Get the previous horizon if present else set the horizon to 0
+                const previousHorizon = predictions[predictions.length -1] !== undefined ? predictions[predictions.length -1].horizon : 0;
+                predictions = [...predictions, 
+                    {
+                        key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+                        symbol: _.get(selectedPosition, 'symbol', ''),
+                        target: 2,
+                        type: 'buy',
+                        horizon: previousHorizon + 1,
+                        investment: 10,
+                        locked: false,
+                        new: true
+                    }
+                ];
+            }
+            if (newPredictions.length > 0 && selectedPosition.addPrediction === false) {
+                predictions = predictions.filter(prediction => prediction.new === false);
+            }
+
             return {
                 ...selectedPosition,
                 points: Math.abs(_.get(clonedOldPositions[oldPositionIndex], 'points', 10)),
-                predictions: _.get(clonedOldPositions[oldPositionIndex], 'predictions', {})
+                predictions: predictions
             }
         } else {
             return {
@@ -169,7 +197,7 @@ export const getMultiStockData = (stocks = []) => {
 
 export const isMarketOpen = (currentTime = moment()) => {
     const marketOpenTime = moment().hours(9).minutes(15);
-    const marketCloseTime = moment().hours(21).minutes(30);
+    const marketCloseTime = moment().hours(23).minutes(30);
     if (currentTime.isSameOrAfter(marketOpenTime) && currentTime.isSameOrBefore(marketCloseTime)) {
         return {status: true};
     } else if (currentTime.isBefore(marketOpenTime)) {
@@ -184,4 +212,48 @@ export const getTopStocks = (selectedDate = moment(), history, currentUrl, handl
     const url = `${requestUrl}/dailycontest/topstocks?date=${requiredDate}`;
 
     return fetchAjaxPromise(url, history, currentUrl, handleError)
+}
+
+export const getLeaderboard = (selectedDate = moment(), history, currentUrl, handleError = true) => {
+    const requiredDate = selectedDate.format(dateFormat);
+    const url = `${requestUrl}/dailycontest/leaderboard?date=${requiredDate}`;
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError);
+}
+
+export const processLeaderboardWinners = (leaders = []) => {
+    return Promise.map(leaders, leader => {
+        const userName = _.get(leader, 'advisor.user.firstName', '') + ' ' + _.get(leader, 'advisor.user.lastName', '');
+        const pnl = {
+            long: _.get(leader, 'pnlStats.long.pnl', 0),
+            short: _.get(leader, 'pnlStats.short.pnl', 0),
+            total: _.get(leader, 'pnlStats.total.pnl', 0)
+        };
+
+        const pnlPct = {
+            long: _.get(leader, 'pnlStats.long.pnlPct', 0),
+            short: _.get(leader, 'pnlStats.short.pnlPct', 0),
+            total: _.get(leader, 'pnlStats.total.pnlPct', 0)
+        };
+
+        const cost = {
+            long: _.get(leader, 'pnlStats.long.cost', 0),
+            short: _.get(leader, 'pnlStats.short.cost', 0),
+            total: _.get(leader, 'pnlStats.total.cost', 0)
+        };
+
+        const netValue = {
+            long: _.get(leader, 'pnlStats.long.netValue', 0),
+            short: _.get(leader, 'pnlStats.short.netValue', 0),
+            total: _.get(leader, 'pnlStats.total.netValue', 0)
+        };
+
+        const profitFactor = {
+            long: _.get(leader, 'pnlStats.long.profitFactor', 0),
+            short: _.get(leader, 'pnlStats.short.profitFactor', 0),
+            total: _.get(leader, 'pnlStats.total.profitFactor', 0)
+        };
+
+        return {userName, pnl, pnlPct, cost, netValue, profitFactor};
+    })
 }

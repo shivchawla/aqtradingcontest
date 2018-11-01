@@ -2,6 +2,7 @@ import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
 import {Utils, fetchAjaxPromise} from '../../../../utils';
+import {maxPredictionLimit} from '../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
@@ -120,7 +121,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
 }
 
 // formats predictions obtained from the backend
-export const processPredictions = (predictions = [], locked = false) => {
+export const processPredictions = (predictions = [], locked = false, type = 'startedToday') => {
     return Promise.map(predictions, prediction => ({
         symbol: _.get(prediction, 'position.security.ticker', null),
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),
@@ -132,7 +133,8 @@ export const processPredictions = (predictions = [], locked = false) => {
         targetAchieved: _.get(prediction, 'success.status', false),
         target: _.get(prediction, 'target', 0),
         locked,
-        new: false
+        new: false,
+        type
     }))
 }
 
@@ -146,4 +148,17 @@ export const checkPositionsEquality = (positions = [], staticPositions = []) => 
     clonedStaticPositions = clonedStaticPositions.map(position => _.pick(position, keysToCompare));
 
     return _.isEqual(clonedPositions, clonedStaticPositions);
+}
+
+// get the positions that has predictions less than the maxLimit
+export const getPositionsForNewPredictions = (positions = []) => {
+    return positions.filter(position => position.predictions.length < maxPredictionLimit);
+}   
+
+// get the positions that has atleast one new prediction
+export const getPositionsWithNewPredictions = (positions = []) => {
+    return positions.filter(position => {
+        const newPredictions = _.get(position, 'predictions', []).filter(prediction => prediction.new === true);
+        return newPredictions.length > 0;
+    });
 }

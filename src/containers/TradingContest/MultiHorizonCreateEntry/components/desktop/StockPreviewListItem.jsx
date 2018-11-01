@@ -3,7 +3,6 @@ import moment from 'moment';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-// import Tag from './Tag';
 import Icon from '@material-ui/core/Icon';
 import {horizontalBox, metricColor, nameEllipsisStyle} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
@@ -31,7 +30,8 @@ export default class StockPreviewListItem extends React.Component {
             symbol = null,
             lastPrice = null,
             avgPrice = 0,
-            investment = 0
+            investment = 0,
+            targetAchieved = false
         } = this.props.prediction;
         const stale = moment(null, dateFormat).isAfter(moment(endDate, dateFormat));
         const horizon = moment(endDate, dateFormat).diff(moment(startDate, dateFormat), 'days');
@@ -40,6 +40,7 @@ export default class StockPreviewListItem extends React.Component {
         const changeColor = chg > 0 ? metricColor.positive : chg === 0 ? metricColor.neutral : metricColor.negative
         const activationColor = stale ? '#90A4AE' : '#FFB74D';
         const typeColor = type === 'buy' ? '#69F0AE' : '#EF9A9A';
+        const currentChangePct = (((lastPrice - avgPrice) * 100) / avgPrice).toFixed(2)
 
         return (
             <SGrid 
@@ -92,11 +93,17 @@ export default class StockPreviewListItem extends React.Component {
                         ₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}
                     </SecondayText>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start', alignItems: 'center'}}>
                     <SecondayText>{target}%</SecondayText>
+                    {
+                        targetAchieved &&
+                        <Icon style={{fontSize: '18px', color: metricColor.positive, marginLeft: '5px'}}>
+                            beenhere
+                        </Icon>
+                    }
                 </Grid>
                 <Grid item xs={2}>
-                    <SecondayText>{2.5}%</SecondayText>
+                    <SecondayText>{currentChangePct}%</SecondayText>
                 </Grid>
                 <Grid item xs={1}>
                     <SecondayText>{horizon} days</SecondayText>
