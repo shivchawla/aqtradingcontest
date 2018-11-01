@@ -64,11 +64,13 @@ class CreateEntry extends React.Component {
         this.setState({bottomSheetOpenStatus: !this.state.bottomSheetOpenStatus});
     }
 
-    conditionallyAddPosition = async selectedPositions => {
+    conditionallyAddPosition = async (selectedPositions, cb = null) => {
         try {
             const positions = selectedPositions.filter(position => position.points >= 0);
             const processedPositions = await processSelectedPosition(this.state.positions, positions);
-            this.setState({positions: processedPositions});
+            this.setState({positions: processedPositions}, () => {
+                cb && cb();
+            });
         } catch(err) {
             console.log(err);
         }

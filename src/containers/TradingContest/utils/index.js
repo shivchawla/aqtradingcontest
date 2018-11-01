@@ -77,12 +77,37 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
         // 2. Use predictions from the previous positions
         const oldPositionIndex = _.findIndex(clonedOldPositions, oldPosition => oldPosition.symbol === selectedPosition.symbol);
         if (oldPositionIndex > -1) {
+            let predictions =  _.get(clonedOldPositions[oldPositionIndex], 'predictions', {});
+            const newPredictions = predictions.filter(prediction => prediction.new === true);
+            if (
+                selectedPosition.addPrediction === true 
+                && selectedPosition.deletePrediction === false
+                && newPredictions.length === 0
+            ) {
+                const previousHorizon = _.get(predictions, `[${predictions.length - 1}].horizon`, 0);
+                // should add new prediction
+                predictions.push({
+                    key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+                    symbol: _.get(selectedPosition, 'symbol', ''),
+                    target: 2,
+                    type: 'buy',
+                    horizon: previousHorizon + 1,
+                    investment: 10,
+                    locked: false,
+                    new: true
+                })
+
+            } else if (selectedPosition.addPrediction === false && selectedPosition.deletePrediction === true) {
+                predictions = predictions.filter(prediction => prediction.new === false);
+            }
+
             return {
                 ...selectedPosition,
                 points: Math.abs(_.get(clonedOldPositions[oldPositionIndex], 'points', 10)),
-                predictions: _.get(clonedOldPositions[oldPositionIndex], 'predictions', {})
+                predictions
             }
         } else {
+            console.log('Enters Here');
             return {
                 ...selectedPosition,
                 points: Math.abs(_.get(selectedPosition, 'points', 10)),

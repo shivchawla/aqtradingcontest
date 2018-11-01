@@ -147,3 +147,12 @@ export const checkPositionsEquality = (positions = [], staticPositions = []) => 
 
     return _.isEqual(clonedPositions, clonedStaticPositions);
 }
+
+// Gives positions with atleaset one new predictions
+export const getPositionsWithNewPredictions = (positions = []) => {
+    return positions.filter(position => {
+        const predictions= _.get(position, 'predictions', []);
+        const newPredictions = predictions.filter(prediction => prediction.new === true);
+        return newPredictions.length > 0;
+    });
+}
