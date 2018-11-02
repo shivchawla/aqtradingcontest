@@ -29,21 +29,25 @@ export default class CreateEntryPreviewScreen extends React.Component {
     renderPredictionList = (startedPredictions, otherPredictions) => {
         const {
             getRequiredMetrics,
-            toggleEntryDetailBottomSheet
+            toggleEntryDetailBottomSheet,
+            pnlFound = false
         } = this.props;
 
         return (
             <Grid container>
+                {
+                    pnlFound && 
+                    <Grid item xs={12}>
+                        <SelectionMetricsMini 
+                            {...getRequiredMetrics()}
+                            onClick={toggleEntryDetailBottomSheet}
+                        />
+                    </Grid>
+                }
                 <Grid item xs={12}>
                     <SectionHeader>
                         Predicted on {this.props.selectedDate.format(dateFormat)}
                     </SectionHeader>
-                </Grid>
-                <Grid item xs={12}>
-                    <SelectionMetricsMini 
-                        {...getRequiredMetrics()}
-                        onClick={toggleEntryDetailBottomSheet}
-                    />
                 </Grid>
                 <Grid item xs={12}>
                     <StockPreviewList positions={startedPredictions} />

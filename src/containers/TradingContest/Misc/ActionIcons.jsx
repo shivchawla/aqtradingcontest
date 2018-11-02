@@ -20,7 +20,7 @@ export default class ActionIcons extends React.Component {
         return (
             <IconButton 
                     aria-label="Delete" 
-                    onClick={() => onClick && onClick()}
+                    onClick={(e) => onClick && onClick(e)}
                     style={style}
                     disabled={disabled}
                     {...iconButtonProps}

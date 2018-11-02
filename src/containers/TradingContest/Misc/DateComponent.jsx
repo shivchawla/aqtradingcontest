@@ -3,12 +3,10 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
 import ActionIcon from '../Misc/ActionIcons';
 import DatePicker from 'material-ui-pickers/DatePicker';
 import TimerComponent from '../Misc/TimerComponent';
-import {horizontalBox, verticalBox} from '../../../constants';
+import {horizontalBox} from '../../../constants';
 const DateHelper = require('../../../utils/date');
 
 const dateFormat = 'Do MMM YY';

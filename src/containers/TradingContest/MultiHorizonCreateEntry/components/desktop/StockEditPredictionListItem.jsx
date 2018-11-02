@@ -4,14 +4,14 @@ import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import DatePicker from 'material-ui-pickers/DatePicker';
 import {getPercentageModifiedValue} from '../../utils';
 import {withStyles} from '@material-ui/core/styles';
 import ActionIcon from '../../../Misc/ActionIcons';
 import NumberInput from '../../../../../components/input/NumberInput';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
 
+const DateHelper = require('../../../../../utils/date');
 
 const dateFormat = 'YYYY-MM-DD';
 const styles = theme => {
@@ -55,33 +55,17 @@ const styles = theme => {
 }
 
 class StockEditPredictionListItem extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            anchorEl: null,
-            selectedHorizon: 1
-        };
-    }
-
     maxInvestment = 100;
     minInvestment = 10;
 
-    handleHorizonEditClick = event => {
-        this.setState({ anchorEl: event.currentTarget });
-    };
-    
-    handleHorizonEditClose = (e) => {
-        this.setState({ anchorEl: null });
-    };
-
-    onMenuItemClicked = (horizon) => {
-        this.setState({anchorEl: null, selectedHorizon: horizon});
+    onDateChanged = selectedDate => {
+        const date = moment(selectedDate).format(dateFormat);
         let {prediction = {}} = this.props;
         const symbol = _.get(prediction, 'symbol', null);
         const key = _.get(prediction, 'key', null);
         prediction = {
             ...prediction,
-            horizon: horizon
+            endDate: date
         };
         this.props.modifyPrediction(symbol, key, prediction);
     }
@@ -146,14 +130,17 @@ class StockEditPredictionListItem extends React.Component {
         this.props.deletePrediction(symbol, key);
     }
 
+    disabledDate = (date) => {
+        const isWeekend = date.get('day') === 0 || date.get('day') === 6;
+        const isHoliday = DateHelper.isHoliday(date);
+        return isWeekend || isHoliday;
+    }
+
     render() {
-        const {anchorEl} = this.state;
-        const open = Boolean(anchorEl);
-        const {horizon = 1, investment = 0, target = 1, type = 'buy', symbol = '', locked = false, lastPrice = 0} = this.props.prediction;
+        const {investment = 0, target = 1, type = 'buy', symbol = '', locked = false, lastPrice = 0, endDate = null} = this.props.prediction;
         const {classes} = this.props;
         const buyButtonClass = type === 'buy' ? classes.buyButtonActive : classes.inActiveButton;
         const sellButtonClass = type === 'sell' ? classes.sellButtonActive : classes.inActiveButton;
-        const horizonOptions = [1, 2, 3, 4, 5];
         const max = type === 'buy' ? getPercentageModifiedValue(50, lastPrice) : getPercentageModifiedValue(2, lastPrice, 'minus');
         const min = type === 'buy' ? getPercentageModifiedValue(2, lastPrice) : getPercentageModifiedValue(50, lastPrice, 'minus');
 
@@ -195,44 +182,17 @@ class StockEditPredictionListItem extends React.Component {
                 </Grid>
                 <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
                     <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                        <PredictionText>{horizon} {horizon > 1 ? 'Days' : 'Day'}</PredictionText>
-                        <DateText>{moment().add(horizon, 'days').format("Do MMM 'YY")}</DateText>
-                    </div>
-                    {
-                        !locked &&
-                        <ActionIcon 
-                            type='edit' 
-                            color='#4B4A4A'
-                            iconButtonProps = {{
-                                'aria-owns': open ? 'long-menu' : null,
-                                'aria-haspopup': 'true',
-                                onClick: this.handleHorizonEditClick
-                            }}
+                        <DatePicker
+                            value={endDate}
+                            style={{textAlign: 'center'}}
+                            TextFieldComponent={DateFields}
+                            locked={locked}
+                            onChange={this.onDateChanged}
+                            shouldDisableDate={this.disabledDate}
+                            disablePast
+                            format={dateFormat}
                         />
-                    }
-                    <Menu
-                            id="long-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={this.handleHorizonEditClose}
-                            PaperProps={{
-                                style: {
-                                width: 200,
-                                },
-                            }}
-                    >
-                        {
-                            horizonOptions.map(option => (
-                                <MenuItem 
-                                        key={option} 
-                                        onClick={e => this.onMenuItemClicked(option)}
-                                        selected={option === this.state.selectedHorizon}
-                                >
-                                    {`${option} ${option > 1 ? 'Days' : 'Day'}`}
-                                </MenuItem>
-                            ))
-                        }
-                    </Menu>
+                    </div>
                 </Grid>
                 <Grid item xs={3}>
                     <NumberInput 
@@ -274,6 +234,22 @@ class StockEditPredictionListItem extends React.Component {
 
 export default withStyles(styles)(StockEditPredictionListItem);
 
+const DateFields = props => {
+    return (
+        <div style={{...horizontalBox}}>
+            <PredictionText>{moment(props.value, dateFormat).format("Do MMM 'YY")}</PredictionText>
+            {
+                !props.locked &&
+                <ActionIcon 
+                    type='edit' 
+                    color='#4B4A4A'
+                    onClick={props.onClick}
+                />
+            }
+        </div>
+    );
+}
+
 const typeContainerStyle = {
     ...horizontalBox,
     justifyContent: 'flex-start'
@@ -304,3 +280,4 @@ const DateText = styled.h3`
     color: #747272;
     font-weight: 400;
 `;
+

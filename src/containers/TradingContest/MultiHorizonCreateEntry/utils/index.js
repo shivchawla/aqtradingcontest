@@ -6,6 +6,7 @@ import {maxPredictionLimit} from '../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
+const DateHelper = require('../../../../utils');
 
 export const getPredictionsFromPositions = (positions = []) => {
     const clonedPositions = _.map(positions, _.cloneDeep);
@@ -30,7 +31,8 @@ export const getPredictionsFromPositions = (positions = []) => {
         },
         startDate: moment().format(dateFormat),
         // Adding the horizon to the current date
-        endDate: moment().add(_.get(prediction, 'horizon', 0), 'days').format(dateFormat),
+        endDate: _.get(prediction, 'endDate', moment().add(1, 'days').format(dateFormat)),
+        // endDate: moment().add(_.get(prediction, 'horizon', 0), 'days').format(dateFormat),
         target: _.get(prediction, 'target', 1)
     }));
 }
@@ -54,7 +56,13 @@ export const checkHorizonDuplicationStatus = (predictions) => {
 
     predictions.map(prediction => {
         const horizon = _.get(prediction, 'horizon', 1);
-        const predictionsWithSameHorizon = predictions.filter(prediction => prediction.horizon === horizon);
+        const endDate = _.get(prediction, 'endDate', moment().format(dateFormat));
+        const formattedEndDate = moment(endDate, dateFormat).format(dateFormat);
+        const predictionsWithSameHorizon = predictions.filter(nPrediction => {
+            const nEndDate = _.get(nPrediction, 'endDate', moment().format(dateFormat));
+            const nFormattedEndDate = moment(nEndDate, dateFormat).format(dateFormat);
+            return formattedEndDate === nFormattedEndDate;
+        });
 
         if (predictionsWithSameHorizon.length > 1) {
             duplicatePredictions++;
@@ -179,4 +187,11 @@ export const getPercentageModifiedValue = (percentage, value, add = true) => {
     }
 
     return value - ((percentage * value) / 100);
+}
+
+export const getPredictionEndDate = (predictions = []) => {
+    const previousEndDate = predictions.length > 0 
+        ? moment(predictions[predictions.length - 1].endDate, dateFormat)
+        : moment();
+    return moment(DateHelper.nextNonHolidayWeekday(previousEndDate.toDate())).format(dateFormat);
 }

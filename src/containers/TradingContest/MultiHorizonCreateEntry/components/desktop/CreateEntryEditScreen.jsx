@@ -207,11 +207,11 @@ export default class CreateEntryEditScreen extends React.Component {
     }
 
     renderOtherStocksList = () => {
-        // const allPredictions = [...this.props.activePredictions, ...this.props.stalePredictions];
         let positions = this.getPositions(this.state.listView);
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
+            pnlFound = false
         } = this.props;
 
         return (
@@ -232,10 +232,13 @@ export default class CreateEntryEditScreen extends React.Component {
                         onMenuItemClicked={this.onPredictionTypeMenuItemClicked}
                     />
                 </div>
-                <SelectionMetricsMini 
-                    {...getRequiredMetrics()}
-                    onClick={toggleEntryDetailBottomSheet}
-                />
+                {
+                    pnlFound &&
+                    <SelectionMetricsMini 
+                        {...getRequiredMetrics()}
+                        onClick={toggleEntryDetailBottomSheet}
+                    />
+                }
                 <StockPreviewList positions={positions} />
             </Grid>
         );

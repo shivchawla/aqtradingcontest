@@ -18,8 +18,6 @@ const customTheme = createMuiTheme({
 });
 
 class NumberInput extends React.Component {
-    max = 5;
-    min = -5;
     stepSize = 100;
 
     constructor(props) {
@@ -31,7 +29,9 @@ class NumberInput extends React.Component {
 
     onChange = e => {
         const value = e.target.value;
-        if (value >= this.min && value <= this.max) {
+        const max = _.get(this.props, 'max', this.max);
+        const min = _.get(this.props, 'min', this.min);
+        if (value >= min && value <= max) {
             this.setState({value}, () => {
                 this.props.onChange && this.props.onChange(value);
             });
@@ -48,6 +48,7 @@ class NumberInput extends React.Component {
                 ? max : value + this.stepSize
             : value - this.stepSize < min
                 ? min : value - this.stepSize;
+        // value = Number(value.toFixed(2))
         this.setState({value}, () => {
             this.props.onChange && this.props.onChange(value);
         });
@@ -124,7 +125,7 @@ class NumberInput extends React.Component {
             <MuiThemeProvider theme={customTheme}>
                 {
                     disabled
-                    ?   <DisabledText color={disabledTextColor}>{this.state.value} %</DisabledText>
+                    ?   <DisabledText color={disabledTextColor}>{this.state.value}</DisabledText>
                     :   this.renderInput()
                 }
             </MuiThemeProvider>

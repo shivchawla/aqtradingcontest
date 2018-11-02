@@ -17,9 +17,10 @@ import CreateEntryPreview from './components/desktop/CreateEntryPreviewScreen';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import {DailyContestCreateMeta} from '../metas';
 import {processSelectedPosition, getMultiStockData} from '../utils';
-import {getPredictionsFromPositions, createPredictions, checkHorizonDuplicationStatus, getDailyContestPredictions, convertPredictionsToPositions, processPredictions, getPnlStats, getPercentageModifiedValue} from './utils';
+import {getPredictionsFromPositions, createPredictions, checkHorizonDuplicationStatus, getDailyContestPredictions, convertPredictionsToPositions, processPredictions, getPnlStats, getPercentageModifiedValue, getPredictionEndDate} from './utils';
 import {handleCreateAjaxError} from '../../../utils';
 import {maxPredictionLimit} from './constants';
+const DateHelper = require('../../../utils/date');
 
 const dateFormat = 'YYYY-MM-DD';
 const CancelToken = axios.CancelToken;
@@ -60,7 +61,8 @@ class CreateEntry extends React.Component {
             snackbarMessage: 'N/A',
             entryDetailBottomSheetOpenStatus: false,
             positionsWithDuplicateHorizons: [],
-            duplicateHorizonDialogOpenStaus: false
+            duplicateHorizonDialogOpenStaus: false,
+            pnlFound: false
         };
         this.source = CancelToken.source();
     }
@@ -316,10 +318,13 @@ class CreateEntry extends React.Component {
         return getPnlStats(selectedDate, this.props, this.props.match.url, false)
         .then(response => {
             const pnlStats = response.data;
-            this.setState({pnlStats: pnlStats});
+            this.setState({
+                pnlStats: pnlStats,
+                pnlFound: true
+            });
         }) 
         .catch(err => {
-            console.log(err);
+            this.setState({pnlFound: false})
         })       
     }
 
@@ -341,8 +346,9 @@ class CreateEntry extends React.Component {
             const selectedPosition = clonedPositions[selectedPositionIndex];
             const predictions = selectedPosition.predictions;
             const lastPrice = _.get(selectedPosition, 'lastPrice', 0);
-            // Setting the horizon in incremental order, if it is the first prediction then setting horizon to 1
-            let horizon = predictions.length > 0 ? predictions[predictions.length - 1].horizon + 1 : 1;
+
+            // setting the default endDate to the next non holiday
+            const endDate = getPredictionEndDate(predictions);
 
             if (predictions.length >= maxPredictionLimit) {
                 this.setState({
@@ -357,12 +363,13 @@ class CreateEntry extends React.Component {
                 symbol: _.get(selectedPosition, 'symbol', ''),
                 target: getPercentageModifiedValue(2, lastPrice),
                 type: 'buy',
-                horizon,
+                // horizon,
                 investment: 10,
                 locked: false,
                 new: true,
                 lastPrice: _.get(selectedPosition, 'lastPrice', null),
                 avgPrice: _.get(selectedPosition, 'avgPrice', null),
+                endDate
             });
             selectedPosition.predictions = predictions;
             clonedPositions[selectedPositionIndex] = selectedPosition;
@@ -555,7 +562,8 @@ class CreateEntry extends React.Component {
             staticPositions: this.state.staticPositions,
             activePositions: this.state.activePositions,
             stalePositions: this.state.stalePositions,
-            startedTodayPositions: this.state.startedTodayPositions
+            startedTodayPositions: this.state.startedTodayPositions,
+            pnlFound: this.state.pnlFound
         };
 
         return (

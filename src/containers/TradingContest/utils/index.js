@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import axios from 'axios';
 import {Utils, fetchAjax, getStockData, fetchAjaxPromise} from '../../../utils';
-import {getPercentageModifiedValue} from '../MultiHorizonCreateEntry/utils';
+import {getPercentageModifiedValue, getPredictionEndDate} from '../MultiHorizonCreateEntry/utils';
 import gold from '../../../assets/gold.svg';
 import silver from '../../../assets/silver.svg';
 import bronze from '../../../assets/bronze.svg';
@@ -86,8 +86,10 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
                 && selectedPosition.deletePrediction === false
                 && newPredictions.length === 0
             ) {
-                const previousHorizon = _.get(predictions, `[${predictions.length - 1}].horizon`, 0);
+                // const previousHorizon = _.get(predictions, `[${predictions.length - 1}].horizon`, 0);
                 // should add new prediction
+                const endDate = getPredictionEndDate(predictions);
+
                 predictions.push({
                     key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
                     symbol: _.get(selectedPosition, 'symbol', ''),
@@ -95,10 +97,11 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
                     lastPrice,
                     avgPrice: _.get(selectedPosition, 'avgPrice', 0),
                     type: 'buy',
-                    horizon: previousHorizon + 1,
+                    // horizon: previousHorizon + 1,
                     investment: 10,
                     locked: false,
-                    new: true
+                    new: true,
+                    endDate
                 })
 
             } else if (selectedPosition.addPrediction === false && selectedPosition.deletePrediction === true) {
@@ -125,7 +128,8 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
                         horizon: 1,
                         investment: 10,
                         locked: false,
-                        new: true
+                        new: true,
+                        endDate: getPredictionEndDate([])
                     }
                 ]
             };

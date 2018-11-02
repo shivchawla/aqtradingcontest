@@ -1,10 +1,14 @@
 import React from 'react';
+import moment from 'moment';
 import _ from 'lodash';
 import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {Utils} from '../../../../../utils';
-import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
+import {verticalBox, metricColor} from '../../../../../constants';
+
+const readableDateFormat = "Do MMM 'YY";
+const dateFormat = 'YYYY-MM-DD';
 
 export default class StockPreviewPredictionListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) { 
@@ -13,6 +17,27 @@ export default class StockPreviewPredictionListItem extends React.Component {
         }
 
         return false;
+    }
+
+    getIconConfig = (targetAchieved, active) => {
+        if (active) {
+            if (targetAchieved) {
+                return {
+                    type: 'thumb_up_alt',
+                    color: '#3EF79B'
+                };
+            } else {
+                return {
+                    type: 'check_circle',
+                    color: metricColor.neutral
+                };
+            }
+        } else {
+            return {
+                type: 'thumb_down_alt',
+                color: '#FE6662'
+            }
+        }
     }
 
     render() {
@@ -29,24 +54,31 @@ export default class StockPreviewPredictionListItem extends React.Component {
             targetAchieved = false,
             active = false
         } = this.props.prediction;
-        const typeBackgroundColor = type === 'buy' ? '#3EF79B' : '#FE6662';
+        const typeBackgroundColor = type === 'buy' ? '#3EF79B' : '#fff';
+        const typeColor = type === 'buy' ? '#fff' : '#FE6662';
+        const borderColor = type === 'buy' ? '#3EF79B' : '#FE6662'
         const typeText = type === 'buy' ? 'BUY' : 'SELL';
-        const iconType = (targetAchieved || active) ? 'thumb_up_alt' : 'thumb_down_alt';
-        const iconColor = (targetAchieved || active) ? '#3EF79B' : '#FE6662';
+        const iconConfig = this.getIconConfig(targetAchieved, active);
 
         return (
             <Container container alignItems="center">
-                <Grid item xs={1}>
-                    <Icon style={{color: iconColor}}>{iconType}</Icon>
-                </Grid>
-                <Grid item xs={3}>
-                    <TypeTag backgroundColor={typeBackgroundColor}>{typeText}</TypeTag>
-                </Grid>
-                <Grid item xs={3}><MetricText>{endDate}</MetricText></Grid>
-                <Grid item xs={3}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
-                <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start'}}>
+                <Grid item xs={3} style={{...verticalBox, alignItems: 'flex-start', paddingLeft: '20px'}}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
-                    <CallDate>{startDate}</CallDate>
+                    <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
+                </Grid>
+                <Grid item xs={3}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
+                <Grid item xs={3}>
+                    <TypeTag 
+                        backgroundColor={typeBackgroundColor}
+                        color={typeColor}
+                        borderColor={borderColor}
+                    >
+                        {typeText}
+                    </TypeTag>
+                </Grid>
+                <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
+                <Grid item xs={1}>
+                    <Icon style={{color: iconConfig.color}}>{iconConfig.type}</Icon>
                 </Grid>
             </Container>
         );
@@ -76,11 +108,12 @@ const TypeTag = styled.div`
     font-weight: 400;
     height: 30px;
     width: 54px;
-    color: #fff;
+    color: ${props => props.color || '#fff'};
     padding: 4px 8px;
     border-radius: 4px;
     background-color: ${props => props.backgroundColor || '#3EF79B'};
     box-sizing: border-box;
+    border: 1px solid ${props => props.borderColor || props.backgroundColor || '#3EF79B'};
 `;
 
 const CallDate = styled.h3`

@@ -358,7 +358,6 @@ export class SearchStocks extends React.Component {
                 targetStock.addPrediction = true;
             } else {
                 if (lockedPredictions.length === 0) {
-                    console.log('Enter locked positions change');
                     selectedStocks.splice(selectedStockIndex, 1);
                     targetStock.checked = false;
                     targetLocalStock.checked = false;
@@ -495,8 +494,8 @@ export class SearchStocks extends React.Component {
     syncStockListWithPortfolio = (props = this.props) => {
         const positions = _.get(props, 'portfolioPositions', []);
         const sellPositions = _.get(props, 'portfolioSellPositions', []);
-        const selectedStocks = positions.map(position => position.symbol);
-        const sellSelectedStocks = sellPositions.map(position => position.symbol);
+        const selectedStocks = positions.map(position => _.get(position, 'symbol', null)).filter(item => item !== null);
+        const sellSelectedStocks = []
 
         let stocks = [...this.state.stocks]; 
         let localStocks = [...this.localStocks];
@@ -990,7 +989,7 @@ export class SearchStocks extends React.Component {
                             <SearchStockHeaderDesktop
                                 filters={this.props.filters}
                                 selectedStocks={selectedStocks}
-                                stocksCount={this.localStocks.filter(stock => stock.addPrediction === true).length}
+                                stocksCount={this.state.selectedStocks.length}
                                 stockPerformanceOpen={this.state.stockPerformanceOpen}
                                 toggleBottomSheet={this.props.toggleBottomSheet}
                                 addSelectedStocksToPortfolio={this.addSelectedStocksToPortfolio}
