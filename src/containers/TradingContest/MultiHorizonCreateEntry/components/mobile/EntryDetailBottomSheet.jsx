@@ -64,9 +64,9 @@ export default class EntryDetailBottomSheet extends React.Component {
                                     <MetricsHeader>Short</MetricsHeader>
                                     <SelectionMetrics {...metrics.short}/>
                                 </Grid>
-                                <Grid item xs={12} style={{marginTop: '10px'}}>
+                                {/* <Grid item xs={12} style={{marginTop: '10px'}}>
                                     <Warning>* As of {resultDate.format('Do MMM YY')}</Warning>
-                                </Grid>
+                                </Grid> */}
                             </Grid>
                         </div>
                 }
