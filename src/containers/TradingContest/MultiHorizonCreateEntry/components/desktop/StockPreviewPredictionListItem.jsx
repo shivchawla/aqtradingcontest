@@ -5,7 +5,7 @@ import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {Utils} from '../../../../../utils';
-import {verticalBox, metricColor} from '../../../../../constants';
+import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
 
 const readableDateFormat = "Do MMM 'YY";
 const dateFormat = 'YYYY-MM-DD';
@@ -19,7 +19,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
         return false;
     }
 
-    getIconConfig = (targetAchieved, active) => {
+    getIconConfig = (targetAchieved) => {
+        const {endDate = null} = this.props.prediction;
+        const todayDate = moment().format(dateFormat);
+        const active = moment(todayDate, dateFormat).isBefore(moment(endDate, dateFormat));
         if (active) {
             if (targetAchieved) {
                 return {
@@ -52,22 +55,25 @@ export default class StockPreviewPredictionListItem extends React.Component {
             startDate = null, 
             endDate = null,
             targetAchieved = false,
-            active = false
+            active = false,
+            lastPrice = 0
         } = this.props.prediction;
-        const typeBackgroundColor = type === 'buy' ? '#3EF79B' : '#fff';
-        const typeColor = type === 'buy' ? '#fff' : '#FE6662';
+        const typeBackgroundColor = '#fff';
+        const typeColor = type === 'buy' ? '#3EF79B' : '#FE6662';
         const borderColor = type === 'buy' ? '#3EF79B' : '#FE6662'
         const typeText = type === 'buy' ? 'BUY' : 'SELL';
         const iconConfig = this.getIconConfig(targetAchieved, active);
+        const changeInvestment = ((lastPrice - avgPrice) / avgPrice) * investment;
+        const changedInvestment = investment + changeInvestment;
 
         return (
             <Container container alignItems="center">
-                <Grid item xs={3} style={{...verticalBox, alignItems: 'flex-start', paddingLeft: '20px'}}>
+                <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start', paddingLeft: '20px'}}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
                     <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
                 </Grid>
-                <Grid item xs={3}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
+                <Grid item xs={2}>
                     <TypeTag 
                         backgroundColor={typeBackgroundColor}
                         color={typeColor}
@@ -75,6 +81,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     >
                         {typeText}
                     </TypeTag>
+                </Grid>
+                <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                    <MetricText>{investment}K</MetricText>
+                    <Icon>arrow_right_alt</Icon>
+                    <MetricText>{changedInvestment.toFixed(2)}K</MetricText>
                 </Grid>
                 <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
                 <Grid item xs={1}>

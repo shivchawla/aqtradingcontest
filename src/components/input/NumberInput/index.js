@@ -125,7 +125,7 @@ class NumberInput extends React.Component {
             <MuiThemeProvider theme={customTheme}>
                 {
                     disabled
-                    ?   <DisabledText color={disabledTextColor}>{this.state.value}</DisabledText>
+                    ?   <DisabledText color={disabledTextColor}>{this.state.value.toFixed(2)}</DisabledText>
                     :   this.renderInput()
                 }
             </MuiThemeProvider>

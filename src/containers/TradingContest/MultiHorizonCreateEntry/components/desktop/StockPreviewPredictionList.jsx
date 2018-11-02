@@ -38,9 +38,10 @@ export default class StockEditPredictionList extends React.Component {
 
 const StockPreviewPredictionListHeader = () => (
     <Grid container alignItems="center" style={{margin: '20px 0'}}>
-        <Grid item xs={3} style={{textAlign: 'start', paddingLeft: '20px'}}><HeaderText>CALL PRICE</HeaderText></Grid>
-        <Grid item xs={3} style={{textAlign: 'start'}}><HeaderText>TARGET</HeaderText></Grid>
-        <Grid item xs={3} style={{textAlign: 'start'}}><HeaderText>TYPE</HeaderText></Grid>
+        <Grid item xs={2} style={{textAlign: 'start', paddingLeft: '20px'}}><HeaderText>CALL PRICE</HeaderText></Grid>
+        <Grid item xs={2} style={{textAlign: 'start'}}><HeaderText>TARGET</HeaderText></Grid>
+        <Grid item xs={2} style={{textAlign: 'start'}}><HeaderText>TYPE</HeaderText></Grid>
+        <Grid item xs={3} style={{textAlign: 'start'}}><HeaderText>INVESTMENT</HeaderText></Grid>
         <Grid item xs={2} style={{textAlign: 'start'}}><HeaderText>ENDING ON</HeaderText></Grid>
         <Grid item xs={1} style={{textAlign: 'center'}}><HeaderText>Status</HeaderText></Grid>
     </Grid>

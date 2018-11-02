@@ -5,10 +5,18 @@ import styled from 'styled-components';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
-import {metricColor, primaryColor} from '../../../../../constants';
+import RadioGroup from '../../../../../components/selections/RadioGroup';
+import {metricColor, primaryColor, horizontalBox} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
 
 export default class SelectionMetricsMini extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selected: 0
+        };
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.state, nextState) || !_.isEqual(this.props, nextProps)) {
             return true;
@@ -16,11 +24,22 @@ export default class SelectionMetricsMini extends React.Component {
         return false;
     }
 
-    render() {
-        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, cost = 0} = this.props;
+    handleRadioChange = value => {
+        this.setState({selected: value});
+    }
 
+    render() {
+        const metrics = this.state.selected === 0 ? this.props.daily : this.props.total;
+        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, cost = 0} = metrics.total;
+        
         return (
             <SGrid container justify="center" alignItems="center">
+                <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                    <RadioGroup 
+                        items={['Daily', 'Cumulative']}
+                        onChange={this.handleRadioChange}
+                    />
+                </Grid>
                 <Grid item xs={10}>
                     <Grid container spacing={8}>
                         {
@@ -43,7 +62,7 @@ export default class SelectionMetricsMini extends React.Component {
 }
 
 const MetricItem = ({label, value, percentage = false, coloured = false, money = false}) => {
-    const color = coloured ? value < 0 ? metricColor.negative : metricColor.positive : '#4B4B4B';
+    const color = coloured ? value < 0 ? metricColor.negative : value === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
     let nValue = money ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(value)}` : value;
     nValue = percentage ? `${nValue} %` : nValue;
     const xs = global.screen.width > 600 ? 3 : 4;

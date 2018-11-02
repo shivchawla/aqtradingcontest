@@ -79,9 +79,9 @@ export const getDailyContestPredictions = (date = null, category='started', popu
     return fetchAjaxPromise(url, history, currentUrl, handleError)
 }
 
-export const getPnlStats = (date = moment(), history, currentUrl, handleError = true) => {
+export const getPnlStats = (date = moment(), type = 'started', history, currentUrl, handleError = true) => {
     const requiredDate = date.format(dateFormat);
-    const url =`${requestUrl}/dailycontest/pnl?date=${requiredDate}&category=total`;
+    const url =`${requestUrl}/dailycontest/pnl?date=${requiredDate}&category=${type}`;
 
     return fetchAjaxPromise(url, history, currentUrl, handleError);
 }
@@ -116,8 +116,8 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
         const positionIndex = _.findIndex(positions, position => position.symbol === symbol);
         if (positionIndex < 0) {
             positions.push({
-                chg: 0,
-                chgPct: 0,
+                chg: _.get(prediction, 'position.security.latestDetail.change', 0),
+                chgPct: _.get(prediction, 'position.security.latestDetail.changePct', null),
                 industry: _.get(prediction, 'position.security.detail.Industry', null),
                 key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
                 lastPrice: _.get(prediction, 'position.lastPrice', null),

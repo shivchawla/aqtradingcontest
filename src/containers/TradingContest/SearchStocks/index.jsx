@@ -170,7 +170,7 @@ export class SearchStocks extends React.Component {
         });
     }
 
-    fetchStocks = (searchQuery = this.state.searchInput, shoudlConcatenate = true) => new Promise(resolve => {
+    fetchStocks = (searchQuery = this.state.searchInput, shoudlConcatenate = true, shouldSync = true) => new Promise(resolve => {
         const limit = 10;
         const stocks = [...this.state.stocks];
         const skip = this.state.selectedPage * limit;
@@ -196,7 +196,7 @@ export class SearchStocks extends React.Component {
             resolve(true);
         })
         .then(() => {
-            this.syncStockListWithPortfolio();
+            shouldSync && this.syncStockListWithPortfolio();
         })
         .catch(err => {
             console.log(err);
@@ -491,39 +491,36 @@ export class SearchStocks extends React.Component {
         }
     }
 
+    // componentWillMount() {
+    //     this.fetchStocks('');
+    //     this.initializeSelectedStocks();
+    // }
+
     syncStockListWithPortfolio = (props = this.props) => {
         const positions = _.get(props, 'portfolioPositions', []);
-        const sellPositions = _.get(props, 'portfolioSellPositions', []);
         const selectedStocks = positions.map(position => _.get(position, 'symbol', null)).filter(item => item !== null);
-        const sellSelectedStocks = []
 
         let stocks = [...this.state.stocks]; 
         let localStocks = [...this.localStocks];
         
         stocks = stocks.map(stock => {
-            const numPredictions = this.getPredictionsCount(stock.symbol, positions);
             // If stock is present in the portfolio mark checked as true else false
             const stockIndex = _.findIndex(positions, position => position.symbol === stock.symbol);
-            const sellStockIndex = _.findIndex(sellPositions, sellPosition => sellPosition.symbol === stock.symbol);
             const checked = stockIndex !== -1 ? true : false;
-            const sellChecked = sellStockIndex !== -1 ? true : false;
             const predictions = _.get(positions, `[${stockIndex}].predictions`, []);
 
-            return {...stock, checked, sellChecked, predictions};
+            return {...stock, checked, predictions};
         });
         localStocks = localStocks.map(stock => {
-            const numPredictions = this.getPredictionsCount(stock.symbol, positions);
             // If stock is present in the portfolio mark checked as true else false
             const stockIndex = _.findIndex(positions, position => position.symbol === stock.symbol);
-            const sellStockIndex = _.findIndex(sellPositions, sellPosition => sellPosition.symbol === stock.symbol);
             const checked = stockIndex !== -1 ? true : false;
-            const sellChecked = sellStockIndex !== -1 ? true : false;
             const predictions = _.get(positions, `[${stockIndex}].predictions`, []);
 
-            return {...stock, checked, sellChecked, predictions};
+            return {...stock, checked, predictions};
         })
         this.localStocks = localStocks;
-        this.setState({stocks, selectedStocks, sellSelectedStocks});
+        this.setState({stocks, selectedStocks});
     }
 
     getPredictionsCount = (symbol, positions = this.props.portfolioPositions) => {
@@ -579,10 +576,10 @@ export class SearchStocks extends React.Component {
         })
     }
 
-    componentWillMount() {
-        this.fetchStocks('');
-        this.initializeSelectedStocks();
-    }
+    // componentWillMount() {
+    //     this.fetchStocks('');
+    //     this.initializeSelectedStocks();
+    // }
 
     handlePagination = type => {
         let {selectedPage = 0} = this.state;
@@ -590,7 +587,7 @@ export class SearchStocks extends React.Component {
         this.setState({
             selectedPage
         }, () => {
-            this.fetchStocks();
+            this.fetchStocks(this.state.searchInput, true, false);
         })
     }
 
@@ -930,9 +927,31 @@ export class SearchStocks extends React.Component {
         }, 400)
     }
 
+    getCheckedStatus = (stock) => {
+        const predictions = _.get(stock, 'predictions', []);
+        const checked = _.get(stock, 'checked', false);
+        const lockedPredictions = predictions.filter(prediction => prediction.locked === true);
+        const newPredictions = predictions.filter(prediction => prediction.new === true);
+        if (predictions.length === 0) {
+            if (checked) {
+                return true
+            } else {
+                return false
+            }
+        } else if (lockedPredictions.length < maxPredictionLimit) {
+            if (newPredictions.length === 0) {
+                return false
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
     render() { 
         const selectedStocks = [...this.state.selectedStocks, ...this.state.sellSelectedStocks];
-
+        const selectedNewPredictions = this.state.stocks.filter(stock => this.getCheckedStatus(stock) === true);
         return (
             <React.Fragment>
                 <Snackbar
@@ -989,7 +1008,7 @@ export class SearchStocks extends React.Component {
                             <SearchStockHeaderDesktop
                                 filters={this.props.filters}
                                 selectedStocks={selectedStocks}
-                                stocksCount={this.state.selectedStocks.length}
+                                stocksCount={selectedNewPredictions.length}
                                 stockPerformanceOpen={this.state.stockPerformanceOpen}
                                 toggleBottomSheet={this.props.toggleBottomSheet}
                                 addSelectedStocksToPortfolio={this.addSelectedStocksToPortfolio}

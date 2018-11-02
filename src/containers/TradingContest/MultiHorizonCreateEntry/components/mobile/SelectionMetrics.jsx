@@ -22,8 +22,8 @@ export default class SelectionMetrics extends React.Component {
                 <SGrid container>
                     <Grid item xs={12} style={{borderBottom: `1px solid ${borderColor}`}}>
                         <Grid container>
-                            <MetricItem money label='Positive PnL' value={((pnlPositive || 0) * 1000)} />
-                            <MetricItem money label='Negative PnL' value={((pnlNegative || 0) * 1000)} />
+                            <MetricItem money label='Profit' value={((pnlPositive || 0) * 1000)} />
+                            <MetricItem money label='Loss' value={((pnlNegative || 0) * 1000)} />
                             <MetricItem label='Profit Factor' value={(profitFactor || 0).toFixed(2)} />
                             <MetricItem label='Cost' value={`${(cost || 0)}K`} />
                             <MetricItem money label='Total PnL' coloured value={((pnl || 0) * 1000)} />
@@ -37,7 +37,7 @@ export default class SelectionMetrics extends React.Component {
 }
 
 const MetricItem = ({label, value, percentage = false, coloured = false, money = false}) => {
-    const color = coloured ? value < 0 ? metricColor.negative : metricColor.positive : '#4B4B4B';
+    const color = coloured ? value < 0 ? metricColor.negative : value === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
     let nValue = money ? `₹${Utils.formatMoneyValueMaxTwoDecimals(value)}` : value;
     nValue = percentage ? `${nValue}%` : nValue;
 

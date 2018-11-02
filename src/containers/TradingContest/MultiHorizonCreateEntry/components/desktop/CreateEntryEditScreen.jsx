@@ -20,7 +20,7 @@ export default class CreateEntryEditScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: 'startedToday',
+            listView: 'started',
             anchorEl: null
         };
     }
@@ -42,24 +42,14 @@ export default class CreateEntryEditScreen extends React.Component {
     }
 
     onPredictionTypeMenuItemClicked = (event, listView) => {
-        this.setState({anchorEl: null, listView});
+        this.setState({anchorEl: null, listView}, () => {
+            this.props.handlePreviewListMenuItemChange(listView)
+        });
     }
 
-    getPositions = (type = 'startedToday') => {
+    getPositions = (type = 'started') => {
         let predictions = [];
-        switch(type) {
-            case "startedToday":
-                predictions = this.props.startedTodayPositions;
-                break;
-            case "activeToday":
-                predictions = this.props.activePositions;
-                break;
-            case "endedToday":
-                predictions = this.props.stalePositions;
-                break;
-        }
-
-        return predictions;
+        this.props.handlePreviewListMenuItemChange(type)
     }
 
     renderEmptySelections = () => {
@@ -207,7 +197,7 @@ export default class CreateEntryEditScreen extends React.Component {
     }
 
     renderOtherStocksList = () => {
-        let positions = this.getPositions(this.state.listView);
+        let positions = this.props.previewPositions;
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
@@ -216,30 +206,36 @@ export default class CreateEntryEditScreen extends React.Component {
 
         return (
             <Grid item xs={12}>
-                <div
-                        style={{
-                            ...horizontalBox, 
-                            justifyContent: 'space-between',
-                            width: '100%'
-                        }}
-                >
-                    <SectionHeader style={{marginTop: '20px'}}>Predictions</SectionHeader>
-                    <PredictionTypeMenu 
-                        type={this.state.listView}
-                        anchorEl={this.state.anchorEl}
-                        onClick={this.onPredictionTypeMenuClicked}
-                        onClose={this.onPredictionTypeMenuClose}
-                        onMenuItemClicked={this.onPredictionTypeMenuItemClicked}
-                    />
-                </div>
                 {
-                    pnlFound &&
-                    <SelectionMetricsMini 
-                        {...getRequiredMetrics()}
-                        onClick={toggleEntryDetailBottomSheet}
-                    />
+                    this.props.loadingPreview 
+                    ?   <LoaderComponent />
+                    :   <React.Fragment>
+                            <div
+                                    style={{
+                                        ...horizontalBox, 
+                                        justifyContent: 'space-between',
+                                        width: '100%'
+                                    }}
+                            >
+                                <SectionHeader style={{marginTop: '20px'}}>Predictions</SectionHeader>
+                                <PredictionTypeMenu 
+                                    type={this.state.listView}
+                                    anchorEl={this.state.anchorEl}
+                                    onClick={this.onPredictionTypeMenuClicked}
+                                    onClose={this.onPredictionTypeMenuClose}
+                                    onMenuItemClicked={this.onPredictionTypeMenuItemClicked}
+                                />
+                            </div>
+                            {
+                                pnlFound &&
+                                <SelectionMetricsMini 
+                                    {...getRequiredMetrics()}
+                                    onClick={toggleEntryDetailBottomSheet}
+                                />
+                            }
+                            <StockPreviewList positions={positions} />
+                        </React.Fragment>
                 }
-                <StockPreviewList positions={positions} />
             </Grid>
         );
     }
@@ -262,16 +258,16 @@ export default class CreateEntryEditScreen extends React.Component {
     }
 }
 
-const PredictionTypeMenu = ({anchorEl, type = 'startedToday', onClick , onClose, onMenuItemClicked}) => {
+const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMenuItemClicked}) => {
     let buttonText = 'Started Today';
     switch(type) {
-        case "startedToday":
+        case "started":
             buttonText = "Started Today";
             break;
-        case "activeToday":
+        case "active":
             buttonText = "Active Today";
             break;
-        case "endedToday":
+        case "ended":
             buttonText = "Ended Today";
             break;
         default:
@@ -296,20 +292,20 @@ const PredictionTypeMenu = ({anchorEl, type = 'startedToday', onClick , onClose,
                     onClose={onClose}
             >
                 <MenuItem 
-                        onClick={e => onMenuItemClicked(e, 'startedToday')}
-                        selected={type === 'startedToday'}
+                        onClick={e => onMenuItemClicked(e, 'started')}
+                        selected={type === 'started'}
                 >
                     Started Today
                 </MenuItem>
                 <MenuItem 
-                        onClick={e => onMenuItemClicked(e, 'activeToday')}
-                        selected={type === 'activeToday'}
+                        onClick={e => onMenuItemClicked(e, 'active')}
+                        selected={type === 'active'}
                 >
                     Active
                 </MenuItem>
                 <MenuItem 
-                        onClick={e => onMenuItemClicked(e, 'endedToday')}
-                        selected={type === 'endedToday'}
+                        onClick={e => onMenuItemClicked(e, 'ended')}
+                        selected={type === 'ended'}
                 >
                     Ended Today
                 </MenuItem>

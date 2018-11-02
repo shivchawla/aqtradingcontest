@@ -32,8 +32,8 @@ export default class EntryDetailBottomSheet extends React.Component {
     }
 
     render() {
-        const {open = false, dailyMetric ={}, weeklyMetric = {}, resultDate = moment()} = this.props; 
-        const metrics = this.state.selectedView === 0 ? dailyMetric : weeklyMetric;
+        const {open = false, pnlMetrics ={}, weeklyMetric = {}, resultDate = moment()} = this.props; 
+        const metrics = this.state.selectedView === 0 ? _.get(pnlMetrics, 'daily', {}) : _.get(pnlMetrics, 'total', {});
 
         return (
             <Motion style={{x: spring(open ? 0 : -global.screen.height)}}>
@@ -51,6 +51,12 @@ export default class EntryDetailBottomSheet extends React.Component {
                                     <IconButton style={{position: 'absolute', right: 0}} onClick={this.props.toggle}>
                                         <Icon style={{color: metricColor.negative}}>highlight_off</Icon>
                                     </IconButton>
+                                </Grid>
+                                <Grid item xs={12} style={horizontalBox}>
+                                    <SegmentedControl 
+                                        labels={['Daily', 'CUMULATIVE']}
+                                        onChange={this.handleSegmentChange}
+                                    />
                                 </Grid>
                                 <Grid item xs={12} style={verticalBox}>
                                     <MetricsHeader>Total</MetricsHeader>
