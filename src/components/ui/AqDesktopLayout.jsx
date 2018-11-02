@@ -39,7 +39,6 @@ class AqDesktopLayout extends React.Component {
     }
 
     handleTabChange = (e, value) => {
-        console.log(value);
         this.setState({activeSegment: value});
         this.props.handleTabChange && this.props.handleTabChange(value);
     }

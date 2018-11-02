@@ -36,8 +36,13 @@ export default class DateComponent extends React.Component {
 
     navigateToNextDate = () => {
         const date = moment(DateHelper.nextNonHolidayWeekday(this.state.selectedDate.toDate()));
-        //WHY IS THERE A LAG in FE?
-        this.setState({selectedDate: date}, () => this.onDateChange());
+        if (!this.isFutureDate(date)) {
+            this.setState({selectedDate: date}, () => this.onDateChange());
+        }
+    }
+
+    isFutureDate = date => {
+        return moment().isBefore(date);
     }
 
     handleDatePickerChange = date => {
@@ -83,10 +88,15 @@ export default class DateComponent extends React.Component {
                         style={{textAlign: 'center'}}
                         TextFieldComponent={DateFields}
                         color={color}
+                        disableFuture={true}
                     />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}} onClick={this.navigateToNextDate}> 
-                    <ActionIcon size={30} color={color} type='chevron_right' />
+                    <ActionIcon 
+                        size={30} 
+                        color={color} 
+                        type='chevron_right' 
+                    />
                 </Grid>
                 {
                     _.get(this.props, 'timerDate', null) !== null &&

@@ -2,6 +2,7 @@ import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
 import {Utils, fetchAjaxPromise} from '../../../../utils';
+import {maxPredictionLimit} from '../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
@@ -133,7 +134,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
 }
 
 // formats predictions obtained from the backend
-export const processPredictions = (predictions = [], locked = false) => {
+export const processPredictions = (predictions = [], locked = false, type = 'startedToday') => {
     return Promise.map(predictions, prediction => ({
         symbol: _.get(prediction, 'position.security.ticker', null),
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),
@@ -145,7 +146,8 @@ export const processPredictions = (predictions = [], locked = false) => {
         targetAchieved: _.get(prediction, 'success.status', false),
         target: _.get(prediction, 'target', 0),
         locked,
-        new: false
+        new: false,
+        type
     }))
 }
 

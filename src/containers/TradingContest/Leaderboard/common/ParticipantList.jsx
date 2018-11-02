@@ -15,11 +15,15 @@ export default class ParticipantList extends React.Component {
     }
 
     renderWinners = () => {
-        const {winners = []} = this.props;
+        const {winners = [], listType = 'long'} = this.props;
         const ParticipantListItem = global.screen.width < 600 ? ParticipantListItemMobile : ParticipantListItemDesktop;
 
         return winners.map((winner, index) => (
-            <ParticipantListItem key={index} {...winner} />
+            <ParticipantListItem 
+                key={index} 
+                {...winner} 
+                listType={listType}
+            />
         ));
     }
     

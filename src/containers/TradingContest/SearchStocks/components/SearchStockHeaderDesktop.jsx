@@ -55,7 +55,8 @@ export default class SearchStockHeaderDesktop extends React.Component {
                         >
                             SELECTED
                             <CounterTag 
-                                count={this.props.selectedStocks.length} 
+                                // count={this.props.selectedStocks.length} 
+                                count={this.props.stocksCount} 
                             />
                         </Button>
                     </React.Fragment>

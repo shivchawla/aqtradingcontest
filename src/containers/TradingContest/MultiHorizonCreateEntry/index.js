@@ -39,7 +39,9 @@ class CreateEntry extends React.Component {
             startedTodayPositions: [],
             predictions: [], // Predictions started that day
             activePredictions: [], // Predictions that are active that day
-            stalePredictions: [], // Predictions that ended that day
+            stalePredictions: [], // Predictions that ended that day,
+            activePositions: [], // Active Positions
+            stalePositions: [], // Stale Positions
             sellPositions: [], // Positions to sell
             previousPositions: [], // contains the positions for the previous entry in the current contest for buy,
             previousSellPositions: [], // contains the positions for the previous entry in the current contest for sell,
@@ -425,11 +427,16 @@ class CreateEntry extends React.Component {
             if (selectedPredictionIndex > -1) {
                 // Prediction to be deleted found
                 selectedPosition.predictions.splice(selectedPredictionIndex, 1);
+                // if number of new predictions is 0 then set addPrediction to false
+                if (selectedPosition.predictions.filter(prediction => prediction.new === true).length === 0) {
+                    selectedPosition.addPrediction = false;
+                }
                 // Delete the position if all the predictions are deleted
                 if (selectedPosition.predictions.length === 0) {
                     clonedPositions.splice(selectedPositionIndex, 1);
                 } else {
                     clonedPositions[selectedPositionIndex] = selectedPosition;
+
                 }
                 this.setState({positions: clonedPositions}, () => {
                     this.checkForDuplicateHorizon();

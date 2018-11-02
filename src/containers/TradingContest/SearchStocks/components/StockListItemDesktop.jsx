@@ -6,8 +6,8 @@ import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import ActionIcon from '../../Misc/ActionIcons';
 import {Utils} from '../../../../utils';
-import {metricColor, primaryColor, horizontalBox, verticalBox, nameEllipsisStyle} from '../../../../constants';
 import {maxPredictionLimit} from '../../MultiHorizonCreateEntry/constants';
+import {metricColor, primaryColor, horizontalBox, verticalBox, nameEllipsisStyle} from '../../../../constants';
 
 const textColor = '#757575';
 const styles = {
@@ -84,7 +84,21 @@ export default class StockListItem extends React.Component {
     }
 
     render() {
-        const {symbol, name, change, changePct, close, open, current, onClick, checked = false, onAddIconClick, selected = false, hideActions = false} = this.props;
+        const {
+            symbol, 
+            name, 
+            change, 
+            changePct, 
+            close, 
+            open, 
+            current, 
+            onClick, 
+            checked = false, 
+            onAddIconClick, 
+            selected = false, 
+            hideActions = false,
+            numPredictions = null
+        } = this.props;
         const containerStyle = {
             borderBottom: '1px solid #eaeaea',
             color: textColor,
@@ -109,6 +123,7 @@ export default class StockListItem extends React.Component {
         const changeIcon = change < 0 ? 'caret-down' : 'caret-up';
         const nChangePct = (changePct * 100).toFixed(2);
 
+        
         return (
             <Grid container className='stock-row' style={containerStyle} alignItems="center">
                 <Grid item xs={4} style={leftContainerStyle} onClick={() => onClick({symbol, name})}>

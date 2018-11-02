@@ -199,7 +199,7 @@ export const getMultiStockData = (stocks = []) => {
 
 export const isMarketOpen = (currentTime = moment()) => {
     const marketOpenTime = moment().hours(9).minutes(15);
-    const marketCloseTime = moment().hours(21).minutes(30);
+    const marketCloseTime = moment().hours(23).minutes(30);
     if (currentTime.isSameOrAfter(marketOpenTime) && currentTime.isSameOrBefore(marketCloseTime)) {
         return {status: true};
     } else if (currentTime.isBefore(marketOpenTime)) {
@@ -214,4 +214,50 @@ export const getTopStocks = (selectedDate = moment(), history, currentUrl, handl
     const url = `${requestUrl}/dailycontest/topstocks?date=${requiredDate}`;
 
     return fetchAjaxPromise(url, history, currentUrl, handleError)
+}
+
+export const getLeaderboard = (selectedDate = moment(), history, currentUrl, handleError = true) => {
+    const requiredDate = selectedDate.format(dateFormat);
+    const url = `${requestUrl}/dailycontest/leaderboard?date=${requiredDate}`;
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError);
+}
+
+export const processLeaderboardWinners = (leaders = []) => {
+    return Promise.map(leaders, leader => {
+        const userName = _.get(leader, 'advisor.user.firstName', '') + ' ' + _.get(leader, 'advisor.user.lastName', '');
+        const pnl = {
+            long: _.get(leader, 'pnlStats.long.pnl', 0),
+            short: _.get(leader, 'pnlStats.short.pnl', 0),
+            total: _.get(leader, 'pnlStats.total.pnl', 0)
+        };
+
+        const pnlPct = {
+            long: _.get(leader, 'pnlStats.long.pnlPct', 0),
+            short: _.get(leader, 'pnlStats.short.pnlPct', 0),
+            total: _.get(leader, 'pnlStats.total.pnlPct', 0)
+        };
+
+        const cost = {
+            long: _.get(leader, 'pnlStats.long.cost', 0),
+            short: _.get(leader, 'pnlStats.short.cost', 0),
+            total: _.get(leader, 'pnlStats.total.cost', 0)
+        };
+
+        const netValue = {
+            long: _.get(leader, 'pnlStats.long.netValue', 0),
+            short: _.get(leader, 'pnlStats.short.netValue', 0),
+            total: _.get(leader, 'pnlStats.total.netValue', 0)
+        };
+
+        const profitFactor = {
+            long: _.get(leader, 'pnlStats.long.profitFactor', 0),
+            short: _.get(leader, 'pnlStats.short.profitFactor', 0),
+            total: _.get(leader, 'pnlStats.total.profitFactor', 0)
+        };
+
+        const rank = _.get(leader, 'rank', 0)
+
+        return {userName, pnl, pnlPct, cost, netValue, profitFactor, rank};
+    })
 }

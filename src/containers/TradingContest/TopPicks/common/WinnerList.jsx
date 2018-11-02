@@ -19,7 +19,11 @@ export default class WinnerList extends React.Component {
         const WinnerListItem = global.screen.width < 600 ? WinnerListItemMobile : WinnerListItemDesktop;
         
         return winners.map((winner, index) => (
-            <WinnerListItem {...winner} key={index} />
+            <WinnerListItem 
+                {...winner} 
+                key={index} 
+                type={this.props.type}
+            />
         ));
     }
     

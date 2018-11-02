@@ -1,62 +1,69 @@
 import React from 'react';
-import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import LoaderComponent from '../../Misc/Loader';
 import TopPicksTable from './TopPicksTable';
-import TimerComponent from '../../Misc/TimerComponent';
-import {verticalBox} from '../../../../constants';
+import RadioGroup from '../../../../components/selections/RadioGroup';
+import {verticalBox, horizontalBox} from '../../../../constants';
 
 export default class TopPicksLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            timelineView: 'daily'
+            view: 'byInvestment'
         };
     }
 
+    onRadioChange = value => {
+        switch(value) {
+            case 0:
+                this.setState({view: 'byInvestment'});
+                break;
+            case 1:
+                this.setState({view: 'byUsers'});
+                break;
+            default:
+                this.setState({view: 'byInvestment'});
+                break;
+        }
+    }
+
     renderContent() {
-        const contestEnded = moment().isAfter(moment(this.props.endDate));
-        const contestRunning = moment().isSameOrAfter(moment(this.props.startDate)) && !contestEnded;
-        const winnerStocks = this.props.winnerStocks;
-        const winnerStocksWeekly = this.props.winnerStocksWeekly;
+        const winnerStocksByInvestment = this.props.winnerStocksByInvestment;
+        const winnerStocksByUsers = this.props.winnerStocksByUsers;
 
         return (
             <SGrid container>
                 {
-                    this.props.noContestFound
-                    ?   <ContestNotPresentView />
-                    :   <Grid item xs={12}>
-                            {
-                                this.props.winnerStocks.length === 0 &&
-                                    <ContestStartedView 
-                                        endDate={
-                                            contestEnded 
-                                            ? this.props.resultDate 
-                                            : contestRunning 
-                                                ? this.props.endDate 
-                                                :  this.props.startDate
-                                        }
-                                        contestEnded={contestEnded}
-                                        contestRunning={contestRunning}
-                                    />
-                            }     
-                            {
-                                contestEnded &&
-                                <div 
-                                        style={{
-                                            marginLeft: '3%', 
-                                            marginRight: '3%',
-                                            marginTop: '-50px'
-                                        }}
-                                >
-                                    <TopPicksTable 
-                                        winnerStocks={winnerStocks}
-                                        winnerStocksWeekly={winnerStocksWeekly}
-                                        timelineView={this.state.timelineView}
-                                    />
-                                </div>
-                            }
+                    (winnerStocksByInvestment.length === 0 && winnerStocksByUsers.length === 0)
+                    ?   <NoDataFound />
+                    :   <Grid item xs={12} style={containerColStyle}>
+                            <div 
+                                    style={{
+                                        ...horizontalBox, 
+                                        width: '100%',
+                                        justifyContent: 'flex-end'
+                                    }}
+                            >
+                                <RadioGroup 
+                                    items={['By Investment', 'By Users']} 
+                                    onChange={this.onRadioChange}
+                                />
+                            </div>
+                            <div 
+                                    style={{
+                                        width: '95%',
+                                        marginLeft: '3%', 
+                                        marginRight: '3%',
+                                        marginTop: '-50px',
+                                    }}
+                            >
+                                <TopPicksTable 
+                                    winnerStocksByInvestment={winnerStocksByInvestment}
+                                    winnerStocksByUsers={winnerStocksByUsers}
+                                    type={this.state.view}
+                                />
+                            </div>
                         </Grid>
 
                 }
@@ -69,40 +76,27 @@ export default class TopPicksLayout extends React.Component {
     }
 }
 
-const ContestNotPresentView = () => {
+const NoDataFound = () => {
     return (
         <Grid container style={{height: 'calc(100vh - 300px)', width: '100%'}}>
             <Grid item xs={12} style={verticalBox}>
-                <ContestNotAvailableText>No contest avaiable for selected date</ContestNotAvailableText>
+                <NoDataText>No Data Found.</NoDataText>
             </Grid>
         </Grid>
     );
 }
 
-const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
-    return (
-        <Grid container style={{marginTop: '0%', height: 'calc(100vh - 300px)', width: '100%'}}>
-            <Grid item xs={12} style={{...verticalBox}}>
-                <h3 style={{fontSize: '18px', color: '#4B4B4B', fontWeight: 300}}>
-                    {
-                        contestEnded ? 'Results will be declared soon' : contestRunning ? 'Contest submission ends in' : 'New Contest will start in'
-                    }
-                </h3>
-                {
-                    !contestEnded &&
-                    <TimerComponent date={endDate} />
-                }
-            </Grid>
-        </Grid>
-    );
-}
+const containerColStyle = {
+    ...verticalBox,
+    alignItems: 'flex-start',
+};
 
 const SGrid = styled(Grid)`
     background-color: #fff;
 `;
 
-const ContestNotAvailableText = styled.h3`
+const NoDataText = styled.h3`
     font-size: 18px;
+    color: #535353;
     font-weight: 400;
-    color: primaryColor;
 `;

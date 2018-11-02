@@ -18,8 +18,8 @@ import SelectedStocksDialog from './components/SelectedStocksDialog';
 import SearchStockHeaderMobile from './components/StockSearchHeaderMobile';
 import SearchStockHeaderDesktop from './components/SearchStockHeaderDesktop';
 import StockList from './components/StockList';
-import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
 import {maxPredictionLimit} from '../MultiHorizonCreateEntry/constants'
+import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
 import {fetchAjax} from '../../../utils';
 import './css/searchStocks.css';
 
@@ -259,6 +259,7 @@ export class SearchStocks extends React.Component {
     processStockList = (stocks = []) => {
         const selectedStocks = [...this.state.selectedStocks];
         const sellSelectedStocks = [...this.state.sellSelectedStocks];
+        const positions = _.get(this.props, 'portfolioPositions', []);
 
         return stocks.map(stock => {
             const symbol = _.get(stock, 'security.detail.NSE_ID', null) !== null
@@ -321,7 +322,6 @@ export class SearchStocks extends React.Component {
     conditionallyAddItemToSelectedArray = (symbol, addToPortfolio = false) => {
         const {maxLimit = 5} = this.props;
         const selectedStocks = _.map([...this.state.selectedStocks], _.cloneDeep);
-        const sellSelectedStocks = _.map(this.state.sellSelectedStocks, _.cloneDeep);
         const localStocks = _.map([...this.localStocks], _.cloneDeep);
         const stocks = _.map([...this.state.stocks], _.cloneDeep);
         const selectedPositions = this.props.portfolioPositions;
@@ -336,7 +336,6 @@ export class SearchStocks extends React.Component {
         }
 
         const selectedStockIndex = selectedStocks.indexOf(symbol);
-        const sellSelectedStockIndex = sellSelectedStocks.indexOf(symbol);
 
         const targetIndex = _.findIndex(stocks, stock => stock.symbol === symbol);
         const targetStock = stocks[targetIndex];
@@ -347,20 +346,16 @@ export class SearchStocks extends React.Component {
         const targetLocalStock = localStocks.filter(stock => stock.symbol === symbol)[0];
         if (targetStock !== undefined && targetLocalStock !== undefined) {
             if (selectedStockIndex === -1) {
-
+                // Addition happens here
                 if (this.state.selectedStocks.length >= maxLimit) {
                     this.setState({snackbar: {open: true, message: `You can't buy more than ${maxLimit} stocks`}});
                     return;
                 }
                 selectedStocks.push(symbol);
-                // Checking if it is present in the be sold array, if present delete it
-                if (sellSelectedStockIndex >= 0) {
-                    sellSelectedStocks.splice(sellSelectedStockIndex, 1);
-                    targetStock.sellChecked = false;
-                    targetLocalStock.sellChecked = false;
-                }
                 targetStock.checked = true;
                 targetLocalStock.checked = true;
+                targetLocalStock.addPrediction = true;
+                targetStock.addPrediction = true;
             } else {
                 if (lockedPredictions.length === 0) {
                     console.log('Enter locked positions change');
@@ -380,7 +375,7 @@ export class SearchStocks extends React.Component {
                 }
             }
             stocks[targetIndex] = targetStock;
-            this.setState({selectedStocks, stocks, sellSelectedStocks});
+            this.setState({selectedStocks, stocks});
             this.localStocks = localStocks;
         }
     }
@@ -505,7 +500,9 @@ export class SearchStocks extends React.Component {
 
         let stocks = [...this.state.stocks]; 
         let localStocks = [...this.localStocks];
+        
         stocks = stocks.map(stock => {
+            const numPredictions = this.getPredictionsCount(stock.symbol, positions);
             // If stock is present in the portfolio mark checked as true else false
             const stockIndex = _.findIndex(positions, position => position.symbol === stock.symbol);
             const sellStockIndex = _.findIndex(sellPositions, sellPosition => sellPosition.symbol === stock.symbol);
@@ -516,6 +513,7 @@ export class SearchStocks extends React.Component {
             return {...stock, checked, sellChecked, predictions};
         });
         localStocks = localStocks.map(stock => {
+            const numPredictions = this.getPredictionsCount(stock.symbol, positions);
             // If stock is present in the portfolio mark checked as true else false
             const stockIndex = _.findIndex(positions, position => position.symbol === stock.symbol);
             const sellStockIndex = _.findIndex(sellPositions, sellPosition => sellPosition.symbol === stock.symbol);
@@ -529,16 +527,16 @@ export class SearchStocks extends React.Component {
         this.setState({stocks, selectedStocks, sellSelectedStocks});
     }
 
-    checkForLockedPredictionsInPosition = (symbol, positions = this.props.portfolioPositions) => {
+    getPredictionsCount = (symbol, positions = this.props.portfolioPositions) => {
         const selectedPosition = positions.filter(position => position.symbol === symbol)[0];
         if (selectedPosition !== undefined) {
             const predictions = _.get(selectedPosition, 'predictions', []);
             const lockedPredictions = predictions.filter(prediction => prediction.locked === true);
 
-            return lockedPredictions.length > 0 ? true : false;
+            return lockedPredictions.length;
         }
 
-        return false;
+        return null;
     }
 
     initializeSelectedStocks = async (positions = [...this.props.portfolioPositions], sellPositions= [...this.props.portfolioSellPositions]) => {
@@ -547,6 +545,7 @@ export class SearchStocks extends React.Component {
         const processedSellSelectedStocks = await this.getLocalStocksFromPortfolio(sellPositions, 'sell');
         this.localStocks = [...processedBuySelectedStocks, ...processedSellSelectedStocks];
         stocks.map(stock => {
+            // stocks that were not there in the portfolio but are rendered in the stock list
             const localStock = this.localStocks.filter(item => item.symbol === stock.symbol)[0];
             if (localStock === undefined) {
                 this.localStocks.push(stock);
@@ -991,6 +990,7 @@ export class SearchStocks extends React.Component {
                             <SearchStockHeaderDesktop
                                 filters={this.props.filters}
                                 selectedStocks={selectedStocks}
+                                stocksCount={this.localStocks.filter(stock => stock.addPrediction === true).length}
                                 stockPerformanceOpen={this.state.stockPerformanceOpen}
                                 toggleBottomSheet={this.props.toggleBottomSheet}
                                 addSelectedStocksToPortfolio={this.addSelectedStocksToPortfolio}

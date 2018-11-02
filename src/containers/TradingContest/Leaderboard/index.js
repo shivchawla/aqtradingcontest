@@ -6,69 +6,45 @@ import {withRouter} from 'react-router';
 import LeaderboardLayoutMobile from './mobile/LeaderboardLayout';
 import LeaderboardLayoutDesktop from './desktop/LeaderboardLayout';
 import {DailyContestCreateMeta} from '../metas';
-import {getContestSummary, processParticipants} from '../utils';
+import {getContestSummary, processParticipants, getLeaderboard, processLeaderboardWinners} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
-const URLSearchParamsPoly = require('url-search-params');
 
 class Participants extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            contestActive: false,
-            startDate: moment(),
-            endDate: moment().add(1, 'days'),
-            resultDate: moment().add(1, 'days'),
             selectedDate: props.selectedDate || moment(),
             winners: [],
-            winnersWeekly: [],
             loading: false,
-            timelineView: 'daily'
         };
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.selectedDate !== nextProps.selectedDate) {
-            this.setState({selectedDate: nextProps.selectedDate}, this.getContestRankings(nextProps.selectedDate));
+        if (this.props.selectedDate.format(dateFormat) !== nextProps.selectedDate.format(dateFormat)) {
+            this.setState({
+                selectedDate: nextProps.selectedDate
+            }, this.fetchLeaderboard(nextProps.selectedDate));
         }
     } 
 
-    getContestRankings = selectedDate => {
-        const date = moment(selectedDate).format(dateFormat);
+    fetchLeaderboard = (selectedDate = moment()) => {
         this.setState({loading: true});
-        const errorCallback = err => {
-            this.setState({winners: [], contestActive: false});
-        }
-         getContestSummary(date, this.props.history, this.props.match.url, errorCallback)
+        getLeaderboard(selectedDate, this.props.history, this.props.match.params, false)
         .then(async response => {
-            const topStocks = _.get(response.data, 'topStocks', []);
-            const contestActive = _.get(response.data, 'active', false);
-            const startDate = moment(_.get(response.data, 'startDate', null));
-            const endDate = moment(_.get(response.data, 'endDate', null));
-            const resultDate = moment(_.get(response.data, 'resultDate', null));      
-            const todayDate = moment().format(dateFormat);
-            const contestEnded = moment(todayDate, dateFormat).isAfter(moment(endDate));  
-            const winnerParticipants = _.get(response.data, 'winners', []);
-            const winnerParticipantsWeekly = _.get(response.data, 'winners_weekly', []);
-            const processedParticipants = await processParticipants(winnerParticipants);
-            const processedParticipantsWeekly = await processParticipants(winnerParticipantsWeekly);
-
-            this.setState({
-                contestActive, 
-                startDate, 
-                endDate, 
-                resultDate, 
-                winners: processedParticipants,
-                winnersWeekly: processedParticipantsWeekly
-            });
+            const winners = await processLeaderboardWinners(_.get(response, 'data.winners', []));
+            this.setState({winners});
         })
+        .catch(err => {
+            console.log(err);
+        }) 
         .finally(() => {
             this.setState({loading: false});
-        });
+        })
     }
 
     componentWillMount() {
-        this.getContestRankings(this.state.selectedDate);
+        this.fetchLeaderboard(this.state.selectedDate);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -83,17 +59,10 @@ class Participants extends React.Component {
         this.setState({timelineView: view});
     }
 
-    handleDateChange = date => {
-        this.setState({selectedDate: date}, () => {
-            this.getContestRankings(date);
-        });
-    }
-
     render() {
-        const {winners = [], winnersWeekly = []} = this.state;
+        const {winners = []} = this.state;
         const props = {
             winners,
-            winnersWeekly,
             endDate: this.state.endDate,
             startDate: this.state.startDate,
             contestActive: this.state.contestActive,
@@ -113,7 +82,7 @@ class Participants extends React.Component {
                 />
                 <Media 
                     query="(min-width: 601px)"
-                    render={() => <LeaderboardLayoutDesktop {...props} onDateChange={this.handleDateChange} />}
+                    render={() => <LeaderboardLayoutDesktop {...props} />}
                 />
             </React.Fragment>
         );

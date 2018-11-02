@@ -7,16 +7,19 @@ export default class TableHeader extends React.Component {
         return (
             <Grid container style={{marginBottom: '10px'}}>
                 <Grid item xs={2} style={{paddingLeft: '10px'}}>
-                    <TableHeaderText>Rank</TableHeaderText>
+                    <TableHeaderText>RANK</TableHeaderText>
                 </Grid>
-                <Grid item xs={4}>
-                    <TableHeaderText>Stock</TableHeaderText>
-                </Grid>
-                <Grid item xs={4}>
-                    <TableHeaderText>Last Price</TableHeaderText>
+                <Grid item xs={3}>
+                    <TableHeaderText>STOCK</TableHeaderText>
                 </Grid>
                 <Grid item xs={2}>
-                    <TableHeaderText>Votes</TableHeaderText>
+                    <TableHeaderText>LONG</TableHeaderText>
+                </Grid>
+                <Grid item xs={2}>
+                    <TableHeaderText>SHORT</TableHeaderText>
+                </Grid>
+                <Grid item xs={2}>
+                    <TableHeaderText>TOTAL</TableHeaderText>
                 </Grid>
             </Grid>
         );
@@ -24,7 +27,7 @@ export default class TableHeader extends React.Component {
 }
 
 const TableHeaderText = styled.h3`
-    font-size: 16px;
+    font-size: 14px;
     color: #6F6F6F;
     font-weight: 400;
     text-align: start;

@@ -15,14 +15,15 @@ export default class TopPicksTable extends React.Component {
     }
 
     render() {
-        const {winnerStocks = [], winnerStocksWeekly = [], timelineView = 'daily'} = this.props; 
-        const winners = timelineView === 'daily' ? winnerStocks : winnerStocksWeekly;
+        const {winnerStocksByInvestment = [], winnerStocksByUsers = [], type = 'byInvestment'} = this.props; 
+        const winners = type === 'byInvestment' ? winnerStocksByInvestment : winnerStocksByUsers;
 
         return (
             <Grid item xs={12} style={{padding: '10px', marginTop: '60px'}}>
                 { winners.length > 0 && <TableHeader /> }
                 <WinnerList 
                     winners={winners}
+                    type={type}
                 />
             </Grid>
         );
