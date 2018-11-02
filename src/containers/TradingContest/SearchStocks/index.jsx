@@ -196,7 +196,7 @@ export class SearchStocks extends React.Component {
             resolve(true);
         })
         .then(() => {
-            shouldSync && this.syncStockListWithPortfolio();
+            this.syncStockListWithPortfolio();
         })
         .catch(err => {
             console.log(err);

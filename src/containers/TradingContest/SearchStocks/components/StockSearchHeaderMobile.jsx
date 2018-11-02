@@ -30,7 +30,10 @@ export default class SearchStockHeader extends React.Component {
                     <Grid
                             item 
                             xs={12} 
-                            style={{...horizontalBox, justifyContent: 'space-between'}}
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'space-between', 
+                            }}
                     >
                         <ActionIcon 
                             style={{
@@ -38,7 +41,6 @@ export default class SearchStockHeader extends React.Component {
                                 cursor: 'pointer', 
                                 color: textColor, 
                                 marginRight: '5px',
-                                position: 'absolute',
                                 left: '10px'
                             }} 
                             type={
@@ -84,15 +86,18 @@ export default class SearchStockHeader extends React.Component {
                                     variant='contained' 
                                     color='primary' 
                                     onClick={this.props.addSelectedStocksToPortfolio}
-                                    style={{marginRight: '5px', backgroundColor: primaryColor, boxShadow: 'none'}}
+                                    style={{
+                                        marginRight: '5px',
+                                        backgroundColor: primaryColor, 
+                                        boxShadow: 'none',
+                                        padding: '4px 8px'
+                                    }}
                             >
                                 <Icon style={{marginRight: '5px'}}>done_all</Icon>
                                 DONE
                             </Button>
                         }
                     </Grid>
-                    {/* {this.props.renderSelectedStocks()}
-                    {this.props.renderSelectedStocks('sell')} */}
                 </SGrid>
             </Grid>
         );

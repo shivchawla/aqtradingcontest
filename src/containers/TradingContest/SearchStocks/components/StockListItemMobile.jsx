@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
+import ActionIcon from '../../Misc/ActionIcons';
+import {maxPredictionLimit} from '../../MultiHorizonCreateEntry/constants';
 import {Utils} from '../../../../utils';
 import {metricColor, horizontalBox, verticalBox} from '../../../../constants';
 
@@ -78,6 +80,43 @@ export default class StockListItemMobile extends React.Component {
         );
     }
 
+    renderBuyActionButton = () => {
+        const {symbol, checked = false, onAddIconClick, predictions = []} = this.props;
+        let iconType = 'remove_circle';
+        let iconColor = metricColor.negative;
+
+        const lockedPredictions = predictions.filter(prediction => prediction.locked === true);
+        const newPredictions = predictions.filter(prediction => prediction.new === true);
+        if (predictions.length === 0) {
+            if (checked) {
+                iconType = 'remove_circle';
+                iconColor = metricColor.negative;
+            } else {
+                iconType = 'add_circle';
+                iconColor = metricColor.neutral;
+            }
+        } else if (lockedPredictions.length < maxPredictionLimit) {
+            if (newPredictions.length === 0) {
+                iconType = 'add_circle';
+                iconColor = metricColor.neutral;
+            } else {
+                iconType = 'remove_circle';
+                iconColor = metricColor.negative;
+            }
+        } else {
+            return null;
+        }
+
+        return (
+            <ActionIcon 
+                color={iconColor} 
+                size={30} 
+                type={iconType} 
+                onClick={() => onAddIconClick(symbol)}
+            />
+        );
+    }
+
     render() {
         const {symbol, name, change, changePct, current, onClick, checked=false, sellChecked = false} = this.props;
         const containerStyle = {
@@ -133,7 +172,7 @@ export default class StockListItemMobile extends React.Component {
                         }}
                         xs={6}
                 >
-                    {this.renderActionButtons()}
+                    {this.renderBuyActionButton()}
                 </Grid>
             </SGrid>
         );

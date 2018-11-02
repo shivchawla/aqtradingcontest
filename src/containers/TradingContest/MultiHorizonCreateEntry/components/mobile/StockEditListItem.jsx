@@ -19,32 +19,16 @@ export default class StockEditListItem extends React.Component {
         this.setState({points});
     }
 
-    onAddClick = () => {
-        const {max = 60 , symbol = 'LT', type = 'buy'} = this.props.stockItem;
-        let {points = 10} = this.state;
-        if (points < max) {
-            points += 10;
-            this.setState({points});
-            this.props.onStockItemChange(symbol, points, type);
-        }
-    }
-
-    onReduceClick = () => {
-        const {min = 10, symbol = 'LT', type = 'buy'} = this.props.stockItem;
-        let {points = 10} = this.state;
-        if (points > min) {
-            points -= 10;
-            this.setState({points});
-            this.props.onStockItemChange(symbol, points, type);
-        }
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
         }
 
         return false;
+    }
+
+    onPositionClicked = (symbol) => {
+        this.props.onEditScreenOpened(symbol);
     }
 
     render() {
@@ -54,15 +38,13 @@ export default class StockEditListItem extends React.Component {
             lastPrice = 1609, 
             chg = 2.70, 
             chgPct = 0.13, 
-            min = 10, 
-            max = 60,
-            type = 'buy' 
+            type = 'buy',
+            predictions = []
         } = this.props.stockItem;
 
         const isBuy = type == 'buy';
         const direction = isBuy ? 'BUY' : 'SELL';
 
-        const {points = 10} = this.state;
         const colStyle = {...horizontalBox, justifyContent: 'space-between'};
         const rowStyle = {...verticalBox, };
         const changeColor = chgPct >= 0 ? metricColor.positive : metricColor.negative;
@@ -73,7 +55,6 @@ export default class StockEditListItem extends React.Component {
                 <SGridCol item xs={12} style={colStyle}>
                     <Symbol>
                         {symbol}
-                        <Tag style={{backgroundColor: isBuy ? 'green' : 'red'}}>{direction}</Tag>
                         <p style={{...nameEllipsisStyle, width: '170px', color: '#6A6A6A', textAlign: 'start', marginTop:'0px'}}>{name}</p>
                     </Symbol>
                     <SecondayText style={{marginTop:'-20px', fontSize: '16px'}}>
@@ -83,42 +64,28 @@ export default class StockEditListItem extends React.Component {
                         </span>
                     </SecondayText>
                 </SGridCol>
-
-                <SGridCol item xs={12} style={{...colStyle, marginTop:'-10px'}}>
-
-                    <div style={horizontalBox}>
-                        <SliderMetric label='Min' value={min+'K'} />
-                        <SliderMetric style={{marginLeft: '10px'}} label='Max' value={max+'K'} />
-                    </div>
-
-                    <PointsComponent 
-                        points={points} 
-                        onAddClick={this.onAddClick}
-                        onReduceClick={this.onReduceClick}
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'flex-end', 
+                            marginBottom: '10px'
+                        }}
+                >
+                    <SecondayText
+                            onClick={() => this.onPositionClicked(symbol)}
+                    >
+                        {predictions.length} Predictions
+                    </SecondayText>
+                    <ActionIcon 
+                        type='chevron_right'
+                        onClick={() => this.onPositionClicked(symbol)}
                     />
-                    
-                </SGridCol>
+                </Grid>
             </SGrid>
         );
     }
-}
-
-const PointsComponent = ({points, onAddClick, onReduceClick}) => {
-    return (
-        <div style={{...horizontalBox, justifyContent: 'center', marginRight: '-10px', marginTop:'-10px'}}>
-            <ActionIcon color="red" type='remove_circle_outline' onClick={onReduceClick} />
-            <SecondayText><span style={{fontSize: '20px', marginRight: '2px'}}>{points}</span>K</SecondayText>
-            <ActionIcon color="green" type='add_circle_outline' onClick={onAddClick} />
-        </div>
-    );
-}
-
-const SliderMetric = ({label, value, style}) => {
-    return (
-        <div style={{...horizontalBox, justifyContent: 'flex-start', ...style}}>
-            <SliderMetricText>{label} <span style={{fontSize:'16px'}}>{value}</span></SliderMetricText>
-        </div>
-    );
 }
 
 const SGrid = styled(Grid)`
@@ -143,18 +110,4 @@ const SecondayText = styled.div`
     font-size: 18px;
     font-weight: 400;
     color: ${props => props.color || '#6A6A6A'} 
-`;
-
-const SliderMetricText = styled.h3`
-    font-size: 12px;
-    font-weight: 400;
-    color: #296E5A;
-`;
-
-const Tag = styled.span`
-    font-size: 8px;
-    font-weight: 400;
-    color: #fff;
-    padding: 1px 2px;
-    margin-left: 5px;
 `;

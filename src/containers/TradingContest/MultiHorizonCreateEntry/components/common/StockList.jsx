@@ -61,6 +61,7 @@ export default class StockList extends React.Component {
                                 modifyPrediction={this.props.modifyPrediction}
                                 deletePrediction={this.props.deletePrediction}
                                 deletePosition={this.props.deletePosition}
+                                onEditScreenOpened={this.props.onEditScreenOpened}
                             />
                         );
                     })

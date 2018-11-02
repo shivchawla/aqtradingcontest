@@ -11,7 +11,7 @@ import {Motion, spring} from 'react-motion';
 import {withRouter} from 'react-router';
 import {SearchStocks} from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
-import CreateEntryLayoutMobile from './components/mobile/CreateEntryLayoutMobile';
+import CreateEntryLayoutMobile from './components/mobile/CreateEntryEditScreen';
 import CreateEntryEdit from './components/desktop/CreateEntryEditScreen';
 import CreateEntryPreview from './components/desktop/CreateEntryPreviewScreen';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';

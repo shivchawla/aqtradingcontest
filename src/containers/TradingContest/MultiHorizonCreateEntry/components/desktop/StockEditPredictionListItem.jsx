@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import DatePicker from 'material-ui-pickers/DatePicker';
 import {getPercentageModifiedValue} from '../../utils';
 import {withStyles} from '@material-ui/core/styles';
+import {buySellActionButtonsStyles} from '../../constants';
 import ActionIcon from '../../../Misc/ActionIcons';
 import NumberInput from '../../../../../components/input/NumberInput';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
@@ -14,45 +15,6 @@ import {horizontalBox, verticalBox, metricColor} from '../../../../../constants'
 const DateHelper = require('../../../../../utils/date');
 
 const dateFormat = 'YYYY-MM-DD';
-const styles = theme => {
-    return ({
-        buyButtonActive: {
-            backgroundColor: '#3EF79B',
-            color: '#fff',
-            border: 'none',
-            '&:hover': {
-                backgroundColor: '#3EF79B'
-            }
-        },
-        sellButtonActive: {
-            backgroundColor: '#FE6662',
-            color: '#fff',
-            border: 'none',
-            '&:hover': {
-                backgroundColor: '#FE6662'
-            }
-        },
-        inActiveButton: {
-            backgroundColor: '#fff',
-            border: '1px solid #D5D5D5',
-            '&:hover': {
-                backgroundColor: '#fff'
-            }
-        },
-        button: {
-            boxShadow: 'none',
-            fontWeight: 400,
-            fontSize: '14px',
-            minWidth: '54px',
-            minHeight: '30px',
-            padding: '4px 8px',
-            width: '54px',
-            '&:hover': {
-                backgroundColor: 'undefined'
-            }
-        }
-    });
-}
 
 class StockEditPredictionListItem extends React.Component {
     maxInvestment = 100;
@@ -232,7 +194,7 @@ class StockEditPredictionListItem extends React.Component {
     }
 }
 
-export default withStyles(styles)(StockEditPredictionListItem);
+export default withStyles(buySellActionButtonsStyles)(StockEditPredictionListItem);
 
 const DateFields = props => {
     return (

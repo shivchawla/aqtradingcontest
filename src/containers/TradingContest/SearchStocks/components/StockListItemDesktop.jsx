@@ -46,8 +46,6 @@ export default class StockListItem extends React.Component {
 
     renderBuyActionButton = () => {
         const {symbol, checked = false, onAddIconClick, predictions = []} = this.props;
-        // const iconType = checked ? 'remove_circle' : 'add_circle';
-        // const iconColor = checked ? metricColor.negative : primaryColor;
         let iconType = 'remove_circle';
         let iconColor = metricColor.negative;
 
