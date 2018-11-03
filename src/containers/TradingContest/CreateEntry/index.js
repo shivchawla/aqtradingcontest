@@ -328,13 +328,12 @@ class CreateEntry extends React.Component {
             return getMultiStockData(positions)
                 .then(stocks => {
                     return Promise.map(stocks, stock => {
-                        const change = _.get(stock, 'latestDetailRT.change', null) !== null 
-                            ?  _.get(stock, 'latestDetailRT.change', 0)
-                            :  _.get(stock, 'latestDetail.values.Change', 0);
+                        const change = _.get(stock, 'latestDetailRT.change', 0) ||
+                            _.get(stock, 'latestDetail.Change', 0);
         
-                        const changePct = _.get(stock, 'latestDetailRT.changePct', null) !== null 
-                                ?  _.get(stock, 'latestDetailRT.changePct', 0)
-                                :  _.get(stock, 'latestDetail.values.ChangePct', 0);
+                        const changePct = _.get(stock, 'latestDetailRT.changePct', 0) || 
+                            _.get(stock, 'latestDetail.ChangePct', 0);
+
                         const symbol = _.get(stock, 'security.ticker', '');
         
                         return {symbol, change, changePct};

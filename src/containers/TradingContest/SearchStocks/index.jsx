@@ -262,36 +262,29 @@ export class SearchStocks extends React.Component {
         const positions = _.get(this.props, 'portfolioPositions', []);
 
         return stocks.map(stock => {
-            const symbol = _.get(stock, 'security.detail.NSE_ID', null) !== null
-                    ? _.get(stock, 'security.detail.NSE_ID', null) 
-                    : _.get(stock, 'security.ticker', null);
-            const close = _.get(stock, 'latestDetailRT.close', null) !== null
-                ?  _.get(stock, 'latestDetailRT.close', 0)
-                :  _.get(stock, 'latestDetail.values.Close', 0);
+            const symbol = _.get(stock, 'security.detail.NSE_ID', null) ||
+                _.get(stock, 'security.ticker', "");
 
-            const change = _.get(stock, 'latestDetailRT.change', null) !== null 
-                    ?  _.get(stock, 'latestDetailRT.change', 0)
-                    :  _.get(stock, 'latestDetail.values.Change', 0);
+            const close = _.get(stock, 'latestDetailRT.close', 0) ||
+                _.get(stock, 'latestDetail.Close', 0);
 
-            const changePct = _.get(stock, 'latestDetailRT.changePct', null) !== null 
-                    ?  _.get(stock, 'latestDetailRT.changePct', 0)
-                    :  _.get(stock, 'latestDetail.values.ChangePct', 0);
+            const change = _.get(stock, 'latestDetailRT.change', 0) || 
+                _.get(stock, 'latestDetail.Change', 0);
 
-            const high = _.get(stock, 'latestDetailRT.high', null) !== null 
-                    ?  _.get(stock, 'latestDetailRT.high', 0)
-                    :  _.get(stock, 'latestDetail.values.High', 0);
+            const changePct = _.get(stock, 'latestDetailRT.changePct', 0) ||
+                _.get(stock, 'latestDetail.ChangePct', 0);
 
-            const low = _.get(stock, 'latestDetailRT.low', null) !== null 
-                    ?  _.get(stock, 'latestDetailRT.low', 0)
-                    :  _.get(stock, 'latestDetail.values.Low', 0);
+            const high = _.get(stock, 'latestDetailRT.high', 0) ||
+                 _.get(stock, 'latestDetail.High', 0);
+
+            const low = _.get(stock, 'latestDetailRT.low', 0) ||
+                _.get(stock, 'latestDetail.Low', 0);
             
-            const open = _.get(stock, 'latestDetailRT.open', null) !== null 
-                    ?  _.get(stock, 'latestDetailRT.open', 0)
-                    :  _.get(stock, 'latestDetail.values.Open', 0);
+            const open = _.get(stock, 'latestDetailRT.open', 0) ||
+                _.get(stock, 'latestDetail.Open', 0);
 
-            const current = _.get(stock, 'latestDetailRT.current', null) !== null 
-                    ?  _.get(stock, 'latestDetailRT.current', 0)
-                    :  _.get(stock, 'latestDetail.values.Close', 0);
+            const current = _.get(stock, 'latestDetailRT.current', 0) ||
+                _.get(stock, 'latestDetail.Close', 0);
 
             const shortable = _.get(stock, 'shortable', false);
 

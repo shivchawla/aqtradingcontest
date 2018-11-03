@@ -97,37 +97,39 @@ export default class DisplayPredictions extends React.Component {
                     this.props.loadingPreview 
                     ?   <LoaderComponent />
                     :   
-                    		positions.length === 0 ?
-			                    <EmptyPositionsText>
-			                        No Predictions Found!!
-			                    </EmptyPositionsText>
-		                :
-
-		                <React.Fragment>
-                            <div
-                                    style={{
-                                        ...horizontalBox, 
-                                        justifyContent: 'space-between',
-                                        width: '100%'
-                                    }}
-                            >
+                		<React.Fragment>
+	                    	<div
+		                        style={{
+		                            ...horizontalBox, 
+		                            justifyContent: 'space-between',
+		                            width: '100%'
+		                        }}
+	                        >
 			                    <RadioGroup style={{margin:'0px auto 10px auto'}}
 			                        items={predictionTypes}
 			                        defaultSelected={this.state.listView}
 			                        onChange={this.onPredictionTypeRadioClicked}
 			                    />
+		                    </div>
 
-                            </div>
-                            {
-                                pnlFound &&
-                                <SelectionMetricsMini 
-                                    {...getRequiredMetrics()}
-                                    onClick={toggleEntryDetailBottomSheet}
-                                />
-                            }
-                            <StockPreviewList positions={positions} />
-                        </React.Fragment>
-                }
+                    		{positions.length === 0 ?
+			                    <EmptyPositionsText>
+			                        No Predictions Found!!
+			                    </EmptyPositionsText>
+			                :
+			                	<React.Fragment>
+		                            {
+		                                pnlFound &&
+		                                <SelectionMetricsMini 
+		                                    {...getRequiredMetrics()}
+		                                    onClick={toggleEntryDetailBottomSheet}
+		                                />
+		                            }
+		                            <StockPreviewList positions={positions} />
+	                        	</React.Fragment>
+                        	}
+                    	</React.Fragment>
+        		}
             </Grid>
         );
     }

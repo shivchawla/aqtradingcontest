@@ -116,8 +116,8 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
         const positionIndex = _.findIndex(positions, position => position.symbol === symbol);
         if (positionIndex < 0) {
             positions.push({
-                chg: _.get(prediction, 'position.security.latestDetail.change', 0),
-                chgPct: _.get(prediction, 'position.security.latestDetail.changePct', null),
+                chg: _.get(prediction, 'position.security.latestDetailRT.change', 0) || _.get(prediction, 'position.security.latestDetail.Change', 0),
+                chgPct: _.get(prediction, 'position.security.latestDetailRT.changePct', 0) || _.get(prediction, 'position.security.latestDetail.ChangePct', null),
                 industry: _.get(prediction, 'position.security.detail.Industry', null),
                 key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
                 lastPrice: _.get(prediction, 'position.lastPrice', null),
