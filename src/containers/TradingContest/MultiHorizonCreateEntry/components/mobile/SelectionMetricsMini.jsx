@@ -29,17 +29,24 @@ export default class SelectionMetricsMini extends React.Component {
     }
 
     render() {
-        const metrics = this.state.selected === 0 ? this.props.daily : this.props.total;
+        const metrics = this.props.cumulative; //this.state.selected === 0 ? this.props.daily : this.props.cumulative;
         const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, cost = 0} = metrics.total;
         
         return (
-            <SGrid container justify="center" alignItems="center">
-                <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
+            <SGrid container justify="center" alignItems="center" style={{width:'95%', margin:'0 auto', border:'1px solid lightgrey'}}>
+                {/*<Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
                     <RadioGroup 
                         items={['Daily', 'Cumulative']}
                         onChange={this.handleRadioChange}
                     />
+                </Grid>*/}
+
+                <Grid item xs={12} style={{marginTop:'-22px', alignItems:'start'}}>
+                    <div style={{width: '80px', backgroundColor: '#fff', color:'#1763c6'}}>
+                        <h5>Profit/Loss</h5>
+                    </div>
                 </Grid>
+
                 <Grid item xs={10}>
                     <Grid container spacing={8}>
                         {
@@ -47,8 +54,8 @@ export default class SelectionMetricsMini extends React.Component {
                             <MetricItem label='Investment' value={`${cost}K`} />
                         }
                         <MetricItem label='Profit Factor' value={(profitFactor || 0).toFixed(2)} />
-                        <MetricItem money coloured label='Total PnL' value={((pnl || 0) * 1000)} />
-                        <MetricItem percentage coloured label='Total PnL Pct' value={((pnlPct || 0) * 100).toFixed(2)} />
+                        <MetricItem money coloured label='Profit/Loss' value={((pnl || 0) * 1000)} />
+                        <MetricItem percentage coloured label='Profit/Loss %' value={((pnlPct || 0) * 100).toFixed(2)} />
                     </Grid>
                 </Grid>
                 <Grid item xs={2}>

@@ -1,12 +1,34 @@
 import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
-import Grid from '@material-ui/core/Grid'
-import Icon from '@material-ui/core/Icon';
-import {horizontalBox, verticalBox, metricColor, nameEllipsisStyle} from '../../../../../constants';
+import Grid from '@material-ui/core/Grid';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {withStyles} from '@material-ui/core/styles';
+import StockPreviewPredictionList from './StockPreviewPredictionList';
+import {horizontalBox, metricColor, nameEllipsisStyle, verticalBox} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
 
-export default class StockPreviewListItem extends React.Component {
+const styles = theme => ({
+    expansionPanelRoot: {
+        marginBottom: '20px',
+        backgroundColor: '#FBFCFF',
+        border: '1px solid #EAEAEA',
+        borderRadius: '4px',
+        boxShadow: 'none',
+        '&::before': {
+            backgroundColor: 'transparent'
+        }
+    },
+    expansionPanelDetailRoot: {
+        borderTop: '1px solid #DCDCDC',
+        padding: '0px'
+    }
+});
+
+class StockPreviewListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -16,97 +38,161 @@ export default class StockPreviewListItem extends React.Component {
     }
     
     render() {
+        const {classes} = this.props;
         const {
             symbol = 'LT', 
             name = 'Larsen & Tourbo', 
             lastPrice = 1609, 
-            points = 0,
-            chg = null,
-            chgPct = null,
-            avgPrice = null,
-            type='buy' 
+            chg = 2.70, 
+            chgPct = 0.13, 
+            min = 10, 
+            max = 60,
+            type = 'buy',
+            predictions = []
         } = this.props.position;
 
-        const isBuy = type=='buy';
-        const direction = isBuy ? 'BUY' : 'SELL';
-
-        let change = null, changePct = null;
-        if (chg === null) {
-            change = lastPrice - avgPrice;
-            changePct = (change / avgPrice) * 100;
-        } else {
-            change = chg;
-            changePct = chgPct * 100;
-        }
-        const colStyle = {...horizontalBox, justifyContent: 'space-between'};
-        const changeColor = change > 0 ? metricColor.positive : metricColor.negative;
-        const pointsChange = (type === 'buy' ? 1 : -1) * ((changePct * points) / 100);
-        const changedPoints = Number((points + pointsChange).toFixed(2));
-        const pointsChangeColor = type === 'buy'
-                ? change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative
-                : change < 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
-        changePct = `(${changePct.toFixed(2)}%)`;
-
+        const nPredictions = predictions.length;
         return (
-            <SGrid container style={{padding: '10px'}}>
-                <Grid item  xs={12} style={colStyle}>
-                    <Symbol>
-                        {symbol} 
-                        <span style={{backgroundColor: isBuy ? 'green' : 'red', color:'#fff', padding:'1px 2px', fontSize:'8px', marginLeft:'5px'}}>{direction}</span>
-                    </Symbol>
-                    <div style={{...horizontalBox}}>
-                        <SecondayText style={{fontSize: '18px'}}>{points}K</SecondayText>
-                        <Icon style={{color: pointsChangeColor}}>arrow_right_alt</Icon>
-                        <SecondayText style={{fontSize: '18px', color: pointsChangeColor}}>{changedPoints}K</SecondayText>
-                    </div>
-                </Grid>
-                <Grid item  xs={12} style={colStyle}>
-                    <SecondayText style={{...nameEllipsisStyle, width: '150px', color: '#6A6A6A', textAlign: 'start'}}>
-                        {name}
-                    </SecondayText>
-                    <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                        <SecondayText style={{fontSize:'14px', marginTop:'-4px'}}>
-                            ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
-                        </SecondayText>
-                        <ChangeText style={{marginRight: '2px', marginLeft: '2px'}} color={pointsChangeColor}>
-                            {change.toFixed(2)}
-                        </ChangeText>
-                        <ChangeText style={{marginLeft: '2px'}} color={pointsChangeColor}>{changePct}</ChangeText>
-                    </div>
-                </Grid>
-            </SGrid>
+            <ExpansionPanel
+                    classes={{
+                        root: classes.expansionPanelRoot
+                    }}
+            >
+                <ExpansionPanelSummary 
+                        expandIcon={<ExpandMoreIcon />}
+                        style={{paddingLeft: '10px'}}
+
+                >
+                    <Grid container alignItems="center" justify="space-between">
+                        <Grid 
+                                item xs={5} 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'flex-start', 
+                                    alignItems: 'flex-start',
+                                }}
+                        >
+                            <SymbolComponent symbol={`${symbol} (${nPredictions})`} name={name} />
+                        </Grid>
+                        <Grid item xs={4}>
+                            <ChangeComponent 
+                                lastPrice={lastPrice}
+                                change={chg}
+                                changePct={chgPct}
+                            />
+                        </Grid>
+                        {/*<Grid item xs={2}>
+                            <Prediction prediction={predictions.length} />
+                        </Grid>*/}
+                    </Grid>
+                </ExpansionPanelSummary>
+                <ExpansionPanelDetails classes={{root: classes.expansionPanelDetailRoot}}>
+                    <Grid container>
+                        <StockPreviewPredictionList 
+                            predictions={predictions} 
+                            modifyPrediction={this.props.modifyPrediction}
+                            deletePrediction={this.props.deletePrediction}
+                        />
+                    </Grid>
+                </ExpansionPanelDetails>
+            </ExpansionPanel>
         );
     }
 }
 
-const SGrid = styled(Grid)`
-    background-color: #FAFCFF;
-    border: 1px solid #F2F5FF;
-    border-radius: 3px;
-    margin-bottom: 10px;
-`;
+export default withStyles(styles)(StockPreviewListItem);
 
-const Symbol = styled.h3`
+const SymbolComponent = ({symbol, name}) => {
+    return (
+        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+            <Symbol>{symbol}</Symbol>
+            <span style={nameStyle}>{name}</span>
+        </div>
+    );
+}
+
+const ChangeComponent = ({lastPrice, change, changePct}) => {
+    const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
+    let formattedChangePct = (changePct * 100).toFixed(2);
+
+    return (
+        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+            {/*<div style={{...horizontalBox, justifyContent: 'flex-start'}}>*/}
+                <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
+                {/*<ChangeDivider>|</ChangeDivider>*/}
+                <Change color={changeColor}>₹{change} ({formattedChangePct}%)</Change>
+            {/*</div>*/}
+            {/*<LastPriceLabel>Last Price</LastPriceLabel>*/}
+        </div>
+    );
+}
+
+const Prediction = ({prediction = 0}) => {
+    return (
+        <div style={{...verticalBox, justifyContent: 'flex-start', alignItems: 'flex-end'}}>
+            <PredictionText>{prediction}</PredictionText>
+            <h3 
+                    style={{
+                        fontSize: '14px', 
+                        color: '#676767', 
+                        fontWeight: '400',
+                        marginLeft: '4px',
+                        marginBottom: '2px'
+                    }}
+            >
+                {prediction === 1 ? 'Prediction' : 'Predictions'}
+            </h3>
+        </div>
+    );
+}
+
+const nameStyle = {
+    ...nameEllipsisStyle, 
+    width: '140px', 
+    color: '#464646', 
+    textAlign: 'start', 
+    marginTop:'4px',
+    fontSize: '11px',
+    fontWeight: 400,
+    marginBottom: 0
+};
+
+const Symbol = styled.div`
+    text-align: start;
     font-weight: 600;
-    font-size: 18px;
-    color: #6A6A6A;
+    font-size: 16px;
+    color: #535353;
 `;
 
-const SecondayText = styled.h3`
+const LastPrice = styled.h3`
+    font-size: 16px;
+    color: #545454;
+    font-weight: 400;
+`;
+
+const LastPriceLabel = styled.h3`
+    font-size: 11px;
+    color: #747272;
+    font-weight: 400;
+`;
+
+const Change = styled.h1`
+    font-size: 12px;
+    color: ${props => props.color || '#535353'};
+    font-weight: 400;
+    margin-top: 1px;
+`;
+
+const ChangeDivider = styled.span`
+    font-size: 16px;
+    color: #B6B6B6;
+    font-weight: 200;
+    margin: 0 4px;
+    margin-top: -1px
+`;
+
+const PredictionText = styled.h3`
     font-size: 16px;
     font-weight: 400;
-    color: ${props => props.color || '#6A6A6A'} 
-`;
-
-const ChangeText = styled.h5`
-    font-size: 12px;
-    font-weight: 400;
-    color: ${props => props.color || '#6A6A6A'}
-`;
-
-const ChangeDivider = styled.h3`
-    font-weight: 300;
-    color: #717171;
-    font-size: 12px;
-    margin-top: -2px;
+    color: #676767;
 `;

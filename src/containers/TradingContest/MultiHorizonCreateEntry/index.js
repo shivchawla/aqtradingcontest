@@ -14,6 +14,7 @@ import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
 import CreateEntryLayoutMobile from './components/mobile/CreateEntryEditScreen';
 import CreateEntryEdit from './components/desktop/CreateEntryEditScreen';
 import CreateEntryPreview from './components/desktop/CreateEntryPreviewScreen';
+import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import {DailyContestCreateMeta} from '../metas';
 import {processSelectedPosition, getMultiStockData} from '../utils';
@@ -519,6 +520,14 @@ class CreateEntry extends React.Component {
         return shouldRenderEdit ? <CreateEntryEdit {...props} /> : <CreateEntryPreview {...props} />
     }
 
+    renderMobileLayout = (props) => {
+        const currentDate = moment().format(dateFormat);
+        const selectedDate = this.state.selectedDate.format(dateFormat);
+        const shouldRenderEdit = currentDate === selectedDate;
+
+        return <DisplayPredictionsMobile {...props} /> 
+    }
+
     renderPortfolioPicksDetail = () => {
         const props = {
             contestStartDate: this.state.contestStartDate,
@@ -563,12 +572,14 @@ class CreateEntry extends React.Component {
             loadingPreview: this.state.loadingPreview
         };
 
+        //<CreateEntryLayoutMobile {...props}/>
         return (
             <React.Fragment>
                 <Media 
                     query="(max-width: 600px)"
-                    render={() => <CreateEntryLayoutMobile {...props}/>}
+                    render={() => this.renderMobileLayout(props)}
                 />
+
                 <Media 
                     query="(min-width: 601px)"
                     render={() => this.renderDesktopLayout(props)}
