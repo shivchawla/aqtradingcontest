@@ -32,7 +32,7 @@ export default class StockListComponent extends React.Component {
                                         key={index} 
                                         {...stock} 
                                         onClick={this.props.handleStockListItemClick} 
-                                        onAddIconClick={this.props.conditionallyAddItemToSelectedArray}
+                                        onAddIconClick={this.props.conditionallyAddToggleStock}
                                         onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
                                     />
                                 )}

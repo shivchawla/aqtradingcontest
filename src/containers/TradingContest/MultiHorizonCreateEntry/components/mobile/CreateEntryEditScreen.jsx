@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import moment from 'moment';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
@@ -62,10 +63,12 @@ export default class CreateEntryLayoutMobile extends React.Component {
     onEditScreenOpened = (symbol) => {
         const {positions = []} = this.props;
         const selectedPosition = positions.filter(position => position.symbol === symbol)[0];
-        this.setState({
-            editPredictionBottomSheetOpenStatus: !this.state.editPredictionBottomSheetOpenStatus,
-            selectedPosition: selectedPosition !== undefined ? selectedPosition : {}
-        });
+        if (selectedPosition !== undefined) {
+            this.setState({
+                editPredictionBottomSheetOpenStatus: !this.state.editPredictionBottomSheetOpenStatus,
+                selectedPosition: selectedPosition !== undefined ? selectedPosition : {}
+            });
+        }
     }
 
     renderStockList = () => {
@@ -81,6 +84,27 @@ export default class CreateEntryLayoutMobile extends React.Component {
                 onEditScreenOpened={this.onEditScreenOpened}
             />
         )
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!_.isEqual(this.props, nextProps)) {
+            // Updating the selected position with the updated position value when modified in any way
+            const {positions = []} = nextProps;
+            const positionsWithNewPredictions = getPositionsWithNewPredictions(positions);
+            if (positionsWithNewPredictions.length > 0) {
+                this.setState({selectedPosition: positionsWithNewPredictions[0]});
+            } else {
+                this.setState({selectedPosition: {}})
+            }
+        }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(nextProps, this.props) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
     }
 
     renderContent = () => {
@@ -109,8 +133,12 @@ export default class CreateEntryLayoutMobile extends React.Component {
                         open={this.state.editPredictionBottomSheetOpenStatus}
                         onClose={this.toggleEditPredictionScreen}
                         position={this.state.selectedPosition}
+                        addPrediction={this.props.addPrediction}
+                        modifyPrediction={this.props.modifyPrediction}
+                        deletePrediction={this.props.deletePrediction}
+                        deletePosition={this.props.deletePosition}
                     />
-                    {this.renderStockList()}
+                    {/* {this.renderStockList()} */}
                     {
                          marketOpen.status &&
                         <div 

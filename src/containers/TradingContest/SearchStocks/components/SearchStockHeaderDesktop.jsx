@@ -37,30 +37,25 @@ export default class SearchStockHeaderDesktop extends React.Component {
                         </h3>
                     </div>
                 </Grid>
-                {
-                    this.props.selectedStocks.length > 0 &&
-                    <React.Fragment>
-                        <Button 
-                                size="small"
-                                onClick={this.props.addSelectedStocksToPortfolio} 
-                                type="primary" 
-                                loading={this.props.portfolioLoading}
-                                variant="extendedFab"
-                                style={{
-                                    backgroundColor: primaryColor, 
-                                    color: '#fff', 
-                                    paddingLeft: '15px',
-                                    boxShadow: 'none'
-                                }}
-                        >
-                            SELECTED
-                            <CounterTag 
-                                // count={this.props.selectedStocks.length} 
-                                count={this.props.stocksCount} 
-                            />
-                        </Button>
-                    </React.Fragment>
-                }
+                <Button 
+                        size="small"
+                        onClick={this.props.addSelectedStocksToPortfolio} 
+                        type="primary" 
+                        loading={this.props.portfolioLoading}
+                        variant="extendedFab"
+                        style={{
+                            backgroundColor: primaryColor, 
+                            color: '#fff', 
+                            paddingLeft: '15px',
+                            boxShadow: 'none'
+                        }}
+                >
+                    SELECTED
+                    <CounterTag 
+                        // count={this.props.selectedStocks.length} 
+                        count={this.props.stocksCount} 
+                    />
+                </Button>
             </Grid>
         );
     }

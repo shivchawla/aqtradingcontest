@@ -195,3 +195,48 @@ export const getPredictionEndDate = (predictions = []) => {
         : moment();
     return moment(DateHelper.nextNonHolidayWeekday(previousEndDate.toDate())).format(dateFormat);
 }
+
+
+// returns a default prediction that is to be added into the positions
+export const getDefaultPrediction = position => {
+    const predictions = _.get(position, 'predictions', []);
+    const lastPrice = _.get(position, 'lastPrice', 0);
+
+    // setting the default endDate to the next non holiday
+    const endDate = getPredictionEndDate(predictions);
+
+    return {
+        key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
+        symbol: _.get(position, 'symbol', ''),
+        target: 0,
+        // target: getPercentageModifiedValue(2, lastPrice),
+        type: 'buy',
+        investment: 10,
+        locked: false,
+        new: true,
+        lastPrice: _.get(position, 'lastPrice', null),
+        avgPrice: _.get(position, 'avgPrice', null),
+        endDate
+    }
+}
+
+export const checForUntouchedPrediction = (position, prediction) => {
+    const predictionFieldsToCompare = ['target', 'type', 'investment', 'avgPrice'];
+    const defaultPrediction = _.pick(getDefaultPrediction(position), predictionFieldsToCompare);
+    const nPrediction = _.pick(prediction, predictionFieldsToCompare);
+
+    return _.isEqual(defaultPrediction, nPrediction);
+}
+
+// checks for untouched predictions inside positions
+// return true if untouched predictions present else false
+export const checkForUntouchedPredictionsInPositions = (positions = []) => {
+    const invalidPositions = positions.filter(position => {
+        const positionPredictions = _.get(position, 'predictions', []);
+        const untouchedPredictions = positionPredictions.filter(prediction => checForUntouchedPrediction(position, prediction));
+
+        return untouchedPredictions.length > 0;
+    });
+
+    return invalidPositions.length > 0 ? true : false;
+}

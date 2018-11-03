@@ -17,10 +17,19 @@ import CreateEntryPreview from './components/desktop/CreateEntryPreviewScreen';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import {DailyContestCreateMeta} from '../metas';
 import {processSelectedPosition, getMultiStockData} from '../utils';
-import {getPredictionsFromPositions, createPredictions, checkHorizonDuplicationStatus, getDailyContestPredictions, convertPredictionsToPositions, processPredictions, getPnlStats, getPercentageModifiedValue, getPredictionEndDate} from './utils';
 import {handleCreateAjaxError} from '../../../utils';
 import {maxPredictionLimit} from './constants';
-const DateHelper = require('../../../utils/date');
+import {
+    getPredictionsFromPositions, 
+    createPredictions, 
+    checkHorizonDuplicationStatus, 
+    getDailyContestPredictions, 
+    convertPredictionsToPositions, 
+    processPredictions, 
+    getPnlStats, 
+    getDefaultPrediction,
+    checkForUntouchedPredictionsInPositions
+} from './utils';
 
 const dateFormat = 'YYYY-MM-DD';
 const CancelToken = axios.CancelToken;
@@ -80,9 +89,25 @@ class CreateEntry extends React.Component {
 
     conditionallyAddPosition = async (selectedPositions, cb = null) => {
         try {
+            let clonedOldPositions = _.map(this.state.positions, _.cloneDeep);
             const positions = selectedPositions.filter(position => position.points >= 0);
             const processedPositions = await processSelectedPosition(this.state.positions, positions);
-            this.setState({positions: processedPositions}, () => {
+            clonedOldPositions = clonedOldPositions.filter(oldPosition => {
+                const oldPositionIndex = _.findIndex(processedPositions, position => position.symbol === oldPosition.symbol);
+
+                return oldPositionIndex === -1;
+            });
+
+            clonedOldPositions = clonedOldPositions.map(oldPosition => {
+                const predictions = oldPosition.predictions.filter(prediction => prediction.locked === true);
+
+                return {
+                    ...oldPosition,
+                    predictions
+                };
+            });
+
+            this.setState({positions: [...clonedOldPositions, ...processedPositions]}, () => {
                 cb && cb();
             });
         } catch(err) {
@@ -216,6 +241,14 @@ class CreateEntry extends React.Component {
     }
 
     submitPositions = async () => {
+        if (checkForUntouchedPredictionsInPositions(this.state.positions)) {
+            this.setState({
+                snackbarOpenStatus: true, 
+                snackbarMessage: `Please modify your predictions before submission`
+            });
+            return;
+        }
+
         const shouldCreate = this.state.noEntryFound ? true : false;
         const allPredictions = await getPredictionsFromPositions(this.state.positions);
         this.setState({submissionLoading: true, todayDataLoaded: false});
@@ -353,10 +386,6 @@ class CreateEntry extends React.Component {
         if (selectedPositionIndex > -1) {
             const selectedPosition = clonedPositions[selectedPositionIndex];
             const predictions = selectedPosition.predictions;
-            const lastPrice = _.get(selectedPosition, 'lastPrice', 0);
-
-            // setting the default endDate to the next non holiday
-            const endDate = getPredictionEndDate(predictions);
 
             if (predictions.length >= maxPredictionLimit) {
                 this.setState({
@@ -366,19 +395,7 @@ class CreateEntry extends React.Component {
                 return;
             }
 
-            predictions.push({
-                key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-                symbol: _.get(selectedPosition, 'symbol', ''),
-                target: getPercentageModifiedValue(2, lastPrice),
-                type: 'buy',
-                // horizon,
-                investment: 10,
-                locked: false,
-                new: true,
-                lastPrice: _.get(selectedPosition, 'lastPrice', null),
-                avgPrice: _.get(selectedPosition, 'avgPrice', null),
-                endDate
-            });
+            predictions.push(getDefaultPrediction(selectedPosition));
             selectedPosition.predictions = predictions;
             clonedPositions[selectedPositionIndex] = selectedPosition;
             this.setState({positions: clonedPositions}, () => {
@@ -392,7 +409,11 @@ class CreateEntry extends React.Component {
         const selectedPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
         if (selectedPositionIndex > -1) { // Item to be deleted found
             clonedPositions.splice(selectedPositionIndex, 1);
-            this.setState({positions: clonedPositions});
+            this.setState({positions: clonedPositions}, () => {
+                if (this.searchStockComponent !== null ) {
+                    this.searchStockComponent.removeStock(symbol);
+                }
+            });
         }
     }
 

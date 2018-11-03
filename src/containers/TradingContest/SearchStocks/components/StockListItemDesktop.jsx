@@ -45,32 +45,22 @@ export default class StockListItem extends React.Component {
     }
 
     renderBuyActionButton = () => {
-        const {symbol, checked = false, onAddIconClick, predictions = []} = this.props;
+        const {symbol, checked = false, onAddIconClick, hideActions = false} = this.props;
         let iconType = 'remove_circle';
         let iconColor = metricColor.negative;
 
-        const lockedPredictions = predictions.filter(prediction => prediction.locked === true);
-        const newPredictions = predictions.filter(prediction => prediction.new === true);
-        if (predictions.length === 0) {
-            if (checked) {
-                iconType = 'remove_circle';
-                iconColor = metricColor.negative;
-            } else {
-                iconType = 'add_circle';
-                iconColor = metricColor.neutral;
-            }
-        } else if (lockedPredictions.length < maxPredictionLimit) {
-            if (newPredictions.length === 0) {
-                iconType = 'add_circle';
-                iconColor = metricColor.neutral;
-            } else {
-                iconType = 'remove_circle';
-                iconColor = metricColor.negative;
-            }
+        if (checked) {
+            iconType = 'remove_circle';
+            iconColor = metricColor.negative;
         } else {
-            return null;
+            iconType = 'add_circle';
+            iconColor = metricColor.neutral;
         }
 
+        if (hideActions) {
+            return null;
+        }
+        
         return (
             <ActionIcon 
                 color={iconColor} 

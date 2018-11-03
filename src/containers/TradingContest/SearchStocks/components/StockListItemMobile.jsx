@@ -45,68 +45,23 @@ export default class StockListItemMobile extends React.Component {
         return false;
     }
 
-    renderActionButtons = () => {
-        const {symbol, checked = false, onAddIconClick, onSellIconClick, sellChecked = false, shortable = false} = this.props;
-        const { classes } = this.props;
-
-        return (
-            <React.Fragment>
-                {
-                    shortable &&
-                    <Button
-                        size='small' 
-                        color="secondary" 
-                        onClick={() => onSellIconClick(symbol)}
-                        variant={sellChecked ? 'contained': 'outlined'}
-                        style={{boxShadow: 'none', ...(sellChecked ? styles.sellButton.contained : styles.sellButton.outlined)}}
-                    >
-                        {/*<Icon>money_off</Icon>*/}
-                        Sell
-                    </Button>
-                }
-                <Button 
-                        size='small' 
-                        color="primary" 
-                        onClick={() => onAddIconClick(symbol)}
-                        variant={checked ? 'contained' : 'outlined'}
-                        style={{boxShadow: 'none', marginLeft: '10px',
-                            ...(checked ? styles.buyButton.contained : styles.buyButton.outlined)
-                        }}
-                >
-                    {/*<Icon style={{marginRight: '5px'}}>monetization_on</Icon>*/}
-                    Buy
-                </Button>
-            </React.Fragment>
-        );
-    }
-
     renderBuyActionButton = () => {
-        const {symbol, checked = false, onAddIconClick, predictions = []} = this.props;
+        const {symbol, checked = false, onAddIconClick, hideActions = false} = this.props;
         let iconType = 'remove_circle';
         let iconColor = metricColor.negative;
 
-        const lockedPredictions = predictions.filter(prediction => prediction.locked === true);
-        const newPredictions = predictions.filter(prediction => prediction.new === true);
-        if (predictions.length === 0) {
-            if (checked) {
-                iconType = 'remove_circle';
-                iconColor = metricColor.negative;
-            } else {
-                iconType = 'add_circle';
-                iconColor = metricColor.neutral;
-            }
-        } else if (lockedPredictions.length < maxPredictionLimit) {
-            if (newPredictions.length === 0) {
-                iconType = 'add_circle';
-                iconColor = metricColor.neutral;
-            } else {
-                iconType = 'remove_circle';
-                iconColor = metricColor.negative;
-            }
+        if (checked) {
+            iconType = 'remove_circle';
+            iconColor = metricColor.negative;
         } else {
-            return null;
+            iconType = 'add_circle';
+            iconColor = metricColor.neutral;
         }
 
+        if (hideActions) {
+            return null;
+        }
+        
         return (
             <ActionIcon 
                 color={iconColor} 
