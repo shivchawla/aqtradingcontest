@@ -29,17 +29,11 @@ export default class SelectionMetricsMini extends React.Component {
     }
 
     render() {
-        const metrics = this.props.cumulative; //this.state.selected === 0 ? this.props.daily : this.props.cumulative;
-        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, cost = 0} = metrics.total;
+        const metrics = this.props.cumulative || {};
+        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, cost = 0} = _.get(metrics, 'total', {});
         
         return (
             <SGrid container justify="center" alignItems="center" style={{width:'95%', margin:'0 auto', border:'1px solid lightgrey'}}>
-                {/*<Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                    <RadioGroup 
-                        items={['Daily', 'Cumulative']}
-                        onChange={this.handleRadioChange}
-                    />
-                </Grid>*/}
 
                 <Grid item xs={12} style={{marginTop:'-22px', alignItems:'start'}}>
                     <div style={{width: '80px', backgroundColor: '#fff', color:'#1763c6'}}>

@@ -32,13 +32,7 @@ export default class StockPreviewList extends React.Component {
                         paddingRight: '3%'
                     }}
             >
-                {
-                    positions.length === 0 &&
-                    <EmptyPositionsText>
-                        No Predictions Found. :(
-                    </EmptyPositionsText>
-                }
-
+                    
                 <Grid item xs={12} style={{margin:'5px 0px'}}>
                     <div style={{color:'#1763c6'}}>
                         <h4>Predictions</h4>
@@ -46,7 +40,6 @@ export default class StockPreviewList extends React.Component {
                 </Grid>
 
                 {
-
                     positions.map((position, index) => {
                         return (
                             <StockPreviewListItem position={position} key={index} edit />

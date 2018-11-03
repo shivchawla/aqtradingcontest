@@ -96,7 +96,14 @@ export default class DisplayPredictions extends React.Component {
                 {
                     this.props.loadingPreview 
                     ?   <LoaderComponent />
-                    :   <React.Fragment>
+                    :   
+                    		positions.length === 0 ?
+			                    <EmptyPositionsText>
+			                        No Predictions Found!!
+			                    </EmptyPositionsText>
+		                :
+
+		                <React.Fragment>
                             <div
                                     style={{
                                         ...horizontalBox, 
@@ -197,6 +204,13 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
         </div>
     );
 }
+
+const EmptyPositionsText = styled.h3`
+    font-size: 20px;
+    color: #979797;
+    font-weight: 400;
+    margin-top: 5%;
+`;
 
 const emptyPortfolioButtonStyle = {
     backgroundColor: primaryColor,

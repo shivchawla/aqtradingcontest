@@ -240,7 +240,7 @@ class CreateEntry extends React.Component {
         });
     }
 
-    updateDailyPredictionsOnDateChange = (selectedDate = moment(), type = 'started') => {
+    updateDailyPredictionsOnDateChange = (selectedDate = moment(), type = 'active') => {
         let predictions = [];
         return Promise.all([
             getDailyContestPredictions(selectedDate, type, false, this.props.history, this.props.match.url, false),
@@ -323,7 +323,7 @@ class CreateEntry extends React.Component {
             })
     }
 
-    updateDailyPnlStats = (selectedDate = moment(), type='started') => {
+    updateDailyPnlStats = (selectedDate = moment(), type='active') => {
         return getPnlStats(selectedDate, type, this.props, this.props.match.url, false)
         .then(response => {
             const pnlStats = response.data;
