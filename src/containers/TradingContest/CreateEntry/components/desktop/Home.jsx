@@ -65,7 +65,7 @@ class Home extends React.Component {
                                     position: 'absolute',
                                     bottom: '100px'
                                 }}
-                                onClick={() => this.props.history.push('/dailycontest/create')}
+                                onClick={() => this.props.history.push('/dailycontest/preview')}
                         >
                             Enter Contest
                             <Icon style={{color: '#fff'}}>chevron_right</Icon>

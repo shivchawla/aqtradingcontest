@@ -196,7 +196,7 @@ const menuCategories = [
         name: "Daily Contest", icon:'bubble_chart', url: '/dailycontest'
     },
     {
-        name: "Create Entry", icon:'create', url: '/createentry'
+        name: "Create Entry", icon:'create', url: '/dailycontest/preview'
     },
     {
         name: "Home", url:'/home', href:true, icon:'home_outline'

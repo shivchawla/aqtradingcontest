@@ -242,7 +242,7 @@ class CreateEntry extends React.Component {
         )
     }
 
-    submitPositions = async () => {
+    submitPositions = async (redirect = false) => {
         if (checkForUntouchedPredictionsInPositions(this.state.positions)) {
             this.setState({
                 snackbarOpenStatus: true, 
@@ -262,6 +262,8 @@ class CreateEntry extends React.Component {
             this.setState({
                 snackbarOpenStatus: true, 
                 snackbarMessage: `Predictions successfully ${shouldCreate ? 'created' : 'updated'} :)`
+            }, () => {
+                redirect && this.props.history.push('/dailycontest/preview');
             });
         })
         .catch(error => {

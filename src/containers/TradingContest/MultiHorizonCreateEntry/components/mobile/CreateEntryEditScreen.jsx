@@ -107,13 +107,6 @@ class CreateEntryEditScreen extends React.Component {
         return false;
     }
 
-    createEntry = () => {
-        this.props.submitPositions()
-        .then(() => {
-            this.props.history.push('/dailycontest/preview');
-        })
-    }
-
     renderContent = () => {
         const {
             positions = [], 
@@ -162,7 +155,7 @@ class CreateEntryEditScreen extends React.Component {
                                             size='small' 
                                             variant="extendedFab" 
                                             aria-label="Edit" 
-                                            onClick={this.createEntry}
+                                            onClick={() => submitPositions(true)}
                                             disabled={submissionLoading}
                                     >
                                         <Icon style={{marginRight: '5px'}}>update</Icon>
