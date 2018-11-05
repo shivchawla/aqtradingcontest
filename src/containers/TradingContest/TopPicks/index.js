@@ -44,8 +44,8 @@ class Winners extends React.Component {
         this.setState({loading: true});
         getTopStocks(selectedDate, this.props.history, this.props.match.url, false)
         .then(response => {
-            const winnerStocksByInvestment = _.get(response, 'data.topStocks.byInvesment', []);
-            const winnerStocksByUsers = _.get(response, 'data.topStocks.byUsers', []);
+            const winnerStocksByInvestment = _.get(response, 'data.byInvestment', []);
+            const winnerStocksByUsers = _.get(response, 'data.byUsers', []);
             
             this.setState({winnerStocksByInvestment, winnerStocksByUsers});
         })

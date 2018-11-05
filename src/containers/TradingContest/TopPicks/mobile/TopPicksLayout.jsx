@@ -3,7 +3,8 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import WinnerList from '../common/WinnerList';
 import LoaderComponent from '../../Misc/Loader';
-import {verticalBox} from '../../../../constants';
+import RadioGroup from '../../../../components/selections/RadioGroup';
+import {verticalBox, horizontalBox} from '../../../../constants';
 
 export default class TopPicksLayout extends React.Component {
     constructor(props) {
@@ -37,9 +38,21 @@ export default class TopPicksLayout extends React.Component {
                     (winnerStocksByInvestment.length === 0 && winnerStocksByUsers.length === 0)
                     ?   <NoDataFound />
                     :   <Grid item xs={12} style={{padding: '10px'}}>
+                            <div 
+                                    style={{
+                                        ...horizontalBox, 
+                                        width: '100%',
+                                        justifyContent: 'center'
+                                    }}
+                            >
+                                <RadioGroup 
+                                    items={['By Investment', 'By Users']} 
+                                    onChange={this.onRadioChange}
+                                />
+                            </div>
                             <WinnerList 
                                 winners={
-                                    this.props.view === 'byInvestment' 
+                                    this.state.view === 'byInvestment' 
                                         ? winnerStocksByInvestment 
                                         : winnerStocksByUsers
                                     }
