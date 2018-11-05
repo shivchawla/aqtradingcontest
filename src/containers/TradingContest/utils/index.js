@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import axios from 'axios';
 import {Utils, fetchAjax, getStockData, fetchAjaxPromise} from '../../../utils';
-import {getPercentageModifiedValue, getPredictionEndDate, getDefaultPrediction} from '../MultiHorizonCreateEntry/utils';
+import {getDefaultPrediction} from '../MultiHorizonCreateEntry/utils';
 import gold from '../../../assets/gold.svg';
 import silver from '../../../assets/silver.svg';
 import bronze from '../../../assets/bronze.svg';
@@ -82,7 +82,7 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
             };
         } else if (oldPositions[oldPositionIndex].predictions.filter(prediction => prediction.new === true).length === 0) {
             let predictions =  _.get(clonedOldPositions[oldPositionIndex], 'predictions', []);
-            predictions.push(getDefaultPrediction(selectedPosition));
+            predictions.push(getDefaultPrediction(oldPositions[oldPositionIndex]));
 
             return {
                 ...selectedPosition,

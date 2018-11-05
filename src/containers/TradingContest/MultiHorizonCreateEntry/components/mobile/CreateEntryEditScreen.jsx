@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash';
-import moment from 'moment';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -110,23 +109,16 @@ export default class CreateEntryLayoutMobile extends React.Component {
     renderContent = () => {
         const {
             positions = [], 
-            contestFound = false,
-            noEntryFound = false,
-            previousPositions = [],
-            listView,
-            handleStockTypeRadioChange,
-            toggleEntryDetailBottomSheet,
             toggleSearchStockBottomSheet,
             showPreviousPositions,
             submitPositions,
             submissionLoading,
-            getRequiredMetrics
         } = this.props;
         const marketOpen = isMarketOpen();
+        const positionsWithNewPredictions = getPositionsWithNewPredictions(positions);
 
         return (
-            !contestFound || (noEntryFound && positions.length === 0 && previousPositions.length == 0)
-            
+            positionsWithNewPredictions.length === 0
             ?   this.renderEmptySelections()
             :   <Grid item xs={12}>
                     <EditPredictionScreen 
@@ -138,7 +130,6 @@ export default class CreateEntryLayoutMobile extends React.Component {
                         deletePrediction={this.props.deletePrediction}
                         deletePosition={this.props.deletePosition}
                     />
-                    {/* {this.renderStockList()} */}
                     {
                          marketOpen.status &&
                         <div 
