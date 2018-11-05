@@ -104,9 +104,10 @@ class TradingContest extends React.Component {
                     </Grid>
                     { // Preview comes here
                         this.state.selectedTab === 0 && 
-                        <Grid item xs={12}>
-                            <h1>This will be the preview of create entry</h1>
-                        </Grid>
+                        <CreateEntry 
+                            selectedDate={this.state.selectedDate}
+                            componentType='preview'
+                        />
                     }
                     {
                         this.state.selectedTab === 1 && 

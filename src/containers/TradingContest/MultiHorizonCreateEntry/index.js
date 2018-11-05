@@ -541,11 +541,9 @@ class CreateEntry extends React.Component {
     }
 
     renderMobileLayout = (props) => {
-        const currentDate = moment().format(dateFormat);
-        const selectedDate = this.state.selectedDate.format(dateFormat);
-        const shouldRenderEdit = currentDate === selectedDate;
+        const {componentType = 'create'} = this.props;
 
-        return <DisplayPredictionsMobile {...props} /> 
+        return componentType === 'create' ? <CreateEntryLayoutMobile {...props}/> : <DisplayPredictionsMobile {...props}/>
     }
 
     renderPortfolioPicksDetail = () => {
