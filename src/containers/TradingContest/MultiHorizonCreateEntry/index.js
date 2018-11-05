@@ -7,7 +7,6 @@ import Media from 'react-media';
 import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
 import Snackbar from '@material-ui/core/Snackbar';
-import {Motion, spring} from 'react-motion';
 import {withRouter} from 'react-router';
 import {SearchStocks} from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
@@ -18,7 +17,7 @@ import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import {DailyContestCreateMeta} from '../metas';
 import {processSelectedPosition, getMultiStockData} from '../utils';
-import {handleCreateAjaxError} from '../../../utils';
+import {Utils, handleCreateAjaxError} from '../../../utils';
 import {maxPredictionLimit} from './constants';
 import {
     getPredictionsFromPositions, 
@@ -30,7 +29,6 @@ import {
     getPnlStats, 
     getDefaultPrediction,
     checkForUntouchedPredictionsInPositions,
-    getPositionsWithNewPredictions
 } from './utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -76,15 +74,17 @@ class CreateEntry extends React.Component {
             pnlFound: false,
             todayDataLoaded: false,
             previewPositions: [], // used to store the data for previewing,
-            loadingPreview: false
+            loadingPreview: false,
+            selectedView: 'started'
         };
+        this.mounted = false;
         this.source = CancelToken.source();
     }
 
     toggleSearchStockBottomSheet = () => {
         this.setState({bottomSheetOpenStatus: !this.state.bottomSheetOpenStatus}, () => {
             if (this.state.bottomSheetOpenStatus) {
-                this.searchStockComponent.fetchStocks();
+                this.searchStockComponent && this.searchStockComponent.fetchStocks();
             }
         });
     }
@@ -173,42 +173,9 @@ class CreateEntry extends React.Component {
         return numExpanded === this.state.positions.length;
     }
 
-    renderSearchStocksBottomSheet = () => {
+    renderAddStocksBottomSheet = () => {
         return (
             <React.Fragment>
-                <Media 
-                    query="(max-width: 600px)"
-                    render={() => (
-                        <Motion style={{x: spring(this.state.bottomSheetOpenStatus ? 0 : -(global.screen.height + 45))}}>
-                            {
-                                ({x}) => 
-                                    <div 
-                                        style={{
-                                            transform: `translate3d(0, ${x}px, 0)`,
-                                            position: 'fixed',
-                                            top:0,
-                                            backgroundColor: '#fff',
-                                            zIndex: '2000'
-                                        }}
-                                    >
-                                        <SearchStocks 
-                                            toggleBottomSheet={this.toggleSearchStockBottomSheet}
-                                            addPositions={this.conditionallyAddPosition}
-                                            portfolioPositions={this.state.positions}
-                                            portfolioSellPositions={this.state.sellPositions}
-                                            filters={{}}
-                                            ref={el => this.searchStockComponent = el}
-                                            history={this.props.history}
-                                            pageUrl={this.props.match.url}
-                                            isUpdate={false}
-                                            benchmark='NIFTY_50'
-                                            maxLimit={10}
-                                        />
-                                    </div>
-                            }
-                        </Motion>
-                    )}
-                />
                 <Media 
                     query="(min-width: 601px)"
                     render={() => (
@@ -242,13 +209,14 @@ class CreateEntry extends React.Component {
         )
     }
 
-    submitPositions = async (redirect = false) => {
+    submitPositions = (redirect = false) => new Promise(async (resovle, reject) => {
         if (checkForUntouchedPredictionsInPositions(this.state.positions)) {
             this.setState({
                 snackbarOpenStatus: true, 
                 snackbarMessage: `Please modify your predictions before submission`
             });
-            return;
+            reject(false);
+            return false;
         }
 
         const shouldCreate = this.state.noEntryFound ? true : false;
@@ -256,7 +224,7 @@ class CreateEntry extends React.Component {
         this.setState({submissionLoading: true, todayDataLoaded: false});
         return createPredictions(allPredictions, shouldCreate)
         .then(response => {
-            return this.updateDailyPredictionsOnDateChange();
+            return this.getDailyPredictionsOnDateChange();
         })
         .then(() => {
             this.setState({
@@ -265,6 +233,8 @@ class CreateEntry extends React.Component {
             }, () => {
                 redirect && this.props.history.push('/dailycontest/preview');
             });
+            resovle(true);
+            return true;
         })
         .catch(error => {
             const errorMessage = _.get(error, 'response.data.message', 'Error Occured :(');
@@ -274,29 +244,40 @@ class CreateEntry extends React.Component {
         .finally(() => {
             this.setState({submissionLoading: false});
         });
+    })
+
+    updateDailyPredictions = async (predictions = []) => {
+        const rawStalePredictions = predictions;
+        const formattedPredictions = await processPredictions(predictions, true);
+        const stalePositions = convertPredictionsToPositions(rawStalePredictions, true, false);
+        const positions = convertPredictionsToPositions(predictions, true, false);
+        this.setState({
+            // If data already loaded then don't modify for predictions that are to be edited
+            predictions: this.state.todayDataLoaded ? this.state.predictions : formattedPredictions, 
+            stalePositions: this.state.todayDataLoaded ? this.state.stalePositions : stalePositions,
+            todayDataLoaded: this.state.todayDataLoaded === false ? true : this.state.todayDataLoaded,
+            previewPositions: positions,
+            positions: this.state.todayDataLoaded ? this.state.positions : positions,
+            staticPositions: this.state.todayDataLoaded ? this.state.positions : positions,
+            noEntryFound: this.state.todayDataLoaded ? this.state.predictions.length === 0 : predictions.length === 0
+        });
     }
 
-    updateDailyPredictionsOnDateChange = (selectedDate = moment(), type = 'active') => {
+    updateDailyPnLStats = (pnlStats) => {
+        this.setState({
+            pnlStats: pnlStats,
+            pnlFound: true
+        });
+    }
+
+    getDailyPredictionsOnDateChange = (selectedDate = moment(), type = 'active') => {
         let predictions = [];
         return Promise.all([
             getDailyContestPredictions(selectedDate, type, false, this.props.history, this.props.match.url, false),
         ])
         .then(async ([response]) => {
             predictions = response.data;
-            const rawStalePredictions = response.data;
-            const formattedPredictions = await processPredictions(predictions, true);
-            const stalePositions = convertPredictionsToPositions(rawStalePredictions, true, false);
-            const positions = convertPredictionsToPositions(predictions, true, false);
-            this.setState({
-                // If data already loaded then don't modify for predictions that are to be edited
-                predictions: this.state.todayDataLoaded ? this.state.predictions : formattedPredictions, 
-                stalePositions: this.state.todayDataLoaded ? this.state.stalePositions : stalePositions,
-                todayDataLoaded: this.state.todayDataLoaded === false ? true : this.state.todayDataLoaded,
-                previewPositions: positions,
-                positions: this.state.todayDataLoaded ? this.state.positions : positions,
-                staticPositions: this.state.todayDataLoaded ? this.state.positions : positions,
-                noEntryFound: this.state.todayDataLoaded ? this.state.predictions.length === 0 : predictions.length === 0
-            });
+            this.updateDailyPredictions(predictions);
         })
         .catch(err => {
             console.log('Error', err)
@@ -304,79 +285,93 @@ class CreateEntry extends React.Component {
         })
     }
 
-    handlePreviewListMenuItemChange = (type = 'started') => {
-        this.setState({loadingPreview: true});
-        Promise.all([
-            this.updateDailyPredictionsOnDateChange(this.state.selectedDate, type),
-            this.updateDailyPnlStats(this.state.selectedDate, type)
-        ])
-        .finally(() => {
-            this.setState({loadingPreview: false});
-        })
-    }
-
-    updateSearchStocksWithChange = (positions = [...this.state.positions]) => {
-        const stockSymbols = positions.map(position => position.symbol);
-        return getMultiStockData(stockSymbols)
-            .then(stocks => {
-                return Promise.map(stocks, stock => {
-                    const change = _.get(stock, 'latestDetailRT.change', 0)  || 
-                        _.get(stock, 'latestDetail.Change', 0);
-    
-                    const changePct = _.get(stock, 'latestDetailRT.changePct', 0) ||
-                        _.get(stock, 'latestDetail.ChangePct', 0);
-
-                    const symbol = _.get(stock, 'security.ticker', '');
-                    
-                    const lastPrice = _.get(stock, 'latestDetailRT.current', 0) ||
-                        _.get(stock, 'latestDetail.Close', 0);
-    
-                    return {symbol, change, changePct, lastPrice};
-                });
-            })
-            .then(changeData => {
-                let clonedPositions = _.map(positions, _.cloneDeep);
-    
-                // Updating buy positions with change and changePct
-                clonedPositions = clonedPositions.map(position => {
-                    const positionWithChangeData = changeData.filter(changePosition => changePosition.symbol === position.symbol)[0];
-                    if (positionWithChangeData !== undefined) {
-                        return {
-                            ...position,
-                            chg: positionWithChangeData.change,
-                            chgPct: positionWithChangeData.changePct,
-                            lastPrice: positionWithChangeData.lastPrice
-                        }
-                    }
-                });                
-                this.searchStockComponent.initializeSelectedStocks(clonedPositions);
-
-                return clonedPositions;    
-            })
-            .catch(err => {
-                console.log(err);
-            })
-    }
-
-    updateDailyPnlStats = (selectedDate = moment(), type='active') => {
+    getDailyPnlStats = (selectedDate = moment(), type='active') => {
         return getPnlStats(selectedDate, type, this.props, this.props.match.url, false)
         .then(response => {
             const pnlStats = response.data;
-            this.setState({
-                pnlStats: pnlStats,
-                pnlFound: true
-            });
+            this.updateDailyPnLStats(pnlStats);
         }) 
         .catch(err => {
             this.setState({pnlFound: false})
         })       
     }
 
+    setUpSocketConnection = () => {
+        if (Utils.webSocket && Utils.webSocket.readyState == WebSocket.OPEN) {
+            Utils.webSocket.onopen = () => {
+                Utils.webSocket.onmessage = this.processRealtimeMessage;
+                this.subscribeToPredictions();
+            }
+
+            Utils.webSocket.onclose = () => {
+                this.setUpSocketConnection();
+            }
+
+            Utils.webSocket.onerror = error => {
+                console.log('Error', error);
+            }
+            
+            Utils.webSocket.onmessage = this.processRealtimeMessage;
+            this.subscribeToPredictions();
+        } else {
+            setTimeout(function() {
+                this.setUpSocketConnection()
+            }.bind(this), 5000);
+        }
+    }
+
+    subscribeToPredictions = (type = 'active') => {
+        const msg = {
+            "aimsquant-token": Utils.getAuthToken(),
+            "action": "subscribe-prediction",
+            "category": type
+        };
+        Utils.sendWSMessage(msg);
+    }
+
+    unSubscribeToPredictions = (type = 'active') => {
+        const msg = {
+            'aimsquant-token': Utils.getAuthToken(),
+            'action': 'unsubscribe-predictions',
+            'category': type,
+        };
+        Utils.sendWSMessage(msg);
+    }
+
+    processRealtimeMessage = msg => {
+        console.log('Message', msg);
+        if (this.mounted) {
+            try {
+                const realtimeData = JSON.parse(msg.data);
+                console.log(realtimeData);
+                const predictons = _.get(realtimeData, 'predictions', {});
+                const pnl = _.get(realtimeData, 'predictions', []);
+                this.updateDailyPredictions(predictons);
+                this.updateDailyPnLStats(pnl);
+            } catch(error) {
+                console.log(error);
+                return error;
+            }
+        }
+    }
+
+    handlePreviewListMenuItemChange = (type = 'started') => {
+        this.setState({loadingPreview: true});
+        this.subscribeToPredictions(type);
+        Promise.all([
+            this.getDailyPredictionsOnDateChange(this.state.selectedDate, type),
+            this.getDailyPnlStats(this.state.selectedDate, type)
+        ])
+        .finally(() => {
+            this.setState({loadingPreview: false});
+        })
+    }
+
     fetchPredictionsAndPnl = (selectedDate = moment()) => {
         this.setState({loading: true});
         Promise.all([
-            this.updateDailyPredictionsOnDateChange(selectedDate),
-            this.updateDailyPnlStats(selectedDate)
+            this.getDailyPredictionsOnDateChange(selectedDate),
+            this.getDailyPnlStats(selectedDate)
         ])
         .finally(() => {
             this.setState({loading: false});
@@ -421,6 +416,7 @@ class CreateEntry extends React.Component {
     }
 
     modifyPrediction = (symbol, key, prediction) => {
+        console.log('modifyPrediction called');
         const clonedPositions = _.map(this.state.positions, _.cloneDeep);
         const selectedPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
 
@@ -522,6 +518,16 @@ class CreateEntry extends React.Component {
 
     componentWillMount = () => {
         this.fetchPredictionsAndPnl(this.state.selectedDate);
+        this.setUpSocketConnection();
+    }
+
+    componentDidMount() {
+        this.mounted = true;
+    }
+
+    componentWillUnmount() {
+        this.unSubscribeToPredictions();
+        this.mounted = false;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -546,9 +552,15 @@ class CreateEntry extends React.Component {
     renderMobileLayout = (props) => {
         const {componentType = 'create'} = this.props;
 
-        return componentType === 'create' 
-            ? <CreateEntryLayoutMobile {...props}/> 
-            : <DisplayPredictionsMobile {...props}/>
+        // return componentType === 'create' 
+        //     ? <CreateEntryLayoutMobile {...props}/> 
+        //     : <DisplayPredictionsMobile {...props}/>
+        return (
+            <React.Fragment>
+                <DisplayPredictionsMobile {...props} />
+                <CreateEntryLayoutMobile {...props} />
+            </React.Fragment>
+        )
     }
 
     renderPortfolioPicksDetail = () => {
@@ -593,6 +605,9 @@ class CreateEntry extends React.Component {
             previewPositions: this.state.previewPositions,
             handlePreviewListMenuItemChange: this.handlePreviewListMenuItemChange,
             loadingPreview: this.state.loadingPreview,
+            conditionallyAddPosition: this.conditionallyAddPosition,
+            bottomSheetOpenStatus: this.state.bottomSheetOpenStatus,
+            subscribeToPredictions: this.subscribeToPredictions
         };
 
         //<CreateEntryLayoutMobile {...props}/>
@@ -637,7 +652,7 @@ class CreateEntry extends React.Component {
                         message={this.state.snackbarMessage}
                         onClose={() => this.setState({snackbarOpenStatus: false})}
                     />
-                    {this.renderSearchStocksBottomSheet()}
+                    {this.renderAddStocksBottomSheet()}
                     {this.renderPortfolioPicksDetail()}
                 </SGrid>
             </React.Fragment>

@@ -21,8 +21,12 @@ export default class Top extends React.Component {
         this.props.onClose && this.props.onClose();
     }
 
+    onBackPressed = () => {
+        this.props.onLeftClicked && this.props.onLeftClicked();
+    }
+
     render() {
-        const {open = false, header = 'Header'} = this.props;
+        const {open = false, header = 'Header', leftIconType = null} = this.props;
         return (
             <Motion style={{x: spring(open ? 0 : -global.screen.height)}}>
                 {
@@ -36,7 +40,23 @@ export default class Top extends React.Component {
                                 }}
                         >
                             <Grid container>
-                                <Grid item xs={12} style={{...horizontalBox, alignItems: 'start', justifyContent: 'center'}}>
+                                <Grid 
+                                        item xs={12} 
+                                        style={{
+                                            ...horizontalBox, 
+                                            alignItems: 'start', 
+                                            justifyContent: 'center'
+                                        }}
+                                >
+                                    {
+                                        leftIconType !== null &&
+                                        <IconButton 
+                                                style={{position: 'absolute', left: 0, fontSize: '32px'}} 
+                                                onClick={this.onBackPressed}
+                                        >
+                                            <Icon style={{color: metricColor.negative}}>chevron_left</Icon>
+                                        </IconButton>
+                                    }
                                     <Header>{header}</Header>
                                     <IconButton 
                                             style={{position: 'absolute', right: 0}} 

@@ -3,7 +3,6 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import StockEditPredictionItem from './StockEditPredictionItem';
-import AqLayout from '../../../../../components/ui/AqLayout';
 import {horizontalBox, nameEllipsisStyle} from '../../../../../constants';
 
 
@@ -26,23 +25,21 @@ export default class EditPredictionScreen extends React.Component {
         const newPredictions = predictions.filter(prediction => prediction.new === true);
 
         return (
-            <AqLayout>
-                <Grid container style={{marginTop: '20px'}}>
-                    <Grid item xs={12} style={{paddingLeft: '20px'}}>
-                        <Symbol>{symbol}</Symbol>
-                        <h3 style={nameStyle}>{name}</h3>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <PredictionList 
-                            predictions={newPredictions} 
-                            addPrediction={this.props.addPrediction}
-                            modifyPrediction={this.props.modifyPrediction}
-                            deletePrediction={this.props.deletePrediction}
-                            deletePosition={this.props.deletePosition}
-                        />
-                    </Grid>
+            <Grid container style={{marginTop: '20px'}}>
+                <Grid item xs={12} style={{paddingLeft: '20px'}}>
+                    <Symbol>{symbol}</Symbol>
+                    <h3 style={nameStyle}>{name}</h3>
                 </Grid>
-            </AqLayout>
+                <Grid item xs={12}>
+                    <PredictionList 
+                        predictions={newPredictions} 
+                        addPrediction={this.props.addPrediction}
+                        modifyPrediction={this.props.modifyPrediction}
+                        deletePrediction={this.props.deletePrediction}
+                        deletePosition={this.props.deletePosition}
+                    />
+                </Grid>
+            </Grid>
         );
     }
 }

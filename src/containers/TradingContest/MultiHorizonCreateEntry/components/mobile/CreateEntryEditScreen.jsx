@@ -5,8 +5,10 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withRouter} from 'react-router-dom';
+import TopSheet from '../../../../../components/Alerts/TopSheet';
+import HorizontalToggleScreen from '../../../../../components/ui/HorizontalToggleScreen';
+import {SearchStocks} from '../../../SearchStocks';
 import StockList from '../common/StockList';
-import LoaderComponent from '../../../Misc/Loader';
 import EditPredictionScreen from './EditPredictionScreen';
 import {isMarketOpen} from '../../../utils';
 import {getPositionsWithNewPredictions} from '../../utils';
@@ -15,9 +17,12 @@ import {verticalBox, primaryColor, secondaryColor} from '../../../../../constant
 class CreateEntryEditScreen extends React.Component {
     constructor(props) {
         super(props);
+        this.searchStockComponent = null;
         this.state = {
             editPredictionBottomSheetOpenStatus: false,
-            selectedPosition: {}
+            selectedPosition: {},
+            selectedView: 0,
+            stockPerformanceOpen: false
         }
     }
 
@@ -82,13 +87,12 @@ class CreateEntryEditScreen extends React.Component {
         )
     }
 
-    componentWillMount() {
-        this.props.toggleSearchStockBottomSheet();
-    }
-
     componentWillReceiveProps(nextProps) {
         if (!_.isEqual(this.props, nextProps)) {
             // Updating the selected position with the updated position value when modified in any way
+            if (this.props.bottomSheetOpenStatus === false) {
+                this.searchStockComponent && this.searchStockComponent.fetchStocks();
+            }
             const {positions = []} = nextProps;
             const positionsWithNewPredictions = getPositionsWithNewPredictions(positions);
             if (positionsWithNewPredictions.length > 0) {
@@ -107,74 +111,124 @@ class CreateEntryEditScreen extends React.Component {
         return false;
     }
 
-    renderContent = () => {
+    toggleStockPerformance = () => {
+        this.setState({stockPerformanceOpen: !this.state.stockPerformanceOpen});
+    }
+
+    renderSearchStocks = () => {
+        return (
+            <SearchStocks 
+                toggleBottomSheet={this.goToEditScreen}
+                addPositions={this.props.conditionallyAddPosition}
+                portfolioPositions={this.state.positions}
+                filters={{}}
+                ref={el => this.searchStockComponent = el}
+                history={this.props.history}
+                pageUrl={this.props.match.url}
+                isUpdate={false}
+                benchmark='NIFTY_50'
+                maxLimit={10}
+                onBackClicked={this.onLeftClicked}
+                stockPerformanceOpen={this.state.stockPerformanceOpen}
+                toggleStockPerformanceOpen={this.toggleStockPerformance}
+            />
+        );
+    }
+
+    submitPositions = () => {
+        this.props.submitPositions()
+        .then(() => {
+            this.props.toggleSearchStockBottomSheet();
+        })    
+    }
+
+    goToEditScreen = () => {
+        this.setState({selectedView: 1});
+    }
+
+    goToSearchStocksScreen = () => {
+        this.setState({selectedView: 0});
+    }
+
+    onLeftClicked = (cb = null) => {
+        this.searchStockComponent.toggleStockPerformanceOpen();
+    }
+
+    renderEditView = () => {
         const {
-            positions = [], 
-            toggleSearchStockBottomSheet,
             showPreviousPositions,
-            submitPositions,
             submissionLoading,
         } = this.props;
         const marketOpen = isMarketOpen();
-        const positionsWithNewPredictions = getPositionsWithNewPredictions(positions);
 
         return (
-            positionsWithNewPredictions.length === 0
-            ?   this.renderEmptySelections()
-            :   <Grid item xs={12}>
-                    <EditPredictionScreen 
-                        open={this.state.editPredictionBottomSheetOpenStatus}
-                        position={this.state.selectedPosition}
-                        addPrediction={this.props.addPrediction}
-                        modifyPrediction={this.props.modifyPrediction}
-                        deletePrediction={this.props.deletePrediction}
-                        deletePosition={this.props.deletePosition}
-                    />
-                    {
-                         marketOpen.status &&
-                        <div 
-                                style={{
-                                    ...fabContainerStyle,
-                                    justifyContent: showPreviousPositions ? 'center' : 'space-between'
-                                }}
+            <Grid item xs={12} style={{height: 'calc(100% - 61px)'}}>
+                <EditPredictionScreen 
+                    open={this.state.editPredictionBottomSheetOpenStatus}
+                    position={this.state.selectedPosition}
+                    addPrediction={this.props.addPrediction}
+                    modifyPrediction={this.props.modifyPrediction}
+                    deletePrediction={this.props.deletePrediction}
+                    deletePosition={this.props.deletePosition}
+                />
+                {
+                    marketOpen.status &&
+                    <div 
+                            style={{
+                                ...fabContainerStyle,
+                                justifyContent: showPreviousPositions ? 'center' : 'space-between'
+                            }}
+                    >
+                        <Button 
+                                style={{...fabButtonStyle, ...addStocksStyle}} 
+                                size='small' variant="extendedFab" 
+                                aria-label="Delete" 
+                                onClick={this.goToSearchStocksScreen}
                         >
-                            <Button 
-                                    style={{...fabButtonStyle, ...addStocksStyle}} 
-                                    size='small' variant="extendedFab" 
-                                    aria-label="Delete" 
-                                    onClick={toggleSearchStockBottomSheet}
-                            >
-                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                UPDATE
-                            </Button>
-                            {
-                                !showPreviousPositions &&
-                                <div>
-                                    <Button 
-                                            style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                            size='small' 
-                                            variant="extendedFab" 
-                                            aria-label="Edit" 
-                                            onClick={() => submitPositions(true)}
-                                            disabled={submissionLoading}
-                                    >
-                                        <Icon style={{marginRight: '5px'}}>update</Icon>
-                                        SUBMIT
-                                        {submissionLoading && <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />}
-                                    </Button>
-                                </div>
-                            }
-                        </div>
-                    }
-                </Grid>
+                            <Icon>chevron_left</Icon>
+                            BACK
+                        </Button>
+                        {
+                            !showPreviousPositions &&
+                            <div>
+                                <Button 
+                                        style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                        size='small' 
+                                        variant="extendedFab" 
+                                        aria-label="Edit" 
+                                        onClick={this.submitPositions}
+                                        disabled={submissionLoading}
+                                >
+                                    <Icon style={{marginRight: '5px'}}>update</Icon>
+                                    SUBMIT
+                                    {submissionLoading && <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />}
+                                </Button>
+                            </div>
+                        }
+                    </div>
+                }
+            </Grid>
         );
     }
 
     render() {
+        const header = this.state.selectedView === 0 ? 'ADD STOCK' : 'EDIT PREDICTION';
+
         return (
-            this.props.loading 
-            ?   <LoaderComponent />
-            :   this.renderContent()
+            <TopSheet 
+                    open={this.props.bottomSheetOpenStatus}
+                    onClose={this.props.toggleSearchStockBottomSheet}
+                    header={header}
+                    onLeftClicked={this.onLeftClicked}
+                    leftIconType='chevron_left'
+            >
+                <HorizontalToggleScreen 
+                    selectedView={this.state.selectedView}
+                    firstScreenContent={this.renderSearchStocks}
+                    secondScreenContent={this.renderEditView}
+                    height='calc(100% - 61px)'
+                />
+            </TopSheet>
         );
     }
 }
@@ -211,7 +265,7 @@ const fabContainerStyle = {
 
 
 const addStocksStyle = {
-    backgroundColor: secondaryColor,
+    backgroundColor: '#607D8B',
     color: '#fff'
 };
 

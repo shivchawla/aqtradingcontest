@@ -140,7 +140,7 @@ class DisplayPredictions extends React.Component {
                                             size='small' 
                                             variant="extendedFab" 
                                             aria-label="Edit" 
-                                            onClick={() => this.props.history.push('/dailycontest/create')}
+                                            onClick={this.props.toggleSearchStockBottomSheet}
                                     >
                                         <Icon style={{marginRight: '5px'}}>add_circle</Icon>
                                         ADD PREDICTIONS

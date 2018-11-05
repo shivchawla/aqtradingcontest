@@ -75,25 +75,20 @@ export class SearchStocks extends React.Component {
                             shrink: true,
                         }}
                     />
-                    {/* <Button shape="circle" icon="filter" /> */}
                 </Grid>
                 <Grid item xs={1} style={{paddingTop: '8px'}}>
                     {
-                        this.state.loadingStocks &&
-                        <CircularProgress />
+                        this.state.portfolioLoading &&
+                        <CircularProgress size={25} />
                     }
                 </Grid>
-                {/* <SectorItems sectors={this.getSectors()}/> */}
                 <Grid 
                         item
                         xs={12} 
                         style={{marginTop: '20px', marginBottom: '20px'}}
                         ref={el => this.stockListComponent = el}
                 >
-                    {
-                        // !this.state.loadingStocks &&
-                        this.renderStockList()
-                    }
+                    this.renderStockList()
                 </Grid>
                 {this.renderPagination()}
             </SGrid>
@@ -123,11 +118,7 @@ export class SearchStocks extends React.Component {
                         onChange={value => this.handleSearchInputChange(value, 'mobile')}
                     />
                     {
-                        this.shouldFiltersBeShown() &&
-                        // selectedStocks.length > 0 &&
-                        !this.state.stockPerformanceOpen &&
-                        !this.state.stockFilterOpen &&
-                        // <IconButton>
+                        !this.props.stockPerformanceOpen &&
                             <Badge 
                                 style={{
                                     backgroundColor: '#fff', 
@@ -139,9 +130,7 @@ export class SearchStocks extends React.Component {
                                 badgeContent={selectedStocks.length}
                                 onClick={this.toggleSelectedStocksDialogClose}
                             >
-                                {/* <Icon>view_list</Icon> */}
                             </Badge>
-                        // </IconButton>
                     }
                 </Grid>
                 <Grid
@@ -248,7 +237,7 @@ export class SearchStocks extends React.Component {
     }
 
     handleStockListItemClick = stock => {
-        this.toggleStockPerformanceOpen();
+        this.props.toggleStockPerformanceOpen();
         this.setState({selectedStock: stock});
     }
 
@@ -502,13 +491,9 @@ export class SearchStocks extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (!_.isEqual(nextProps, this.props)) {
+            console.log('Called');
             // this.syncStockListWithPortfolio(nextProps);
         }
-    }
-
-    componentWillMount() {
-        // this.fetchStocks('');
-        this.initializeSelectedStocks();
     }
 
     syncStockListWithPortfolioNew = (requiredStocks) => {
@@ -551,20 +536,6 @@ export class SearchStocks extends React.Component {
         }
 
         return null;
-    }
-
-    initializeSelectedStocks = async (positions = [...this.props.portfolioPositions], sellPositions= [...this.props.portfolioSellPositions]) => {
-        const stocks = [...this.state.stocks];
-        const processedBuySelectedStocks = await this.getLocalStocksFromPortfolio(positions, 'buy');
-        const processedSellSelectedStocks = await this.getLocalStocksFromPortfolio(sellPositions, 'sell');
-        this.localStocks = [...processedBuySelectedStocks, ...processedSellSelectedStocks];
-        stocks.map(stock => {
-            // stocks that were not there in the portfolio but are rendered in the stock list
-            const localStock = this.localStocks.filter(item => item.symbol === stock.symbol)[0];
-            if (localStock === undefined) {
-                this.localStocks.push(stock);
-            }
-        });
     }
 
     /**
@@ -709,7 +680,7 @@ export class SearchStocks extends React.Component {
     }
 
     toggleStockPerformanceOpen = () => {
-        this.setState({stockPerformanceOpen: !this.state.stockPerformanceOpen});
+        this.setState({stockPerformanceOpen: !this.props.stockPerformanceOpen});
     }
 
     toggleStockFilterOpen = () => {
@@ -751,8 +722,8 @@ export class SearchStocks extends React.Component {
                     render={() => (
                         <Motion
                                 style={{ 
-                                    detailX: spring((this.state.stockPerformanceOpen || this.state.stockFilterOpen) ? 0 : 600),
-                                    listX: spring((this.state.stockPerformanceOpen || this.state.stockFilterOpen) ? -600 : 0)
+                                    detailX: spring((this.props.stockPerformanceOpen || this.state.stockFilterOpen) ? 0 : 600),
+                                    listX: spring((this.props.stockPerformanceOpen || this.state.stockFilterOpen) ? -600 : 0)
                                 }}>
                             {
                                 ({detailX, listX}) => 
@@ -776,13 +747,13 @@ export class SearchStocks extends React.Component {
                                                 xs={12} 
                                                 style={{
                                                     transform: `translate3d(${detailX}px, 0, 0)`,
-                                                    top: this.state.stockPerformanceOpen ? '85px' : '45px',
+                                                    top: this.props.stockPerformanceOpen ? '85px' : '45px',
                                                     position: 'absolute',
                                                     width: '100%'
                                                 }}
                                         >
                                             {
-                                                this.state.stockPerformanceOpen &&
+                                                this.props.stockPerformanceOpen &&
                                                 <StockPerformance stock={this.state.selectedStock}/>
                                             }
                                             {/* <div
@@ -888,7 +859,7 @@ export class SearchStocks extends React.Component {
         const selectedStocks = type === 'buy' ? [...this.state.selectedStocks] : [...this.state.sellSelectedStocks];
         return (
             selectedStocks.length > 0 
-            && !this.state.stockPerformanceOpen 
+            && !this.props.stockPerformanceOpen 
             && !this.state.stockFilterOpen 
             && global.screen.width <= 600
             ?   <Grid
@@ -992,30 +963,13 @@ export class SearchStocks extends React.Component {
                         }}
                 >
                     <Media 
-                        query='(max-width: 600px)'
-                        render={() => 
-                            <SearchStockHeaderMobile 
-                                    filters={this.props.filters}
-                                    selectedStocks={this.state.newStocks}
-                                    stockPerformanceOpen={this.state.stockPerformanceOpen}
-                                    stockFilterOpen={this.state.stockFilterOpen}
-                                    toggleBottomSheet={this.props.toggleBottomSheet}
-                                    addSelectedStocksToPortfolio={this.addSelectedStocksToPortfolio}
-                                    portfolioLoading={this.state.portfolioLoading}
-                                    toggleStockPerformanceOpen={this.toggleStockPerformanceOpen}
-                                    toggleStockFilterOpen={this.toggleStockFilterOpen}
-                                    loading={this.state.loadingStocks}
-                            />
-                        }
-                    />
-                    <Media 
                         query='(min-width: 601px)'
                         render={() => 
                             <SearchStockHeaderDesktop
                                 filters={this.props.filters}
                                 selectedStocks={this.state.newStocks}
                                 stocksCount={this.state.newStocks.length}
-                                stockPerformanceOpen={this.state.stockPerformanceOpen}
+                                stockPerformanceOpen={this.props.stockPerformanceOpen}
                                 toggleBottomSheet={this.props.toggleBottomSheet}
                                 addSelectedStocksToPortfolio={this.addSelectedStocksToPortfolio}
                                 portfolioLoading={this.state.portfolioLoading}
@@ -1023,6 +977,30 @@ export class SearchStocks extends React.Component {
                         }
                     />
                     {this.renderStockListDetails()}
+                    {
+                        this.state.newStocks.length > 0 && !this.props.stockPerformanceOpen &&
+                        <Media 
+                            query='(max-width: 600px)'
+                            render={() => 
+                                <div 
+                                        style={{
+                                            ...fabContainerStyle,
+                                            justifyContent: 'center'
+                                        }}
+                                >
+                                    <Button 
+                                            style={{...fabButtonStyle, ...addStocksStyle}} 
+                                            size='small' variant="extendedFab" 
+                                            aria-label="Delete" 
+                                            onClick={this.addSelectedStocksToPortfolio}
+                                    >
+                                        <Icon>done_all</Icon>
+                                        DONE
+                                    </Button>
+                                </div>
+                            }
+                        />
+                    }
                 </SGrid>
             </React.Fragment>
         );
@@ -1032,3 +1010,26 @@ export class SearchStocks extends React.Component {
 const SGrid = styled(Grid)`
     background-color: #fff;
 `;
+
+const fabButtonStyle = {
+    borderRadius:'5px', 
+    padding: '0 10px',
+    minHeight: '36px',
+    height: '36px',
+    boxShadow: '0 11px 21px #c3c0c0'
+};
+
+const fabContainerStyle = {
+    display: 'flex', 
+    width: '95%', 
+    padding:'0 10px', 
+    position: 'fixed', 
+    zIndex:2, 
+    bottom: '20px', 
+};
+
+
+const addStocksStyle = {
+    backgroundColor: '#607D8B',
+    color: '#fff'
+};

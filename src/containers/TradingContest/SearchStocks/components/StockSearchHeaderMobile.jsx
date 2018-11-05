@@ -35,27 +35,6 @@ export default class SearchStockHeader extends React.Component {
                                 justifyContent: 'space-between', 
                             }}
                     >
-                        <ActionIcon 
-                            style={{
-                                fontSize: '24px', 
-                                cursor: 'pointer', 
-                                color: textColor, 
-                                marginRight: '5px',
-                                left: '10px'
-                            }} 
-                            type={
-                                this.props.stockPerformanceOpen || this.props.stockFilterOpen
-                                    ? "chevron_left" 
-                                    : ""
-                            }
-                            onClick={
-                                () => this.props.stockPerformanceOpen
-                                ? this.props.toggleStockPerformanceOpen()
-                                : this.props.stockFilterOpen 
-                                    ? this.props.toggleStockFilterOpen()
-                                    : () => {}
-                            }
-                        />
                         {
                         this.props.loading 
                         ?   <CircularProgress size={25}/>
@@ -71,9 +50,7 @@ export default class SearchStockHeader extends React.Component {
                                 {
                                     this.props.stockPerformanceOpen 
                                     ? 'Stock Performance' 
-                                    : this.props.stockFilterOpen
-                                        ? 'Stock Filters'
-                                        : 'Add Stocks'
+                                    : 'Select a Stock'
                                 }
                             </h3>
                         }
