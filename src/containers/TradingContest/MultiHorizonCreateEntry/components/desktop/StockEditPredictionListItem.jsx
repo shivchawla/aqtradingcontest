@@ -143,18 +143,16 @@ class StockEditPredictionListItem extends React.Component {
                     }
                 </Grid>
                 <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                    <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                        <DatePicker
-                            value={endDate}
-                            style={{textAlign: 'center'}}
-                            TextFieldComponent={DateFields}
-                            locked={locked}
-                            onChange={this.onDateChanged}
-                            shouldDisableDate={this.disabledDate}
-                            disablePast
-                            format={dateFormat}
-                        />
-                    </div>
+                    <DatePicker
+                        value={endDate}
+                        style={{textAlign: 'center'}}
+                        TextFieldComponent={DateFields}
+                        locked={locked}
+                        onChange={this.onDateChanged}
+                        shouldDisableDate={this.disabledDate}
+                        disablePast
+                        format={dateFormat}
+                    />
                 </Grid>
                 <Grid item xs={3}>
                     <NumberInput 

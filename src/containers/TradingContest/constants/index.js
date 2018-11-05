@@ -9,7 +9,7 @@ export const bottomSheetStyle = {
     position: 'fixed',
     top:0,
     backgroundColor: '#fff',
-    zIndex: '2000',
+    zIndex: '1100',
     overflow: 'hidden',
     overflowY: 'scroll',
     height: '100vh',

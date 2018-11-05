@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
-import TimelineSegment from '../../Misc/TimelineSegment';
 import TimerComponent from '../../Misc/TimerComponent';
 import ParticipantList from '../common/ParticipantList';
 import LoaderComponent from '../../Misc/Loader';

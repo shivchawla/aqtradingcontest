@@ -1,5 +1,5 @@
 import React from 'react';
-import moment from 'moment';
+import _ from 'lodash';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -62,10 +62,12 @@ export default class CreateEntryLayoutMobile extends React.Component {
     onEditScreenOpened = (symbol) => {
         const {positions = []} = this.props;
         const selectedPosition = positions.filter(position => position.symbol === symbol)[0];
-        this.setState({
-            editPredictionBottomSheetOpenStatus: !this.state.editPredictionBottomSheetOpenStatus,
-            selectedPosition: selectedPosition !== undefined ? selectedPosition : {}
-        });
+        if (selectedPosition !== undefined) {
+            this.setState({
+                editPredictionBottomSheetOpenStatus: !this.state.editPredictionBottomSheetOpenStatus,
+                selectedPosition: selectedPosition !== undefined ? selectedPosition : {}
+            });
+        }
     }
 
     renderStockList = () => {
@@ -83,34 +85,51 @@ export default class CreateEntryLayoutMobile extends React.Component {
         )
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (!_.isEqual(this.props, nextProps)) {
+            // Updating the selected position with the updated position value when modified in any way
+            const {positions = []} = nextProps;
+            const positionsWithNewPredictions = getPositionsWithNewPredictions(positions);
+            if (positionsWithNewPredictions.length > 0) {
+                this.setState({selectedPosition: positionsWithNewPredictions[0]});
+            } else {
+                this.setState({selectedPosition: {}})
+            }
+        }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(nextProps, this.props) || !_.isEqual(nextState, this.state)) {
+            return true;
+        }
+
+        return false;
+    }
+
     renderContent = () => {
         const {
             positions = [], 
-            contestFound = false,
-            noEntryFound = false,
-            previousPositions = [],
-            listView,
-            handleStockTypeRadioChange,
-            toggleEntryDetailBottomSheet,
             toggleSearchStockBottomSheet,
             showPreviousPositions,
             submitPositions,
             submissionLoading,
-            getRequiredMetrics
         } = this.props;
         const marketOpen = isMarketOpen();
+        const positionsWithNewPredictions = getPositionsWithNewPredictions(positions);
 
         return (
-            !contestFound || (noEntryFound && positions.length === 0 && previousPositions.length == 0)
-            
+            positionsWithNewPredictions.length === 0
             ?   this.renderEmptySelections()
             :   <Grid item xs={12}>
                     <EditPredictionScreen 
                         open={this.state.editPredictionBottomSheetOpenStatus}
                         onClose={this.toggleEditPredictionScreen}
                         position={this.state.selectedPosition}
+                        addPrediction={this.props.addPrediction}
+                        modifyPrediction={this.props.modifyPrediction}
+                        deletePrediction={this.props.deletePrediction}
+                        deletePosition={this.props.deletePosition}
                     />
-                    {this.renderStockList()}
                     {
                          marketOpen.status &&
                         <div 

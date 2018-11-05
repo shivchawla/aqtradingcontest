@@ -1,62 +1,50 @@
 import React from 'react';
-import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import WinnerList from '../common/WinnerList';
 import LoaderComponent from '../../Misc/Loader';
-import TimerComponent from '../../Misc/TimerComponent';
 import {verticalBox} from '../../../../constants';
 
 export default class TopPicksLayout extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            view: 'byInvestment'
+        }
+    }
+
+    onRadioChange = value => {
+        switch(value) {
+            case 0:
+                this.setState({view: 'byInvestment'});
+                break;
+            case 1:
+                this.setState({view: 'byUsers'});
+                break;
+            default:
+                this.setState({view: 'byInvestment'});
+                break;
+        }
+    }
+
     renderContent() {
-        const contestEnded = moment().isAfter(moment(this.props.endDate));
-        const contestRunning = moment().isSameOrAfter(moment(this.props.startDate)) && !contestEnded;
-        const winnerStocks = this.props.winnerStocks;
-        const winnerStocksWeekly = this.props.winnerStocksWeekly;
+        const winnerStocksByInvestment = this.props.winnerStocksByInvestment;
+        const winnerStocksByUsers = this.props.winnerStocksByUsers;
 
         return (
             <SGrid container>
                 {
-                    this.props.noContestFound
-                    ?   <ContestNotPresentView />
-                    :   <React.Fragment>
-                            {
-                                this.props.winnerStocks.length === 0 &&
-                                <Grid 
-                                        item 
-                                        xs={12} 
-                                        style={{
-                                            ...verticalBox, 
-                                            padding: '0 10px', 
-                                            backgroundColor: '#fff'
-                                        }}
-                                >
-                                    <ContestStartedView 
-                                        endDate={
-                                            contestEnded 
-                                            ? this.props.resultDate 
-                                            : contestRunning 
-                                                ? this.props.endDate 
-                                                :  this.props.startDate
-                                        }
-                                        contestEnded={contestEnded}
-                                        contestRunning={contestRunning}
-                                    />
-                                </Grid>
-                            }     
-                            {
-                                contestEnded &&
-                                <Grid item xs={12} style={{padding: '10px'}}>
-                                    {
-                                        (winnerStocks.length > 0 || winnerStocksWeekly.length > 0) && 
-                                        <WinnerList 
-                                            winners={this.props.timelineView === 'daily' ? winnerStocks : winnerStocksWeekly}
-                                        />
+                    (winnerStocksByInvestment.length === 0 && winnerStocksByUsers.length === 0)
+                    ?   <NoDataFound />
+                    :   <Grid item xs={12} style={{padding: '10px'}}>
+                            <WinnerList 
+                                winners={
+                                    this.props.view === 'byInvestment' 
+                                        ? winnerStocksByInvestment 
+                                        : winnerStocksByUsers
                                     }
-                                </Grid>
-                            }
-                        </React.Fragment>
-
+                            />
+                        </Grid>
                 }
             </SGrid>
         );
@@ -77,32 +65,12 @@ export default class TopPicksLayout extends React.Component {
     }
 }
 
-const ContestNotPresentView = () => {
+const NoDataFound = () => {
     return (
         <Grid container>
             <Grid item xs={12} style={verticalBox}>
-                <ContestNotAvailableText>No contest avaiable for selected date</ContestNotAvailableText>
+                <ContestNotAvailableText>No Data Found..</ContestNotAvailableText>
             </Grid>
-        </Grid>
-    );
-}
-
-const ContestStartedView = ({endDate, contestEnded, contestRunning}) => {
-    return (
-        <Grid container style={{marginTop: '0%'}}>
-            <Grid item xs={12}>
-                <h3 style={{fontSize: '18px', color: '#4B4B4B', fontWeight: 300}}>
-                    {
-                        contestEnded ? 'Results will be declared soon' : contestRunning ? 'Contest submission ends in' : 'New Contest will start in'
-                    }
-                </h3>
-            </Grid>
-            {
-                !contestEnded &&
-                <Grid item xs={12}>
-                    <TimerComponent date={endDate} />
-                </Grid>
-            }
         </Grid>
     );
 }

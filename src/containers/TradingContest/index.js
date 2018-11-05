@@ -21,7 +21,6 @@ import {primaryColor} from '../../constants';
 import {Utils} from '../../utils';
 
 class TradingContest extends React.Component {
-    createEntryComponent = null;
     state = {
         selectedTab: 0,
         selectedDate: moment(),
@@ -45,7 +44,6 @@ class TradingContest extends React.Component {
     }
 
     updateDate = (date) => {
-        // this.createEntryComponent && this.createEntryComponent.cancelGetContestEntryCall();
         this.setState({selectedDate: date});
     }
 
@@ -104,15 +102,10 @@ class TradingContest extends React.Component {
                             onDateChange={this.updateDate}
                         />
                     </Grid>
-                    {
+                    { // Preview comes here
                         this.state.selectedTab === 0 && 
                         <Grid item xs={12}>
-                            <CreateEntry 
-                                ref={el => this.createEntryComponent = el} 
-                                selectedDate={this.state.selectedDate}
-                                match={this.props.match}
-                                history={this.props.history}
-                            />
+                            <h1>This will be the preview of create entry</h1>
                         </Grid>
                     }
                     {

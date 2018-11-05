@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import axios from 'axios';
 import {Utils, fetchAjax, getStockData, fetchAjaxPromise} from '../../../utils';
-import {getPercentageModifiedValue, getPredictionEndDate} from '../MultiHorizonCreateEntry/utils';
+import {getDefaultPrediction} from '../MultiHorizonCreateEntry/utils';
 import gold from '../../../assets/gold.svg';
 import silver from '../../../assets/silver.svg';
 import bronze from '../../../assets/bronze.svg';
@@ -73,40 +73,16 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
     const clonedSelectedPositions = _.map(selectedPositions, _.cloneDeep);
 
     return Promise.map(clonedSelectedPositions, selectedPosition => {
-        // Check if position was previously present, if present 
-        // 1. Use points from the previous position
-        // 2. Use predictions from the previous positions
-        const lastPrice = _.get(selectedPosition, 'lastPrice', 0);
         const oldPositionIndex = _.findIndex(clonedOldPositions, oldPosition => oldPosition.symbol === selectedPosition.symbol);
-        if (oldPositionIndex > -1) {
-            let predictions =  _.get(clonedOldPositions[oldPositionIndex], 'predictions', {});
-            const newPredictions = predictions.filter(prediction => prediction.new === true);
-            if (
-                selectedPosition.addPrediction === true 
-                && selectedPosition.deletePrediction === false
-                && newPredictions.length === 0
-            ) {
-                // const previousHorizon = _.get(predictions, `[${predictions.length - 1}].horizon`, 0);
-                // should add new prediction
-                const endDate = getPredictionEndDate(predictions);
-
-                predictions.push({
-                    key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-                    symbol: _.get(selectedPosition, 'symbol', ''),
-                    target: getPercentageModifiedValue(2, lastPrice),
-                    lastPrice,
-                    avgPrice: _.get(selectedPosition, 'avgPrice', 0),
-                    type: 'buy',
-                    // horizon: previousHorizon + 1,
-                    investment: 10,
-                    locked: false,
-                    new: true,
-                    endDate
-                })
-
-            } else if (selectedPosition.addPrediction === false && selectedPosition.deletePrediction === true) {
-                predictions = predictions.filter(prediction => prediction.new === false);
-            }
+        if (oldPositionIndex === -1) {
+            return {
+                ...selectedPosition,
+                points: Math.abs(_.get(selectedPosition, 'points', 10)),
+                predictions: [getDefaultPrediction(selectedPosition)]
+            };
+        } else if (oldPositions[oldPositionIndex].predictions.filter(prediction => prediction.new === true).length === 0) {
+            let predictions =  _.get(clonedOldPositions[oldPositionIndex], 'predictions', []);
+            predictions.push(getDefaultPrediction(oldPositions[oldPositionIndex]));
 
             return {
                 ...selectedPosition,
@@ -114,25 +90,7 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
                 predictions
             }
         } else {
-            return {
-                ...selectedPosition,
-                points: Math.abs(_.get(selectedPosition, 'points', 10)),
-                predictions: [
-                    {
-                        key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-                        symbol: _.get(selectedPosition, 'symbol', ''),
-                        target: getPercentageModifiedValue(2, lastPrice),
-                        lastPrice,
-                        avgPrice: _.get(selectedPosition, 'avgPrice', 0),
-                        type: 'buy',
-                        horizon: 1,
-                        investment: 10,
-                        locked: false,
-                        new: true,
-                        endDate: getPredictionEndDate([])
-                    }
-                ]
-            };
+            return oldPositions[oldPositionIndex];
         }
     });
 }

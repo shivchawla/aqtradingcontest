@@ -7,6 +7,7 @@ import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
 import TradingContest from './containers/TradingContest';
+import TradingContestCreateMobile from './containers/TradingContest/MultiHorizonCreateEntry';
 import TradingContestHomeMobile from './containers/TradingContest/Home';
 import TradingContestHomeDesktop from './containers/TradingContest/CreateEntry/components/desktop/Home';
 import UnderDevelopment from './containers/UnderDevelopment';
@@ -24,9 +25,10 @@ class App extends Component {
                         render={() => {
                             return (
                                 <Switch>
-                                    <Route exact={true} path='/dailycontest/create' component={TradingContest} /> 
+                                    <Route exact={true} path='/dailycontest/create' component={TradingContestCreateMobile} /> 
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
+                                    <Route exact={true} path='/dailycontest/preview' component={TradingContest} /> 
                                     <Route exact={true} path='/dailycontest' component={TradingContestHomeMobile} /> 
                                 </Switch>
                             );
