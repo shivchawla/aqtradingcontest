@@ -42,7 +42,7 @@ class AqLayout extends React.Component {
         } = this.props;
 
         return (
-            <div>
+            <div style={{width: '100%'}}>
                 <NavigationDrawer 
                     open={this.state.navigationDrawerOpenStatus} 
                     onToggle={this.toggleNavigationDrawer}

@@ -4,6 +4,7 @@ import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {withRouter} from 'react-router-dom';
 import StockList from '../common/StockList';
 import LoaderComponent from '../../../Misc/Loader';
 import EditPredictionScreen from './EditPredictionScreen';
@@ -11,17 +12,13 @@ import {isMarketOpen} from '../../../utils';
 import {getPositionsWithNewPredictions} from '../../utils';
 import {verticalBox, primaryColor, secondaryColor} from '../../../../../constants';
 
-export default class CreateEntryLayoutMobile extends React.Component {
+class CreateEntryEditScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             editPredictionBottomSheetOpenStatus: false,
             selectedPosition: {}
         }
-    }
-
-    toggleEditPredictionScreen = () => {
-        this.setState({editPredictionBottomSheetOpenStatus: !this.state.editPredictionBottomSheetOpenStatus});
     }
 
     renderEmptySelections = () => {
@@ -52,7 +49,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
                             style={emptyPortfolioButtonStyle}
                             onClick={this.props.toggleSearchStockBottomSheet}
                     >
-                        ADD STOCKS
+                        ADD PREDICTIONS
                     </Button>
                 }
             </Grid>
@@ -85,6 +82,10 @@ export default class CreateEntryLayoutMobile extends React.Component {
         )
     }
 
+    componentWillMount() {
+        this.props.toggleSearchStockBottomSheet();
+    }
+
     componentWillReceiveProps(nextProps) {
         if (!_.isEqual(this.props, nextProps)) {
             // Updating the selected position with the updated position value when modified in any way
@@ -106,6 +107,13 @@ export default class CreateEntryLayoutMobile extends React.Component {
         return false;
     }
 
+    createEntry = () => {
+        this.props.submitPositions()
+        .then(() => {
+            this.props.history.push('/dailycontest/preview');
+        })
+    }
+
     renderContent = () => {
         const {
             positions = [], 
@@ -123,7 +131,6 @@ export default class CreateEntryLayoutMobile extends React.Component {
             :   <Grid item xs={12}>
                     <EditPredictionScreen 
                         open={this.state.editPredictionBottomSheetOpenStatus}
-                        onClose={this.toggleEditPredictionScreen}
                         position={this.state.selectedPosition}
                         addPrediction={this.props.addPrediction}
                         modifyPrediction={this.props.modifyPrediction}
@@ -155,7 +162,7 @@ export default class CreateEntryLayoutMobile extends React.Component {
                                             size='small' 
                                             variant="extendedFab" 
                                             aria-label="Edit" 
-                                            onClick={submitPositions}
+                                            onClick={this.createEntry}
                                             disabled={submissionLoading}
                                     >
                                         <Icon style={{marginRight: '5px'}}>update</Icon>
@@ -178,6 +185,8 @@ export default class CreateEntryLayoutMobile extends React.Component {
         );
     }
 }
+
+export default withRouter(CreateEntryEditScreen);
 
 const fabButtonStyle = {
     borderRadius:'5px', 

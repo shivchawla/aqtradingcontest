@@ -17,6 +17,8 @@ const customTheme = createMuiTheme({
     },
 });
 
+let timeout = null;
+
 class NumberInput extends React.Component {
     stepSize = 100;
 
@@ -29,13 +31,11 @@ class NumberInput extends React.Component {
 
     onChange = e => {
         const value = e.target.value;
-        const max = _.get(this.props, 'max', this.max);
-        const min = _.get(this.props, 'min', this.min);
-        if (value >= min && value <= max) {
-            this.setState({value}, () => {
-                this.props.onChange && this.props.onChange(value);
-            });
-        }
+        clearTimeout(timeout);
+        this.setState({value});
+        timeout = setTimeout(() => {
+            this.props.onChange && this.props.onChange(Number(value));
+        }, 500);
     }
 
     onActionButtonChange = (type = 'add') => {

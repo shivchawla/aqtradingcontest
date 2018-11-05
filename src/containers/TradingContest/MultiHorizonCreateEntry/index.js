@@ -29,7 +29,8 @@ import {
     processPredictions, 
     getPnlStats, 
     getDefaultPrediction,
-    checkForUntouchedPredictionsInPositions
+    checkForUntouchedPredictionsInPositions,
+    getPositionsWithNewPredictions
 } from './utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -253,7 +254,7 @@ class CreateEntry extends React.Component {
         const shouldCreate = this.state.noEntryFound ? true : false;
         const allPredictions = await getPredictionsFromPositions(this.state.positions);
         this.setState({submissionLoading: true, todayDataLoaded: false});
-        createPredictions(allPredictions, shouldCreate)
+        return createPredictions(allPredictions, shouldCreate)
         .then(response => {
             return this.updateDailyPredictionsOnDateChange();
         })
@@ -431,7 +432,7 @@ class CreateEntry extends React.Component {
                 const nPrediction = {
                     ...prediction,
                     // target: (prediction.type === 'buy' ? 1 : -1) * Math.abs(prediction.target),
-                    target: this.adjustPriceDifference(prediction.lastPrice, prediction.target, prediction.type)
+                    // target: this.adjustPriceDifference(prediction.lastPrice, prediction.target, prediction.type)
                 };
                 selectedPosition.predictions[selectedPredictionIndex] = nPrediction;
                 clonedPositions[selectedPositionIndex] = selectedPosition;
@@ -543,7 +544,9 @@ class CreateEntry extends React.Component {
     renderMobileLayout = (props) => {
         const {componentType = 'create'} = this.props;
 
-        return componentType === 'create' ? <CreateEntryLayoutMobile {...props}/> : <DisplayPredictionsMobile {...props}/>
+        return componentType === 'create' 
+            ? <CreateEntryLayoutMobile {...props}/> 
+            : <DisplayPredictionsMobile {...props}/>
     }
 
     renderPortfolioPicksDetail = () => {
@@ -587,7 +590,7 @@ class CreateEntry extends React.Component {
             pnlFound: this.state.pnlFound,
             previewPositions: this.state.previewPositions,
             handlePreviewListMenuItemChange: this.handlePreviewListMenuItemChange,
-            loadingPreview: this.state.loadingPreview
+            loadingPreview: this.state.loadingPreview,
         };
 
         //<CreateEntryLayoutMobile {...props}/>

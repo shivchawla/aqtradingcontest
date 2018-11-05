@@ -46,14 +46,14 @@ export default class SearchStockHeader extends React.Component {
                             type={
                                 this.props.stockPerformanceOpen || this.props.stockFilterOpen
                                     ? "chevron_left" 
-                                    : "cancel"
+                                    : ""
                             }
                             onClick={
                                 () => this.props.stockPerformanceOpen
                                 ? this.props.toggleStockPerformanceOpen()
                                 : this.props.stockFilterOpen 
                                     ? this.props.toggleStockFilterOpen()
-                                    : this.props.toggleBottomSheet()
+                                    : () => {}
                             }
                         />
                         {

@@ -27,7 +27,7 @@ export default class EditPredictionScreen extends React.Component {
 
         return (
             <AqLayout>
-                <Grid container>
+                <Grid container style={{marginTop: '20px'}}>
                     <Grid item xs={12} style={{paddingLeft: '20px'}}>
                         <Symbol>{symbol}</Symbol>
                         <h3 style={nameStyle}>{name}</h3>

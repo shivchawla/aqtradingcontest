@@ -259,13 +259,9 @@ export class SearchStocks extends React.Component {
      * @returns: {symbol, name, change, changePct, close, high, low, open}
      */
     processStockList = (stocks = []) => {
-        const selectedStocks = [...this.state.selectedStocks];
-        const sellSelectedStocks = [...this.state.sellSelectedStocks];
-        const positions = _.get(this.props, 'portfolioPositions', []);
-
         return stocks.map(stock => {
-            const symbol = _.get(stock, 'security.detail.NSE_ID', null) ||
-                _.get(stock, 'security.ticker', "");
+            const symbol = _.get(stock, 'detail.NSE_ID', null) ||
+                _.get(stock, 'ticker', "");
 
             const close = _.get(stock, 'latestDetailRT.close', 0) ||
                 _.get(stock, 'latestDetail.Close', 0);
@@ -293,7 +289,7 @@ export class SearchStocks extends React.Component {
 
             return {
                 symbol,
-                name: _.get(stock, 'security.detail.Nse_Name', null),
+                name: _.get(stock, 'detail.Nse_Name', null),
                 change,
                 changePct,
                 close,
@@ -303,12 +299,12 @@ export class SearchStocks extends React.Component {
                 current,
                 checked: false,
                 sellChecked: false,
-                sector: _.get(stock, 'security.detail.Sector', null),
-                industry: _.get(stock, 'security.detail.Industry', null),
+                sector: _.get(stock, 'detail.Sector', null),
+                industry: _.get(stock, 'detail.Industry', null),
                 shortable,
                 hideActions: false,
             };
-        }).filter(stock => stock.name !== null);
+        }).filter(stock => stock.name !== null);;
     }
 
     conditionallyAddStock = symbol => {
