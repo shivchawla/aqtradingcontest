@@ -26,11 +26,10 @@ class App extends Component {
                         render={() => {
                             return (
                                 <Switch>
-                                    <Route exact={true} path='/dailycontest/create' component={TradingContestCreateMobile} /> 
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
                                     <Route exact={true} path='/watchlist' component={Watchlist} /> 
-                                    {/* <Route exact={true} path='/dailycontest' component={TradingContestHomeMobile} />  */}
+                                    <Route path='/dailycontest' component={TradingContest} /> 
                                 </Switch>
                             );
                         }}

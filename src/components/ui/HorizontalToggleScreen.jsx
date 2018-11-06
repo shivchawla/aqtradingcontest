@@ -5,7 +5,13 @@ import {Motion, spring} from 'react-motion';
 
 export default class HorizontalToggleScreen extends React.Component {
     render() {
-        const {selectedView = 0, firstScreenContent, secondScreenContent, height = '100%', width = '100%'} = this.props;
+        const {
+            selectedView = 0, 
+            firstScreenContent, 
+            secondScreenContent, 
+            height = '100%', 
+            width = global.screen.width
+        } = this.props;
 
         return (
             <Motion
@@ -15,7 +21,16 @@ export default class HorizontalToggleScreen extends React.Component {
                     }}>
                 {
                     ({firstScreenXPosition, secondScreenXPosition}) => 
-                        <React.Fragment>
+                        <div 
+                                style={{
+                                    width: global.screen.width, 
+                                    overflow: 'hidden', 
+                                    position: 'relative',
+                                    height: 'calc(100vh - 56px)',
+                                    marginLeft: '-24px',
+                                    paddingTop: '60px'
+                                }}
+                        >
                             <Grid
                                     item 
                                     xs={12} 
@@ -45,7 +60,7 @@ export default class HorizontalToggleScreen extends React.Component {
                             >
                                 {secondScreenContent()}
                             </Grid>
-                        </React.Fragment>
+                        </div>
                 }
             </Motion>
         );

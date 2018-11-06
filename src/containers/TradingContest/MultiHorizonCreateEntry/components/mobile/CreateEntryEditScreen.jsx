@@ -4,15 +4,29 @@ import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import Slide from '@material-ui/core/Slide';
 import {withRouter} from 'react-router-dom';
-import TopSheet from '../../../../../components/Alerts/TopSheet';
+import {withStyles} from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import CloseIcon from '@material-ui/icons/Close';
 import HorizontalToggleScreen from '../../../../../components/ui/HorizontalToggleScreen';
 import {SearchStocks} from '../../../SearchStocks';
 import StockList from '../common/StockList';
 import EditPredictionScreen from './EditPredictionScreen';
 import {isMarketOpen} from '../../../utils';
 import {getPositionsWithNewPredictions} from '../../utils';
-import {verticalBox, primaryColor, secondaryColor} from '../../../../../constants';
+import {verticalBox, primaryColor, horizontalBox} from '../../../../../constants';
+
+const styles = theme => ({
+    dialogContentRoot: {
+        overflow: 'hidden'
+    }
+});
 
 class CreateEntryEditScreen extends React.Component {
     constructor(props) {
@@ -133,6 +147,7 @@ class CreateEntryEditScreen extends React.Component {
                 onBackClicked={this.onLeftClicked}
                 stockPerformanceOpen={this.state.stockPerformanceOpen}
                 toggleStockPerformanceOpen={this.toggleStockPerformance}
+                loadOnMount={true}
             />
         );
     }
@@ -170,7 +185,7 @@ class CreateEntryEditScreen extends React.Component {
         const marketOpen = isMarketOpen();
 
         return (
-            <Grid item xs={12} style={{height: 'calc(100% - 61px)'}}>
+            <Grid item xs={12} style={{height: 'calc(100vh - 61px)'}}>
                 <EditPredictionScreen 
                     open={this.state.editPredictionBottomSheetOpenStatus}
                     position={this.state.selectedPosition}
@@ -181,38 +196,19 @@ class CreateEntryEditScreen extends React.Component {
                 />
                 {
                     marketOpen.status &&
-                    <div 
-                            style={{
-                                ...fabContainerStyle,
-                                justifyContent: 'center'
-                            }}
-                    >
-                        {/* <Button 
-                                style={{...fabButtonStyle, ...addStocksStyle}} 
-                                size='small' variant="extendedFab" 
-                                aria-label="Delete" 
-                                onClick={this.goToSearchStocksScreen}
+                    <div style={{...horizontalBox, justifyContent: 'center'}}>
+                        <Button 
+                                style={{...fabButtonStyle, ...submitButtonStyle}} 
+                                size='small' 
+                                variant="extendedFab" 
+                                aria-label="Edit" 
+                                onClick={this.submitPositions}
+                                disabled={submissionLoading}
                         >
-                            <Icon>chevron_left</Icon>
-                            BACK
-                        </Button> */}
-                        {
-                            !showPreviousPositions &&
-                            <div>
-                                <Button 
-                                        style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                        size='small' 
-                                        variant="extendedFab" 
-                                        aria-label="Edit" 
-                                        onClick={this.submitPositions}
-                                        disabled={submissionLoading}
-                                >
-                                    <Icon style={{marginRight: '5px'}}>update</Icon>
-                                    SUBMIT
-                                    {submissionLoading && <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />}
-                                </Button>
-                            </div>
-                        }
+                            <Icon style={{marginRight: '5px'}}>update</Icon>
+                            SUBMIT
+                            {submissionLoading && <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />}
+                        </Button>
                     </div>
                 }
             </Grid>
@@ -220,36 +216,65 @@ class CreateEntryEditScreen extends React.Component {
     }
 
     render() {
+        const {classes} = this.props;
         const header = this.state.selectedView === 0 ? 'ADD STOCK' : 'EDIT PREDICTION';
         const headerIcon = (!this.state.stockPerformanceOpen && this.state.selectedView === 0) ? null : 'chevron_left';
 
         return (
-            <TopSheet 
-                    open={this.props.bottomSheetOpenStatus}
-                    onClose={this.props.toggleSearchStockBottomSheet}
-                    header={header}
-                    onLeftClicked={this.onLeftClicked}
-                    leftIconType={headerIcon}
+            <Dialog
+                fullScreen
+                open={this.props.bottomSheetOpenStatus}
+                onClose={this.props.toggleSearchStockBottomSheet}
+                TransitionComponent={Transition}
+                style={{overflow: 'hidden'}}
             >
-                <HorizontalToggleScreen 
-                    selectedView={this.state.selectedView}
-                    firstScreenContent={this.renderSearchStocks}
-                    secondScreenContent={this.renderEditView}
-                    height='calc(100% - 61px)'
-                />
-            </TopSheet>
+                <AppBar>
+                    <Toolbar>
+                        <Button color="inherit" onClick={this.props.toggleSearchStockBottomSheet}>
+                            save
+                        </Button>
+                        <Typography variant="h6" color="inherit">
+                            ADD STOCKS
+                        </Typography>
+                        <IconButton 
+                                color="inherit" 
+                                onClick={this.props.toggleSearchStockBottomSheet} 
+                                aria-label="Close"
+                                style={{position: 'absolute', right: '10px'}}
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Toolbar>
+                </AppBar>
+                <DialogContent
+                        classes={{
+                            root: classes.dialogContentRoot
+                        }}
+                >
+                    <HorizontalToggleScreen 
+                        selectedView={this.state.selectedView}
+                        firstScreenContent={this.renderSearchStocks}
+                        secondScreenContent={this.renderEditView}
+                        height='calc(100vh - 61px)'
+                    />
+                </DialogContent>
+            </Dialog>
         );
     }
 }
 
-export default withRouter(CreateEntryEditScreen);
+export default withStyles(styles)(withRouter(CreateEntryEditScreen));
+
+const Transition = (props) => {
+    return <Slide direction="up" {...props} />;
+}
 
 const fabButtonStyle = {
     borderRadius:'5px', 
     padding: '0 10px',
     minHeight: '36px',
     height: '36px',
-    boxShadow: '0 11px 21px #c3c0c0'
+    boxShadow: 'none'
 };
 
 const emptyPortfolioButtonStyle = {

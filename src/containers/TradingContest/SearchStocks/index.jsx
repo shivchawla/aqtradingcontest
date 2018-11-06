@@ -77,7 +77,7 @@ export class SearchStocks extends React.Component {
                 </Grid>
                 <Grid item xs={1} style={{paddingTop: '8px'}}>
                     {
-                        this.state.portfolioLoading &&
+                        this.state.loadingStocks &&
                         <CircularProgress size={25} />
                     }
                 </Grid>
@@ -105,7 +105,8 @@ export class SearchStocks extends React.Component {
                         style={{
                             ...horizontalBox,
                             backgroundColor: '#efeff4',
-                            justifyContent: 'space-between'
+                            justifyContent: 'space-between',
+                            padding: '0 5px'
                         }}
                 >
                     <TextField
@@ -117,20 +118,24 @@ export class SearchStocks extends React.Component {
                         onChange={value => this.handleSearchInputChange(value, 'mobile')}
                     />
                     {
-                        !this.props.stockPerformanceOpen &&
-                            <Badge 
-                                style={{
-                                    backgroundColor: '#fff', 
-                                    color: primaryColor, 
-                                    fontSize: '14px', 
-                                    right: '30px'
-                                }} 
-                                color="primary"
-                                badgeContent={selectedStocks.length}
-                                onClick={this.toggleSelectedStocksDialogClose}
-                            >
-                            </Badge>
+                        this.state.loadingStocks &&
+                        <CircularProgress size={25} />
                     }
+                    {
+                        !this.state.loadingStocks && 
+                        this.state.newStocks.length > 0 && 
+                        !this.props.stockPerformanceOpen &&
+                        <Button 
+                                style={{...fabButtonStyle, ...addStocksStyle}} 
+                                size='small' variant="extendedFab" 
+                                aria-label="Delete" 
+                                onClick={this.addSelectedStocksToPortfolio}
+                        >
+                            <Icon>done_all</Icon>
+                            DONE
+                        </Button>
+                    }
+
                 </Grid>
                 <Grid
                         item 
@@ -671,6 +676,10 @@ export class SearchStocks extends React.Component {
         return false;
     }
 
+    componentWillMount() {
+        this.props.loadOnMount && this.fetchStocks();
+    }
+
     toggleStockPerformanceOpen = () => {
         this.setState({stockPerformanceOpen: !this.props.stockPerformanceOpen});
     }
@@ -748,16 +757,6 @@ export class SearchStocks extends React.Component {
                                                 this.props.stockPerformanceOpen &&
                                                 <StockPerformance stock={this.state.selectedStock}/>
                                             }
-                                            {/* <div
-                                                    style={{
-                                                        display: this.state.stockFilterOpen ? 'block' : 'none'
-                                                    }}
-                                            >
-                                                <StockFilter 
-                                                    onFilterChange={this.onFilterChange}
-                                                    filters={this.props.filters}
-                                                />
-                                            </div> */}
                                         </Grid>
                                     </React.Fragment>
                             }
@@ -813,79 +812,12 @@ export class SearchStocks extends React.Component {
                                         borderRight: '1px solid #eaeaea'
                                     }}
                             >
-                                {/* {this.renderSelectedStocks()} */}
                                 <StockPerformance stock={this.state.selectedStock}/>
                             </Grid>
                         </React.Fragment>
                     )}
                 />
             </React.Fragment>
-        );
-    }
-    
-    renderSelectedStocks = () => {
-        const selectedStocks = [...this.state.selectedStocks];
-
-        return (
-            <SGrid container>
-                {
-                    selectedStocks.map((stock, index) => {
-                        return (
-                            <Chip
-                                key={stock}
-                                label={stock}
-                                onDelete={() => {
-                                    this.conditionallyAddStock(stock)
-                                }}
-                                style={{marginRight: '5px'}}
-                                color="primary"
-                            />
-                        );
-                    })
-                }
-            </SGrid>
-        );
-    }
-
-    renderSelectedStocksMobile = (type = 'buy') => {
-        const selectedStocks = type === 'buy' ? [...this.state.selectedStocks] : [...this.state.sellSelectedStocks];
-        return (
-            selectedStocks.length > 0 
-            && !this.props.stockPerformanceOpen 
-            && !this.state.stockFilterOpen 
-            && global.screen.width <= 600
-            ?   <Grid
-                        item 
-                        xs={12}
-                        className='selectedstocks-mobile'
-                        style={{
-                            ...horizontalBox,
-                            width: '100%',
-                            zIndex: '200',
-                            backgroundColor: '#fff',
-                            height: '50px',
-                            overflow: 'hidden',
-                            overflowX: 'scroll',
-                            borderTop: '1px solid #eaeaea',
-                            borderBottom: '1px solid #eaeaea',
-                            padding: '0 10px',
-                        }}
-                >
-                    {
-                        selectedStocks.map((stock, index) => {
-                            return (
-                                <Chip
-                                    key={stock}
-                                    label={stock}
-                                    onDelete={() => this.conditionallyAddStock(stock)}
-                                    color="primary"
-                                    style={{marginRight: '5px'}}
-                                />
-                            );
-                        })
-                    }
-                </Grid>
-            : null
         );
     }
 
@@ -969,30 +901,6 @@ export class SearchStocks extends React.Component {
                         }
                     />
                     {this.renderStockListDetails()}
-                    {
-                        this.state.newStocks.length > 0 && !this.props.stockPerformanceOpen &&
-                        <Media 
-                            query='(max-width: 600px)'
-                            render={() => 
-                                <div 
-                                        style={{
-                                            ...fabContainerStyle,
-                                            justifyContent: 'center'
-                                        }}
-                                >
-                                    <Button 
-                                            style={{...fabButtonStyle, ...addStocksStyle}} 
-                                            size='small' variant="extendedFab" 
-                                            aria-label="Delete" 
-                                            onClick={this.addSelectedStocksToPortfolio}
-                                    >
-                                        <Icon>done_all</Icon>
-                                        DONE
-                                    </Button>
-                                </div>
-                            }
-                        />
-                    }
                 </SGrid>
             </React.Fragment>
         );
@@ -1008,18 +916,8 @@ const fabButtonStyle = {
     padding: '0 10px',
     minHeight: '36px',
     height: '36px',
-    boxShadow: '0 11px 21px #c3c0c0'
+    boxShadow: 'none'
 };
-
-const fabContainerStyle = {
-    display: 'flex', 
-    width: '95%', 
-    padding:'0 10px', 
-    position: 'fixed', 
-    zIndex:2, 
-    bottom: '20px', 
-};
-
 
 const addStocksStyle = {
     backgroundColor: '#607D8B',
