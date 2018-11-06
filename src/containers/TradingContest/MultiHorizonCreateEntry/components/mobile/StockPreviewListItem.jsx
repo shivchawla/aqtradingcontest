@@ -133,13 +133,14 @@ const SymbolComponent = ({symbol, name}) => {
 const ChangeComponent = ({lastPrice, change, changePct}) => {
     const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
     let formattedChangePct = (changePct * 100).toFixed(2);
+    let formattedChange = change.toFixed(2);
 
     return (
         <div style={{...verticalBox, alignItems: 'flex-start'}}>
             {/*<div style={{...horizontalBox, justifyContent: 'flex-start'}}>*/}
                 <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
                 {/*<ChangeDivider>|</ChangeDivider>*/}
-                <Change color={changeColor}>₹{change} ({formattedChangePct}%)</Change>
+                <Change color={changeColor}>₹{formattedChange} ({formattedChangePct}%)</Change>
             {/*</div>*/}
             {/*<LastPriceLabel>Last Price</LastPriceLabel>*/}
         </div>
