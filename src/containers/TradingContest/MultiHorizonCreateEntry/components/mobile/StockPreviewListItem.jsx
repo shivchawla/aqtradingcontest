@@ -52,6 +52,22 @@ class StockPreviewListItem extends React.Component {
         } = this.props.position;
 
         const nPredictions = predictions.length;
+
+        let totalPnl = 0;
+        let totalPnlPct = 0;
+
+        let investment = 0;
+        predictions.forEach(item => {
+            investment += item.investment;
+            var direction = item.type == "buy" ? 1 : -1;
+            totalPnl += item.avgPrice > 0 ? direction*(item.investment/item.avgPrice)*(item.lastPrice - item.avgPrice) : 0;
+        });
+
+        var pnlColor = totalPnl > 0 ? metricColor.positive : totalPnl < 0 ? metricColor.negative : metricColor.neutral;
+
+        totalPnlPct = `${((investment > 0 ? totalPnl/investment : 0.0)*100).toFixed(2)}%`;
+        totalPnl = Utils.formatMoneyValueMaxTwoDecimals(totalPnl*1000);
+
         return (
             <ExpansionPanel
                     classes={{
@@ -81,9 +97,12 @@ class StockPreviewListItem extends React.Component {
                                 changePct={chgPct}
                             />
                         </Grid>
-                        {/*<Grid item xs={2}>
-                            <Prediction prediction={predictions.length} />
-                        </Grid>*/}
+                        <Grid item xs={2}>
+                            <div style={{color: pnlColor, fontSize: '15px', display:'grid'}}>
+                                ₹{totalPnl}
+                                <span style={{fontSize:'12px'}}>{totalPnlPct}</span>
+                            </div>
+                        </Grid>
                     </Grid>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails classes={{root: classes.expansionPanelDetailRoot}}>
@@ -148,7 +167,7 @@ const Prediction = ({prediction = 0}) => {
 
 const nameStyle = {
     ...nameEllipsisStyle, 
-    width: '140px', 
+    width: '100px', 
     color: '#464646', 
     textAlign: 'start', 
     marginTop:'4px',
@@ -165,7 +184,7 @@ const Symbol = styled.div`
 `;
 
 const LastPrice = styled.h3`
-    font-size: 16px;
+    font-size: 15px;
     color: #545454;
     font-weight: 400;
 `;
