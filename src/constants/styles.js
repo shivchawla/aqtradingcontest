@@ -101,7 +101,7 @@ export const nameEllipsisStyle2 = {
     overflow: 'hidden', 
     textOverflow: 'ellipsis', 
     whiteSpace: 'nowrap', 
-    width: '250px',
+    width: '150px',
     cursor: 'pointer',
     color: '#0091EA'
 };
@@ -117,7 +117,7 @@ export const tabBackgroundColor = '#fbfbfc';
 export const metricColor = {
     positive: '#4CAF50',
     negative: '#f5222d',
-    neutral: '#3F51B5'
+    neutral: 'black'
 };
 
 export const loadingColor = '#03A7AD';

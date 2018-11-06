@@ -16,7 +16,7 @@ export default class WinnerListItem extends React.Component {
     }
     
     render() {
-        const {security = {}, numUsers = 1, rank = 5, lastDetail = {}} = this.props;
+        const {security = {}, numUsers = 1, rank = 5, lastDetail = {}, investment} = this.props;
         const symbol = _.get(security, 'detail.NSE_ID', null) || security.ticker;
         const name = _.get(security, 'detail.Nse_Name', null) || '';
         const lastPrice = _.get(security, 'latestDetailRT.current', null) || _.get(security, 'latestDetail.Close', 0);
@@ -28,28 +28,51 @@ export default class WinnerListItem extends React.Component {
 
         const medal = getRankMedal(rank);
 
+        var colorLongUsers = numUsers.long > 0 ? metricColor.positive : metricColor.neutral;
+        var colorShortUsers = numUsers.short > 0 ? metricColor.negative : metricColor.neutral;
+
+        var colorLongInvestment = investment.long > 0 ? metricColor.positive : metricColor.neutral;
+        var colorShortInvestment = investment.short > 0 ? metricColor.negative : metricColor.neutral;
+
         return (
             <SGrid container>
                 <Grid item xs={1} style={{...verticalBox, justifyContent: 'center'}}>
                     <img src={medal} width={20}/>
                 </Grid>
-                <Grid item xs={10} style={{...verticalBox, alignItems: 'flex-start', marginLeft:'5px'}}>
+                <Grid item xs={4} style={{...verticalBox, alignItems: 'flex-start', marginLeft:'5px'}}>
                     <Symbol>{symbol}</Symbol>
                     <SecondaryText style={{...nameEllipsisStyle2, textAlign: 'start'}}>{name}</SecondaryText>
                 </Grid>
-                <Grid item  xs={12} style={{...colStyle, marginTop:'10px'}}>
-                    <SecondaryText>
-                        ₹{lastPrice} <p style={labelStyle}>Last Price</p>
+                <Grid item xs={4} style={{...colStyle, marginLeft:'auto'}}>
+                    <SecondaryText style={{display:'grid'}}>
+                        ₹{lastPrice} 
+                        <span style={{color: changeColor, fontSize: '14px'}}>₹{change} {changePct}</span>
+                        {/*<p style={labelStyle}>Last Price</p>*/}
+                    </SecondaryText>
+                    
+                </Grid>
+
+                <Grid item xs={12} style={{...horizontalBox, marginLeft:'auto', marginTop:'5px', justifyContent:'space-between'}}>
+                    <SecondaryText style={{marginLeft:'15px', width:'140px'}}>
+                        {numUsers.total} 
+                        <span> (</span>
+                        <span style={{fontSize:'16px', color: colorLongUsers}}>{numUsers.long}</span>
+                        <span>/</span>
+                        <span style={{fontSize:'16px', color: colorShortUsers}}>{numUsers.short}</span>
+                        <span>)</span>
+                        <p style={labelStyle}>Votes</p>
                     </SecondaryText>
 
-                    <SecondaryText>
-                        <span style={{color: changeColor}}>₹{change} {changePct}</span><p style={labelStyle}>Change</p>
+                    <SecondaryText style={{marginLeft:'15px', width:'200px'}}>
+                        {investment.gross}K 
+                        <span> (</span>
+                        <span style={{fontSize:'16px', color: colorLongInvestment}}>{investment.long}K</span>
+                        <span>/</span>
+                        <span style={{fontSize:'16px', color: colorShortInvestment}}>{investment.short}K</span>
+                        <span>)</span>
+                        <p style={labelStyle}>Investment</p>
                     </SecondaryText>
-
-                    <SecondaryText>
-                        {numUsers.total} <p style={labelStyle}>Votes</p>
-                    </SecondaryText>
-                
+                    
                 </Grid>
             </SGrid>
         ); 
@@ -92,6 +115,6 @@ const Points = styled.div`
 `;
 
 const labelStyle = {
-    fontSize:'12px',
-    marginTop:'-2px'
+    fontSize:'13px',
+    marginTop:'0px'
 };

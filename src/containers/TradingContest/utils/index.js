@@ -187,7 +187,7 @@ export const getLeaderboard = (selectedDate = moment(), history, currentUrl, han
 
 export const processLeaderboardWinners = (leaders = []) => {
     return Promise.map(leaders, leader => {
-        const userName = _.get(leader, 'advisor.user.firstName', '') + ' ' + _.get(leader, 'advisor.user.lastName', '');
+        const userName = _.get(leader, 'advisor.firstName', '') + ' ' + _.get(leader, 'advisor.lastName', '');
         const pnl = {
             long: _.get(leader, 'pnlStats.long.pnl', 0),
             short: _.get(leader, 'pnlStats.short.pnl', 0),

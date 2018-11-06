@@ -37,7 +37,7 @@ class TradingContest extends React.Component {
     }
 
     handleChange = (selectedTab) => {
-        console.log('Selected Tab', selectedTab);
+        //console.log('Selected Tab', selectedTab);
         let tab = this.getSelectedPage(selectedTab);
         const url = `${this.props.match.path}/${tab}?date=${this.state.selectedDate.format(dateFormat)}`;
         this.props.history.push(url);
