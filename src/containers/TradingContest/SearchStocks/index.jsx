@@ -488,13 +488,6 @@ export class SearchStocks extends React.Component {
         })
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (!_.isEqual(nextProps, this.props)) {
-            console.log('Called');
-            // this.syncStockListWithPortfolio(nextProps);
-        }
-    }
-
     syncStockListWithPortfolioNew = (requiredStocks) => {
         const selectedPositions = _.get(this.props, 'portfolioPositions', []);
         let stocks = _.map(requiredStocks, _.cloneDeep);

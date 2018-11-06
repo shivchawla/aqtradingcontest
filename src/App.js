@@ -28,8 +28,8 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/create' component={TradingContestCreateMobile} /> 
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
-                                    <Route exact={true} path='/dailycontest/preview' component={TradingContest} /> 
-                                    <Route exact={true} path='/dailycontest' component={TradingContestHomeMobile} /> 
+                                    <Route path='/dailycontest' component={TradingContest} /> 
+                                    {/* <Route exact={true} path='/dailycontest' component={TradingContestHomeMobile} />  */}
                                 </Switch>
                             );
                         }}
@@ -39,10 +39,10 @@ class App extends Component {
                         render={() => {
                             return (
                                 <Switch>
-                                    <Route path='/dailycontest/create' component={TradingContest} /> 
+                                    {/* <Route path='/dailycontest/create' component={TradingContest} />  */}
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} />
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} /> 
-                                    <Route exact={true} path='/dailycontest' component={TradingContestHomeDesktop} />  
+                                    <Route path='/dailycontest' component={TradingContest} />  
                                     <Route component={UnderDevelopment} />
                                 </Switch>
                             );

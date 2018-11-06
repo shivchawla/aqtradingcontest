@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import Media from 'react-media';
 import moment from 'moment';
+import Route from 'react-router/Route';
 import styled from 'styled-components';
 import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -20,16 +21,53 @@ import Header from '../Header';
 import {primaryColor} from '../../constants';
 import {Utils} from '../../utils';
 
-class TradingContest extends React.Component {
-    state = {
-        selectedTab: 0,
-        selectedDate: moment(),
-        bottomSheetOpen: false,
-    };
+const URLSearchParamsPoly = require('url-search-params');
+const dateFormat = 'YYYY-MM-DD';
 
-    handleChange = (event, selectedTab) => {
+class TradingContest extends React.Component {
+    params = {}
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedTab: 0,
+            selectedDate: moment(),
+            bottomSheetOpen: false,
+        };
+    }
+
+    handleChange = (selectedTab) => {
+        console.log('Selected Tab', selectedTab);
+        let tab = this.getSelectedPage(selectedTab);
+        const url = `${this.props.match.path}/${tab}?date=${this.state.selectedDate.format(dateFormat)}`;
+        this.props.history.push(url);
         this.setState({selectedTab});
     };
+
+    getSelectedPage = (selectedTab = 0) => {
+        switch(selectedTab) {
+            case 0:
+                return 'mypicks';
+            case 1:
+                return 'toppicks';
+            case 2:
+                return 'leaderboard';
+            default:
+                return 'mypicks';
+        }
+    } 
+
+    getSelectedTab = (url) => {
+        switch(url) {
+            case "/dailycontest/mypicks":
+                return 0;
+            case "/dailycontest/toppicks":
+                return 1;
+            case "/dailycontest/leaderboard":
+                return 2;
+            default:
+                return 0;
+        }
+    }
 
     handleDesktopTabChange = selectedTab => {
         this.setState({selectedTab});
@@ -64,9 +102,15 @@ class TradingContest extends React.Component {
     }
 
     componentWillMount() {
+        this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
+        const date = this.params.get('date');
+        if (date !== null) {
+            this.setState({selectedDate: moment(date, dateFormat)});
+        }
         if (!Utils.isLoggedIn()) {
             window.location.assign('/login');
         }
+        this.setState({selectedTab: this.getSelectedTab(this.props.location.pathname)});
     }
 
     renderMobile = () => {
@@ -86,7 +130,7 @@ class TradingContest extends React.Component {
                     <Grid item xs={12}>
                         <STabs
                             value={selectedTab}
-                            onChange={this.handleChange}
+                            onChange={(e, selectedTab) => this.handleChange(selectedTab)}
                             indicatorColor="secondary"
                             fullWidth>
                                 <STab label="MY PICKS" />
@@ -94,7 +138,6 @@ class TradingContest extends React.Component {
                                 <STab label="LEADERBOARD"/>
                         </STabs>
                     </Grid>
-
                     <Grid item xs={12}>
                         <DateComponent 
                             selectedDate={this.state.selectedDate}
@@ -102,25 +145,30 @@ class TradingContest extends React.Component {
                             onDateChange={this.updateDate}
                         />
                     </Grid>
-                    { // Preview comes here
-                        this.state.selectedTab === 0 && 
-                        <CreateEntry 
-                            selectedDate={this.state.selectedDate}
-                            componentType='preview'
-                        />
-                    }
-                    {
-                        this.state.selectedTab === 1 && 
-                        <Grid item xs={12}>
+                    <Route 
+                        exact
+                        path={`${this.props.match.path}/mypicks`}
+                        render={() => (
+                            <CreateEntry 
+                                selectedDate={this.state.selectedDate}
+                                componentType='preview'
+                            />
+                        )}
+                    />
+                    <Route 
+                        exact
+                        path={`${this.props.match.path}/toppicks`}
+                        render={() => (
                             <TopPicks selectedDate={this.state.selectedDate}/>
-                        </Grid>
-                    }
-                    {
-                        this.state.selectedTab === 2 && 
-                        <Grid item xs={12}>
+                        )}
+                    />
+                    <Route 
+                        exact
+                        path={`${this.props.match.path}/leaderboard`}
+                        render={() => (
                             <Leaderboard selectedDate={this.state.selectedDate}/>
-                        </Grid>
-                    }
+                        )}
+                    />
                 </Grid>
             </AqLayout>
         );
@@ -147,30 +195,34 @@ class TradingContest extends React.Component {
                 <Header />
                 <AqLayoutDesktop
                         handleDateChange={this.updateDate}
-                        handleTabChange={this.handleDesktopTabChange}
+                        handleTabChange={this.handleChange}
                         header={this.getDesktopHeader()}
+                        defaultSelected={this.state.selectedTab}
                 >
-                    {
-                        this.state.selectedTab === 0 &&
-                        <CreateEntry 
-                            selectedDate={this.state.selectedDate} 
-                            setLoading={this.setLoading}
-                        />
-                    }
-                    {
-                        this.state.selectedTab === 1 &&
-                        <TopPicks 
-                            selectedDate={this.state.selectedDate} 
-                            setLoading={this.setLoading}
-                        />
-                    }
-                    {
-                        this.state.selectedTab === 2 &&
-                        <Leaderboard 
-                            selectedDate={this.state.selectedDate} 
-                            setLoading={this.setLoading}
-                        />
-                    }
+                    <Route 
+                        exact
+                        path={`${this.props.match.path}/mypicks`}
+                        render={() => (
+                            <CreateEntry 
+                                selectedDate={this.state.selectedDate}
+                                componentType='preview'
+                            />
+                        )}
+                    />
+                    <Route 
+                        exact
+                        path={`${this.props.match.path}/toppicks`}
+                        render={() => (
+                            <TopPicks selectedDate={this.state.selectedDate}/>
+                        )}
+                    />
+                    <Route 
+                        exact
+                        path={`${this.props.match.path}/leaderboard`}
+                        render={() => (
+                            <Leaderboard selectedDate={this.state.selectedDate}/>
+                        )}
+                    />
                 </AqLayoutDesktop>
             </div>
         );

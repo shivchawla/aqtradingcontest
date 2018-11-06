@@ -75,7 +75,7 @@ class CreateEntry extends React.Component {
             todayDataLoaded: false,
             previewPositions: [], // used to store the data for previewing,
             loadingPreview: false,
-            selectedView: 'started'
+            selectedView: 'active'
         };
         this.mounted = false;
         this.source = CancelToken.source();
@@ -320,7 +320,8 @@ class CreateEntry extends React.Component {
         }
     }
 
-    subscribeToPredictions = (type = 'active') => {
+    subscribeToPredictions = (type = this.state.selectedView) => {
+        console.log('Subscription Message Sent for', type);
         const msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-prediction",
@@ -329,7 +330,7 @@ class CreateEntry extends React.Component {
         Utils.sendWSMessage(msg);
     }
 
-    unSubscribeToPredictions = (type = 'active') => {
+    unSubscribeToPredictions = (type = this.state.selectedView) => {
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-predictions',
@@ -342,6 +343,7 @@ class CreateEntry extends React.Component {
         if (this.mounted) {
             try {
                 const realtimeData = JSON.parse(msg.data);
+                console.log(realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const pnl = _.get(realtimeData, 'pnl', []);
                 this.updateDailyPredictions(predictons);
@@ -354,8 +356,9 @@ class CreateEntry extends React.Component {
     }
 
     handlePreviewListMenuItemChange = (type = 'started') => {
-        this.setState({loadingPreview: true});
-        this.subscribeToPredictions(type);
+        this.setState({loadingPreview: true, selectedView: type}, () => {
+            this.subscribeToPredictions(type);
+        });
         Promise.all([
             this.getDailyPredictionsOnDateChange(this.state.selectedDate, type),
             this.getDailyPnlStats(this.state.selectedDate, type)

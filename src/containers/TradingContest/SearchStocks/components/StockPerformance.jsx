@@ -46,7 +46,6 @@ export default class StockPerformance extends React.Component {
         ])
         .then(([latestDetailResponse, rollingPerformanceResponse, stockPerformance]) => {
             const latestDetail = latestDetailResponse.data;
-            console.log(stockPerformance);
             this.setState({
                 latestDetail: this.getPriceMetrics(latestDetail),
                 series: {...this.state.series, data: stockPerformance},

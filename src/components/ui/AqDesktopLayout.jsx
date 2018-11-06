@@ -13,7 +13,7 @@ class AqDesktopLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeSegment: 0
+            activeSegment: this.props.defaultSelected || 0
         };
     }
 
