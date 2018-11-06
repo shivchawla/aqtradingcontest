@@ -634,8 +634,6 @@ class CreateEntry extends React.Component {
                         open={this.state.entryDetailBottomSheetOpenStatus}
                         toggle={this.toggleEntryDetailBottomSheet}
                         pnlMetrics={this.state.pnlStats}
-                        weeklyMetric={this.state.weeklyPnlStats}
-                        resultDate={this.state.contestResultDate}
                     />
                     <SnackbarComponent 
                         openStatus={this.state.snackbarOpenStatus} 

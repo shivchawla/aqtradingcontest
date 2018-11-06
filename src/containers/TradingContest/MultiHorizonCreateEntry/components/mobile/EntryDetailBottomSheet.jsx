@@ -32,8 +32,8 @@ export default class EntryDetailBottomSheet extends React.Component {
     }
 
     render() {
-        const {open = false, pnlMetrics ={}, weeklyMetric = {}, resultDate = moment()} = this.props; 
-        const metrics = this.state.selectedView === 0 ? _.get(pnlMetrics, 'daily', {}) : _.get(pnlMetrics, 'total', {});
+        const {open = false, pnlMetrics ={}} = this.props; 
+        const metrics = this.state.selectedView === 0 ? _.get(pnlMetrics, 'daily', {}) : _.get(pnlMetrics, 'cumulative', {});
 
         return (
             <Motion style={{x: spring(open ? 0 : -global.screen.height)}}>
