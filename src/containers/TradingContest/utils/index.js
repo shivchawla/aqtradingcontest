@@ -223,3 +223,10 @@ export const processLeaderboardWinners = (leaders = []) => {
         return {userName, pnl, pnlPct, cost, netValue, profitFactor, rank};
     })
 }
+
+export const isSelectedDateSameAsCurrentDate = (selectedDate = moment()) => {
+    const currentDate = moment().format(dateFormat);
+    const nSelectedDate = selectedDate.format(dateFormat);
+
+    return _.isEqual(currentDate, nSelectedDate);
+}

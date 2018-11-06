@@ -17,6 +17,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import HorizontalToggleScreen from '../../../../../components/ui/HorizontalToggleScreen';
 import {SearchStocks} from '../../../SearchStocks';
 import StockList from '../common/StockList';
+import ActionIcon from '../../../Misc/ActionIcons';
 import EditPredictionScreen from './EditPredictionScreen';
 import {isMarketOpen} from '../../../utils';
 import {getPositionsWithNewPredictions} from '../../utils';
@@ -230,9 +231,15 @@ class CreateEntryEditScreen extends React.Component {
             >
                 <AppBar>
                     <Toolbar>
-                        <Button color="inherit" onClick={this.props.toggleSearchStockBottomSheet}>
-                            save
-                        </Button>
+                        {
+                            headerIcon !== null &&
+                            <ActionIcon 
+                                color='#fff' 
+                                type='chevron_left' 
+                                onClick={this.onLeftClicked} 
+                                size={26}
+                            />
+                        }
                         <Typography variant="h6" color="inherit">
                             ADD STOCKS
                         </Typography>

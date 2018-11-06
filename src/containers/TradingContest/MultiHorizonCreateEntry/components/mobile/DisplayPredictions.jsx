@@ -10,7 +10,7 @@ import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
-import {isMarketOpen} from '../../../utils';
+import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
 
 const predictionTypes = ['Active', 'Ended', 'Started'];
 
@@ -125,7 +125,8 @@ class DisplayPredictions extends React.Component {
 	                        	</React.Fragment>
                             }
                             {
-                                marketOpen.status &&
+                                isSelectedDateSameAsCurrentDate(this.props.selectedDate) 
+                                && marketOpen.status &&
                                 <div 
                                         style={{
                                             ...fabContainerStyle,
