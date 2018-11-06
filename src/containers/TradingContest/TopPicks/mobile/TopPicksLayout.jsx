@@ -66,7 +66,7 @@ export default class TopPicksLayout extends React.Component {
     render() {
         return (
             <SGrid container style={topPicksDetailStyle}>
-                <Grid item xs={12} style={{...verticalBox, position: 'relative'}}>
+                <Grid item xs={12} style={{...verticalBox, position: 'relative', justifyContent: 'start'}}>
                     {
                         !this.props.loading
                         ? this.renderContent()

@@ -17,7 +17,7 @@ export default class ParticipantListItem extends React.Component {
     
     render() {
         const {
-            userName = 'Saurav Biswas', 
+            userName = '',
             cost = {}, 
             pnl = {}, 
             rank = {}, 
@@ -25,6 +25,7 @@ export default class ParticipantListItem extends React.Component {
             profitFactor = {},
             listType='long'
         }  = this.props;
+        
         const medal = getRankMedal(rank);
         const changeColor = pnl[listType] > 0 ? metricColor.positive : pnl[listType] === 0 ? metricColor.neutral : metricColor.negative;
         
