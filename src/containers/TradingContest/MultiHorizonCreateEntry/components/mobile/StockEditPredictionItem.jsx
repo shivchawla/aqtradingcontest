@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import DatePicker from 'material-ui-pickers/DatePicker';
 import Button from '@material-ui/core/Button';
-import {withStyles} from '@material-ui/core';
+import {withStyles} from '@material-ui/core/styles';
 import NumberInput from '../../../../../components/input/NumberInput';
 import ActionIcon from '../../../Misc/ActionIcons';
 import {buySellActionButtonsStyles} from '../../constants';

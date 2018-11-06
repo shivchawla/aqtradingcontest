@@ -54,23 +54,25 @@ export default class WinnerListItem extends React.Component {
 
                 <Grid item xs={12} style={{...horizontalBox, marginLeft:'auto', marginTop:'5px', justifyContent:'space-between'}}>
                     <SecondaryText style={{marginLeft:'15px', width:'140px'}}>
+                        <span style={labelStyle}>Votes: </span>
                         {numUsers.total} 
                         <span> (</span>
                         <span style={{fontSize:'16px', color: colorLongUsers}}>{numUsers.long}</span>
                         <span>/</span>
                         <span style={{fontSize:'16px', color: colorShortUsers}}>{numUsers.short}</span>
                         <span>)</span>
-                        <p style={labelStyle}>Votes</p>
+                        {/*<p style={labelStyle}>Votes</p>*/}
                     </SecondaryText>
 
                     <SecondaryText style={{marginLeft:'15px', width:'200px'}}>
+                        <span style={labelStyle}>Investment: </span>
                         {investment.gross}K 
                         <span> (</span>
                         <span style={{fontSize:'16px', color: colorLongInvestment}}>{investment.long}K</span>
                         <span>/</span>
                         <span style={{fontSize:'16px', color: colorShortInvestment}}>{investment.short}K</span>
                         <span>)</span>
-                        <p style={labelStyle}>Investment</p>
+                        {/*<p style={labelStyle}>Investment</p>*/}
                     </SecondaryText>
                     
                 </Grid>
