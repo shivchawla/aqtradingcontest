@@ -300,7 +300,7 @@ class CreateEntry extends React.Component {
         if (Utils.webSocket && Utils.webSocket.readyState == WebSocket.OPEN) {
             Utils.webSocket.onopen = () => {
                 Utils.webSocket.onmessage = this.processRealtimeMessage;
-                this.subscribeToPredictions();
+                this.takeSubscriptionAction();
             }
 
             Utils.webSocket.onclose = () => {
@@ -312,7 +312,7 @@ class CreateEntry extends React.Component {
             }
             
             Utils.webSocket.onmessage = this.processRealtimeMessage;
-            this.subscribeToPredictions();
+            this.takeSubscriptionAction();
         } else {
             setTimeout(function() {
                 this.setUpSocketConnection()
@@ -320,8 +320,19 @@ class CreateEntry extends React.Component {
         }
     }
 
+    takeSubscriptionAction = (type = this.state.selectedView) => {
+        const todayDate = moment().format(dateFormat);
+        const selectedDate = this.state.selectedDate.format(dateFormat);
+
+        if (_.isEqual(todayDate, selectedDate)) {
+            this.subscribeToPredictions(type);
+        } else {
+            this.unSubscribeToPredictions(type);
+        }
+    }
+
     subscribeToPredictions = (type = this.state.selectedView) => {
-        console.log('Subscription Message Sent for', type);
+        console.log('Subscribed to ', type);
         const msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-prediction",
@@ -331,6 +342,7 @@ class CreateEntry extends React.Component {
     }
 
     unSubscribeToPredictions = (type = this.state.selectedView) => {
+        console.log('Un Subscribed to ', type);
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-predictions',
@@ -340,7 +352,12 @@ class CreateEntry extends React.Component {
     }
 
     processRealtimeMessage = msg => {
-        if (this.mounted) {
+        const currentDate = moment().format(dateFormat);
+        const selectedDate = this.state.selectedDate.format(dateFormat);
+        console.log('Current Date', currentDate);
+        console.log('Selected Date', selectedDate);
+        if (this.mounted && _.isEqual(currentDate, selectedDate)) {
+            console.log('Entered Here');
             try {
                 const realtimeData = JSON.parse(msg.data);
                 console.log(realtimeData);
@@ -357,7 +374,7 @@ class CreateEntry extends React.Component {
 
     handlePreviewListMenuItemChange = (type = 'started') => {
         this.setState({loadingPreview: true, selectedView: type}, () => {
-            this.subscribeToPredictions(type);
+            this.takeSubscriptionAction(type);
         });
         Promise.all([
             this.getDailyPredictionsOnDateChange(this.state.selectedDate, type),
@@ -371,8 +388,8 @@ class CreateEntry extends React.Component {
     fetchPredictionsAndPnl = (selectedDate = moment()) => {
         this.setState({loading: true});
         Promise.all([
-            this.getDailyPredictionsOnDateChange(selectedDate),
-            this.getDailyPnlStats(selectedDate)
+            this.getDailyPredictionsOnDateChange(selectedDate, this.state.selectedView),
+            this.getDailyPnlStats(selectedDate, this.state.selectedView)
         ])
         .finally(() => {
             this.setState({loading: false});
@@ -525,9 +542,15 @@ class CreateEntry extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         const currentSelectedDate = this.props.selectedDate.format(dateFormat);
+        const todayDate = moment().format(dateFormat);
         const nextSelectedDate = nextProps.selectedDate.format(dateFormat);
 
         if (!_.isEqual(currentSelectedDate, nextSelectedDate)) {
+            if (_.isEqual(todayDate, nextSelectedDate)) {
+                this.subscribeToPredictions();
+            } else {
+                this.unSubscribeToPredictions();
+            }
             this.setState({selectedDate: nextProps.selectedDate}, () => {
                 this.fetchPredictionsAndPnl(nextProps.selectedDate)
             });
@@ -600,7 +623,8 @@ class CreateEntry extends React.Component {
             loadingPreview: this.state.loadingPreview,
             conditionallyAddPosition: this.conditionallyAddPosition,
             bottomSheetOpenStatus: this.state.bottomSheetOpenStatus,
-            subscribeToPredictions: this.subscribeToPredictions
+            subscribeToPredictions: this.subscribeToPredictions,
+            selectedView: this.state.selectedView
         };
 
         //<CreateEntryLayoutMobile {...props}/>
