@@ -33,28 +33,21 @@ class NumberInput extends React.Component {
         clearTimeout(timeout);
         this.setState({value});
         timeout = setTimeout(() => {
-            this.props.onChange && this.props.onChange(Number
-                (value));
+            this.props.onChange && this.props.onChange(Number(value));
         }, 500);
     }
 
     onActionButtonChange = (type = 'add') => {
         let value = Number(this.state.value);
-        const max = _.get(this.props, 'max', this.max);
-        const min = _.get(this.props, 'min', this.min);
-
-        // value = type === 'add' 
-        //     ? value + this.stepSize > max
-        //         ? max : value + this.stepSize
-        //     : value - this.stepSize < min
-        //         ? min : value - this.stepSize;
-        // value = Number(value.toFixed(2));
         value = type === 'add' 
             ? value + this.stepSize 
             : value - this.stepSize;
-        this.setState({value}, () => {
+        clearTimeout(timeout);
+        this.setState({value});
+        timeout = setTimeout(() => {
             this.props.onChange && this.props.onChange(value);
-        });
+        }, 500);
+        
     }
 
     shouldComponentUpdate(nextProps, nextState) {

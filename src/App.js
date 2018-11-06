@@ -12,6 +12,7 @@ import TradingContestHomeMobile from './containers/TradingContest/Home';
 import TradingContestHomeDesktop from './containers/TradingContest/CreateEntry/components/desktop/Home';
 import UnderDevelopment from './containers/UnderDevelopment';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
+import Watchlist from './containers/Watchlist';
 import './App.css';
 
 class App extends Component {
@@ -28,7 +29,7 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/create' component={TradingContestCreateMobile} /> 
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
-                                    <Route path='/dailycontest' component={TradingContest} /> 
+                                    <Route exact={true} path='/watchlist' component={Watchlist} /> 
                                     {/* <Route exact={true} path='/dailycontest' component={TradingContestHomeMobile} />  */}
                                 </Switch>
                             );
