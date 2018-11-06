@@ -90,7 +90,9 @@ class CreateEntryEditScreen extends React.Component {
     componentWillReceiveProps(nextProps) {
         if (!_.isEqual(this.props, nextProps)) {
             // Updating the selected position with the updated position value when modified in any way
-            if (this.props.bottomSheetOpenStatus === false) {
+            if ((!_.isEqual(this.props.bottomSheetOpenStatus, nextProps.bottomSheetOpenStatus)) 
+                && (nextProps.bottomSheetOpenStatus === true)
+            ) {
                 this.searchStockComponent && this.searchStockComponent.fetchStocks();
             }
             const {positions = []} = nextProps;
