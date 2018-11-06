@@ -237,7 +237,7 @@ class CreateEntry extends React.Component {
             return true;
         })
         .catch(error => {
-            const errorMessage = _.get(error, 'response.data.message', 'Error Occured :(');
+            const errorMessage = _.get(error, 'response.data.msg', 'Error Occured :(');
             this.setState({snackbarOpenStatus: true, snackbarMessage: errorMessage, todayDataLoaded: true});
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
@@ -339,11 +339,9 @@ class CreateEntry extends React.Component {
     }
 
     processRealtimeMessage = msg => {
-        console.log('Message', msg);
         if (this.mounted) {
             try {
                 const realtimeData = JSON.parse(msg.data);
-                console.log(realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const pnl = _.get(realtimeData, 'predictions', []);
                 this.updateDailyPredictions(predictons);
@@ -416,7 +414,6 @@ class CreateEntry extends React.Component {
     }
 
     modifyPrediction = (symbol, key, prediction) => {
-        console.log('modifyPrediction called');
         const clonedPositions = _.map(this.state.positions, _.cloneDeep);
         const selectedPositionIndex = _.findIndex(clonedPositions, position => position.symbol === symbol);
 
@@ -425,14 +422,7 @@ class CreateEntry extends React.Component {
             const selectedPredictionIndex = _.findIndex(selectedPosition.predictions, prediction => prediction.key === key);
 
             if (selectedPredictionIndex > -1) {
-                // Prediction to be modified found
-                // If type == buy make target positive else make target negative
-                const nPrediction = {
-                    ...prediction,
-                    // target: (prediction.type === 'buy' ? 1 : -1) * Math.abs(prediction.target),
-                    // target: this.adjustPriceDifference(prediction.lastPrice, prediction.target, prediction.type)
-                };
-                selectedPosition.predictions[selectedPredictionIndex] = nPrediction;
+                selectedPosition.predictions[selectedPredictionIndex] = prediction;
                 clonedPositions[selectedPositionIndex] = selectedPosition;
                 this.setState({positions: clonedPositions}, () => {
                     this.checkForDuplicateHorizon();

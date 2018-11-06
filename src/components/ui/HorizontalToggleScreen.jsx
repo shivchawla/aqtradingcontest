@@ -4,14 +4,6 @@ import Grid from '@material-ui/core/Grid';
 import {Motion, spring} from 'react-motion';
 
 export default class HorizontalToggleScreen extends React.Component {
-    shouldComponentUpdate(nextProps, nextState) {
-        if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
-            return true;
-        }
-
-        return false;
-    }
-
     render() {
         const {selectedView = 0, firstScreenContent, secondScreenContent, height = '100%', width = '100%'} = this.props;
 

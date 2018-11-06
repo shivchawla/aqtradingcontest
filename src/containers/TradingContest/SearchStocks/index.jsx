@@ -15,7 +15,6 @@ import StockFilter from './components/StockFilter';
 import {screenSize} from '../constants';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import SelectedStocksDialog from './components/SelectedStocksDialog';
-import SearchStockHeaderMobile from './components/StockSearchHeaderMobile';
 import SearchStockHeaderDesktop from './components/SearchStockHeaderDesktop';
 import StockList from './components/StockList';
 import {maxPredictionLimit} from '../MultiHorizonCreateEntry/constants'
@@ -88,7 +87,7 @@ export class SearchStocks extends React.Component {
                         style={{marginTop: '20px', marginBottom: '20px'}}
                         ref={el => this.stockListComponent = el}
                 >
-                    this.renderStockList()
+                    {this.renderStockList()}
                 </Grid>
                 {this.renderPagination()}
             </SGrid>
@@ -237,7 +236,7 @@ export class SearchStocks extends React.Component {
     }
 
     handleStockListItemClick = stock => {
-        this.props.toggleStockPerformanceOpen();
+        this.props.toggleStockPerformanceOpen && this.props.toggleStockPerformanceOpen();
         this.setState({selectedStock: stock});
     }
 

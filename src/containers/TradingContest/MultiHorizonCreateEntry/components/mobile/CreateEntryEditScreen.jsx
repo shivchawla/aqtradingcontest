@@ -138,6 +138,7 @@ class CreateEntryEditScreen extends React.Component {
     submitPositions = () => {
         this.props.submitPositions()
         .then(() => {
+            this.setState({selectedView: 0, stockPerformanceOpen: false});
             this.props.toggleSearchStockBottomSheet();
         })    
     }
@@ -151,7 +152,12 @@ class CreateEntryEditScreen extends React.Component {
     }
 
     onLeftClicked = (cb = null) => {
-        this.searchStockComponent.toggleStockPerformanceOpen();
+        console.log('Called');
+        if (this.state.selectedView === 1) {
+            this.goToSearchStocksScreen();
+        } else {
+            this.toggleStockPerformance();
+        }
     }
 
     renderEditView = () => {
@@ -176,10 +182,10 @@ class CreateEntryEditScreen extends React.Component {
                     <div 
                             style={{
                                 ...fabContainerStyle,
-                                justifyContent: showPreviousPositions ? 'center' : 'space-between'
+                                justifyContent: 'center'
                             }}
                     >
-                        <Button 
+                        {/* <Button 
                                 style={{...fabButtonStyle, ...addStocksStyle}} 
                                 size='small' variant="extendedFab" 
                                 aria-label="Delete" 
@@ -187,7 +193,7 @@ class CreateEntryEditScreen extends React.Component {
                         >
                             <Icon>chevron_left</Icon>
                             BACK
-                        </Button>
+                        </Button> */}
                         {
                             !showPreviousPositions &&
                             <div>
@@ -213,6 +219,7 @@ class CreateEntryEditScreen extends React.Component {
 
     render() {
         const header = this.state.selectedView === 0 ? 'ADD STOCK' : 'EDIT PREDICTION';
+        const headerIcon = (!this.state.stockPerformanceOpen && this.state.selectedView === 0) ? null : 'chevron_left';
 
         return (
             <TopSheet 
@@ -220,7 +227,7 @@ class CreateEntryEditScreen extends React.Component {
                     onClose={this.props.toggleSearchStockBottomSheet}
                     header={header}
                     onLeftClicked={this.onLeftClicked}
-                    leftIconType='chevron_left'
+                    leftIconType={headerIcon}
             >
                 <HorizontalToggleScreen 
                     selectedView={this.state.selectedView}

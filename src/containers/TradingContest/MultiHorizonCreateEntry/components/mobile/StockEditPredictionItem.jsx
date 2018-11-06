@@ -136,7 +136,7 @@ class StockEditPredictionItem extends React.Component {
                         max={max}
                         min={min}
                         disabled={locked}
-                        base={lastPrice}
+                        base={getPercentageModifiedValue(2, lastPrice)}
                     />
                 </Grid>
                 <Grid item xs={12} style={colStyle}>

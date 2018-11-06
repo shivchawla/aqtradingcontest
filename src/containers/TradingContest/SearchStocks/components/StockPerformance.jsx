@@ -1,13 +1,9 @@
 import * as React from 'react';
 import _  from 'lodash';
 import Media from 'react-media';
-// import {Row, Col, Spin, Tabs} from 'antd';
-// import {Tabs as MobileTabs} from 'antd-mobile';
 import Grid from '@material-ui/core/Grid';
 import HighStock from '../../../../components/Charts/StockChart';
 import LoaderComponent from '../../Misc/Loader';
-// import {AqPerformanceMetrics} from '../../../components/AqPerformanceMetrics';
-// import {MetricItem} from '../../../components/MetricItem';
 import {getStockData, getStockPerformance, Utils} from '../../../../utils';
 import {horizontalBox, verticalBox} from '../../../../constants';
 
@@ -50,6 +46,7 @@ export default class StockPerformance extends React.Component {
         ])
         .then(([latestDetailResponse, rollingPerformanceResponse, stockPerformance]) => {
             const latestDetail = latestDetailResponse.data;
+            console.log(stockPerformance);
             this.setState({
                 latestDetail: this.getPriceMetrics(latestDetail),
                 series: {...this.state.series, data: stockPerformance},
@@ -58,6 +55,7 @@ export default class StockPerformance extends React.Component {
             });
         })
         .catch(error => {
+            console.log(error);
             const errorStatus = _.get(error, 'response.status', null);
             if (errorStatus === 400 || errorStatus === 403) {
                 this.setState({showErrorScreen: true});
@@ -91,53 +89,6 @@ export default class StockPerformance extends React.Component {
         return value ? Math.round(value) == value ? Utils.formatMoneyValueMaxTwoDecimals(value) : Utils.formatMoneyValueMaxTwoDecimals(Number(value.toFixed(2))) : '-';
     }
 
-    // renderPriceMetrics = () => {
-    //     const {latestDetail = {}} = this.state;
-    //     const priceMetrics = [
-    //         {label: 'High', value: _.get(latestDetail, 'high', 0)},
-    //         {label: 'Low', value: _.get(latestDetail, 'low', 0)},
-    //         {label: 'Open', value: _.get(latestDetail, 'open', 0)},
-    //         {label: 'Prev. Close', value: _.get(latestDetail, 'close', 0)},
-    //         {label: '52W High', value: _.get(latestDetail, 'high_52w', 0)},
-    //         {label: '52W Low', value: _.get(latestDetail, 'low_52w', 0)},
-    //     ];
-    //     return (
-    //         <Row style={{borderRadius: '4px', height: '100%', padding: '10px'}}>
-    //             {
-    //                 priceMetrics.map((item, index) => {
-    //                     return (
-    //                         <Col key={index} span={8} style={{marginTop: '20px', textAlign: 'center'}}>
-    //                             <h3 style={{fontSize: '18px', color: '#3b3737', fontWeight: 300}}>{this.formatPriceMetrics(item.value)}</h3>
-    //                             <h3 style={{fontSize: '13px', color: '#000000a6'}}>{item.label}</h3>
-    //                         </Col>
-    //                     );
-    //                 })
-    //             }
-    //         </Row>
-    //     );
-    // }
-
-    // renderLatestDetail = () => {
-    //     const {latestDetail = {}} = this.state;
-    //     const {latestPrice = 0} = latestDetail;
-    //     const {open = 0} = latestDetail;
-    //     const {close = 0} = latestDetail;
-    //     const {high = 0} = latestDetail;
-    //     const {low = 0} = latestDetail;
-    //     const {changePct = 0} = latestDetail;
-    //     const {change = 0} = latestDetail;
-
-    //     return (
-    //         <Row type="flex" justify="space-between">
-    //             <Col span={4}><MetricItem money value={latestPrice} label="Price" style={{border: 'none'}} valueStyle={{fontWeight: 300}} /></Col>
-    //             <Col span={4}><MetricItem money value={change} label="Change" style={{border: 'none'}} /></Col>
-    //             <Col span={4}><MetricItem percentage value={changePct} label="Change %" style={{border: 'none'}} /></Col>
-    //             <Col span={4}><MetricItem money value={open} label="Open" style={{border: 'none'}} /></Col>
-    //             <Col span={4}><MetricItem money value={close} label="Close" style={{border: 'none'}} /></Col>
-    //         </Row>
-    //     );
-    // }
-
     renderNoDataView = () => {
         return (
             <Grid container type="flex" align="middle" style={{height: global.screen.height - 200}}>
@@ -151,38 +102,7 @@ export default class StockPerformance extends React.Component {
     }
 
     renderDesktopTabs = () => {
-        // const TabPane = Tabs.TabPane;
-
         return (
-            // <Tabs defaultActiveKey="1" animated={false}>
-            //     <TabPane tab="Price Chart" key="1">
-            //         <Col span={24} style={{marginTop: '0px'}}>
-            //             <HighStock series={[this.state.series]} />
-            //         </Col>
-            //     </TabPane>
-                
-            //     <TabPane tab="Price Metrics" key="2">
-            //         <Col span={24} style={{marginTop: '20px'}}>
-            //             {this.renderPriceMetrics()}
-            //             {/*this.renderLatestDetail()*/}
-            //         </Col>
-            //     </TabPane>
-
-            //     <TabPane tab="Rolling Performance" key="3">
-            //         <Col span={24} style={{marginTop: '20px', height:'200px'}}>
-            //             <AqPerformanceMetrics 
-            //                 type="new"
-            //                 rollingPerformance={this.state.rollingPerformance} 
-            //                 style={{height: '100%', border:'none'}}
-            //                 noTitle
-            //                 selectedTimeline={['ytd', '1y', '2y', '5y', '10y']}
-            //             />
-            //             {/*<Col span={12} style={{height: '200px'}}>
-            //                 {this.renderPriceMetrics()}
-            //             </Col>*/}
-            //         </Col>
-            //     </TabPane>
-            // </Tabs>
             <Grid item xs={12} style={{marginTop: '0px'}}>
                 <HighStock series={[this.state.series]} />
             </Grid>
@@ -197,27 +117,6 @@ export default class StockPerformance extends React.Component {
         ];
 
         return (
-            // <MobileTabs tabs={tabs}>
-            //     <Col span={24} style={{marginTop: '10px'}}>
-            //         <HighStock series={[this.state.series]} />
-            //     </Col>
-            //     <Col span={24} style={{marginTop: '20px'}}>
-            //         {this.renderPriceMetrics()}
-            //         {/*this.renderLatestDetail()*/}
-            //     </Col>
-            //     <Col span={24} style={{marginTop: '20px', height:'200px'}}>
-            //         <AqPerformanceMetrics 
-            //             type="new"
-            //             rollingPerformance={this.state.rollingPerformance} 
-            //             style={{height: '100%', border:'none'}}
-            //             noTitle
-            //             selectedTimeline={['ytd', '1y', '2y', '5y', '10y']}
-            //         />
-            //         {/*<Col span={12} style={{height: '200px'}}>
-            //             {this.renderPriceMetrics()}
-            //         </Col>*/}
-            //     </Col>
-            // </MobileTabs>
             <Grid item xs={12} style={{marginTop: '10px'}}>
                 <HighStock series={[this.state.series]} />
             </Grid>

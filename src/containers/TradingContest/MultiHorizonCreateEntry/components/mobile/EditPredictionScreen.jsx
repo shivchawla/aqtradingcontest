@@ -3,7 +3,8 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import StockEditPredictionItem from './StockEditPredictionItem';
-import {horizontalBox, nameEllipsisStyle} from '../../../../../constants';
+import {horizontalBox, nameEllipsisStyle, verticalBox, metricColor} from '../../../../../constants';
+import {Utils} from '../../../../../utils';
 
 
 export default class EditPredictionScreen extends React.Component {
@@ -15,23 +16,40 @@ export default class EditPredictionScreen extends React.Component {
         return false;
     }
 
-    onAddPredictionClicked = () => {
-        const symbol = _.get(this.props.position, 'symbol', null);
-        this.props.addPrediction(symbol);
-    }
-
     render() {
-        const {symbol = '', name = '', predictions = []} = this.props.position;
+        const {symbol = '', name = '', predictions = [], lastPrice = 0, chg = 0, chgPct = 0} = this.props.position;
         const newPredictions = predictions.filter(prediction => prediction.new === true);
+        const changeColor = chg > 0 ? metricColor.positive : chg === 0 ? metricColor.neutral : metricColor.negative;
 
         return (
             <Grid container style={{marginTop: '20px'}}>
-                <Grid item xs={12} style={{paddingLeft: '20px'}}>
-                    <Symbol>{symbol}</Symbol>
-                    <h3 style={nameStyle}>{name}</h3>
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            ...horizontalBox, 
+                            paddingLeft: '20px',
+                            justifyContent: 'space-between'
+                        }}
+                >
+                    <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                        <Symbol>{symbol}</Symbol>
+                        <h3 style={nameStyle}>{name}</h3>
+                    </div>
+                    <div 
+                            style={{
+                                ...verticalBox, 
+                                alignItems: 'flex-end',
+                                marginRight: '20px'
+                            }}
+                    >
+                        <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
+                        <Change color={changeColor}>₹{chg}({(chgPct * 100).toFixed(2)}%)</Change>
+                    </div>
                 </Grid>
                 <Grid item xs={12}>
                     <PredictionList 
+                        position={this.props.position}
                         predictions={newPredictions} 
                         addPrediction={this.props.addPrediction}
                         modifyPrediction={this.props.modifyPrediction}
@@ -44,13 +62,14 @@ export default class EditPredictionScreen extends React.Component {
     }
 }
 
-const PredictionList = ({predictions, addPrediction, modifyPrediction, deletePrediction, deletePosition}) => {
+const PredictionList = ({predictions, addPrediction, modifyPrediction, deletePrediction, deletePosition, position = {}}) => {
     return (
         <Grid container>
             {
                 predictions.map(prediction => (
                     <Grid item xs={12}>
                         <StockEditPredictionItem 
+                            position={position}
                             prediction={prediction}
                             addPrediction={addPrediction}
                             modifyPrediction={modifyPrediction}
@@ -64,13 +83,6 @@ const PredictionList = ({predictions, addPrediction, modifyPrediction, deletePre
     );
 }
 
-const addPredictionButtonStyle = {
-    boxShadow: 'none',
-    backgroundColor: '#6b83e1',
-    color: '#fff',
-    marginBottom: '30px'
-}
-
 const nameStyle = {
     ...nameEllipsisStyle, 
     width: '200px', 
@@ -82,22 +94,20 @@ const nameStyle = {
     marginBottom: 0
 };
 
-const actionButtonContainer = {
-    ...horizontalBox, 
-    justifyContent: 'space-between'
-}
-
-
 const Symbol = styled.h3`
     font-size: 20px;
     color: #464646;
     font-weight: 600;
     text-align: start;
 `;
-
-const MetricsHeader = styled.h3`
+const LastPrice = styled.h3`
     font-size: 18px;
-    color: #4B4A4A;
     font-weight: 500;
-    text-align: start;
+    color: #7F7F7F;
+`;
+
+const Change = styled.h1`
+    font-size: 16px;
+    font-weight: 400;
+    color: ${props => props.color || '#7F7F7F'}
 `;

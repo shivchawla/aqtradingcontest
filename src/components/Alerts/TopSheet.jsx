@@ -9,14 +9,6 @@ import {bottomSheetStyle} from '../../containers/TradingContest/constants';
 import {metricColor, primaryColor, horizontalBox, verticalBox} from '../../constants';
 
 export default class Top extends React.Component {
-    shouldComponentUpdate(nextProps, nextState) {
-        if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
-            return true;
-        }
-
-        return false;
-    }
-
     onClose = () => {
         this.props.onClose && this.props.onClose();
     }
