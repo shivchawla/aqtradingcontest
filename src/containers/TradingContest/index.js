@@ -20,6 +20,7 @@ import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
 import Header from '../Header';
 import {primaryColor} from '../../constants';
 import {Utils} from '../../utils';
+const DateHelper = require('../../utils/date');
 
 const URLSearchParamsPoly = require('url-search-params');
 const dateFormat = 'YYYY-MM-DD';
@@ -30,7 +31,7 @@ class TradingContest extends React.Component {
         super(props);
         this.state = {
             selectedTab: 0,
-            selectedDate: moment(),
+            selectedDate: moment(DateHelper.previousNonHolidayWeekday(moment().add(1, 'days').toDate())),
             bottomSheetOpen: false,
         };
     }
