@@ -51,7 +51,7 @@ export class ChartTickerItem extends React.Component {
                         style={priceContainer}
                 >
                     <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(price)}</LastPrice>
-                    <Change color={changeColor}>₹{change}({changePct}%)</Change>
+                    <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)}({changePct}%)</Change>
                 </Grid>
                 {
                     this.props.edit &&

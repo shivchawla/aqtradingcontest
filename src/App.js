@@ -29,7 +29,7 @@ class App extends Component {
                                 <Switch>
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
-                                    <Route exact={true} path='/watchlist' component={Watchlist} /> 
+                                    <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
                                     <Route 
                                         path='/dailycontest' 
                                         render={() => Utils.isLoggedIn() 
