@@ -35,7 +35,7 @@ export default class WatchlistComponent extends React.Component {
     getWatchlists = () => {
         const url = `${requestUrl}/watchlist`;
         this.setState({loading: true});
-        fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
+        return fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
             const watchlists = this.processWatchlistData(response.data);
             this.setState({watchlists, selectedWatchlistTab: watchlists[0].id});
@@ -205,6 +205,7 @@ export default class WatchlistComponent extends React.Component {
                 <CreateWatchlist 
                     visible={this.state.createWatchlistDialogOpen}
                     toggleModal={this.toggleCreateWatchlistDialog}
+                    getWatchlists={this.getWatchlists}
                 />
                 <Grid item xs={12}>
                     {this.renderTabs()}
@@ -212,11 +213,12 @@ export default class WatchlistComponent extends React.Component {
                 <Grid item xs={12}>
                     {this.renderWatchList()}
                 </Grid>
-                <Grid item xs={12} style={{position: 'fixed', bottom: '20px'}}>
+                <Grid item xs={12} style={fabContainer}>
                     <Button 
                             onClick={this.toggleCreateWatchlistDialog}
-                            variant='contained'
+                            variant='extendedFab'
                             color="primary"
+                            style={fabButton}
                     >
                         Create Watchlist
                     </Button>
@@ -232,6 +234,16 @@ export default class WatchlistComponent extends React.Component {
             </AqLayout>
         );
     }
+}
+
+const fabContainer = {
+    position: 'fixed',
+    bottom: '20px',
+    width: '100%'
+}
+
+const fabButton = {
+    boxShadow: 'none'
 }
 
 const STabs = styled(Tabs)`

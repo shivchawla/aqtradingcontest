@@ -3,7 +3,6 @@ import {emphasize} from '@material-ui/core/styles/colorManipulator';
 export default theme => ({
     root: {
       flexGrow: 1,
-      height: 250,
       position: 'absolute',
       width: '100%'
     },

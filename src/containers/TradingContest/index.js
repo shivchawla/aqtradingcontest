@@ -170,6 +170,7 @@ class TradingContest extends React.Component {
                             <Leaderboard selectedDate={this.state.selectedDate}/>
                         )}
                     />
+                    
                 </Grid>
             </AqLayout>
         );

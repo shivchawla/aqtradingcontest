@@ -4,9 +4,11 @@ import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import AutoComplete from '../../../../components/input/AutoComplete';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {withRouter} from 'react-router';
 import {ChartTickerItem} from './ChartTickerItem';
 import {Utils} from '../../../../utils';
+import { verticalBox } from '../../../../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -18,6 +20,7 @@ class WatchList extends React.Component {
         super(props);
         this.state = {
             dataSource: [],
+            loading: false
         }
     }
 
@@ -64,6 +67,7 @@ class WatchList extends React.Component {
         const newTickers = _.uniq([...presentTickers, value]); // unique ticker list after adding the selected item  
         // Calculating the difference to check if any item was added in the watchlist, a new request will only be sent
         // with the introduction of a new position
+        this.setState({loading: true});
         const differenceArray = _.without(newTickers, ...presentTickers);
         if (differenceArray.length > 0) {
             const data = {
@@ -87,7 +91,10 @@ class WatchList extends React.Component {
                 if (error.response) {
                     Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
                 }
-            });
+            })
+            .finally(() => {
+                this.setState({loading: false});
+            })
         }
         
     }
@@ -101,6 +108,7 @@ class WatchList extends React.Component {
             name: this.props.name,
             securities: this.processPositions(newTickers)
         };
+        this.setState({loading: true});
         axios({
             url,
             headers: Utils.getAuthTokenHeader(),
@@ -119,7 +127,10 @@ class WatchList extends React.Component {
             if (error.response) {
                 Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
             }
-        });
+        })
+        .finally(() => {
+            this.setState({loading: false});
+        })
     }
 
     processPositions = positions => {
@@ -140,7 +151,7 @@ class WatchList extends React.Component {
     render() {
         return (
             <Grid container>
-                <Grid item xs={12}>
+                <Grid item xs={12} style={{marginTop: '10px'}}>
                     <AutoComplete 
                         handleSearch={this.handleSearch}
                         onClick={this.onSelect}
@@ -148,23 +159,31 @@ class WatchList extends React.Component {
                 </Grid>
                 {
                     this.props.tickers.length === 0 &&
-                    <Grid item xs={12}>
+                    <Grid item xs={12} style={noStocksFoundContainer}>
                         <ErrorText>No Stocks Found</ErrorText>
                     </Grid>
                 }
-                <Grid 
-                        item 
-                        xs={12} 
-                        style={{
-                            overflow: 'hidden', 
-                            overflowY: 'scroll', 
-                            height: '240px', 
-                            paddingLeft: '5px',
-                            marginTop: '40px'
-                        }}
-                >
-                    {this.renderTickers()}
-                </Grid>
+                {
+                    this.state.loading &&
+                    <Grid item xs={12} style={loaderContainer}>
+                        <CircularProgress />
+                    </Grid>
+                }
+                {
+                    this.props.tickers.length > 0 &&
+                    <Grid 
+                            item 
+                            xs={12} 
+                            style={{
+                                overflow: 'hidden', 
+                                overflowY: 'scroll', 
+                                marginTop: '60px',
+                                padding: '0 10px'
+                            }}
+                    >
+                        {this.renderTickers()}
+                    </Grid>
+                }
             </Grid>
         );
     }
@@ -172,13 +191,21 @@ class WatchList extends React.Component {
 
 export default withRouter(WatchList);
 
-const searchIconStyle = {
-    marginRight: '20px',
-    fontSize: '18px'
+const noStocksFoundContainer = {
+    ...verticalBox,
+    height: 'calc(100vh - 200px)',
 };
+
+const loaderContainer = {
+    ...verticalBox,
+    position: 'absolute',
+    top: '50%',
+    width: '100%',
+}
 
 const ErrorText = styled.h3`
     font-size: 18px;
     color: #464646;
     font-weight: 500;
+    border-radius: 4px;
 `;

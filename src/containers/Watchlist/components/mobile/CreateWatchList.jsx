@@ -1,6 +1,7 @@
 import * as React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
+import styled from 'styled-components';
 import {withRouter} from 'react-router';
 import Dialog from '@material-ui/core/Dialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -14,6 +15,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import {Utils} from '../../../../utils';
+import { verticalBox } from '../../../../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -45,7 +47,9 @@ class CreateWatchListImpl extends React.Component {
                 headers: Utils.getAuthTokenHeader()
             })
             .then(response => {
-                console.log('Watchlist create successfully');
+                return this.props.getWatchlists();
+            })
+            .then(() => {
                 this.props.toggleModal();
             })
             .catch(error => {
@@ -105,27 +109,24 @@ class CreateWatchListImpl extends React.Component {
                         <Typography variant="h6" color="inherit">
                             CREATE WATCHLIST
                         </Typography>
-                        <Button color="inherit" onClick={this.props.toggleModal}>
-                            Save
-                        </Button>
                     </Toolbar>
                 </AppBar>
-                <Grid container style={{marginTop: '100px'}}>
-                    <Grid item xs={12}>
+                <Container container>
+                    <Grid item xs={12} style={verticalBox}>
                         <TextField
                             id="outlined-name"
                             label="Watchlist Name"
                             value={this.state.name}
                             onChange={this.handleInputChange}
                             margin="normal"
-                            variant="outlined"
+                            variant="filled"
+                            style={{width: '80%'}}
                         />
-                    </Grid>
-                    <Grid item xs={12}>
                         <Button 
                                 onClick={this.createWatchList}
-                                color="secondary"
+                                color="primary"
                                 variant="contained"
+                                style={{marginTop: '10px', boxShadow: 'none'}}
                         >
                             CREATE WATCHLIST
                             {
@@ -134,7 +135,7 @@ class CreateWatchListImpl extends React.Component {
                             }
                         </Button>
                     </Grid>
-                </Grid>
+                </Container>
             </Dialog>
         );
     }
@@ -144,4 +145,12 @@ export default withRouter(CreateWatchListImpl);
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
-  }
+}
+
+const Container = styled(Grid)`
+    width: 100%;
+    height: calc(100vh - 56px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;

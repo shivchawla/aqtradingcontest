@@ -193,10 +193,10 @@ const listItemTextStyle = {
 
 const menuCategories = [
     {
-        name: "Daily Contest", icon:'bubble_chart', url: '/dailycontest'
+        name: "Daily Contest", icon:'bubble_chart', url: '/dailycontest/home'
     },
     {
-        name: "Create Entry", icon:'create', url: '/dailycontest/preview'
+        name: "Create Entry", icon:'create', url: '/dailycontest/mypicks'
     },
     {
         name: "Home", url:'/home', href:true, icon:'home_outline'
