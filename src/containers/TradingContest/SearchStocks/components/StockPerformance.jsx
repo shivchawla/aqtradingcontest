@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import HighStock from '../../../../components/Charts/StockChart';
 import LoaderComponent from '../../Misc/Loader';
 import {getStockData, getStockPerformance, Utils} from '../../../../utils';
-import {horizontalBox, verticalBox} from '../../../../constants';
+import {verticalBox} from '../../../../constants';
 
 export default class StockPerformance extends React.Component {
     constructor(props) {
@@ -38,6 +38,7 @@ export default class StockPerformance extends React.Component {
     }
 
     fetchStockData = stock => {
+        console.log('Stock', stock);
         this.setState({loading: true});
         Promise.all([
             getStockData(stock, 'latestDetail'),
@@ -54,7 +55,6 @@ export default class StockPerformance extends React.Component {
             });
         })
         .catch(error => {
-            console.log(error);
             const errorStatus = _.get(error, 'response.status', null);
             if (errorStatus === 400 || errorStatus === 403) {
                 this.setState({showErrorScreen: true});
@@ -68,9 +68,9 @@ export default class StockPerformance extends React.Component {
 
     getPriceMetrics = data => {
         const latestDetail = {};
-        latestDetail.ticker = data.security.ticker;
-        latestDetail.exchange = data.security.exchange;
-        latestDetail.close = data.latestDetail.Close;
+        latestDetail.ticker = _.get(data, 'ticker', '');
+        latestDetail.exchange = _.get(data, 'exchange', '');
+        latestDetail.close = _.get(data, 'latestDetail.Close', 0);
         latestDetail.latestPrice = _.get(data, 'latestDetailRT.current', 0) || data.latestDetail.Close
         latestDetail.open = _.get(data, 'latestDetailRT.open', 0) || data.latestDetail.Open;
         latestDetail.low = _.get(data, 'latestDetailRT.low', 0) || data.latestDetail.Low;
@@ -79,7 +79,7 @@ export default class StockPerformance extends React.Component {
         latestDetail.high_52w = Math.max(_.get(data, 'latestDetailRT.high', 0), data.latestDetail.High_52w);
         latestDetail.changePct = _.get(data, 'latestDetailRT.changePct', 0);
         latestDetail.change = _.get(data, 'latestDetailRT.change', 0);
-        latestDetail.name = data.security.detail !== undefined ? data.security.detail.Nse_Name : ' ';
+        latestDetail.name = _.get(data, 'detail.Nse_Name', '');
 
         return latestDetail;
     }

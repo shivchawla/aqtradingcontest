@@ -232,7 +232,7 @@ class CreateEntry extends React.Component {
                 snackbarOpenStatus: true, 
                 snackbarMessage: `Predictions successfully ${shouldCreate ? 'created' : 'updated'} :)`
             }, () => {
-                redirect && this.props.history.push('/dailycontest/preview');
+                redirect && this.props.history.push('/dailycontest/mypicks');
             });
             resovle(true);
             return true;
