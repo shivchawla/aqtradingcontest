@@ -38,6 +38,7 @@ class App extends Component {
                                         }
                                         component={TradingContest} 
                                     /> 
+                                    <Redirect push to='/404' />
                                     {/* <Route component={PageNotFound} /> */}
                                 </Switch>
                             );
@@ -59,6 +60,7 @@ class App extends Component {
                                         }
                                         component={TradingContest} 
                                     /> 
+                                    <Redirect push to='/404' />
                                     {/* <Route path='/dailycontest' component={TradingContest} />   */}
                                     {/* <Route route='/404' component={PageNotFound} /> */}
                                     {/* <Route component={UnderDevelopment} /> */}
