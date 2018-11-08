@@ -6,20 +6,20 @@ export default class TableHeader extends React.Component {
     render() {
         return (
             <Grid container style={{marginBottom: '10px'}}>
-                <Grid item xs={2} style={{paddingLeft: '10px'}}>
+                <Grid item xs={1} style={{paddingLeft: '10px'}}>
                     <TableHeaderText>RANK</TableHeaderText>
                 </Grid>
                 <Grid item xs={3}>
                     <TableHeaderText>STOCK</TableHeaderText>
                 </Grid>
-                <Grid item xs={2}>
-                    <TableHeaderText>LONG</TableHeaderText>
+                <Grid item xs={3}>
+                    <TableHeaderText>LAST PRICE</TableHeaderText>
                 </Grid>
                 <Grid item xs={2}>
-                    <TableHeaderText>SHORT</TableHeaderText>
+                    <TableHeaderText>VOTES</TableHeaderText>
                 </Grid>
-                <Grid item xs={2}>
-                    <TableHeaderText>TOTAL</TableHeaderText>
+                <Grid item xs={3}>
+                    <TableHeaderText>INVESTMENT</TableHeaderText>
                 </Grid>
             </Grid>
         );

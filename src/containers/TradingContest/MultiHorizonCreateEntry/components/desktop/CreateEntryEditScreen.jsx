@@ -214,7 +214,8 @@ export default class CreateEntryEditScreen extends React.Component {
                                     style={{
                                         ...horizontalBox, 
                                         justifyContent: 'space-between',
-                                        width: '100%'
+                                        width: '100%',
+                                        marginBottom: '20px'
                                     }}
                             >
                                 <PredictionTypeMenu 

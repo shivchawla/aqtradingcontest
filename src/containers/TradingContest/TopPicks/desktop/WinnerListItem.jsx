@@ -33,29 +33,59 @@ export default class WinnerListItem extends React.Component {
     }
     
     render() {
-        const {rank = 5, type = 'byInvestment', ticker = null, name = null} = this.props;
-        const metrics = this.getMetrics(type);
+        const {security = {}, numUsers = 1, rank = 5, lastDetail = {}, investment, type} = this.props;
+        const symbol = _.get(security, 'detail.NSE_ID', null) || security.ticker;
+        const name = _.get(security, 'detail.Nse_Name', null) || '';
+        const lastPrice = _.get(security, 'latestDetailRT.current', null) || _.get(security, 'latestDetail.Close', 0);
+        const change = Utils.formatMoneyValueMaxTwoDecimals(_.get(security, 'latestDetail.Change', 0));
+        const changePct = `(${(_.get(security, 'latestDetail.ChangePct', 0.0)*100).toFixed(2)}%)`;
+        
+        const colStyle = {...horizontalBox, justifyContent: 'space-between'};
+        const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
+
+        var colorLongUsers = numUsers.long > 0 ? metricColor.positive : metricColor.neutral;
+        var colorShortUsers = numUsers.short > 0 ? metricColor.negative : metricColor.neutral;
+
+        var colorLongInvestment = investment.long > 0 ? metricColor.positive : metricColor.neutral;
+        var colorShortInvestment = investment.short > 0 ? metricColor.negative : metricColor.neutral;
 
         const medal = getRankMedal(rank);
         const isByInvestment = type === 'byInvestment';
 
         return (
             <SGrid container>
-                <Grid item xs={2} style={{textAlign: 'start', paddingLeft: '10px', boxSizing: 'border-box'}}>
+                <Grid item xs={1} style={{textAlign: 'start', paddingLeft: '10px', boxSizing: 'border-box'}}>
                     <img src={medal} width={26}/>
                 </Grid>
                 <Grid item xs={3} style={{...verticalBox, alignItems: 'flex-start'}}>
-                    <Symbol>{ticker}</Symbol>
+                    <Symbol>{symbol}</Symbol>
                     <SecondaryText style={nameStyle}>{name}</SecondaryText>
                 </Grid>
-                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                    <SecondaryText>{metrics.long}{isByInvestment && 'K'}</SecondaryText>
+                <Grid item xs={3} style={{...verticalBox, alignItems: 'flex-start'}}>
+                    <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
+                    <Change color={changeColor}>₹{change} {changePct}</Change>
                 </Grid>
                 <Grid item xs={2}>
-                    <SecondaryText>{metrics.short}{isByInvestment && 'K'}</SecondaryText>
+                    <SecondaryText>
+                            {numUsers.total} 
+                            <span> (</span>
+                            <span style={{fontSize:'16px', color: colorLongUsers}}>{numUsers.long}</span>
+                            <span>/</span>
+                            <span style={{fontSize:'16px', color: colorShortUsers}}>{numUsers.short}</span>
+                            <span>)</span>
+                            {/*<p style={labelStyle}>Votes</p>*/}
+                    </SecondaryText>
                 </Grid>
-                <Grid item xs={2}>
-                    <SecondaryText>{metrics.total}{isByInvestment && 'K'}</SecondaryText>
+                <Grid item xs={3}>
+                    <SecondaryText>
+                        {investment.gross}K 
+                        <span> (</span>
+                        <span style={{fontSize:'16px', color: colorLongInvestment}}>{investment.long}K</span>
+                        <span>/</span>
+                        <span style={{fontSize:'16px', color: colorShortInvestment}}>{investment.short}K</span>
+                        <span>)</span>
+                        {/*<p style={labelStyle}>Investment</p>*/}
+                    </SecondaryText>
                 </Grid>
             </SGrid>
         ); 
@@ -99,3 +129,22 @@ const SecondaryText = styled.div`
     color: #535353;
     text-align: start;
 `;
+
+const LastPrice = styled.h3`
+    font-size: 18px;
+    font-weight: 400;
+    color: #535353;
+    text-align: start;
+`;
+
+const Change = styled.h3`
+    font-size: 14px;
+    color: ${props => props.color || '#535353'};
+    text-align: start;
+    font-weight: 400;
+`;
+
+const labelStyle = {
+    fontSize:'13px',
+    marginTop:'0px'
+};
