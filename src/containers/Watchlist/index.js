@@ -10,6 +10,7 @@ import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
 import AqLayout from '../../components/ui/AqLayout';
 import LoaderComponent from '../TradingContest/Misc/Loader';
+import ActionIcon from '../TradingContest/Misc/ActionIcons';
 import {fetchAjaxPromise, Utils} from '../../utils';
 import {primaryColor} from '../../constants';
 
@@ -24,7 +25,8 @@ export default class WatchlistComponent extends React.Component {
             loading: false,
             watchlists: [],
             selectedWatchlistTab: '',
-            selectedWatchlistTabIndex: 0
+            selectedWatchlistTabIndex: 0,
+            searchInputOpen: false
         };
     }
 
@@ -62,8 +64,9 @@ export default class WatchlistComponent extends React.Component {
             targetWatchlist.positions = response.data.securities.map(item => {
                 return {
                     name: item.ticker,
-                    change: Number(((_.get(item, 'realtime.changePct', 0.0) || _.get(item, 'eod.ChangePct', 0.0))*100).toFixed(2)) ,
-                    price: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0)
+                    change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))*100).toFixed(2)),
+                    price: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
+                    changePct: Number((_.get(item, 'realtime.changePct', 0.0) * 100).toFixed(2)),
                 }
             });
             this.setState({watchlists});
@@ -131,8 +134,9 @@ export default class WatchlistComponent extends React.Component {
                     var validCurrentPrice = _.get(item, 'realtime.current', 0.0) != 0.0;
                     return {
                         name: item.ticker,
-                        change: validCurrentPrice ? Number(((_.get(item, 'realtime.changePct', 0.0) || _.get(item, 'eod.ChangePct', 0.0))*100).toFixed(2)) : '-',
-                        price: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0)
+                        change: _.get(item, 'realtime.change', 0.0),
+                        price: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
+                        changePct: Number((_.get(item, 'realtime.changePct', 0.0) * 100).toFixed(2))
                     }
                 }),
                 id: item._id
@@ -172,16 +176,14 @@ export default class WatchlistComponent extends React.Component {
         const {watchlists = []} = this.state;
         const selectedWatchlist = watchlists[this.state.selectedWatchlistTabIndex];
         const positions = _.get(selectedWatchlist, 'positions', []);
-        const tickers = positions.map(it => (
-            {name: it.name, y: it.price, change:it.change}
-        ));
 
         return (
             <WatchList 
-                tickers={tickers} 
+                tickers={positions} 
                 id={_.get(selectedWatchlist, 'id', null)} 
                 name={_.get(selectedWatchlist, 'name', '')} 
                 getWatchlist={this.getWatchlist}
+                searchInputOpen={this.state.searchInputOpen}
             />
         );
     }
@@ -199,6 +201,21 @@ export default class WatchlistComponent extends React.Component {
         this.mounted = false;
     }
 
+    toggleSearchMode = () => {
+        this.setState({searchInputOpen: !this.state.searchInputOpen});
+    }
+
+    renderSearchButton = () => {
+        return (
+            <ActionIcon 
+                type='search' 
+                onClick={this.toggleSearchMode} 
+                color='#fff'
+                style={{position: 'absolute', right: 0}}
+            />
+        );
+    }
+
     renderContent() {
         return (
             <Grid container>
@@ -213,7 +230,13 @@ export default class WatchlistComponent extends React.Component {
                 <Grid item xs={12}>
                     {this.renderWatchList()}
                 </Grid>
-                <Grid item xs={12} style={fabContainer}>
+                
+                <div 
+                        style={{
+                            ...fabContainerStyle,
+                            justifyContent: 'center'
+                        }}
+                >
                     <Button 
                             onClick={this.toggleCreateWatchlistDialog}
                             variant='extendedFab'
@@ -222,28 +245,37 @@ export default class WatchlistComponent extends React.Component {
                     >
                         Create Watchlist
                     </Button>
-                </Grid>
+                </div>
             </Grid>
         );
     }
 
     render() {
         return (
-            <AqLayout pageTitle='Watchlist'>
+            <AqLayout 
+                    pageTitle='Watchlist'
+                    extraAction={this.renderSearchButton()}
+            >
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
             </AqLayout>
         );
     }
 }
 
-const fabContainer = {
-    position: 'fixed',
-    bottom: '20px',
-    width: '100%'
-}
-
+const fabContainerStyle = {
+    display: 'flex', 
+    width: '95%', 
+    padding:'0 10px', 
+    position: 'fixed', 
+    zIndex:2, 
+    bottom: '20px', 
+};
 const fabButton = {
-    boxShadow: 'none'
+    borderRadius:'5px', 
+    padding: '0 10px',
+    minHeight: '36px',
+    height: '36px',
+    boxShadow: '0 11px 21px #c3c0c0'
 }
 
 const STabs = styled(Tabs)`

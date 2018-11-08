@@ -217,7 +217,6 @@ export default class CreateEntryEditScreen extends React.Component {
                                         width: '100%'
                                     }}
                             >
-                                <SectionHeader style={{marginTop: '20px'}}>Predictions</SectionHeader>
                                 <PredictionTypeMenu 
                                     type={this.state.listView}
                                     anchorEl={this.state.anchorEl}

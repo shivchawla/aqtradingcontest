@@ -17,6 +17,7 @@ import CreateEntry from './MultiHorizonCreateEntry';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
+import PageNotFound from '../ErrorPages/PageNotFound';
 import Header from '../Header';
 import {primaryColor} from '../../constants';
 import {Utils} from '../../utils';
@@ -170,7 +171,7 @@ class TradingContest extends React.Component {
                             <Leaderboard selectedDate={this.state.selectedDate}/>
                         )}
                     />
-                    
+                    <Route component={PageNotFound} />
                 </Grid>
             </AqLayout>
         );
@@ -225,6 +226,7 @@ class TradingContest extends React.Component {
                             <Leaderboard selectedDate={this.state.selectedDate}/>
                         )}
                     />
+                    <Route component={PageNotFound} />
                 </AqLayoutDesktop>
             </div>
         );

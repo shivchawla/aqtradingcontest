@@ -5,10 +5,11 @@ import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import AutoComplete from '../../../../components/input/AutoComplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
 import {withRouter} from 'react-router';
 import {ChartTickerItem} from './ChartTickerItem';
 import {Utils} from '../../../../utils';
-import { verticalBox } from '../../../../constants';
+import { verticalBox, horizontalBox } from '../../../../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -20,7 +21,8 @@ class WatchList extends React.Component {
         super(props);
         this.state = {
             dataSource: [],
-            loading: false
+            loading: false,
+            searchInputOpen: false
         }
     }
 
@@ -109,7 +111,7 @@ class WatchList extends React.Component {
             securities: this.processPositions(newTickers)
         };
         this.setState({loading: true});
-        axios({
+        return axios({
             url,
             headers: Utils.getAuthTokenHeader(),
             data,
@@ -147,16 +149,33 @@ class WatchList extends React.Component {
     componentWillUnmount() {
         this.mounted = false;
     }
+
+    toggleSerchMode = () => {
+        this.setState({
+            searchInputOpen: !this.state.searchInputOpen
+        });
+    }
     
     render() {
         return (
             <Grid container>
-                <Grid item xs={12} style={{marginTop: '10px'}}>
-                    <AutoComplete 
-                        handleSearch={this.handleSearch}
-                        onClick={this.onSelect}
-                    />
-                </Grid>
+                {
+                    this.props.searchInputOpen &&
+                    <Grid 
+                            item 
+                            xs={12} 
+                            style={{
+                                ...horizontalBox, 
+                                marginTop: '30px',
+                                justifyContent: 'flex-end'
+                            }}
+                    >
+                        <AutoComplete 
+                            handleSearch={this.handleSearch}
+                            onClick={this.onSelect}
+                        />
+                    </Grid>
+                }
                 {
                     this.props.tickers.length === 0 &&
                     <Grid item xs={12} style={noStocksFoundContainer}>
@@ -177,8 +196,9 @@ class WatchList extends React.Component {
                             style={{
                                 overflow: 'hidden', 
                                 overflowY: 'scroll', 
-                                marginTop: '60px',
-                                padding: '0 10px'
+                                marginTop: '10px',
+                                padding: '0 10px',
+                                marginTop: '40px'
                             }}
                     >
                         {this.renderTickers()}

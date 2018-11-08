@@ -6,14 +6,35 @@ import {primaryColor, verticalBox, horizontalBox, metricColor} from '../../../..
 import {Utils} from '../../../../utils';
 
 export class ChartTickerItem extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            editMode: true
+        };
+    }
+
+    toggleEditMode = () => {
+        this.setState({editMode: !this.state.editMode});
+    }
+
+    deleteItem = () => {
+        const {name = ''} = this.props.legend;
+        this.props.deleteItem && this.props.deleteItem(name).then(() => this.setState({editMode: true}));
+    }
+
     render() {
         const {
             name = 'HDFCBANK', 
             y = 1388, 
             change=0, 
+            changePct = 0,
+            price = 0,
             disabled = false, 
             color='#585858',
         } = this.props.legend;
+        const iconType = this.state.editMode ? 'edit' : 'lock';
+        const iconColor = metricColor.neutral;
+
         const changeColor = change > 0 ? metricColor.positive 
                 : change === 0 
                     ? metricColor.neutral 
@@ -27,15 +48,30 @@ export class ChartTickerItem extends React.Component {
                 <Grid item xs={4}>
                     <Symbol>{name}</Symbol>
                 </Grid>
-                <Grid item xs={6} style={priceContainer}>
-                    <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(y)}</LastPrice>
-                    <Change color={changeColor}>{change}%</Change>
+                <Grid 
+                        item 
+                        xs={this.state.editMode ? 6 : 4} 
+                        style={priceContainer}
+                >
+                    <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(price)}</LastPrice>
+                    <Change color={changeColor}>₹{change}({changePct}%)</Change>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid 
+                        item xs={this.state.editMode ? 2: 4} 
+                        style={{...horizontalBox, justifyContent: 'flex-end'}}
+                >
+                    {
+                        !this.state.editMode &&
+                        <ActionIcon 
+                            type='remove_circle_outline' 
+                            color={metricColor.negative}
+                            onClick={this.deleteItem}
+                        />
+                    }
                     <ActionIcon 
-                        type='remove_circle_outline' 
-                        color={metricColor.negative}
-                        onClick={() => {this.props.deleteItem && this.props.deleteItem(name)}}
+                        type={iconType} 
+                        color={iconColor}
+                        onClick={this.toggleEditMode}
                     />
                 </Grid>
             </Container>
