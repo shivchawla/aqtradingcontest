@@ -20,18 +20,10 @@ export class ChartTickerItem extends React.Component {
                     onClick={() => {this.props.onClick && this.props.onClick(name)}}
             >
                 <Grid item xs={4}>
-                    <h4 style={{fontSize: '14px', color}}>{name}</h4>
+                    <Symbol>{name}</Symbol>
                 </Grid>
                 <Grid item xs={6} style={{textAlign: 'left'}}>
-                    {/* <MetricItem 
-                        label=""
-                        value={y}
-                        money
-                        dailyChangePct={change}
-                        isNetValue
-                        labelStyle={{fontSize: '11px'}}
-                        valueStyle={{fontSize: metricFontSize, fontWeight: 400}}/> */}
-                        <Change>{y}({change})</Change>
+                    <Change>{y}({change})</Change>
                 </Grid>
                 <Grid item xs={2}>
                     <ActionIcon 
@@ -40,30 +32,20 @@ export class ChartTickerItem extends React.Component {
                         onClick={() => {this.props.deleteItem && this.props.deleteItem(name)}}
                     />
                 </Grid>
-                {/* <Grid span={1}>
-                    {
-                        !disabled &&
-                        <Icon 
-                            type="close-circle-o" 
-                            style={{
-                                fontSize: '18px', 
-                                fontWeight: 700, 
-                                color: '#FF6767', 
-                                cursor: 'pointer', 
-                                transform: iconScale,
-                                transition: 'all 0.2s ease-in-out'
-                            }} 
-                            onClick={() => {this.props.deleteItem && this.props.deleteItem(name)}}
-                        />
-                    }
-                </Grid> */}
             </Grid>
         );
     }
 }
 
 const Change = styled.h3`
-    font-size: 15px;
+    font-size: 18px;
     color: ${props => props.color || '#464646'};
     font-weight: 400;
+`;
+
+const Symbol = styled.h3`
+    font-size: 18px;
+    color: #202020;
+    font-weight: 500;
+    text-align: start;
 `;

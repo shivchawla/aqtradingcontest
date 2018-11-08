@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import styled from 'styled-components';
 import CreateWatchlist from './components/mobile/CreateWatchList';
 import WatchList from './components/mobile/WatchList';
 import Button from '@material-ui/core/Button';
@@ -7,7 +8,10 @@ import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
+import AqLayout from '../../components/ui/AqLayout';
+import LoaderComponent from '../TradingContest/Misc/Loader';
 import {fetchAjaxPromise, Utils} from '../../utils';
+import {primaryColor} from '../../constants';
 
 const {requestUrl} = require('../../localConfig');
 
@@ -30,6 +34,7 @@ export default class WatchlistComponent extends React.Component {
 
     getWatchlists = () => {
         const url = `${requestUrl}/watchlist`;
+        this.setState({loading: true});
         fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
             const watchlists = this.processWatchlistData(response.data);
@@ -40,7 +45,10 @@ export default class WatchlistComponent extends React.Component {
         })
         .catch(error => {
             console.log(error);
-        });
+        })
+        .finally(() => {
+            this.setState({loading: false});
+        })
     }
 
     getWatchlist = id => {
@@ -141,10 +149,9 @@ export default class WatchlistComponent extends React.Component {
 
         return (
             <Paper square>
-                <Tabs
+                <STabs
                     value={this.state.selectedWatchlistTabIndex}
-                    indicatorColor="primary"
-                    textColor="primary"
+                    indicatorColor="secondary"
                     onChange={this.handleWatchListTabChange}
                     scrollable
                     fullWidth
@@ -152,11 +159,11 @@ export default class WatchlistComponent extends React.Component {
                     {
                         watchlists.map((watchlist, index) => {
                             return (
-                                <Tab key={index} label={watchlist.name} />
+                                <STab key={index} label={watchlist.name} />
                             );
                         })
                     }
-                </Tabs>
+                </STabs>
             </Paper>
         );  
     }
@@ -192,7 +199,7 @@ export default class WatchlistComponent extends React.Component {
         this.mounted = false;
     }
 
-    render() {
+    renderContent() {
         return (
             <Grid container>
                 <CreateWatchlist 
@@ -217,4 +224,21 @@ export default class WatchlistComponent extends React.Component {
             </Grid>
         );
     }
+
+    render() {
+        return (
+            <AqLayout pageTitle='Watchlist'>
+                {this.state.loading ? <LoaderComponent /> : this.renderContent()}
+            </AqLayout>
+        );
+    }
 }
+
+const STabs = styled(Tabs)`
+    background-color: ${primaryColor};
+    color: #fff;
+`;
+
+const STab = styled(Tab)`
+    font-weight: 400;
+`;

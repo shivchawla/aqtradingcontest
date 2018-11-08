@@ -4,6 +4,8 @@ export default theme => ({
     root: {
       flexGrow: 1,
       height: 250,
+      position: 'absolute',
+      width: '100%'
     },
     input: {
       display: 'flex',

@@ -161,7 +161,7 @@ export const getMultiStockData = (stocks = []) => {
 
 export const isMarketOpen = (currentTime = moment()) => {
     const marketOpenTime = moment().hours(6).minutes(15);
-    const marketCloseTime = moment().hours(23).minutes(30);
+    const marketCloseTime = moment().hours(15).minutes(30);
     if (currentTime.isSameOrAfter(marketOpenTime) && currentTime.isSameOrBefore(marketCloseTime)) {
         return {status: true};
     } else if (currentTime.isBefore(marketOpenTime)) {

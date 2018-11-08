@@ -16,7 +16,7 @@ import CreateEntryPreview from './components/desktop/CreateEntryPreviewScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import {DailyContestCreateMeta} from '../metas';
-import {processSelectedPosition, getMultiStockData} from '../utils';
+import {processSelectedPosition} from '../utils';
 import {Utils, handleCreateAjaxError} from '../../../utils';
 import {maxPredictionLimit} from './constants';
 import {
@@ -568,9 +568,6 @@ class CreateEntry extends React.Component {
     renderMobileLayout = (props) => {
         const {componentType = 'create'} = this.props;
 
-        // return componentType === 'create' 
-        //     ? <CreateEntryLayoutMobile {...props}/> 
-        //     : <DisplayPredictionsMobile {...props}/>
         return (
             <React.Fragment>
                 <DisplayPredictionsMobile {...props} />

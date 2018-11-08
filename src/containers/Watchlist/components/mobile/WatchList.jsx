@@ -159,7 +159,8 @@ class WatchList extends React.Component {
                             overflow: 'hidden', 
                             overflowY: 'scroll', 
                             height: '240px', 
-                            paddingLeft: '5px'
+                            paddingLeft: '5px',
+                            marginTop: '40px'
                         }}
                 >
                     {this.renderTickers()}
