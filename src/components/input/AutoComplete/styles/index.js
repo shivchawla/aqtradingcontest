@@ -3,12 +3,12 @@ import {emphasize} from '@material-ui/core/styles/colorManipulator';
 export default theme => ({
     root: {
       flexGrow: 1,
-      position: 'absolute',
-      width: '100%'
+      position: 'relative',
     },
     input: {
       display: 'flex',
       padding: 0,
+      textAlign: 'left'
     },
     valueContainer: {
       display: 'flex',

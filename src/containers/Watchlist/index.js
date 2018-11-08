@@ -229,23 +229,22 @@ export default class WatchlistComponent extends React.Component {
                 </Grid>
                 <Grid item xs={12}>
                     {this.renderWatchList()}
-                </Grid>
-                
-                <div 
-                        style={{
-                            ...fabContainerStyle,
-                            justifyContent: 'center'
-                        }}
-                >
-                    <Button 
-                            onClick={this.toggleCreateWatchlistDialog}
-                            variant='extendedFab'
-                            color="primary"
-                            style={fabButton}
+                    <div 
+                            style={{
+                                ...fabContainerStyle,
+                                justifyContent: 'center'
+                            }}
                     >
-                        Create Watchlist
-                    </Button>
-                </div>
+                        <Button 
+                                onClick={this.toggleCreateWatchlistDialog}
+                                variant='extendedFab'
+                                color="primary"
+                                style={fabButton}
+                        >
+                            Create Watchlist
+                        </Button>
+                    </div>
+                </Grid>
             </Grid>
         );
     }
@@ -254,7 +253,6 @@ export default class WatchlistComponent extends React.Component {
         return (
             <AqLayout 
                     pageTitle='Watchlist'
-                    extraAction={this.renderSearchButton()}
             >
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
             </AqLayout>

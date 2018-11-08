@@ -32,9 +32,6 @@ export class ChartTickerItem extends React.Component {
             disabled = false, 
             color='#585858',
         } = this.props.legend;
-        const iconType = this.state.editMode ? 'edit' : 'lock';
-        const iconColor = metricColor.neutral;
-
         const changeColor = change > 0 ? metricColor.positive 
                 : change === 0 
                     ? metricColor.neutral 
@@ -50,30 +47,25 @@ export class ChartTickerItem extends React.Component {
                 </Grid>
                 <Grid 
                         item 
-                        xs={this.state.editMode ? 6 : 4} 
+                        xs={this.props.edit ? 6 : 8} 
                         style={priceContainer}
                 >
                     <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(price)}</LastPrice>
                     <Change color={changeColor}>₹{change}({changePct}%)</Change>
                 </Grid>
-                <Grid 
-                        item xs={this.state.editMode ? 2: 4} 
-                        style={{...horizontalBox, justifyContent: 'flex-end'}}
-                >
-                    {
-                        !this.state.editMode &&
+                {
+                    this.props.edit &&
+                    <Grid 
+                            item xs={2} 
+                            style={{...horizontalBox, justifyContent: 'flex-end'}}
+                    >
                         <ActionIcon 
                             type='remove_circle_outline' 
                             color={metricColor.negative}
                             onClick={this.deleteItem}
                         />
-                    }
-                    <ActionIcon 
-                        type={iconType} 
-                        color={iconColor}
-                        onClick={this.toggleEditMode}
-                    />
-                </Grid>
+                    </Grid>
+                }
             </Container>
         );
     }

@@ -9,7 +9,7 @@ import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
 import {withRouter} from 'react-router';
 import {ChartTickerItem} from './ChartTickerItem';
 import {Utils} from '../../../../utils';
-import { verticalBox, horizontalBox } from '../../../../constants';
+import { verticalBox, horizontalBox, primaryColor } from '../../../../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -22,7 +22,8 @@ class WatchList extends React.Component {
         this.state = {
             dataSource: [],
             loading: false,
-            searchInputOpen: false
+            searchInputOpen: false,
+            watchlistEditMode: false
         }
     }
 
@@ -34,7 +35,9 @@ class WatchList extends React.Component {
                 key={index} 
                 legend={ticker} 
                 deleteItem={this.deleteItem} 
-                onClick={this.props.onClick}/>
+                onClick={this.props.onClick}
+                edit={this.state.watchlistEditMode}
+            />
         );
     }
 
@@ -42,8 +45,8 @@ class WatchList extends React.Component {
         const url = `${requestUrl}/stock?search=${query}`;
         return axios.get(url, {headers: Utils.getAuthTokenHeader()})
         .then(response => {
+            this.setState({dataSource: this.processSearchResponseData(response.data)})
             resolve(this.processSearchResponseData(response.data));
-            // this.setState({dataSource: this.processSearchResponseData(response.data)})
         })
         .catch(error => {
             reject(error);
@@ -150,32 +153,55 @@ class WatchList extends React.Component {
         this.mounted = false;
     }
 
-    toggleSerchMode = () => {
+    toggleSearchMode = () => {
         this.setState({
             searchInputOpen: !this.state.searchInputOpen
         });
     }
     
+    toggleEditWatclistMode = () => {
+        this.setState({watchlistEditMode: !this.state.watchlistEditMode});
+    }   
+
     render() {
         return (
             <Grid container>
-                {
-                    this.props.searchInputOpen &&
-                    <Grid 
-                            item 
-                            xs={12} 
-                            style={{
-                                ...horizontalBox, 
-                                marginTop: '30px',
-                                justifyContent: 'flex-end'
-                            }}
-                    >
-                        <AutoComplete 
-                            handleSearch={this.handleSearch}
-                            onClick={this.onSelect}
-                        />
+                <Grid item xs={12}>
+                    <Grid container justify="flex-end">
+                    {
+                            this.state.searchInputOpen &&
+                            <Grid 
+                                    item 
+                                    xs={9} 
+                                    style={{
+                                        ...horizontalBox, 
+                                        marginTop: '10px',
+                                        justifyContent: 'flex-end',
+                                        padding: '0 10px'
+                                    }}
+                            >
+                                <AutoComplete 
+                                    handleSearch={this.handleSearch}
+                                    onClick={this.onSelect}
+                                />
+                            </Grid>
+                        }
+                        <Grid item xs={3} style={{...horizontalBox, marginTop: '10px'}}>
+                            <ActionIcon 
+                                type='search' 
+                                color={primaryColor}
+                                style={{fontSize: '24px'}}
+                                onClick={this.toggleSearchMode}
+                            />
+                            <ActionIcon 
+                                type={this.state.watchlistEditMode ? 'lock' : 'edit'} 
+                                color={primaryColor}
+                                style={{fontSize: '24px'}}
+                                onClick={this.toggleEditWatclistMode}
+                            />
+                        </Grid>
                     </Grid>
-                }
+                </Grid>
                 {
                     this.props.tickers.length === 0 &&
                     <Grid item xs={12} style={noStocksFoundContainer}>
@@ -198,7 +224,7 @@ class WatchList extends React.Component {
                                 overflowY: 'scroll', 
                                 marginTop: '10px',
                                 padding: '0 10px',
-                                marginTop: '40px'
+                                marginTop: '15px'
                             }}
                     >
                         {this.renderTickers()}
