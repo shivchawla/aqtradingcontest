@@ -3,6 +3,7 @@ import _ from 'lodash';
 import Media from 'react-media';
 import moment from 'moment';
 import Route from 'react-router/Route';
+import Redirect from 'react-router/Redirect';
 import Switch from 'react-router-dom/Switch';
 import styled from 'styled-components';
 import {withStyles} from '@material-ui/core/styles';
@@ -173,7 +174,17 @@ class TradingContest extends React.Component {
                                 <Leaderboard selectedDate={this.state.selectedDate}/>
                             )}
                         />
-                        <Route component={PageNotFound} />
+                        <Route 
+                            exact
+                            path={`${this.props.match.path}`}
+                            render={() => (
+                                <CreateEntry 
+                                    selectedDate={this.state.selectedDate}
+                                    componentType='preview'
+                                />
+                            )}
+                        />
+                        <Redirect to='/404'/>
                     </Switch>
                 </Grid>
             </AqLayout>
@@ -208,6 +219,16 @@ class TradingContest extends React.Component {
                     <Switch>
                         <Route 
                             exact
+                            path={`${this.props.match.path}`}
+                            render={() => (
+                                <CreateEntry 
+                                    selectedDate={this.state.selectedDate}
+                                    componentType='preview'
+                                />
+                            )}
+                        />
+                        <Route 
+                            exact
                             path={`${this.props.match.path}/mypicks`}
                             render={() => (
                                 <CreateEntry 
@@ -230,7 +251,8 @@ class TradingContest extends React.Component {
                                 <Leaderboard selectedDate={this.state.selectedDate}/>
                             )}
                         />
-                        <Route component={PageNotFound} />
+                        <Redirect to='/404'/>
+                        {/* <Route component={PageNotFound} /> */}
                     </Switch>
                 </AqLayoutDesktop>
             </div>

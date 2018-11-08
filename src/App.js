@@ -30,7 +30,7 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
                                     <Route exact={true} path='/watchlist' component={Watchlist} /> 
                                     <Route path='/dailycontest' component={TradingContest} /> 
-                                    <Route component={PageNotFound} />
+                                    {/* <Route component={PageNotFound} /> */}
                                 </Switch>
                             );
                         }}
@@ -44,7 +44,8 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} />
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} /> 
                                     <Route path='/dailycontest' component={TradingContest} />  
-                                    <Route component={UnderDevelopment} />
+                                    {/* <Route route='/404' component={PageNotFound} /> */}
+                                    {/* <Route component={UnderDevelopment} /> */}
                                 </Switch>
                             );
                         }}
