@@ -19,7 +19,6 @@ import CreateEntry from './MultiHorizonCreateEntry';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
-import PageNotFound from '../ErrorPages/PageNotFound';
 import Header from '../Header';
 import {primaryColor} from '../../constants';
 import {Utils} from '../../utils';
@@ -153,36 +152,41 @@ class TradingContest extends React.Component {
                         <Route 
                             exact
                             path={`${this.props.match.path}/mypicks`}
-                            render={() => (
-                                <CreateEntry 
-                                    selectedDate={this.state.selectedDate}
-                                    componentType='preview'
-                                />
-                            )}
+                            render={() => 
+                                Utils.isLoggedIn()
+                                ?   <CreateEntry 
+                                        selectedDate={this.state.selectedDate}
+                                        componentType='preview'
+                                    />
+                                :   <Redirect push to='/login'/>
+                            }
                         />
                         <Route 
                             exact
                             path={`${this.props.match.path}/toppicks`}
-                            render={() => (
-                                <TopPicks selectedDate={this.state.selectedDate}/>
-                            )}
+                            render={() => Utils.isLoggedIn()
+                                ?   <TopPicks selectedDate={this.state.selectedDate}/>
+                                :   <Redirect push to='/login'/>
+                            }
                         />
                         <Route 
                             exact
                             path={`${this.props.match.path}/leaderboard`}
-                            render={() => (
-                                <Leaderboard selectedDate={this.state.selectedDate}/>
-                            )}
+                            render={() => Utils.isLoggedIn()
+                                ?   <Leaderboard selectedDate={this.state.selectedDate}/>
+                                :   <Redirect push to='/login'/>
+                            }
                         />
                         <Route 
                             exact
                             path={`${this.props.match.path}`}
-                            render={() => (
-                                <CreateEntry 
-                                    selectedDate={this.state.selectedDate}
-                                    componentType='preview'
-                                />
-                            )}
+                            render={() => Utils.isLoggedIn()
+                                ?   <CreateEntry 
+                                        selectedDate={this.state.selectedDate}
+                                        componentType='preview'
+                                    />
+                                :   <Redirect push to='/login'/>
+                            }
                         />
                         <Redirect to='/404'/>
                     </Switch>
@@ -220,36 +224,40 @@ class TradingContest extends React.Component {
                         <Route 
                             exact
                             path={`${this.props.match.path}`}
-                            render={() => (
-                                <CreateEntry 
-                                    selectedDate={this.state.selectedDate}
-                                    componentType='preview'
-                                />
-                            )}
+                            render={() => Utils.isLoggedIn()
+                                ?   <CreateEntry 
+                                        selectedDate={this.state.selectedDate}
+                                        componentType='preview'
+                                    />
+                                :   <Redirect push to='/login'/>
+                            }
                         />
                         <Route 
                             exact
                             path={`${this.props.match.path}/mypicks`}
-                            render={() => (
-                                <CreateEntry 
-                                    selectedDate={this.state.selectedDate}
-                                    componentType='preview'
-                                />
-                            )}
+                            render={() => Utils.isLoggedIn()
+                                ?   <CreateEntry 
+                                        selectedDate={this.state.selectedDate}
+                                        componentType='preview'
+                                    />
+                                :   <Redirect push to='/login'/>
+                            }
                         />
                         <Route 
                             exact
                             path={`${this.props.match.path}/toppicks`}
-                            render={() => (
-                                <TopPicks selectedDate={this.state.selectedDate}/>
-                            )}
+                            render={() => Utils.isLoggedIn()
+                                ?   <TopPicks selectedDate={this.state.selectedDate}/>
+                                :   <Redirect push to='/login'/>
+                            }
                         />
                         <Route 
                             exact
                             path={`${this.props.match.path}/leaderboard`}
-                            render={() => (
-                                <Leaderboard selectedDate={this.state.selectedDate}/>
-                            )}
+                            render={() => Utils.isLoggedIn()
+                                ? <Leaderboard selectedDate={this.state.selectedDate}/>
+                                : <Redirect />
+                            }
                         />
                         <Redirect to='/404'/>
                         {/* <Route component={PageNotFound} /> */}
