@@ -29,6 +29,7 @@ import {
     getPnlStats, 
     getDefaultPrediction,
     checkForUntouchedPredictionsInPositions,
+    getPositionsWithNewPredictions
 } from './utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -492,9 +493,10 @@ class CreateEntry extends React.Component {
 
     checkForDuplicateHorizon = () => {
         const {positions = []} = this.state;
+        const newPositions = getPositionsWithNewPredictions(positions);
         let positionsWithDuplicateHorizons = [];
 
-        Promise.map(positions, position => {
+        Promise.map(newPositions, position => {
             const hasDuplicates = checkHorizonDuplicationStatus(position.predictions);
             if (hasDuplicates) {
                 positionsWithDuplicateHorizons.push(position);
