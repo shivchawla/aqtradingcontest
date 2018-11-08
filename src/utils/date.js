@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-03-31 19:38:33
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-10-20 14:02:00
+* @Last Modified time: 2018-11-08 19:14:28
 */
 "use strict";
 const moment = require('moment-timezone');
@@ -62,7 +62,8 @@ module.exports.getLocalDate = function(dateTime, offset) {
 
 //Return dateTime formatted to Current Date and Time as 00:00:00 IST
 module.exports.getDate = function(dateTime) {
-	return (dateTime ? moment(dateTime) : moment()).tz(indiaTimeZone).toDate();
+
+	return moment((dateTime ? moment(dateTime) : moment()).format("YYYY-MM-DD")).tz(indiaTimeZone).toDate();
 	//return module.exports.getLocalDate(dateTime, 0);
 };
 
@@ -99,19 +100,9 @@ module.exports.getFirstMonday = function(offset) {
 	} else if(offset == "1M" || offset == "1m") {
 		var firstDateNextMonth = module.exports.getDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
 		return module.exports.getLatestWeekday(firstDateNextMonth);
-		//var lastMonday = _getLastMonday(firstDateNextMonth);
-		
-		//var nextDate = lastMonday;
-		//nextDate.setDate(nextDate.getDate() + 7);
-		//return nextDate;
 	} else if(offset == "3M" || offset == "3m" || offset == "1Q" || offset == "1q") {
         var firstDateAfterThreeMonths = module.exports.getDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 3, 1));
-        // console.log(firstDateAfterThreeMonths);
 		return module.exports.getLatestWeekday(firstDateAfterThreeMonths);
-		/*var lastMonday = _getLastMonday(firstDateAfterThreeMonths);
-		var nextDate = lastMonday;
-		nextDate.setDate(nextDate.getDate() + 7);
-		return nextDate;*/
 	} 
 
 	return currentDate;
@@ -137,11 +128,9 @@ module.exports.getNextWeekday = function(date) {
 	} else if (day == 5) { //Friday
 		date.setDate(date.getDate() + 3);
 	} else {
-        // console.log(date);
 		date.setDate(date.getDate() + 1);
 	}
 
-    // console.log(date);
 	return module.exports.getDate(date);
 };
 
@@ -158,7 +147,6 @@ module.exports.getPreviousWeekday = function(date) {
 		date.setDate(date.getDate() - 2);
 	} 
 
-    // console.log(date);
 	return module.exports.getDate(date);
 };
 
@@ -186,8 +174,8 @@ module.exports.nextNonHolidayWeekday = function(date, today=false) {
 };
 
 module.exports.isHoliday = function(date) {
-	date = !date ? module.exports.getCurrentDate() : date;
-	return holidays.findIndex(item => {return item.isSame(moment(date));}) !== -1;
+	date = !date ? module.exports.getCurrentDate() : exports.getDate(date);
+	return holidays.findIndex(item => {return item.isSame(moment(date))}) !== -1;
 };
 
 module.exports.getHolidays = function() {
