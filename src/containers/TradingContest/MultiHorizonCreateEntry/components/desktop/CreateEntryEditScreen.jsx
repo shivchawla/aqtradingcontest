@@ -136,16 +136,19 @@ export default class CreateEntryEditScreen extends React.Component {
                                 marginBottom: '20px'
                             }}
                     >
-                        <Button 
-                                style={{...fabButtonStyle, ...addStocksStyle}} 
-                                size='small' 
-                                variant="contained" 
-                                aria-label="Delete" 
-                                onClick={toggleSearchStockBottomSheet}
-                        >
-                            <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                            PREDICTION
-                        </Button>
+                        {
+                            (this.props.positions.length > 0 || positions.length > 0) &&
+                            <Button 
+                                    style={{...fabButtonStyle, ...addStocksStyle}} 
+                                    size='small' 
+                                    variant="contained" 
+                                    aria-label="Delete" 
+                                    onClick={toggleSearchStockBottomSheet}
+                            >
+                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
+                                PREDICTION
+                            </Button>
+                        }
                         {
                             positionsWithDuplicateHorizons.length > 0 &&
                             <ActionIcon 
@@ -227,13 +230,45 @@ export default class CreateEntryEditScreen extends React.Component {
                                 />
                             </div>
                             {
-                                pnlFound &&
+                                pnlFound && positions.length > 0 &&
                                 <SelectionMetricsMini 
                                     {...getRequiredMetrics()}
                                     onClick={toggleEntryDetailBottomSheet}
                                 />
                             }
-                            <StockPreviewList positions={positions} />
+                            {
+                                positions.length > 0 &&
+                                <StockPreviewList positions={positions} />
+                            }
+                            {
+                                this.props.positions.length > 0 && positions.length === 0 &&
+                                <div style={{...verticalBox, marginTop: '10%'}}>
+                                    <NoPreviewPositionsFound>
+                                        No Predictions Found.
+                                    </NoPreviewPositionsFound>
+                                </div>
+                            }
+                            {
+                                this.props.positions.length === 0 && positions.length === 0 &&
+                                <div style={{...verticalBox, marginTop: '20%'}}>
+                                    <Button 
+                                            style={{
+                                                ...fabButtonStyle, 
+                                                ...addStocksStyle,
+                                                width: 'inherit',
+                                                fontSize: '16px',
+                                                height: '50px'
+                                            }} 
+                                            size='small' 
+                                            variant="contained" 
+                                            aria-label="Delete" 
+                                            onClick={this.props.toggleSearchStockBottomSheet}
+                                    >
+                                        <Icon style={{marginRight: '5px'}}>add_circle</Icon>
+                                        ADD PREDICTION
+                                    </Button>
+                                </div>
+                            }
                         </React.Fragment>
                 }
             </Grid>
@@ -376,4 +411,10 @@ const SectionHeader = styled.h3`
     color: #4B4A4A;
     text-align: start;
     padding-left: 3%;
+`;
+
+const NoPreviewPositionsFound = styled.h3`
+    font-size: 16px;
+    color: #444;
+    font-weight: 400;
 `;
