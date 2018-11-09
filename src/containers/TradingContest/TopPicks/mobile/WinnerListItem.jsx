@@ -52,27 +52,29 @@ export default class WinnerListItem extends React.Component {
                     
                 </Grid>
 
-                <Grid item xs={12} style={{...horizontalBox, marginLeft:'auto', marginTop:'5px', justifyContent:'space-between'}}>
-                    <SecondaryText style={{marginLeft:'15px', width:'140px'}}>
+                <Grid item xs={12} style={{...horizontalBox, marginLeft:'auto', marginTop:'10px'}}>
+                    <SecondaryText style={{marginLeft:'5px', display:'flex', width: '100%', justifyContent:'space-between'}}>
                         <span style={labelStyle}>Votes: </span>
-                        {numUsers.total} 
-                        <span> (</span>
-                        <span style={{fontSize:'16px', color: colorLongUsers}}>{numUsers.long}</span>
-                        <span>/</span>
-                        <span style={{fontSize:'16px', color: colorShortUsers}}>{numUsers.short}</span>
-                        <span>)</span>
-                        {/*<p style={labelStyle}>Votes</p>*/}
+                        <div style={{marginRight:'15px'}}>
+                            <span>{numUsers.total}(</span> 
+                            <span style={{fontSize:'16px', color: colorLongUsers}}>{numUsers.long}</span>
+                            <span>/</span>
+                            <span style={{fontSize:'16px', color: colorShortUsers}}>{numUsers.short}</span>
+                            <span>)</span>
+                        </div>
                     </SecondaryText>
+                </Grid>
 
-                    <SecondaryText style={{marginLeft:'15px', width:'200px'}}>
+                <Grid item xs={12} style={{...horizontalBox, marginLeft:'auto', marginTop:'5px'}}>
+                    <SecondaryText style={{marginLeft:'5px', display:'flex', width: '100%', justifyContent:'space-between'}}>
                         <span style={labelStyle}>Investment: </span>
-                        {investment.gross}K 
-                        <span> (</span>
-                        <span style={{fontSize:'16px', color: colorLongInvestment}}>{investment.long}K</span>
-                        <span>/</span>
-                        <span style={{fontSize:'16px', color: colorShortInvestment}}>{investment.short}K</span>
-                        <span>)</span>
-                        {/*<p style={labelStyle}>Investment</p>*/}
+                        <div style={{marginRight:'15px'}}>
+                            <span>{investment.gross}K(</span>
+                            <span style={{fontSize:'16px', color: colorLongInvestment}}>{investment.long}K</span>
+                            <span>/</span>
+                            <span style={{fontSize:'16px', color: colorShortInvestment}}>{investment.short}K</span>
+                            <span>)</span>
+                        </div>
                     </SecondaryText>
                     
                 </Grid>
