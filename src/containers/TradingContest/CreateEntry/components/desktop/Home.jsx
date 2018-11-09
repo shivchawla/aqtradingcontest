@@ -69,7 +69,7 @@ class Home extends React.Component {
                             </div>
                         </div>
                         <NavigationList 
-                            style={{top: '20%'}}
+                            style={{marginTop: '100px'}}
                             onChange={this.onChange}
                         />
                         <div style={enterContestButtonContainer}>
@@ -78,8 +78,8 @@ class Home extends React.Component {
                                         backgroundColor: '#3B45B2', 
                                         color: '#fff', 
                                         width: '180px',
-                                        position: 'absolute',
-                                        bottom: '100px'
+                                        //position: 'absolute',
+                                        //bottom: '100px'
                                     }}
                                     onClick={() => this.props.history.push('/dailycontest/mypicks')}
                             >
@@ -201,8 +201,9 @@ const enterContestButtonContainer = {
     ...horizontalBox,
     width: '100%',
     justifyContent: 'center',
-    position: 'absolute',
-    bottom: 0
+    marginTop:'100px'
+    //position: 'absolute',
+    //bottom: 0
 }
 
 const firstBlurredCircle = {
@@ -241,7 +242,8 @@ const ListItemText = styled.h5`
 `;
 
 const LeftContainer = styled(Grid)`
-    height: 100vh;
+    height:100vh;
+    min-height: 750px;
     display: flex;
     flex-direction: column;
     text-align: start;
@@ -253,7 +255,8 @@ const LeftContainer = styled(Grid)`
 `;
 
 const RightContainer = styled(Grid)`
-    height: 100vh;
+    height:100vh;
+    min-height:750px;
     display: flex;
     flex-direction: column;
     background-color: #F9FAFF;
