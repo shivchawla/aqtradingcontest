@@ -49,6 +49,20 @@ class StockPreviewListItem extends React.Component {
             type = 'buy',
             predictions = []
         } = this.props.position;
+        let totalPnl = 0;
+        let totalPnlPct = 0;
+
+        let investment = 0;
+        predictions.forEach(item => {
+            investment += item.investment;
+            var direction = item.type == "buy" ? 1 : -1;
+            totalPnl += item.avgPrice > 0 ? direction*(item.investment/item.avgPrice)*(item.lastPrice - item.avgPrice) : 0;
+        });
+
+        var pnlColor = totalPnl > 0 ? metricColor.positive : totalPnl < 0 ? metricColor.negative : metricColor.neutral;
+
+        totalPnlPct = `${((investment > 0 ? totalPnl/investment : 0.0)*100).toFixed(2)}%`;
+        totalPnl = Utils.formatMoneyValueMaxTwoDecimals(totalPnl*1000);
 
         return (
             <ExpansionPanel
@@ -62,7 +76,7 @@ class StockPreviewListItem extends React.Component {
                 >
                     <Grid container alignItems="center">
                         <Grid 
-                                item xs={5} 
+                                item xs={4} 
                                 style={{
                                     ...horizontalBox, 
                                     justifyContent: 'flex-start', 
@@ -70,17 +84,20 @@ class StockPreviewListItem extends React.Component {
                                     paddingLeft: '20px'
                                 }}
                         >
-                            <SymbolComponent symbol={symbol} name={name} />
+                            <SymbolComponent symbol={symbol} name={name} predictions={predictions.length}/>
                         </Grid>
-                        <Grid item xs={5}>
+                        <Grid item xs={4}>
                             <ChangeComponent 
                                 lastPrice={lastPrice}
                                 change={chg}
                                 changePct={chgPct}
                             />
                         </Grid>
-                        <Grid item xs={2}>
-                            <Prediction prediction={predictions.length} />
+                        <Grid item xs={4}>
+                            <PnlComponent 
+                                totalPnl={totalPnl}
+                                pnlPct={totalPnlPct}
+                            />
                         </Grid>
                     </Grid>
                 </ExpansionPanelSummary>
@@ -100,10 +117,10 @@ class StockPreviewListItem extends React.Component {
 
 export default withStyles(styles)(StockPreviewListItem);
 
-const SymbolComponent = ({symbol, name}) => {
+const SymbolComponent = ({symbol, name, predictions}) => {
     return (
         <div style={{...verticalBox, alignItems: 'flex-start'}}>
-            <Symbol>{symbol}</Symbol>
+            <Symbol>{symbol} ({predictions})</Symbol>
             <span style={nameStyle}>{name}</span>
         </div>
     );
@@ -125,21 +142,21 @@ const ChangeComponent = ({lastPrice, change, changePct}) => {
     );
 }
 
-const Prediction = ({prediction = 0}) => {
+const PnlComponent = ({totalPnl, pnlPct}) => {
+    const  pnlColor = totalPnl > 0 
+        ? metricColor.positive 
+        : totalPnl === 0 
+            ? metricColor.neutral 
+            : metricColor.negative;
+    
     return (
-        <div style={{...horizontalBox, justifyContent: 'flex-start', alignItems: 'flex-end'}}>
-            <PredictionText>{prediction}</PredictionText>
-            <h3 
-                    style={{
-                        fontSize: '16px', 
-                        color: '#676767', 
-                        fontWeight: '400',
-                        marginLeft: '4px',
-                        marginBottom: '2px'
-                    }}
-            >
-                {prediction === 1 ? 'Prediction' : 'Predictions'}
-            </h3>
+        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+            <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                <LastPrice>₹{totalPnl}</LastPrice>
+                <ChangeDivider>|</ChangeDivider>
+                <Change color={pnlColor}>({pnlPct})</Change>
+            </div>
+            <LastPriceLabel>PnL Metrics</LastPriceLabel>
         </div>
     );
 }
