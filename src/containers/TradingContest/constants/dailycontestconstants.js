@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-09-11 20:06:27
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-10-25 19:27:06
+* @Last Modified time: 2018-11-09 18:33:19
 */
 
 import React, {Fragment} from 'react'
@@ -11,33 +11,33 @@ import createPortfolio from '../../../assets/CreatePortfolio.svg';
 import updateEntry from '../../../assets/UpdateEntry.svg';
 import winPrize from '../../../assets/WinPrizes.svg';
 
-export const scoringText = 'The theme of the Best Stock Picks Contest is to award best stock pickers with most profitable ideas. For this purpose, our scoring function will only depend on net profit everyday.';
+export const scoringText = 'The theme of the Stock Prediction Contest is to award best stock pickers with most profitable ideas. For this purpose, our scoring function will only depend on net realized profit on anyday.';
 
 
 export const faqs = [
     {
         header: 'How do I enter the contest?', 
-        content: 'Click “Enter Contest", Add up to 10 stocks to buy and up to 10 stocks to sell. Then click “Submit".'
+        content: 'Click “Enter Contest", Add up to 10 stocks to buy or sell. Choose target-price/horizon for each predicton. Then click “Submit".'
     },
     {
         header: 'What stocks/universe is allowed?',
         content: 'We only allow stocks that are included in NIFTY-500 index. For selling, stocks with available future contracts are allowed.'
     },
     {
-        header: 'Will you see my Stock Picks?',
-        content: 'We will look at your stock picks ONLY for evaluation purposes. We will NOT use your stock picks without explicit consent.'
+        header: 'Will you see my Stock Predictions?',
+        content: 'We will look at your stock predictions ONLY for evaluation purposes. We will NOT use your stock predictions without explicit consent.'
     },
     {
         header: 'Can I withdraw my entry from the contest?',
-        content: 'No. Your entry will automatically expire the following trading day. You must re-enter the contest everyday with fresh stock picks to be eligible for the next contest.'
+        content: 'No. Your predictions will automatically expire after the horizon. You must create new predictions at regular interval to be part of the contest.'
     },
     {
         header: 'Is there any submission deadline?',
-        content: 'The contest refreshes everyday and entries can be submitted between Market Open (9:30 AM) to Market Close (3:30PM). Each trading day is a new contest and participant must re-enter.'
+        content: 'The contest is an ongoing contest and predictions can be submitted between Market Open (9:30 AM) to Market Close (3:30PM).'
     },
     {
-        header: 'Can I submit multiple entries in the contest?',
-        content: 'No, you can only submit one entry.'
+        header: 'Can I submit multiple predictions in the contest?',
+        content: 'YES, you can submit upto 10 predictions each day.'
     },
     {
         header: 'Is there any entry fee for contest?',
@@ -45,15 +45,15 @@ export const faqs = [
     },
     {
         header: 'How long are the entries evaluated?',
-        content: 'The entries are evaluated for just 1 trading day. The profit over one trading period is used to select the winners.'
+        content: 'The entries are evaluated each day based on predictions ending on that day. The realized profit is used to select the winners.'
     },
     {
-        header: 'Do I have to re-enter in new daily contests?',
-        content: 'Yes. Your entry is NOT rolled into next contest.'
+        header: 'Do I have to submit predictions daily?',
+        content: 'No. You can submit a prediction anyday.'
     },
     {
         header: 'When are winners declared?',
-        content: 'Each contest runs for just 1 trading day. The winners are decided at the end of the 1 trading day.'
+        content: 'Winners are decided at the end of each trading day based on realized profit that day'
     },
     {
         header: 'What’s the fine print?',
@@ -64,18 +64,18 @@ export const faqs = [
 ];
 
 export const howItWorksContents = [
-    {image: createPortfolio, header: 'Submit Stock Picks', content: 'Select upto 10 stocks to Buy and Sell, and submit it to the contest. Entries are evaluated at the end of next trading day at market close.'},
-    {image: winPrize, header: 'Win Daily Prizes', content: 'The top 5 participants are awarded  10 Free trades worth brokerage coupon every day.'},
-    {image: updateEntry, header: 'New Contest Everyday', content: 'A new contest start every market open. Comeback and submit your stock picks.'}
+    {image: createPortfolio, header: 'Pick your stocks', content: 'Select upto 10 stocks to Buy or Sell'},
+    {image: winPrize, header: 'Set your prediction', content: 'Choose price-target/horizon for each stock prediction.'},
+    {image: updateEntry, header: 'Win prizes daily', content: 'Highest realized profit win cash prizes everyday'}
 ];
 
-export const prizeText = "The top 5 contest participants are awarded 10 Free Trades (brokerage coupon worth Rs. 200) on a daily basis wth our preferred brokerage. The prizes are disbursed at the end of each week.";
+export const prizeText = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";
 
 export const requirements = [
-    {header: 'Profitability', content: 'Your Contest entry must be profitable.'},
+    {header: 'Profitability', content: 'Net Profit/Loss on each day must be positive to win prizes.'},
     {header: 'Stock Universe', content: 'You can only buy stocks that are valid NIFTY 500 constituents.'},
     {header: 'Shortable Universe', content: 'You can only sell stocks that have valid futue contracts associated with it.'},
-    {header: 'Minimum Stocks', content: 'You must buy/sell at-least 5 stocks. Maximum is 10 stocks each side.'},
+    {header: 'Maximum Predictions', content: 'You can only give a maximum of 10 predictions each day'},
     
 ];
 

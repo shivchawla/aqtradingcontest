@@ -10,11 +10,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 const styles = theme => ({
     listText: {
         color: '#fff',
-        fontSize: '20px'
+        fontSize: '20px',
+        fontWeight: '300'
     },
     listTextSelected: {
         color: '#FFF382',
-        fontSize: '20px'
+        fontSize: '20px',
+        fontWeight: '300'
     }
   });
 

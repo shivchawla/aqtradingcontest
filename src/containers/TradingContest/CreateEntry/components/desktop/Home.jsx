@@ -64,8 +64,8 @@ class Home extends React.Component {
                                 style={{height: '40px', marginRight: '20px'}}
                             />
                             <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                                <PageHeader>Daily Trading Contest</PageHeader>
-                                <PageSubHeader>Pick the best stocks and win prizes everyday</PageSubHeader>
+                                <PageHeader>Stock Prediction Contest</PageHeader>
+                                <PageSubHeader>Pick your stocks, set your predictions and win prizes everyday</PageSubHeader>
                             </div>
                         </div>
                         <NavigationList 
@@ -75,7 +75,7 @@ class Home extends React.Component {
                         <div style={enterContestButtonContainer}>
                             <Button 
                                     style={{
-                                        backgroundColor: '#3B45B2', 
+                                        backgroundColor: '#009688', 
                                         color: '#fff', 
                                         width: '180px',
                                         //position: 'absolute',
@@ -270,13 +270,14 @@ const RightContainer = styled(Grid)`
 const PageHeader = styled.h1`
     font-size: 36px;
     color: #fff;
-    font-size: 500;
+    font-weight: 300;
+
 `;
 
 const PageSubHeader = styled.h5`
     font-size: 16px;
     color: #fff;
-    font-weight: 400;
+    font-weight: 300;
     margin-top: 5px;
 `;
 
