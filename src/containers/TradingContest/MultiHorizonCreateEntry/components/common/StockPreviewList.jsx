@@ -32,13 +32,14 @@ export default class StockPreviewList extends React.Component {
                         paddingRight: '3%'
                     }}
             >
-                    
-                <Grid item xs={12} style={{margin:'5px 0px'}}>
-                    <div style={{color:'#1763c6'}}>
-                        <h4>Predictions</h4>
-                    </div>
-                </Grid>
-
+                {
+                    !this.props.hideHeader &&
+                    <Grid item xs={12} style={{margin:'5px 0px'}}>
+                        <div style={{color:'#1763c6'}}>
+                            <h4>Predictions</h4>
+                        </div>
+                    </Grid>
+                }
                 {
                     positions.map((position, index) => {
                         return (

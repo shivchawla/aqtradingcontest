@@ -44,14 +44,19 @@ export default class CreateEntryPreviewScreen extends React.Component {
                         />
                     </Grid>
                 }
-                <Grid item xs={12}>
-                    <SectionHeader>
-                        Predicted on {this.props.selectedDate.format(dateFormat)}
-                    </SectionHeader>
-                </Grid>
-                <Grid item xs={12}>
-                    <StockPreviewList positions={startedPredictions} />
-                </Grid>
+                {
+                    startedPredictions.length > 0 &&
+                    <React.Fragment>
+                        <Grid item xs={12}>
+                            <SectionHeader>
+                                Predicted on {this.props.selectedDate.format(dateFormat)}
+                            </SectionHeader>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <StockPreviewList hideHeader={true} positions={startedPredictions} />
+                        </Grid>
+                    </React.Fragment>
+                }
 
                 <Grid item xs={12} style={{marginTop: '40px'}}>
                     <SectionHeader>Others</SectionHeader>
