@@ -157,8 +157,8 @@ export default class CreateEntryEditScreen extends React.Component {
                         }
                         {
                             positionsWithDuplicateHorizons.length === 0 &&
-                            positionsWithNewPredictions.length > 0
-                            && !checkPositionsEquality(positions, staticPositions) &&
+                            positionsWithNewPredictions.length > 0 &&
+                            // && !checkPositionsEquality(positions, staticPositions) &&
                             <Button 
                                     style={{...fabButtonStyle, ...submitButtonStyle}} 
                                     size='small' 

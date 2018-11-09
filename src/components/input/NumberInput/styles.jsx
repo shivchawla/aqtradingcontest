@@ -7,7 +7,7 @@ const baseInputStyle = {
     fontSize: 16,
     padding: '10px 12px',
     color: 'red',
-    width: '100px',
+    width: '60px',
     margin: '0 2px',
     fontWeight: 500
 }

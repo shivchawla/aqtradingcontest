@@ -105,6 +105,9 @@ class StockEditPredictionListItem extends React.Component {
         const sellButtonClass = type === 'sell' ? classes.sellButtonActive : classes.inActiveButton;
         const max = type === 'buy' ? getPercentageModifiedValue(50, lastPrice) : getPercentageModifiedValue(2, lastPrice, 'minus');
         const min = type === 'buy' ? getPercentageModifiedValue(2, lastPrice) : getPercentageModifiedValue(50, lastPrice, 'minus');
+        const numberInputBasePrice = type === 'buy' 
+            ? getPercentageModifiedValue(2, lastPrice) 
+            : getPercentageModifiedValue(2, lastPrice, 'minus')
 
         return (
             <Container 
@@ -161,7 +164,7 @@ class StockEditPredictionListItem extends React.Component {
                         max={max}
                         min={min}
                         disabled={locked}
-                        base={lastPrice}
+                        type={type}
                     />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'space-between'}}>

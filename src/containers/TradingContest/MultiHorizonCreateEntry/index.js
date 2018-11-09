@@ -480,9 +480,9 @@ class CreateEntry extends React.Component {
                 // Delete the position if all the predictions are deleted
                 if (selectedPosition.predictions.length === 0) {
                     clonedPositions.splice(selectedPositionIndex, 1);
+                    this.searchStockComponent.removeStock(symbol);
                 } else {
                     clonedPositions[selectedPositionIndex] = selectedPosition;
-
                 }
                 this.setState({positions: clonedPositions}, () => {
                     this.checkForDuplicateHorizon();

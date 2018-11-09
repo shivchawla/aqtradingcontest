@@ -41,7 +41,7 @@ class NumberInput extends React.Component {
         let value = Number(this.state.value);
         value = type === 'add' 
             ? value + this.stepSize 
-            : value - this.stepSize;
+            : value - this.stepSize < 0 ? 0 : value - this.stepSize;
         clearTimeout(timeout);
         this.setState({value});
         timeout = setTimeout(() => {
@@ -59,18 +59,24 @@ class NumberInput extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({value: nextProps.value});
+        if (this.state.value.length > 0) { // this is to ignore the 0 appended when all the integers are delete
+            this.setState({value: nextProps.value});
+        }
     }
 
+    getTextInputClass = value => {
+        const {max = 0, min = 0, classes, type = 'buy'} = this.props;
+        if ((type === 'buy' && value < min) || (type === 'sell' && value > max)) {
+            return classes.bootstrapInputNegative;
+        }
+
+        return classes.bootstrapInputPositive
+    } 
+
     renderInput = () => {
-        const {classes, disabled = false} = this.props;
+        const {disabled = false} = this.props;
         const actionIconStyle = {padding: '6px'};
-        const basePrice = _.get(this.props, 'base', 0);
-        const inputClass = this.state.value > basePrice
-            ?   classes.bootstrapInputPositive
-            :   this.state.value === basePrice
-                ?   classes.bootstrapInputNeutral
-                :   classes.bootstrapInputNegative;
+        const inputClass = this.getTextInputClass(this.state.value);
 
         return (
             <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
