@@ -9,10 +9,12 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 const styles = theme => ({
     listText: {
-        color: 'red'
+        color: '#fff',
+        fontSize: '20px'
     },
     listTextSelected: {
-        color: '#00418C'
+        color: '#FFF382',
+        fontSize: '20px'
     }
   });
 
@@ -53,11 +55,11 @@ class HomeListComponent extends React.Component {
                             </ListItemIcon> 
                             <ListItemText 
                                 primary={item.label}
-                                className={
-                                    this.state.selected === item.key
-                                    ? classes.listText 
-                                    : classes.listTextSelected
-                                }
+                                classes={{
+                                    primary: this.state.selected === item.key 
+                                        ? classes.listTextSelected
+                                        : classes.listText
+                                }}
                             />
                         </ListItem>
                     ))
@@ -71,22 +73,10 @@ export default withStyles(styles)(HomeListComponent);
 
 const ListIcon = ({selected}) => {
     const style = {
-        color: selected ? '#00418C' : '#747474',
+        color: selected ? '#FFF382' : '#fff',
         transition: 'all 0.2s ease-in-out'
     };
     const iconType = selected ? 'fiber_manual_record' : 'panorama_fish_eye';
 
     return <Icon style={style}>{iconType}</Icon>
 }
-
-const SListItem = styled(ListItem)`
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-`;
-
-const SIcon = styled(Icon)`
-    /* color: ${props => props.selected ? '#00418C' : '#747474'}; */
-    color: red;
-    transition: all 0.4s ease-in-out;
-`;

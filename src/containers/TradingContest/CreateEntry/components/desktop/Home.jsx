@@ -5,12 +5,11 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import {withStyles} from '@material-ui/core/styles';
 import NavigationList from './HomeListComponent';
-import Header from '../../../../Header';
 import Footer from '../../../../Footer';
 import {verticalBox, horizontalBox} from '../../../../../constants';
-import how_image from '../../../../../assets/how_image.svg';
-// import * as homeData from '../../constants/home';
 import * as homeData from '../../../constants/dailycontestconstants';
+import logo from '../../../../../assets/logo-advq-new.png';
+import blurredCircle from '../../../../../assets/blurred-circle.svg';
 
 class Home extends React.Component {
     constructor(props) {
@@ -28,15 +27,15 @@ class Home extends React.Component {
         const type = this.state.selected;
         switch(type) {
             case "how":
-                return {type: 'list', data: homeData.howItWorksContents};
+                return {type: 'list', data: homeData.howItWorksContents, header: 'How it works?'};
             case "prizes":
-                return {type: 'text', data: homeData.prizeText};
+                return {type: 'text', data: homeData.prizeText, header: 'Prizes'};
             case "requirements":
-                return {type: 'list', data: homeData.requirements};
+                return {type: 'list', data: homeData.requirements, header: 'Requirements'};
             case "scoring":
-                return {type: 'text', data: homeData.scoringText};
+                return {type: 'text', data: homeData.scoringText, header: 'Scoring'};
             case "faq":
-                return {type: 'list', data: homeData.faqs};
+                return {type: 'list', data: homeData.faqs, header: 'FAQ'};
             default:
                 return {type: 'list', data: homeData.howItWorksContents};
         }
@@ -50,27 +49,54 @@ class Home extends React.Component {
             <div className={classes.root}>
                 <Grid container>
                     <LeftContainer item xs={6}>
-                        <PageHeader>Daily Trading Contest</PageHeader>
-                        <PageSubHeader>Pick the best stocks and win prizes everyday</PageSubHeader>
+                        <img src={blurredCircle} style={firstBlurredCircle} />
+                        <img src={blurredCircle} style={secondBlurredCircle} />
+                        <img src={blurredCircle} style={thirdBlurredCircle} />
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'flex-start',
+                                    marginTop: '20px'
+                                }}
+                        >
+                            <img 
+                                src={logo} 
+                                style={{height: '40px', marginRight: '20px'}}
+                            />
+                            <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                                <PageHeader>Daily Trading Contest</PageHeader>
+                                <PageSubHeader>Pick the best stocks and win prizes everyday</PageSubHeader>
+                            </div>
+                        </div>
                         <NavigationList 
-                            style={{position: 'absolute', left: '20px', marginTop: '-5%'}}
+                            style={{top: '20%'}}
                             onChange={this.onChange}
                         />
-                        <Button 
-                                style={{
-                                    backgroundColor: '#3B45B2', 
-                                    color: '#fff', 
-                                    width: '180px',
-                                    position: 'absolute',
-                                    bottom: '100px'
-                                }}
-                                onClick={() => this.props.history.push('/dailycontest/mypicks')}
-                        >
-                            Enter Contest
-                            <Icon style={{color: '#fff'}}>chevron_right</Icon>
-                        </Button>
+                        <div style={enterContestButtonContainer}>
+                            <Button 
+                                    style={{
+                                        backgroundColor: '#3B45B2', 
+                                        color: '#fff', 
+                                        width: '180px',
+                                        position: 'absolute',
+                                        bottom: '100px'
+                                    }}
+                                    onClick={() => this.props.history.push('/dailycontest/mypicks')}
+                            >
+                                Enter Contest
+                                <Icon style={{color: '#fff'}}>chevron_right</Icon>
+                            </Button>
+                        </div>
                     </LeftContainer>
-                    <RightContainer item xs={6} style={{...verticalBox, justifyContent: 'flex-start', position: 'relative'}}>
+                    <RightContainer 
+                            item xs={6} 
+                            style={{
+                                ...verticalBox, 
+                                justifyContent: 'flex-start', 
+                                position: 'relative',
+                            }}
+                    >
+                        <RightContainerHeader>{content.header}</RightContainerHeader>
                         <ListComponent 
                             list={content.type === 'list' ? content.data : []}
                             type={content.type}
@@ -110,7 +136,16 @@ const ListComponent = ({type = 'list', list = [], text = ''}) => {
                                     minHeight: '110px'
                                 }}
                         >
-                            <Icon style={{marginRight: '5px', color: '#3B3B3B'}}>fiber_manual_record</Icon>
+                            <Icon 
+                                    style={{
+                                        marginRight: '5px', 
+                                        color: '#3B3B3B',
+                                        fontSize: '16px',
+                                        marginTop: '3px'
+                                    }}
+                            >
+                                fiber_manual_record
+                            </Icon>
                             <ListItem {...item} />
                         </div>
                     ))
@@ -143,7 +178,8 @@ const TextComponent = ({text}) => {
                     fontSize: '18px',
                     color: '#00418C',
                     fontWeight: 400,
-                    lineHeight: '28px'
+                    lineHeight: '28px',
+                    textAlign: 'start'
                 }}
         >
             {text}
@@ -161,12 +197,33 @@ const desktopStyles = {
     }
 }
 
-const SImg = styled.img `
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    width: 80px;
-`;
+const enterContestButtonContainer = {
+    ...horizontalBox,
+    width: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 0
+}
+
+const firstBlurredCircle = {
+    position: 'absolute',
+    height: '250px',
+    right: '-100px'
+};
+
+const secondBlurredCircle = {
+    height: '400px',
+    position: 'absolute',
+    bottom: '20px',
+    left: '-220px'
+};
+
+const thirdBlurredCircle = {
+    height: '200px',
+    position: 'absolute',
+    bottom: '-90px',
+    right: '-100px'
+};
 
 const ListItemHeader = styled.h3`
     font-weight: 500;
@@ -189,36 +246,43 @@ const LeftContainer = styled(Grid)`
     flex-direction: column;
     text-align: start;
     padding: 20px;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    background: linear-gradient(to bottom, #49AEFF, #045C8B);
+    position: relative;
 `;
 
 const RightContainer = styled(Grid)`
-    height: calc(100vh - 65px);
+    height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: #F9FAFF;
     padding: 20px;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     overflow: hidden;
     overflow-y: scroll;
 `;
 
 const PageHeader = styled.h1`
     font-size: 36px;
-    color: #00418C;
+    color: #fff;
     font-size: 500;
-    position: absolute;
-    top: 80px;
-    left: 20px;
 `;
 
 const PageSubHeader = styled.h5`
     font-size: 16px;
-    color: #666666;
+    color: #fff;
     font-weight: 400;
+    margin-top: 5px;
+`;
+
+const RightContainerHeader = styled.h3`
+    font-size: 30px;
+    color: #502196;
+    font-weight: 500;
+    text-align: start;
+    margin-top: 20px;
     position: absolute;
-    top: 140px;
-    left: 20px;
+    left: 10%;
 `;
