@@ -59,7 +59,6 @@ class StockPreviewListItem extends React.Component {
             totalPnl += item.avgPrice > 0 ? direction*(item.investment/item.avgPrice)*(item.lastPrice - item.avgPrice) : 0;
         });
 
-        var pnlColor = totalPnl > 0 ? metricColor.positive : totalPnl < 0 ? metricColor.negative : metricColor.neutral;
 
         totalPnlPct = `${((investment > 0 ? totalPnl/investment : 0.0)*100).toFixed(2)}%`;
         totalPnl = Utils.formatMoneyValueMaxTwoDecimals(totalPnl*1000);

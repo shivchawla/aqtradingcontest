@@ -48,7 +48,6 @@ class Home extends React.Component {
 
         return (
             <div className={classes.root}>
-                <Header />
                 <Grid container>
                     <LeftContainer item xs={6}>
                         <PageHeader>Daily Trading Contest</PageHeader>
@@ -72,7 +71,6 @@ class Home extends React.Component {
                         </Button>
                     </LeftContainer>
                     <RightContainer item xs={6} style={{...verticalBox, justifyContent: 'flex-start', position: 'relative'}}>
-                        <SImg src={how_image} />
                         <ListComponent 
                             list={content.type === 'list' ? content.data : []}
                             type={content.type}

@@ -14,13 +14,13 @@ import LoaderComponent from '../../../Misc/Loader';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import {isMarketOpen} from '../../../utils';
-import {checkPositionsEquality, getPositionsWithNewPredictions} from '../../utils';
+import {getPositionsWithNewPredictions} from '../../utils';
 
 export default class CreateEntryEditScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: 'started',
+            listView: 'active',
             anchorEl: null
         };
     }
