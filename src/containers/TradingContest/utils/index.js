@@ -78,7 +78,8 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
             return {
                 ...selectedPosition,
                 points: Math.abs(_.get(selectedPosition, 'points', 10)),
-                predictions: [getDefaultPrediction(selectedPosition)]
+                predictions: [getDefaultPrediction(selectedPosition)],
+                expanded: true
             };
         } else if (oldPositions[oldPositionIndex].predictions.filter(prediction => prediction.new === true).length === 0) {
             let predictions =  _.get(clonedOldPositions[oldPositionIndex], 'predictions', []);
@@ -87,7 +88,8 @@ export const processSelectedPosition = (oldPositions = [], selectedPositions = [
             return {
                 ...selectedPosition,
                 points: Math.abs(_.get(clonedOldPositions[oldPositionIndex], 'points', 10)),
-                predictions
+                predictions,
+                expanded: true
             }
         } else {
             return oldPositions[oldPositionIndex];
@@ -160,7 +162,7 @@ export const getMultiStockData = (stocks = []) => {
 }
 
 export const isMarketOpen = (currentTime = moment()) => {
-    const marketOpenTime = moment().hours(6).minutes(15);
+    const marketOpenTime = moment().hours(9).minutes(15);
     const marketCloseTime = moment().hours(15).minutes(30);
     if (currentTime.isSameOrAfter(marketOpenTime) && currentTime.isSameOrBefore(marketCloseTime)) {
         return {status: true};
