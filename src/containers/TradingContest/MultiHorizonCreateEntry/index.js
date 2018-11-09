@@ -225,6 +225,7 @@ class CreateEntry extends React.Component {
         this.setState({submissionLoading: true, todayDataLoaded: false});
         return createPredictions(allPredictions, shouldCreate)
         .then(response => {
+            this.searchStockComponent.clearNewStocks();
             return this.getDailyPredictionsOnDateChange();
         })
         .then(() => {
@@ -258,8 +259,12 @@ class CreateEntry extends React.Component {
             stalePositions: this.state.todayDataLoaded ? this.state.stalePositions : stalePositions,
             todayDataLoaded: this.state.todayDataLoaded === false ? true : this.state.todayDataLoaded,
             previewPositions: positions,
-            positions: this.state.todayDataLoaded ? this.state.positions : positions,
-            staticPositions: this.state.todayDataLoaded ? this.state.positions : positions,
+            positions: this.state.todayDataLoaded 
+                ? this.state.positions.map(position => ({...position, new: false}))
+                : positions,
+            staticPositions: this.state.todayDataLoaded 
+                ? this.state.positions.map(position => ({...position, new: false}))
+                : positions,
             noEntryFound: this.state.todayDataLoaded ? this.state.predictions.length === 0 : predictions.length === 0
         });
     }

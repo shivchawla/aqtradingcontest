@@ -523,6 +523,11 @@ export class SearchStocks extends React.Component {
         this.setState({stocks});
     }
 
+    clearNewStocks = () => {
+        console.log('clearNewStocks called');
+        this.setState({newStocks: []});
+    }
+
     getPredictionsCount = (symbol, positions = this.props.portfolioPositions) => {
         const selectedPosition = positions.filter(position => position.symbol === symbol)[0];
         if (selectedPosition !== undefined) {
