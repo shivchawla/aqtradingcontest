@@ -237,6 +237,7 @@ export class Utils{
 	}
 
 	static getAuthToken(){
+
 		this.loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']){
 			return this.loggedInUserinfo['token'];
@@ -345,6 +346,15 @@ export class Utils{
 			if(otherNumbers !== '' && otherNumbers !== '-')
 			    lastThree = ',' + lastThree;
 			return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
+		} else{
+			return value;
+		}
+	}
+
+	static formatInvestmentValue(value) {
+		if (value && typeof(value) == "number"){
+			return (value/100) > 1.0 ? `${(value/100).toFixed(2)}L` : 
+				value - Math.floor(value) > 0 ? `${value.toFixed(2)}K` : `${value}K`;
 		} else{
 			return value;
 		}
