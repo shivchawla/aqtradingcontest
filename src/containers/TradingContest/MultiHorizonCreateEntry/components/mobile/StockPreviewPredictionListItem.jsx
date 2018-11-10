@@ -126,80 +126,13 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 <Grid item xs={12} style={{...horizontalBox, alignItems: 'flex-start', justify:'space-between', justifyContent:'space-between', padding:'5px 10px'}}>
                     <MetricLabel>Chg. Investment</MetricLabel>
                     <div style={{...horizontalBox}}>
-                        <MetricText>{investment}K</MetricText>
+                        <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
                         <Icon>arrow_right_alt</Icon>
-                        <MetricText color={changedInvestmentColor}>{changedInvestment.toFixed(2)}K</MetricText>
+                        <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
                     </div>
                 </Grid>
 
-                
-                {/*<Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>
-                    <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
-                    <MetricLabel>Ending On</MetricLabel>
-                </Grid>
-
-                <MetricComponent label="Target Price" value={`₹${Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}`}/>
-
-                <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>
-                    <TypeTag 
-                        backgroundColor={typeBackgroundColor}
-                        color={typeColor}
-                        borderColor={borderColor}
-                    >
-                        {typeText}
-                    </TypeTag>
-
-                    {/*<MetricLabel>Direction</MetricLabel>
-
-                </Grid>
-
-                <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>
-                    <TypeTag
-                        backgroundColor={typeBackgroundColor}
-                        color={typeColor}
-                        borderColor={borderColor}
-                    >
-                        ACTIVE
-                    </TypeTag>
-
-                </Grid>
-
-                <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                    <MetricText>{investment}K</MetricText>
-                    <Icon>arrow_right_alt</Icon>
-                    <MetricText>{changedInvestment.toFixed(2)}K</MetricText>
-                </Grid>
-
-
-                <Grid item xs={4} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                    <MetricText>{investment}K</MetricText>
-                    <Icon>arrow_right_alt</Icon>
-                    <MetricText>{changedInvestment.toFixed(2)}K</MetricText>
-                </Grid>
-               
-                <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start', paddingLeft: '20px'}}>
-                    <MetricText></MetricText>
-                    <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
-                </Grid>
-                <Grid item xs={2}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
-                <Grid item xs={2}>
-                    <TypeTag 
-                        backgroundColor={typeBackgroundColor}
-                        color={typeColor}
-                        borderColor={borderColor}
-                    >
-                        {typeText}
-                    </TypeTag>
-                </Grid>
-                <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                    <MetricText>{investment}K</MetricText>
-                    <Icon>arrow_right_alt</Icon>
-                    <MetricText>{changedInvestment.toFixed(2)}K</MetricText>
-                </Grid>
-                <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
-                <Grid item xs={1}>
-                    <Icon style={{color: iconConfig.color}}>{iconConfig.type}</Icon>
-                </Grid>*/}
+            
             </Container>
         );
     }

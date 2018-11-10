@@ -59,8 +59,8 @@ export default class StockPreviewPredictionListItem extends React.Component {
             lastPrice = 0
         } = this.props.prediction;
         const typeBackgroundColor = '#fff';
-        const typeColor = type === 'buy' ? '#3EF79B' : '#FE6662';
-        const borderColor = type === 'buy' ? '#3EF79B' : '#FE6662'
+        const typeColor = type === 'buy' ? '#009688' : '#FE6662';
+        const borderColor = type === 'buy' ? '#009688' : '#FE6662'
         const typeText = type === 'buy' ? 'BUY' : 'SELL';
         const iconConfig = this.getIconConfig(targetAchieved, active);
         const directionUnit = type === 'buy' ? 1 : -1;
@@ -89,9 +89,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     </TypeTag>
                 </Grid>
                 <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                    <MetricText>{investment}K</MetricText>
+                    <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
                     <Icon>arrow_right_alt</Icon>
-                    <MetricText color={changedInvestmentColor}>{changedInvestment.toFixed(2)}K</MetricText>
+                    <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
                 </Grid>
                 <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
                 <Grid item xs={1}>
@@ -121,10 +121,10 @@ const TypeTag = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 400;
-    height: 30px;
-    width: 54px;
+    height: 20px;
+    width: 45px;
     color: ${props => props.color || '#fff'};
     padding: 4px 8px;
     border-radius: 4px;

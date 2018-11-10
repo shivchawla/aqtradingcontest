@@ -69,10 +69,10 @@ export default class WinnerListItem extends React.Component {
                     <SecondaryText style={{marginLeft:'5px', display:'flex', width: '100%', justifyContent:'space-between'}}>
                         <span style={labelStyle}>Investment: </span>
                         <div style={{marginRight:'15px'}}>
-                            <span>{investment.gross}K(</span>
-                            <span style={{fontSize:'16px', color: colorLongInvestment}}>{investment.long}K</span>
+                            <span>{Utils.formatInvestmentValue(investment.gross)}(</span>
+                            <span style={{fontSize:'16px', color: colorLongInvestment}}>{Utils.formatInvestmentValue(investment.long)}</span>
                             <span>/</span>
-                            <span style={{fontSize:'16px', color: colorShortInvestment}}>{investment.short}K</span>
+                            <span style={{fontSize:'16px', color: colorShortInvestment}}>{Utils.formatInvestmentValue(investment.short)}</span>
                             <span>)</span>
                         </div>
                     </SecondaryText>

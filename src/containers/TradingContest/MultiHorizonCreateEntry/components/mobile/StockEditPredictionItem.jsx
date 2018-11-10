@@ -11,6 +11,7 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import {buySellActionButtonsStyles} from '../../constants';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
 import {getPercentageModifiedValue} from '../../utils';
+import {Utils} from '../../../../../utils';
 
 const DateHelper = require('../../../../../utils/date');
 
@@ -154,7 +155,7 @@ class StockEditPredictionItem extends React.Component {
                             type='chevron_left'
                             onClick={() => !locked && this.onInvestmentChange('minus')}
                         />
-                        <Points>{investment}K</Points>
+                        <Points>{Utils.formatInvestmentValue(investment)}</Points>
                         <ActionIcon 
                             size={22} 
                             color={locked ? '#D0D0D0' : metricColor.positive} 

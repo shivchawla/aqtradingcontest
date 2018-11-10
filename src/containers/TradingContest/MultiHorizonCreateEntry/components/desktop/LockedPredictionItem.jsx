@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ActionIcon from '../../../Misc/ActionIcons';
+import {Utils} from '../../../../../utils';
 
 export default class LockedPredictionItem extends React.Component {
     render() {
@@ -21,7 +22,7 @@ export default class LockedPredictionItem extends React.Component {
                     <TextItem>{horizon} {horizon === 1 ? 'day' : 'days'}</TextItem>
                 </Grid>
                 <Grid item xs={2}>
-                    <TextItem>{investment}K</TextItem>
+                    <TextItem>{Utils.formatInvestmentValue(investment)}</TextItem>
                 </Grid>
                 <Grid item xs={3}>
                     <ActionIcon color='#4B4A4A' type='lock_open' />

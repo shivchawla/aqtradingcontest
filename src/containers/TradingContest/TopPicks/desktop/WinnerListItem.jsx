@@ -78,11 +78,11 @@ export default class WinnerListItem extends React.Component {
                 </Grid>
                 <Grid item xs={3}>
                     <SecondaryText>
-                        {investment.gross}K 
+                        {Utils.formatInvestmentValue(investment.gross)} 
                         <span> (</span>
-                        <span style={{fontSize:'16px', color: colorLongInvestment}}>{investment.long}K</span>
+                        <span style={{fontSize:'16px', color: colorLongInvestment}}>{Utils.formatInvestmentValue(investment.long)}</span>
                         <span>/</span>
-                        <span style={{fontSize:'16px', color: colorShortInvestment}}>{investment.short}K</span>
+                        <span style={{fontSize:'16px', color: colorShortInvestment}}>{Utils.formatInvestmentValue(investment.short)}</span>
                         <span>)</span>
                         {/*<p style={labelStyle}>Investment</p>*/}
                     </SecondaryText>

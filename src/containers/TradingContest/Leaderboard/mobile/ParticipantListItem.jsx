@@ -39,7 +39,7 @@ export default class ParticipantListItem extends React.Component {
                 </Grid>
                 <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-end'}}>
                     <Score>
-                        {cost[listType]}K
+                        {Utils.formatInvestmentValue(cost[listType])}
                     </Score>
                 </Grid>
                 <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>

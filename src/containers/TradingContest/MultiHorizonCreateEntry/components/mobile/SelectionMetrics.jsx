@@ -25,7 +25,7 @@ export default class SelectionMetrics extends React.Component {
                             <MetricItem money label='Profit' value={((pnlPositive || 0) * 1000)} />
                             <MetricItem money label='Loss' value={((pnlNegative || 0) * 1000)} />
                             <MetricItem label='Profit Factor' value={(profitFactor || 0).toFixed(2)} />
-                            <MetricItem label='Cost' value={`${(cost || 0)}K`} />
+                            <MetricItem label='Cost' value={Utils.formatInvestmentValue(cost || 0)} />
                             <MetricItem money label='Net PnL' coloured value={((pnl || 0) * 1000)} />
                             <MetricItem label='Net PnL %' coloured percentage value={((pnlPct || 0) * 100).toFixed(2)} />
                         </Grid>

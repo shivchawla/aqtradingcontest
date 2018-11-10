@@ -11,6 +11,7 @@ import {buySellActionButtonsStyles} from '../../constants';
 import ActionIcon from '../../../Misc/ActionIcons';
 import NumberInput from '../../../../../components/input/NumberInput';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
+import {Utils} from '../../../../../utils';
 
 const DateHelper = require('../../../../../utils/date');
 
@@ -171,7 +172,7 @@ class StockEditPredictionListItem extends React.Component {
                     />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'space-between'}}>
-                    <Points>{investment}K</Points>
+                    <Points>{Utils.formatInvestmentValue(investment)}</Points>
                     <div
                             style={{
                                 ...verticalBox, 

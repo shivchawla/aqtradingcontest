@@ -52,7 +52,7 @@ export default class ParticipantListItem extends React.Component {
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <SecondaryText color={primaryColor}>{cost[listType]}K</SecondaryText>
+                    <SecondaryText color={primaryColor}>{Utils.formatInvestmentValue(cost[listType])}</SecondaryText>
                 </Grid>
             </SGrid>
         ); 
