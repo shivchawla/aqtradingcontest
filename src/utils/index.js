@@ -254,7 +254,7 @@ export class Utils{
 		if (this.isLoggedIn()){
 			headersLocal['aimsquant-token'] = this.getAuthToken();
 		}
-		
+
 		return headersLocal;
 	}
 
@@ -353,8 +353,18 @@ export class Utils{
 
 	static formatInvestmentValue(value) {
 		if (value && typeof(value) == "number"){
-			return (value/100) > 1.0 ? `${(value/100).toFixed(2)}L` : 
-				value - Math.floor(value) > 0 ? `${value.toFixed(2)}K` : `${value}K`;
+			
+			var valueLac = value/100;
+			var valueCr = value/10000;
+			var roundVal = value - Math.floor(value) > 0; 
+			var roundLacs = valueLac - Math.floor(valueLac) > 0;
+			var roundCrs = valueCr - Math.floor(valueCr) > 0;
+
+			return valueLac > 1.0 ?  
+				valueCr > 1.0 ? 
+				(roundCrs > 0 ? `${(valueCr).toFixed(2)}Cr` : `${valueCr.toFixed(0)}Cr`) : 
+			 	(roundLacs ? `${valueLac.toFixed(2)}L` : `${valueLac.toFixed(0)}L`) : 
+				(roundVal ? `${value.toFixed(2)}K` : `${value.toFixed(0)}K`);
 		} else{
 			return value;
 		}
