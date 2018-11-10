@@ -116,10 +116,12 @@ class DisplayPredictions extends React.Component {
 			                	<React.Fragment>
 		                            {
 		                                pnlFound &&
-		                                <SelectionMetricsMini 
-		                                    {...getRequiredMetrics()}
-		                                    onClick={toggleEntryDetailBottomSheet}
-		                                />
+                                        <div style={{width:'95%', margin: '0 auto'}}>
+    		                                <SelectionMetricsMini 
+    		                                    {...getRequiredMetrics()}
+    		                                    onClick={toggleEntryDetailBottomSheet}
+    		                                />
+                                        </div>
 		                            }
 		                            <StockPreviewList positions={positions} />
 	                        	</React.Fragment>

@@ -10,9 +10,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import {withRouter} from 'react-router';
 import {SearchStocks} from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
-import CreateEntryLayoutMobile from './components/mobile/CreateEntryEditScreen';
-import CreateEntryEdit from './components/desktop/CreateEntryEditScreen';
-import CreateEntryPreview from './components/desktop/CreateEntryPreviewScreen';
+import CreateEntryEditMobile from './components/mobile/CreateEntryEditScreen';
+import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import {DailyContestCreateMeta} from '../metas';
@@ -569,8 +568,7 @@ class CreateEntry extends React.Component {
         const selectedDate = this.state.selectedDate.format(dateFormat);
         const shouldRenderEdit = currentDate === selectedDate;
 
-        // return shouldRenderEdit ? <CreateEntryEdit {...props} /> : <CreateEntryPreview {...props} />
-        return <CreateEntryEdit {...props} />;
+        return <CreateEntryEditDesktop {...props} />;
     }
 
     renderMobileLayout = (props) => {
@@ -579,7 +577,7 @@ class CreateEntry extends React.Component {
         return (
             <React.Fragment>
                 <DisplayPredictionsMobile {...props} />
-                <CreateEntryLayoutMobile {...props} />
+                <CreateEntryEditMobile {...props} />
             </React.Fragment>
         )
     }
@@ -632,7 +630,6 @@ class CreateEntry extends React.Component {
             selectedView: this.state.selectedView
         };
 
-        //<CreateEntryLayoutMobile {...props}/>
         return (
             <React.Fragment>
                 <Media 

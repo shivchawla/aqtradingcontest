@@ -46,8 +46,8 @@ class AqDesktopLayout extends React.Component {
     render() {
         const {loading} = this.props;
         const {activeSegment = 0} = this.state;
-        const selectedColor = '#AFB9FF';
-        const notSelectedColor = '#F2F4FF';
+        const selectedColor = '#1763c6';
+        const notSelectedColor = '#fff';
 
         return (
             <ContainerGrid container>
@@ -62,9 +62,9 @@ class AqDesktopLayout extends React.Component {
                                 container 
                                 justify='space-between' 
                                 alignItems='center'
-                                style={{width: '98%'}}
+                                style={{width: '100%'}}
                         >
-                            <Grid item xs={6}>
+                            <Grid item xs={7}>
                                 <Tabs 
                                         value={this.state.activeSegment} 
                                         onChange={this.handleTabChange}
@@ -76,8 +76,10 @@ class AqDesktopLayout extends React.Component {
                                             backgroundColor: activeSegment === 0 
                                                 ? selectedColor 
                                                 : notSelectedColor,
-                                            borderTopLeftRadius: '4px',
-                                            borderTopRightRadius: '4px'
+                                            color: activeSegment === 0 
+                                                ? notSelectedColor 
+                                                : selectedColor,
+                                            border:'1px solid #1763c6'
                                         }}
                                     />
                                     <Tab 
@@ -86,8 +88,11 @@ class AqDesktopLayout extends React.Component {
                                             backgroundColor: activeSegment === 1
                                                 ? selectedColor 
                                                 : notSelectedColor,
-                                            borderTopLeftRadius: '4px',
-                                            borderTopRightRadius: '4px'
+                                            color: activeSegment === 1
+                                                ? notSelectedColor 
+                                                : selectedColor,
+                                            border:'1px solid #1763c6'
+                                            
                                         }}
                                     />
                                     <Tab 
@@ -96,8 +101,10 @@ class AqDesktopLayout extends React.Component {
                                             backgroundColor: activeSegment === 2
                                                 ? selectedColor 
                                                 : notSelectedColor,
-                                            borderTopLeftRadius: '4px',
-                                            borderTopRightRadius: '4px'
+                                            color: activeSegment === 2 
+                                                ? notSelectedColor 
+                                                : selectedColor,
+                                            border:'1px solid #1763c6'
                                         }}
                                     />
                                 </Tabs>
@@ -105,7 +112,7 @@ class AqDesktopLayout extends React.Component {
                             <Grid item xs={3}>
                                 <DateComponent 
                                     selectedDate={this.props.selectedDate}
-                                    color='#737373'
+                                    color='#1763c6'
                                     onDateChange={this.props.handleDateChange}
                                 />
                             </Grid>
@@ -138,7 +145,7 @@ const ContainerGrid = styled(Grid)`
     padding-top: 10px;
     margin-bottom: 20px;
     padding-left: 20px;
-    background-color: #F8F6FF;
+    background-color: #fff;
 `;
 
 const LeftContainer = styled(Grid)`

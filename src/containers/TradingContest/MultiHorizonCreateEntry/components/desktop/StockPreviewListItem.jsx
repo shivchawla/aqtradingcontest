@@ -71,7 +71,7 @@ class StockPreviewListItem extends React.Component {
             >
                 <ExpansionPanelSummary 
                         expandIcon={<ExpandMoreIcon />}
-                        style={{paddingLeft: '5px'}}
+                        //style={{paddingLeft: '5px'}}
                 >
                     <Grid container alignItems="center" justify="space-between">
                         <Grid 

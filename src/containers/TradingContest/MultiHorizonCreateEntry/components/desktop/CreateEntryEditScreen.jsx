@@ -223,9 +223,10 @@ export default class CreateEntryEditScreen extends React.Component {
                                     style={{
                                         ...horizontalBox, 
                                         justifyContent: 'space-between',
-                                        width: '100%',
+                                        width: '98%',
                                         marginBottom: '20px',
-                                        paddingLeft: '2.5%'
+                                        backgroundColor:'#fff',
+                                        padding: '0 10px'
                                     }}
                             >
                                 <PredictionTypeMenu 
@@ -238,14 +239,16 @@ export default class CreateEntryEditScreen extends React.Component {
                             </div>
                             {
                                 pnlFound && positions.length > 0 &&
-                                <SelectionMetricsMini 
-                                    {...getRequiredMetrics()}
-                                    onClick={toggleEntryDetailBottomSheet}
-                                />
+                                <div style={{padding:'0 10px 20px 10px'}}>
+                                    <SelectionMetricsMini 
+                                        {...getRequiredMetrics()}
+                                        onClick={toggleEntryDetailBottomSheet}
+                                    />
+                                </div>
                             }
                             {
                                 positions.length > 0 &&
-                                <StockPreviewList positions={positions} />
+                                    <StockPreviewList positions={positions} />
                             }
                             {
                                 this.props.positions.length > 0 && positions.length === 0 &&
@@ -288,7 +291,7 @@ export default class CreateEntryEditScreen extends React.Component {
         return (
             (positions === 0 && activePredictions.length === 0)
             ?   this.renderEmptySelections()
-            :   <Grid container justify="space-between">
+            :   <Grid container justify="space-between" style={{backgroundColor:'#fff'}}>
                     {this.renderPredictedTodayStockList()}
                     {this.renderOtherStocksList()}
                 </Grid>
@@ -317,6 +320,7 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
             break;
     }
 
+    //2196F3
     return (
         <div>
             <Button
@@ -324,10 +328,10 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
                 aria-haspopup="true"
                 onClick={onClick}
                 variant='outlined'
-                style={{fontSize: '12px'}}
+                style={{fontSize: '14px', color:'#1763c6', border:'1px solid #1763c6', transform:'scale(0.8, 0.8)', marginLeft:'-15px'}}
             >
                 {buttonText}
-                <Icon style={{color: '#444'}}>chevron_right</Icon>
+                <Icon style={{color: '#1763c6'}}>chevron_right</Icon>
             </Button>
             <Menu
                     id="simple-menu"
