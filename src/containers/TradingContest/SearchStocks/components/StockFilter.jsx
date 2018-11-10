@@ -65,7 +65,7 @@ export default class StockFilter extends React.Component {
                 {
                     data.map((sector, index) => {
                         return (
-                            <ExpansionPanel>
+                            <ExpansionPanel CollapseProps={{mountOnEnter: true }}>
                                 <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                                     <Grid 
                                             item xs={12} 

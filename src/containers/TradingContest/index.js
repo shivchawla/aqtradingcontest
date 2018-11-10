@@ -215,6 +215,7 @@ class TradingContest extends React.Component {
             <div className={classes.root}>
                 <Header />
                 <AqLayoutDesktop
+                        selectedDate={this.state.selectedDate}
                         handleDateChange={this.updateDate}
                         handleTabChange={this.handleChange}
                         header={this.getDesktopHeader()}

@@ -73,7 +73,7 @@ class StockPreviewListItem extends React.Component {
                         expandIcon={<ExpandMoreIcon />}
                         style={{paddingLeft: '5px'}}
                 >
-                    <Grid container alignItems="center">
+                    <Grid container alignItems="center" justify="space-between">
                         <Grid 
                                 item xs={4} 
                                 style={{
@@ -92,7 +92,7 @@ class StockPreviewListItem extends React.Component {
                                 changePct={chgPct}
                             />
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid item xs={3}>
                             <PnlComponent 
                                 totalPnl={totalPnl}
                                 pnlPct={totalPnlPct}
@@ -134,7 +134,7 @@ const ChangeComponent = ({lastPrice, change, changePct}) => {
             <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
                 <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
                 <ChangeDivider>|</ChangeDivider>
-                <Change color={changeColor}>₹{change} ({formattedChangePct}%)</Change>
+                <Change color={changeColor}>₹{change.toFixed(2)} ({formattedChangePct}%)</Change>
             </div>
             <LastPriceLabel>Last Price</LastPriceLabel>
         </div>
@@ -155,7 +155,7 @@ const PnlComponent = ({totalPnl, pnlPct}) => {
                 <ChangeDivider>|</ChangeDivider>
                 <Change color={pnlColor}>({pnlPct})</Change>
             </div>
-            <LastPriceLabel>PnL Metrics</LastPriceLabel>
+            <LastPriceLabel>Profit/Loss</LastPriceLabel>
         </div>
     );
 }

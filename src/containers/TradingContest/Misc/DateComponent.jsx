@@ -15,7 +15,7 @@ export default class DateComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: props.selectedDate || moment(DateHelper.nextNonHolidayWeekday(null, true))
+            selectedDate: props.selectedDate || moment(DateHelper.previousNonHolidayWeekday(moment().add(1, 'days').toDate()))
         }
     }
 

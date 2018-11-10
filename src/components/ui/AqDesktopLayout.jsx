@@ -77,7 +77,7 @@ class AqDesktopLayout extends React.Component {
                             </Grid>
                             <Grid item xs={3}>
                                 <DateComponent 
-                                    selectedDate={this.props.selectedDate || moment()}
+                                    selectedDate={this.props.selectedDate}
                                     color='#737373'
                                     onDateChange={this.props.handleDateChange}
                                 />
