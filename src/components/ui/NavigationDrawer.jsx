@@ -202,6 +202,6 @@ const menuCategories = [
         name: "Home", url:'/home', href:true, icon:'home_outline'
     },
     {
-        name: "Watchlist", url:'/watchlist', href:true, icon:'visibility'
+        name: "Watchlist", url:'/dailycontest/watchlist', href:true, icon:'visibility'
     }
 ];

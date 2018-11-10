@@ -186,20 +186,23 @@ class WatchList extends React.Component {
                                 />
                             </Grid>
                         }
-                        <Grid item xs={3} style={{...horizontalBox, marginTop: '10px'}}>
-                            <ActionIcon 
-                                type='search' 
-                                color={primaryColor}
-                                style={{fontSize: '24px'}}
-                                onClick={this.toggleSearchMode}
-                            />
-                            <ActionIcon 
-                                type={this.state.watchlistEditMode ? 'lock' : 'edit'} 
-                                color={primaryColor}
-                                style={{fontSize: '24px'}}
-                                onClick={this.toggleEditWatclistMode}
-                            />
-                        </Grid>
+                        {
+                            this.props.tickers.length > 0 &&
+                            <Grid item xs={3} style={{...horizontalBox, marginTop: '10px'}}>
+                                <ActionIcon 
+                                    type='search' 
+                                    color={primaryColor}
+                                    style={{fontSize: '24px'}}
+                                    onClick={this.toggleSearchMode}
+                                />
+                                <ActionIcon 
+                                    type={this.state.watchlistEditMode ? 'lock' : 'edit'} 
+                                    color={primaryColor}
+                                    style={{fontSize: '24px'}}
+                                    onClick={this.toggleEditWatclistMode}
+                                />
+                            </Grid>
+                        }
                     </Grid>
                 </Grid>
                 {

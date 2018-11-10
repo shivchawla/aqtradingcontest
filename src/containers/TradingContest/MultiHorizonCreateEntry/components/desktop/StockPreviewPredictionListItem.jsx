@@ -5,7 +5,7 @@ import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {Utils} from '../../../../../utils';
-import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
+import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
 
 const readableDateFormat = "Do MMM 'YY";
 const dateFormat = 'YYYY-MM-DD';
@@ -31,8 +31,8 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 };
             } else {
                 return {
-                    type: 'check_circle',
-                    color: metricColor.neutral
+                    type: 'loop',
+                    color: primaryColor
                 };
             }
         } else {
