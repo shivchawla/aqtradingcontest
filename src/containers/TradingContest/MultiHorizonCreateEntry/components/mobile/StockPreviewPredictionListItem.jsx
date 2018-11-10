@@ -26,18 +26,18 @@ export default class StockPreviewPredictionListItem extends React.Component {
         if (active) {
             if (targetAchieved) {
                 return {
-                    type: 'thumb_up_alt',
+                    type: 'HIT',
                     color: '#3EF79B'
                 };
             } else {
                 return {
-                    type: 'check_circle',
+                    type: 'ACTIVE',
                     color: metricColor.neutral
                 };
             }
         } else {
             return {
-                type: 'thumb_down_alt',
+                type: 'MISS',
                 color: '#FE6662'
             }
         }
@@ -116,10 +116,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     <MetricLabel>Status</MetricLabel>
                     <TypeTag 
                         backgroundColor={typeBackgroundColor}
-                        color={typeColor}
-                        borderColor={borderColor}
+                        color={iconConfig.color}
+                        borderColor={iconConfig.color}
                     >
-                        {typeText}
+                        {iconConfig.type}
                     </TypeTag>
                 </Grid>
 
