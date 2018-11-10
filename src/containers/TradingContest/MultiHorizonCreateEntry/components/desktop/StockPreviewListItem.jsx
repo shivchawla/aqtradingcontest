@@ -162,7 +162,7 @@ const PnlComponent = ({totalPnl, pnlPct}) => {
 
 const nameStyle = {
     ...nameEllipsisStyle, 
-    width: '250px', 
+    width: '200px', 
     color: '#464646', 
     textAlign: 'start', 
     marginTop:'7px',

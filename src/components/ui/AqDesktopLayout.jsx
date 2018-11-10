@@ -45,13 +45,13 @@ class AqDesktopLayout extends React.Component {
 
     render() {
         const {loading} = this.props;
+        const {activeSegment = 0} = this.state;
+        const selectedColor = '#AFB9FF';
+        const notSelectedColor = '#F2F4FF';
 
         return (
             <ContainerGrid container>
                 <LeftContainer item xs={9} style={{marginTop: '20px'}}>
-                    {/* <AbsoluteContainer top='-35px'>
-                        <MultiSegmentControl centered labels={['Daily', 'Weekly']} />
-                    </AbsoluteContainer> */}
                     <AbsoluteContainer 
                             style={{
                                 top: '10px',
@@ -70,9 +70,36 @@ class AqDesktopLayout extends React.Component {
                                         onChange={this.handleTabChange}
                                         indicatorColor="primary"
                                 >
-                                    <Tab label="My Picks" />
-                                    <Tab label="Top Picks" />
-                                    <Tab label="Leaderboard" />
+                                    <Tab 
+                                        label="My Picks" 
+                                        style={{
+                                            backgroundColor: activeSegment === 0 
+                                                ? selectedColor 
+                                                : notSelectedColor,
+                                            borderTopLeftRadius: '4px',
+                                            borderTopRightRadius: '4px'
+                                        }}
+                                    />
+                                    <Tab 
+                                        label="Top Picks" 
+                                        style={{
+                                            backgroundColor: activeSegment === 1
+                                                ? selectedColor 
+                                                : notSelectedColor,
+                                            borderTopLeftRadius: '4px',
+                                            borderTopRightRadius: '4px'
+                                        }}
+                                    />
+                                    <Tab 
+                                        label="Leaderboard" 
+                                        style={{
+                                            backgroundColor: activeSegment === 2
+                                                ? selectedColor 
+                                                : notSelectedColor,
+                                            borderTopLeftRadius: '4px',
+                                            borderTopRightRadius: '4px'
+                                        }}
+                                    />
                                 </Tabs>
                             </Grid>
                             <Grid item xs={3}>
@@ -111,6 +138,7 @@ const ContainerGrid = styled(Grid)`
     padding-top: 10px;
     margin-bottom: 20px;
     padding-left: 20px;
+    background-color: #F8F6FF;
 `;
 
 const LeftContainer = styled(Grid)`
@@ -122,7 +150,8 @@ const LeftContainer = styled(Grid)`
     position: relative;
     background-color: #fff;
     border-color: #F1F1F1;
-    box-shadow: 0 4px 13px #DEE3FF;
+    border-radius: 4px;
+    /* box-shadow: 0 4px 13px #DEE3FF; */
 `;
 
 const AbsoluteContainer = styled.div`

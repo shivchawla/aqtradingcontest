@@ -224,7 +224,8 @@ export default class CreateEntryEditScreen extends React.Component {
                                         ...horizontalBox, 
                                         justifyContent: 'space-between',
                                         width: '100%',
-                                        marginBottom: '20px'
+                                        marginBottom: '20px',
+                                        paddingLeft: '2.5%'
                                     }}
                             >
                                 <PredictionTypeMenu 
@@ -322,6 +323,8 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
                 aria-owns={anchorEl ? 'simple-menu' : undefined}
                 aria-haspopup="true"
                 onClick={onClick}
+                variant='outlined'
+                style={{fontSize: '12px'}}
             >
                 {buttonText}
                 <Icon style={{color: '#444'}}>chevron_right</Icon>
