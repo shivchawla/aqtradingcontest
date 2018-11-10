@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
@@ -15,6 +16,8 @@ import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import {isMarketOpen} from '../../../utils';
 import {getPositionsWithNewPredictions} from '../../utils';
+
+const dateFormat = 'YYYY-MM-DD';
 
 export default class CreateEntryEditScreen extends React.Component {
     constructor(props) {
@@ -95,6 +98,9 @@ export default class CreateEntryEditScreen extends React.Component {
         } = this.props;
         const allPositionsExpanded = this.props.checkIfAllExpanded();
         const positionsWithNewPredictions = getPositionsWithNewPredictions(this.props.positions);
+        const currentDate = moment().format(dateFormat);
+        const selectedDate = this.props.selectedDate.format(dateFormat);
+        const isToday = _.isEqual(currentDate, selectedDate);
 
         return (
             <React.Fragment>
@@ -127,7 +133,7 @@ export default class CreateEntryEditScreen extends React.Component {
                     }
                 </Grid>
                 {
-                    marketOpen.status && 
+                    isToday && marketOpen.status && 
                     <Grid item xs={4} 
                             style={{
                                 ...fabContainerStyle,

@@ -569,7 +569,8 @@ class CreateEntry extends React.Component {
         const selectedDate = this.state.selectedDate.format(dateFormat);
         const shouldRenderEdit = currentDate === selectedDate;
 
-        return shouldRenderEdit ? <CreateEntryEdit {...props} /> : <CreateEntryPreview {...props} />
+        // return shouldRenderEdit ? <CreateEntryEdit {...props} /> : <CreateEntryPreview {...props} />
+        return <CreateEntryEdit {...props} />;
     }
 
     renderMobileLayout = (props) => {
