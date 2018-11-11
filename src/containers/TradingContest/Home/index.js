@@ -13,6 +13,7 @@ import {DailyContestHomeMeta} from '../metas';
 import {howItWorksContents, prizeText, requirements, scoringText, faqs} from '../constants/dailycontestconstants';
 import AqLayout from '../../../components/ui/AqLayout';
 import './home.css';
+import TradingContestBgImg from '../../../assets/trading-contest-bg-2.svg';
 
 export default class ContestHome extends React.Component {
     constructor(props) {
@@ -34,6 +35,7 @@ export default class ContestHome extends React.Component {
         const containerStyle = {
             backgroundColor: primaryColor,
             height: '180px',
+            //backgroundImage: `url(${TradingContestBgImg})`
         };
 
         return (
@@ -49,7 +51,7 @@ export default class ContestHome extends React.Component {
                                     marginTop:'5px'
                                 }}
                         >
-                            Pick the best stocks and win prizes everyday 
+                            Pick your stock predictions and win prizes everyday
                         </h3>
   
                         <SButton 
@@ -183,7 +185,7 @@ export default class ContestHome extends React.Component {
             <AqLayout
                 loading={this.state.loading}
                 theme='dark'
-                pageTitle='Daily Stock Picks'
+                pageTitle='Stock Prediction Contest'
                 navbarStyle={{
                     backgroundColor: '#00b79c'
                 }}

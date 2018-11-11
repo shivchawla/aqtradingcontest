@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-09-11 20:06:27
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-11-09 18:33:19
+* @Last Modified time: 2018-11-11 19:18:01
 */
 
 import React, {Fragment} from 'react'
@@ -65,8 +65,8 @@ export const faqs = [
 
 export const howItWorksContents = [
     {image: createPortfolio, header: 'Pick your stocks', content: 'Select upto 10 stocks to Buy or Sell'},
-    {image: winPrize, header: 'Set your prediction', content: 'Choose price-target/horizon for each stock prediction.'},
-    {image: updateEntry, header: 'Win prizes daily', content: 'Highest realized profit win cash prizes everyday'}
+    {image: updateEntry, header: 'Set your prediction', content: 'Choose price-target/horizon for each stock prediction.'},
+    {image: winPrize, header: 'Win prizes daily', content: 'Highest realized profit win cash prizes everyday'}
 ];
 
 export const prizeText = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";

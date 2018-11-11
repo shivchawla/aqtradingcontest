@@ -10,6 +10,7 @@ import {verticalBox, horizontalBox} from '../../../../../constants';
 import * as homeData from '../../../constants/dailycontestconstants';
 import logo from '../../../../../assets/logo-advq-new.png';
 import blurredCircle from '../../../../../assets/blurred-circle.svg';
+import TradingContestBgImg from '../../../../../assets/trading-contest-bg-2.svg';
 
 class Home extends React.Component {
     constructor(props) {
@@ -49,9 +50,9 @@ class Home extends React.Component {
             <div className={classes.root}>
                 <Grid container>
                     <LeftContainer item xs={6}>
-                        <img src={blurredCircle} style={firstBlurredCircle} />
+                        {/*<img src={blurredCircle} style={firstBlurredCircle} />
                         <img src={blurredCircle} style={secondBlurredCircle} />
-                        <img src={blurredCircle} style={thirdBlurredCircle} />
+                        <img src={blurredCircle} style={thirdBlurredCircle} />*/}
                         <div 
                                 style={{
                                     ...horizontalBox, 
@@ -61,7 +62,8 @@ class Home extends React.Component {
                         >
                             <img 
                                 src={logo} 
-                                style={{height: '40px', marginRight: '20px'}}
+                                style={{height: '40px', marginRight: '20px', cursor:'pointer'}}
+                                onClick={() => this.props.history.push('/home')}
                             />
                             <div style={{...verticalBox, alignItems: 'flex-start'}}>
                                 <PageHeader>Stock Prediction Contest</PageHeader>
@@ -75,11 +77,9 @@ class Home extends React.Component {
                         <div style={enterContestButtonContainer}>
                             <Button 
                                     style={{
-                                        backgroundColor: '#009688', 
+                                        backgroundColor: '#f44336', 
                                         color: '#fff', 
                                         width: '180px',
-                                        //position: 'absolute',
-                                        //bottom: '100px'
                                     }}
                                     onClick={() => this.props.history.push('/dailycontest/mypicks')}
                             >
@@ -251,6 +251,7 @@ const LeftContainer = styled(Grid)`
     justify-content: flex-start;
     align-items: flex-start;
     background: linear-gradient(to bottom, #49AEFF, #045C8B);
+    background-image: url(${TradingContestBgImg});
     position: relative;
 `;
 
