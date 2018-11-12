@@ -3,7 +3,7 @@ import Media from 'react-media';
 import Route from 'react-router/Route';
 import Redirect from 'react-router/Redirect';
 import Notifications from 'react-notify-toast';
-import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider'
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
@@ -38,7 +38,12 @@ class App extends Component {
                                         }
                                         component={TradingContest} 
                                     /> 
-                                    <Redirect push to='/404' />
+                                    <Route 
+                                        render={() => {
+                                            window.location.href = '/404'
+                                        }}
+                                    />
+                                    {/* <Redirect push to='/404' /> */}
                                     {/* <Route component={PageNotFound} /> */}
                                 </Switch>
                             );
@@ -60,7 +65,12 @@ class App extends Component {
                                         }
                                         component={TradingContest} 
                                     /> 
-                                    <Redirect push to='/404' />
+                                    <Route 
+                                        render={() => {
+                                            window.location.href = '/404'
+                                        }}
+                                    />
+                                    {/* <Redirect push to='/404' /> */}
                                     {/* <Route path='/dailycontest' component={TradingContest} />   */}
                                     {/* <Route route='/404' component={PageNotFound} /> */}
                                     {/* <Route component={UnderDevelopment} /> */}

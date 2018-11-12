@@ -188,7 +188,12 @@ class TradingContest extends React.Component {
                                 :   <Redirect push to='/login'/>
                             }
                         />
-                        <Redirect to='/404'/>
+                        <Route 
+                            render={() => {
+                                window.location.href = '/404'
+                            }}
+                        />
+                        {/* <Redirect to='/404'/> */}
                     </Switch>
                 </Grid>
             </AqLayout>
@@ -260,7 +265,12 @@ class TradingContest extends React.Component {
                                 : <Redirect />
                             }
                         />
-                        <Redirect to='/404'/>
+                        <Route 
+                            render={() => {
+                                window.location.href = '/404'
+                            }}
+                        />
+                        {/* <Redirect to='/404'/> */}
                         {/* <Route component={PageNotFound} /> */}
                     </Switch>
                 </AqLayoutDesktop>
