@@ -1,13 +1,15 @@
 import React from 'react';
 import _ from 'lodash';
+import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import MenuIcon from '@material-ui/icons/Menu';
 import {withStyles} from '@material-ui/core/styles';
-import {primaryColor} from '../../constants';
+import {primaryColor, metricColor} from '../../constants';
 import {NavigationDrawer} from './NavigationDrawer';
+import {isMarketOpen} from '../../containers/TradingContest/utils';
 
 const styles = {
     root: {
@@ -71,3 +73,13 @@ class AqLayout extends React.Component {
 }
 
 export default withStyles(styles)(AqLayout);
+
+const MartketOpenTag = styled.div`
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: ${props => props.backgroundColor || primaryColor};
+    color: #fff;
+    width: 80px;
+    margin: 0 auto;
+`;

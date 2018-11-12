@@ -20,7 +20,8 @@ import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
 import Header from '../Header';
-import {primaryColor} from '../../constants';
+import {primaryColor, verticalBox, metricColor} from '../../constants';
+import {isMarketOpen}  from './utils';
 import {Utils} from '../../utils';
 const DateHelper = require('../../utils/date');
 
@@ -141,12 +142,27 @@ class TradingContest extends React.Component {
                                 <STab label="LEADERBOARD"/>
                         </STabs>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
                         <DateComponent 
                             selectedDate={this.state.selectedDate}
                             color='grey'
                             onDateChange={this.updateDate}
                         />
+                        {
+                            !isMarketOpen().status &&
+                            <MartketOpenTag 
+                                    backgroundColor={isMarketOpen().status 
+                                        ? metricColor.positive 
+                                        : '#fc4c55'
+                                    }
+                            >   
+                                {
+                                    isMarketOpen().status
+                                        ? 'Market Open'
+                                        : 'Market Closed'
+                                }
+                            </MartketOpenTag>
+                        }
                     </Grid>
                     <Switch>
                         <Route 
@@ -312,4 +328,14 @@ const desktopStyles = {
     content: {
         marginTop: 100
     }
-}
+};
+
+const MartketOpenTag = styled.div`
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: ${props => props.backgroundColor || primaryColor};
+    color: #fff;
+    width: 80px;
+    margin: 0 auto;
+`;

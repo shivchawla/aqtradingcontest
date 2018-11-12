@@ -7,7 +7,8 @@ import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
 import DateComponent from '../../containers/TradingContest/Misc/DateComponent';
-import MultiSegmentControl from '../../components/ui/MultiSegmentedControl';
+import {metricColor, primaryColor} from '../../constants';
+import {isMarketOpen} from '../../containers/TradingContest/utils';
 
 class AqDesktopLayout extends React.Component {
     constructor(props) {
@@ -126,6 +127,18 @@ class AqDesktopLayout extends React.Component {
                                 marginBottom: '100px'
                             }}
                     >
+                        <MartketOpenTag 
+                                backgroundColor={isMarketOpen().status 
+                                    ? metricColor.positive 
+                                    : '#fc4c55'
+                                }
+                        >   
+                            {
+                                isMarketOpen().status
+                                    ? 'Market Open'
+                                    : 'Market Closed'
+                            }
+                        </MartketOpenTag>
                         {this.props.children}
                     </AbsoluteContainer>
                 </LeftContainer>
@@ -165,4 +178,14 @@ const AbsoluteContainer = styled.div`
     position: absolute;
     width: 100%;
     top: ${props => props.top || '0px'}
+`;
+
+const MartketOpenTag = styled.div`
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: ${props => props.backgroundColor || primaryColor};
+    color: #fff;
+    width: 80px;
+    margin: 0 auto;
 `;
