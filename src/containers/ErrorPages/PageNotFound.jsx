@@ -10,7 +10,7 @@ export default class PageNotFound extends React.Component {
             <SGrid container>
                 <SGridCol>
                     <ContentText style={{marginBottom: '50px'}}>404. <br></br>The Page you are looking for is not available</ContentText>
-                    <Link to='/dailycontest/home'>Daily Contest</Link>
+                    <Link to='/dailycontest/home'>Stock Prediction Contest</Link>
                 </SGridCol>
             </SGrid>
         );
