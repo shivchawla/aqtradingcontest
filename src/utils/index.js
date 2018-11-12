@@ -228,7 +228,6 @@ export class Utils{
 	}
 
 	static isLoggedIn() {
-		return true;
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']) {
 			return true;
 		}else{
