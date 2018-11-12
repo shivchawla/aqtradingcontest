@@ -74,7 +74,7 @@ export default withStyles(styles)(withRouter(Header));
 
 const HeaderLinks = ({menuOpenStatus = false, onClick}) => {
     const urls = [
-        {name: 'Daily Contest', url: '/dailycontest/home'},
+        {name: 'Contest', url: '/dailycontest/home'},
         {name: 'Stock Research', url: '/stockresearch'},
     ];
     return (

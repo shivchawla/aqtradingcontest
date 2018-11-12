@@ -37,7 +37,7 @@ class AqLayout extends React.Component {
 
     render() {
         const {
-            pageTitle = 'Stock Pick Contest', 
+            pageTitle = 'Stock Prediction Contest', 
             classes
         } = this.props;
 

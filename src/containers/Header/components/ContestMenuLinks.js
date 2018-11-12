@@ -36,7 +36,7 @@ export default class ContestMenuLinks extends React.Component {
         const {open} = this.state;
         const urls = [
             {name: 'Investment Idea', url: '/contest'},
-            {name: 'Daily Contest', url: '/dailycontest'},
+            {name: 'Stock Prediction Contest', url: '/dailycontest'},
         ];
 
         return (
