@@ -200,7 +200,7 @@ export class Utils{
 		this.localStorageSaveObject('adviceFilter', {});
 		this.localStorageSave('selectedPage', 1);
 		this.localStorageSave('selectedTab', 'all');
-		this.localStorageSave('redirectToUrlFromLogin', '/contest');
+		this.localStorageSave('redirectToUrlFromLogin', '/dailycontest/home');
 		this.localStorageSave('selectedAdviceId', null);
 		this.localStorageSave('contestId', null);
 		this.localStorageSave('contestSelectedPage', 0);
@@ -228,7 +228,6 @@ export class Utils{
 	}
 
 	static isLoggedIn() {
-		return true;
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']) {
 			return true;
 		}else{
