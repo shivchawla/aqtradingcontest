@@ -10,7 +10,7 @@ import {verticalBox, horizontalBox} from '../../../../../constants';
 import * as homeData from '../../../constants/dailycontestconstants';
 import logo from '../../../../../assets/logo-advq-new.png';
 import blurredCircle from '../../../../../assets/blurred-circle.svg';
-import TradingContestBgImg from '../../../../../assets/trading-contest-bg-2.svg';
+import TradingContestBgImg from '../../../../../assets/trading-contest-bg.jpg';
 
 class Home extends React.Component {
     constructor(props) {
@@ -50,9 +50,6 @@ class Home extends React.Component {
             <div className={classes.root}>
                 <Grid container>
                     <LeftContainer item xs={6}>
-                        {/*<img src={blurredCircle} style={firstBlurredCircle} />
-                        <img src={blurredCircle} style={secondBlurredCircle} />
-                        <img src={blurredCircle} style={thirdBlurredCircle} />*/}
                         <div 
                                 style={{
                                     ...horizontalBox, 
@@ -63,7 +60,7 @@ class Home extends React.Component {
                             <img 
                                 src={logo} 
                                 style={{height: '40px', marginRight: '20px', cursor:'pointer'}}
-                                onClick={() => this.props.history.push('/home')}
+                                onClick={() => window.location =' /home'}
                             />
                             <div style={{...verticalBox, alignItems: 'flex-start'}}>
                                 <PageHeader>Stock Prediction Contest</PageHeader>
@@ -252,7 +249,7 @@ const LeftContainer = styled(Grid)`
     align-items: flex-start;
     background: linear-gradient(to bottom, #49AEFF, #045C8B);
     background-image: url(${TradingContestBgImg});
-    position: relative;
+    --position: relative;
 `;
 
 const RightContainer = styled(Grid)`
