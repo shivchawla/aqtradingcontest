@@ -28,7 +28,7 @@ class App extends Component {
                             return (
                                 <Switch>
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
-                                    <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} /> 
+                                    <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                     <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
                                     <Route 
                                         path='/dailycontest' 
@@ -50,7 +50,7 @@ class App extends Component {
                             return (
                                 <Switch>
                                     {/* <Route path='/dailycontest/create' component={TradingContest} />  */}
-                                    <Route exact={true} path='/dailycontest/tnc' component={DailyContestTnc} />
+                                    <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} /> 
                                     <Route 
                                         path='/dailycontest' 

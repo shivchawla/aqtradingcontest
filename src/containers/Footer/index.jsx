@@ -18,16 +18,11 @@ export default class Footer extends React.Component {
                     <ListHeader>Policies</ListHeader>
                     <ListItem url='/policies/tnc'>Terms of Use</ListItem>
                     <ListItem url='/policies/privacy'>Privacy Policy</ListItem>
-                    <ListItem url='/contest/rules'>Contest Rules</ListItem>
+                    {<ListItem url='/dailycontest/rules'>Contest Rules</ListItem>
                 </ColGrid>
                 <ColGrid item xs={6}>
                     <ListHeader>Help</ListHeader>
                     <ListItem url='/faq'>FAQ</ListItem>
-                </ColGrid>
-                <ColGrid item xs={6}>
-                    <ListHeader>Rules</ListHeader>
-                    <ListItem url='/dailycontest/tnc'>Daily Trading Contest</ListItem>
-                    <ListItem url='/contest/rules'>Investment Idea Contest</ListItem>
                 </ColGrid>
             </SGrid>
         );
