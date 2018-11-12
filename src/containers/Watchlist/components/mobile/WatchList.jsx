@@ -121,13 +121,13 @@ class WatchList extends React.Component {
             method: 'PUT'
         })
         .then(response => {
-            console.log(`Successfully Deleted ${name} from Wishlist`);
+            // console.log(`Successfully Deleted ${name} from Wishlist`);
             // message.success(`Successfully Deleted ${name} from Wishlist`);
             this.props.getWatchlist(this.props.id);
         })
         .catch(error => {
             // console.log(error);
-            console.log(`Error occured while deleting ${name} from wishlist`);
+            // console.log(`Error occured while deleting ${name} from wishlist`);
             // message.error(`Error occured while deleting ${name} from wishlist`);
             if (error.response) {
                 Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);

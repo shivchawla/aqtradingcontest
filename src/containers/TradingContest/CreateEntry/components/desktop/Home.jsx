@@ -9,6 +9,7 @@ import Footer from '../../../../Footer';
 import {verticalBox, horizontalBox} from '../../../../../constants';
 import * as homeData from '../../../constants/dailycontestconstants';
 import logo from '../../../../../assets/logo-advq-new.png';
+import stockBackImage from '../../../../../assets/trading-contest-bg.jpg';
 import blurredCircle from '../../../../../assets/blurred-circle.svg';
 import TradingContestBgImg from '../../../../../assets/trading-contest-bg.jpg';
 

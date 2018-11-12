@@ -38,7 +38,6 @@ export default class StockPerformance extends React.Component {
     }
 
     fetchStockData = stock => {
-        console.log('Stock', stock);
         this.setState({loading: true});
         Promise.all([
             getStockData(stock, 'latestDetail'),

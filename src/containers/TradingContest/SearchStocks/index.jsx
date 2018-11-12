@@ -524,7 +524,6 @@ export class SearchStocks extends React.Component {
     }
 
     clearNewStocks = () => {
-        console.log('clearNewStocks called');
         this.setState({newStocks: []});
     }
 

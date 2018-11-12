@@ -337,7 +337,7 @@ class CreateEntry extends React.Component {
     }
 
     subscribeToPredictions = (type = this.state.selectedView) => {
-        console.log('Subscribed to ', type);
+        // console.log('Subscribed to ', type);
         const msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-prediction",
@@ -347,7 +347,7 @@ class CreateEntry extends React.Component {
     }
 
     unSubscribeToPredictions = (type = this.state.selectedView) => {
-        console.log('Un Subscribed to ', type);
+        // console.log('Un Subscribed to ', type);
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-predictions',
@@ -359,19 +359,14 @@ class CreateEntry extends React.Component {
     processRealtimeMessage = msg => {
         const currentDate = moment().format(dateFormat);
         const selectedDate = this.state.selectedDate.format(dateFormat);
-        console.log('Current Date', currentDate);
-        console.log('Selected Date', selectedDate);
         if (this.mounted && _.isEqual(currentDate, selectedDate)) {
-            console.log('Entered Here');
             try {
                 const realtimeData = JSON.parse(msg.data);
-                console.log(realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const pnl = _.get(realtimeData, 'pnl', []);
                 this.updateDailyPredictions(predictons);
                 this.updateDailyPnLStats(pnl);
             } catch(error) {
-                console.log(error);
                 return error;
             }
         }

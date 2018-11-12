@@ -203,7 +203,7 @@ export default class StockFilter extends React.Component {
     }
 
     render() {
-        console.log('Stock Filter Updated');
+        // console.log('Stock Filter Updated');
         return(
             <Grid container>
                 <Media 
@@ -283,7 +283,7 @@ class IndustryItem extends React.Component {
     }
 
     render() {
-        console.log('Industry Item Rendered');
+        // console.log('Industry Item Rendered');
         const {checked, text, onChange, sector} = this.props;
 
         return (

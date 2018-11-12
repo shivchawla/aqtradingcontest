@@ -63,7 +63,7 @@ class CreateWatchListImpl extends React.Component {
             })
         } else {
             // message.error('Please provide a name for your watchlist');
-            console.log('Please provide a name for your watchlist');
+            // console.log('Please provide a name for your watchlist');
         }
     }
 
