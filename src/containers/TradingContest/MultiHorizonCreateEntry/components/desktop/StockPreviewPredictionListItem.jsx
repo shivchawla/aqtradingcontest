@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
+import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
@@ -27,18 +28,21 @@ export default class StockPreviewPredictionListItem extends React.Component {
             if (targetAchieved) {
                 return {
                     type: 'thumb_up_alt',
-                    color: '#3EF79B'
+                    color: '#3EF79B',
+                    status: 'Target Achieved'
                 };
             } else {
                 return {
                     type: 'loop',
-                    color: primaryColor
+                    color: primaryColor,
+                    status: 'Active'
                 };
             }
         } else {
             return {
                 type: 'thumb_down_alt',
-                color: '#FE6662'
+                color: '#FE6662',
+                status: 'Target Missed'
             }
         }
     }
@@ -95,7 +99,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 </Grid>
                 <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
                 <Grid item xs={1}>
-                    <Icon style={{color: iconConfig.color}}>{iconConfig.type}</Icon>
+                    <Tooltip title={iconConfig.status}>
+                        <Icon style={{color: iconConfig.color}}>{iconConfig.type}</Icon>
+                    </Tooltip>
                 </Grid>
             </Container>
         );
