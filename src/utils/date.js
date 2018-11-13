@@ -7,6 +7,7 @@
 "use strict";
 const moment = require('moment-timezone');
 const indiaTimeZone = "Asia/Kolkata";
+const localTimeZone = moment.tz.guess();
 
 const holidays = [
     "2018-08-22",
@@ -19,6 +20,40 @@ const holidays = [
     "2018-11-23",
     "2018-12-25"
 ].map(item => moment(item).tz(indiaTimeZone));
+
+function _isBeforeMarketClose() {
+	return moment().isBefore(exports.getMarketClose());
+}
+
+function _isAfterMarketOpen() {
+	return moment().isAfter(exports.getMarketOpen());
+}
+
+module.exports.getMarketOpen = function() {
+	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
+	return moment.tz(`${cd} 09:30:00`, indiaTimeZone).tz(localTimeZone);
+}
+
+module.exports.getMarketClose = function() {
+	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
+	return moment.tz(`${cd} 23:30:00`, indiaTimeZone).tz(localTimeZone);
+}
+
+module.exports.getMarketOpenHour = function() {
+	return exports.getMarketOpen().get('hour');
+}
+
+module.exports.getMarketOpenMinute = function(){
+	return exports.getMarketOpen().get('minute');
+}
+
+module.exports.getMarketCloseHour = function() {
+	return exports.getMarketClose().get('hour');
+}
+
+module.exports.getMarketCloseMinute = function(){
+	return exports.getMarketClose().get('minute');
+}
 
 module.exports.compareDates = function(date1, date2) {
 	var t1 = module.exports.getDate(date1).getTime();
@@ -180,4 +215,20 @@ module.exports.isHoliday = function(date) {
 
 module.exports.getHolidays = function() {
 	return holidays;
+};
+
+module.exports.getMarketCloseDateTime = function(date) {
+	var d = moment.tz(date, indiaTimeZone).format("YYYY-MM-DD"); 
+	return moment.tz(d, localTimeZone).set({hour: exports.getMarketCloseHour(), minute: exports.getMarketCloseMinute(), second: 0, millisecond: 0});
+};
+
+module.exports.getMarketOpenDateTime = function(date) {
+	var d = moment.tz(date, indiaTimeZone).format("YYYY-MM-DD"); 
+	return moment.tz(d, indiaTimeZone).tz(localTimeZone).set({hour: exports.getMarketOpenHour(), minute: exports.getMarketOpenMinute(), second: 0, millisecond: 0});
+};
+
+module.exports.isMarketTrading = function() {
+	if (!exports.isHoliday()) {
+		return _isAfterMarketOpen() && _isBeforeMarketClose();
+	}
 };

@@ -34,7 +34,7 @@ class App extends Component {
                                         path='/dailycontest' 
                                         render={() => Utils.isLoggedIn() 
                                                 ? <TradingContest /> 
-                                                : <Redirect push to='/login' />
+                                                : window.location.href = '/login'
                                         }
                                         component={TradingContest} 
                                     /> 
@@ -61,7 +61,7 @@ class App extends Component {
                                         path='/dailycontest' 
                                         render={() => Utils.isLoggedIn() 
                                                 ? <TradingContest /> 
-                                                : <Redirect push to='/login' />
+                                                : window.location.href = '/login'
                                         }
                                         component={TradingContest} 
                                     /> 

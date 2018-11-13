@@ -8,6 +8,7 @@ import silver from '../../../assets/silver.svg';
 import bronze from '../../../assets/bronze.svg';
 import fourth from '../../../assets/fourth.svg';
 import fifth from '../../../assets/fifth.svg';
+import {isMarketTrading} from '../../../utils/date';
 
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
