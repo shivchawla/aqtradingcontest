@@ -7,6 +7,7 @@ import Redirect from 'react-router/Redirect';
 import Switch from 'react-router-dom/Switch';
 import styled from 'styled-components';
 import {withStyles} from '@material-ui/core/styles';
+import {withRouter} from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -114,6 +115,7 @@ class TradingContest extends React.Component {
         if (!Utils.isLoggedIn()) {
             window.location.assign('/login');
         }
+        console.log(this.props.location)
         this.setState({selectedTab: this.getSelectedTab(this.props.location.pathname)});
     }
 
@@ -310,7 +312,7 @@ class TradingContest extends React.Component {
     }
 }
 
-export default withStyles(desktopStyles)(TradingContest);
+export default withStyles(desktopStyles)(withRouter(TradingContest));
 
 const STabs = styled(Tabs)`
     background-color: ${primaryColor};
