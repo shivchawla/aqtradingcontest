@@ -3,7 +3,7 @@ import Media from 'react-media';
 import Route from 'react-router/Route';
 import Redirect from 'react-router/Redirect';
 import Notifications from 'react-notify-toast';
-import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider'
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
