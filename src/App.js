@@ -10,11 +10,13 @@ import Switch from 'react-router-dom/Switch';
 import TradingContest from './containers/TradingContest';
 import TradingContestHomeMobile from './containers/TradingContest/Home';
 import TradingContestHomeDesktop from './containers/TradingContest/CreateEntry/components/desktop/Home';
-import AuthRoute from './containers/AuthRoute';
+import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
 import Watchlist from './containers/Watchlist';
 import './App.css';
+
+const {develop = false} = require('./localConfig');
 
 class App extends Component {
     render() {
@@ -32,18 +34,22 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
                                     <Route 
                                         path='/dailycontest' 
-                                        render={() => Utils.isLoggedIn() 
-                                                ? <TradingContest /> 
-                                                : window.location.href = '/login'
-                                        }
-                                        component={TradingContest} 
-                                    /> 
-                                    <Route 
                                         render={() => {
-                                            window.location.href = '/404'
-                                        }}
-                                    />
-                                    {/* <Redirect push to='/404' /> */}
+                                            return Utils.isLoggedIn() 
+                                                ? <TradingContest /> 
+                                                : <DummyLogin />
+                                            }
+                                        }
+                                    /> 
+                                    {
+                                        develop 
+                                        ?   <Redirect push to='/404' />
+                                        :   <Route 
+                                                render={() => {
+                                                    window.location.href = '/404'
+                                                }}
+                                            />
+                                    }
                                     {/* <Route component={PageNotFound} /> */}
                                 </Switch>
                             );
@@ -58,18 +64,21 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} /> 
                                     <Route 
-                                        path='/dailycontest' 
+                                        path='/dailycontest/' 
                                         render={() => Utils.isLoggedIn() 
                                                 ? <TradingContest /> 
-                                                : window.location.href = '/login'
+                                                : <DummyLogin />
                                         }
-                                        component={TradingContest} 
                                     /> 
-                                    <Route 
-                                        render={() => {
-                                            window.location.href = '/404'
-                                        }}
-                                    />
+                                    {
+                                        develop 
+                                        ?   <Redirect push to='/404' />
+                                        :   <Route 
+                                                render={() => {
+                                                    window.location.href = '/404'
+                                                }}
+                                            />
+                                    }
                                     {/* <Redirect push to='/404' /> */}
                                     {/* <Route path='/dailycontest' component={TradingContest} />   */}
                                     {/* <Route route='/404' component={PageNotFound} /> */}
