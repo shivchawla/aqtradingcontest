@@ -5,6 +5,7 @@ import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {Utils} from '../../../../../utils';
+import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
 
 const readableDateFormat = "Do MMM 'YY";
@@ -21,24 +22,27 @@ export default class StockPreviewPredictionListItem extends React.Component {
 
     getIconConfig = (targetAchieved) => {
         const {endDate = null} = this.props.prediction;
-        const todayDate = moment().format(dateFormat);
-        const active = moment(todayDate, dateFormat).isBefore(moment(endDate, dateFormat));
-        if (active) {
-            if (targetAchieved) {
-                return {
-                    type: 'HIT',
-                    color: '#3EF79B'
-                };
-            } else {
+        const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+        const todayDate = moment().format(dateTimeFormat);
+        let endTime = moment(endDate, dateFormat).hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
+        endTime = endTime.format(dateTimeFormat);
+        const active = moment(todayDate, dateTimeFormat).isBefore(moment(endTime, dateTimeFormat));
+        if (targetAchieved) {
+            return {
+                type: 'HIT',
+                color: '#3EF79B'
+            };
+        } else {
+            if (active) {
                 return {
                     type: 'ACTIVE',
                     color: metricColor.neutral
                 };
-            }
-        } else {
-            return {
-                type: 'MISS',
-                color: '#FE6662'
+            } else {
+                return {
+                    type: 'MISS',
+                    color: '#FE6662'
+                }
             }
         }
     }

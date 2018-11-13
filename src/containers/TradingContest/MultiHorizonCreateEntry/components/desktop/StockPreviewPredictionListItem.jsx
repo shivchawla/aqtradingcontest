@@ -6,6 +6,7 @@ import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {Utils} from '../../../../../utils';
+import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
 
 const readableDateFormat = "Do MMM 'YY";
@@ -22,27 +23,30 @@ export default class StockPreviewPredictionListItem extends React.Component {
 
     getIconConfig = (targetAchieved) => {
         const {endDate = null} = this.props.prediction;
-        const todayDate = moment().format(dateFormat);
-        const active = moment(todayDate, dateFormat).isBefore(moment(endDate, dateFormat));
-        if (active) {
-            if (targetAchieved) {
-                return {
-                    type: 'thumb_up_alt',
-                    color: '#3EF79B',
-                    status: 'Target Achieved'
-                };
-            } else {
+        const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+        const todayDate = moment().format(dateTimeFormat);
+        let endTime = moment(endDate, dateFormat).hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
+        endTime = endTime.format(dateTimeFormat);
+        const active = moment(todayDate, dateTimeFormat).isBefore(moment(endTime, dateTimeFormat));
+        if (targetAchieved) {
+            return {
+                type: 'thumb_up_alt',
+                color: '#3EF79B',
+                status: 'Target Achieved'
+            };
+        } else {
+            if (active) {
                 return {
                     type: 'loop',
                     color: primaryColor,
                     status: 'Active'
                 };
-            }
-        } else {
-            return {
-                type: 'thumb_down_alt',
-                color: '#FE6662',
-                status: 'Target Missed'
+            } else {
+                return {
+                    type: 'thumb_down_alt',
+                    color: '#FE6662',
+                    status: 'Target Missed'
+                }
             }
         }
     }
