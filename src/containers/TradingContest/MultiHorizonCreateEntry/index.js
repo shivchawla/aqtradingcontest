@@ -224,10 +224,11 @@ class CreateEntry extends React.Component {
         this.setState({submissionLoading: true, todayDataLoaded: false});
         return createPredictions(allPredictions, shouldCreate)
         .then(response => {
-            this.searchStockComponent.clearNewStocks();
+            this.searchStockComponent && this.searchStockComponent.clearNewStocks();
             return this.getDailyPredictionsOnDateChange();
         })
         .then(() => {
+            console.log('Entered Here')
             this.setState({
                 snackbarOpenStatus: true, 
                 snackbarMessage: `Predictions successfully ${shouldCreate ? 'created' : 'updated'} :)`
@@ -238,6 +239,7 @@ class CreateEntry extends React.Component {
             return true;
         })
         .catch(error => {
+            console.log('Error', error);
             const errorMessage = _.get(error, 'response.data.msg', 'Error Occured :(');
             this.setState({snackbarOpenStatus: true, snackbarMessage: errorMessage, todayDataLoaded: true});
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
