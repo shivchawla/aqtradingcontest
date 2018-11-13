@@ -64,7 +64,7 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} /> 
                                     <Route 
-                                        path='/dailycontest/' 
+                                        path='/dailycontest' 
                                         render={() => Utils.isLoggedIn() 
                                                 ? <TradingContest /> 
                                                 : <DummyLogin />
