@@ -17,7 +17,8 @@ export default class RadioGroup extends React.Component {
     }
 
     render() {
-        const {items = ['One', 'Two']} = this.props;
+        const {items = ['One', 'Two'], CustomRadio = null} = this.props;
+        const CustomRadioComponent = CustomRadio !== null ? CustomRadio : RadioComponent;
 
         return (
             <div 
@@ -31,7 +32,7 @@ export default class RadioGroup extends React.Component {
                 {
                     items.map((item, index) => {
                         return (
-                            <RadioComponent 
+                            <CustomRadioComponent 
                                 key={index}
                                 label={item}
                                 checked={this.state.selected === index}

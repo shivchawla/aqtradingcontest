@@ -17,6 +17,7 @@ import Icon from '@material-ui/core/Icon';
 import TopPicks from './TopPicks';
 import Leaderboard from './Leaderboard';
 import CreateEntry from './MultiHorizonCreateEntry';
+import StockPredictions from './StockCardPredictions';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
@@ -51,10 +52,12 @@ class TradingContest extends React.Component {
     getSelectedPage = (selectedTab = 0) => {
         switch(selectedTab) {
             case 0:
-                return 'mypicks';
+                return 'stockpredictions'
             case 1:
-                return 'toppicks';
+                return 'mypicks';
             case 2:
+                return 'toppicks';
+            case 3:
                 return 'leaderboard';
             default:
                 return 'mypicks';
@@ -135,24 +138,31 @@ class TradingContest extends React.Component {
                 >
                     <Grid item xs={12}>
                         <STabs
-                            value={selectedTab}
-                            onChange={(e, selectedTab) => this.handleChange(selectedTab)}
-                            indicatorColor="secondary"
-                            fullWidth>
-                                <STab label="MY PICKS" />
-                                <STab label="TOP PICKS" />
-                                <STab label="LEADERBOARD"/>
+                                value={selectedTab}
+                                onChange={(e, selectedTab) => this.handleChange(selectedTab)}
+                                indicatorColor="secondary"
+                                fullWidth
+                                scrollable
+                                scrollButtons="auto"
+                        >
+                            <STab label="STOCK PREDICTIONS"/>
+                            <STab label="MY PICKS" />
+                            <STab label="TOP PICKS" />
+                            <STab label="LEADERBOARD"/>
                         </STabs>
                     </Grid>
                     <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
-                        <DateComponent 
-                            selectedDate={this.state.selectedDate}
-                            color='grey'
-                            onDateChange={this.updateDate}
-                        />
+                        {
+                            this.state.selectedTab !== 0 &&
+                            <DateComponent 
+                                selectedDate={this.state.selectedDate}
+                                color='grey'
+                                onDateChange={this.updateDate}
+                            />
+                        }
                         {
                             !isMarketOpen().status &&
-                            this.state.selectedTab === 0 &&
+                            this.state.selectedTab === 1 &&
                             <MartketOpenTag 
                                     color={isMarketOpen().status 
                                         ? metricColor.positive 
@@ -193,6 +203,16 @@ class TradingContest extends React.Component {
                             path={`${this.props.match.path}/leaderboard`}
                             render={() => Utils.isLoggedIn()
                                 ?   <Leaderboard selectedDate={this.state.selectedDate}/>
+                                :   <Redirect push to='/login'/>
+                            }
+                        />
+                        <Route 
+                            exact
+                            path={`${this.props.match.path}/stockpredictions`}
+                            render={() => Utils.isLoggedIn()
+                                ?   <StockPredictions 
+                                        selectedDate={this.state.selectedDate}
+                                    />
                                 :   <Redirect push to='/login'/>
                             }
                         />
