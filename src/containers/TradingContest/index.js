@@ -152,8 +152,9 @@ class TradingContest extends React.Component {
                         />
                         {
                             !isMarketOpen().status &&
+                            this.state.selectedTab === 0 &&
                             <MartketOpenTag 
-                                    backgroundColor={isMarketOpen().status 
+                                    color={isMarketOpen().status 
                                         ? metricColor.positive 
                                         : '#fc4c55'
                                     }
@@ -336,8 +337,9 @@ const MartketOpenTag = styled.div`
     padding: 5px;
     border-radius: 4px;
     font-size: 12px;
-    background-color: ${props => props.backgroundColor || primaryColor};
-    color: #fff;
+    border: 1px solid ${props => props.color || '#fff'};
+    background-color: transparent;
+    color: ${props => props.color || '#fff'};
     width: 80px;
     margin: 0 auto;
 `;

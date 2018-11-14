@@ -17,13 +17,13 @@ export default class TopPicksLayout extends React.Component {
     onRadioChange = value => {
         switch(value) {
             case 0:
-                this.setState({listType: 'long'});
+                this.setState({listType: 'total'});
                 break;
             case 1:
-                this.setState({listType: 'short'});
+                this.setState({listType: 'long'});
                 break;
             case 2:
-                this.setState({listType: 'total'});
+                this.setState({listType: 'short'});
                 break;
             default:
                 this.setState({listType: 'total'});
@@ -51,7 +51,7 @@ export default class TopPicksLayout extends React.Component {
                             }}
                     >
                         <RadioGroup 
-                            items={['LONG', 'SHORT', 'TOTAL']}
+                            items={['TOTAL', 'LONG', 'SHORT']}
                             onChange={this.onRadioChange}
                         />
                     </div>

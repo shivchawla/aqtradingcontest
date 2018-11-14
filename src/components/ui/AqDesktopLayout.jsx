@@ -127,18 +127,21 @@ class AqDesktopLayout extends React.Component {
                                 marginBottom: '100px'
                             }}
                     >
-                        <MartketOpenTag 
-                                backgroundColor={isMarketOpen().status 
-                                    ? metricColor.positive 
-                                    : '#fc4c55'
+                        {
+                            this.state.activeSegment === 0 &&
+                            <MartketOpenTag 
+                                    color={isMarketOpen().status 
+                                        ? metricColor.positive 
+                                        : '#fc4c55'
+                                    }
+                            >   
+                                {
+                                    isMarketOpen().status
+                                        ? 'Market Open'
+                                        : 'Market Closed'
                                 }
-                        >   
-                            {
-                                isMarketOpen().status
-                                    ? 'Market Open'
-                                    : 'Market Closed'
-                            }
-                        </MartketOpenTag>
+                            </MartketOpenTag>
+                        }
                         {this.props.children}
                     </AbsoluteContainer>
                 </LeftContainer>
@@ -184,8 +187,9 @@ const MartketOpenTag = styled.div`
     padding: 5px;
     border-radius: 4px;
     font-size: 12px;
-    background-color: ${props => props.backgroundColor || primaryColor};
-    color: #fff;
+    border: 1px solid ${props => props.color || '#fff'};
+    background-color: transparent;
+    color: ${props => props.color || '#fff'};
     width: 80px;
     margin: 0 auto;
 `;
