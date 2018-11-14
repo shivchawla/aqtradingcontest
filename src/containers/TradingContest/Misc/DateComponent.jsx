@@ -5,13 +5,15 @@ import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
 import ActionIcon from '../Misc/ActionIcons';
 import DatePicker from 'material-ui-pickers/DatePicker';
+import {withRouter} from 'react-router-dom';
 import TimerComponent from '../Misc/TimerComponent';
 import {horizontalBox} from '../../../constants';
 const DateHelper = require('../../../utils/date');
 
 const dateFormat = 'Do MMM YY';
+const backendDateFormat = 'YYYY-MM-DD';
 
-export default class DateComponent extends React.Component {
+class DateComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -25,6 +27,7 @@ export default class DateComponent extends React.Component {
 
     navigateToPreviousDate = () => {
         const date = moment(DateHelper.previousNonHolidayWeekday(this.state.selectedDate.toDate()));
+        window.history.replaceState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
         this.setState({selectedDate: date}, () => this.onDateChange());
     }
 
@@ -35,8 +38,14 @@ export default class DateComponent extends React.Component {
     navigateToNextDate = () => {
         const date = moment(DateHelper.nextNonHolidayWeekday(this.state.selectedDate.toDate()));
         if (!this.isFutureDate(date)) {
+            window.history.replaceState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
             this.setState({selectedDate: date}, () => this.onDateChange());
+            
         }
+    }
+
+    constructUrlDate = date => {
+        return `${this.props.location.pathname}?date=${date.format(backendDateFormat)}`;
     }
 
     isFutureDate = date => {
@@ -51,6 +60,7 @@ export default class DateComponent extends React.Component {
 
     handleDateChange = (date) => {
         const selectedDate = moment(date).format(dateFormat);
+        window.history.replaceState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
         this.setState({ selectedDate: date });
         this.props.onDateChange && this.props.onDateChange(moment(selectedDate, dateFormat));
     }
@@ -109,6 +119,8 @@ export default class DateComponent extends React.Component {
         );
     }
 }
+
+export default withRouter(DateComponent);
 
 const DateFields = props => {
     return (
