@@ -33,6 +33,50 @@ export default class StockCard extends React.Component {
         return false;
     }
 
+    handleHorizonChange = value => {
+        this.props.modifyStockData({
+            ...this.props.stockData,
+            horizon: value + 1
+        });
+    }
+
+    handleTargetChange = value => {
+        let stockData = this.props.stockData;
+        switch(value) {
+            case 0:
+                stockData = {
+                    ...stockData,
+                    target: 2
+                };
+                break;
+            case 1:
+                stockData = {
+                    ...stockData,
+                    target: 3
+                };
+                break;
+            case 2:
+                stockData = {
+                    ...stockData,
+                    target: 5
+                };
+                break;
+            case 3:
+                stockData = {
+                    ...stockData, 
+                    target: 7
+                };
+                break;
+            case 4:
+                stockData = {
+                    ...stockData, 
+                    target: 10
+                };
+                break;
+        };
+        this.props.modifyStockData(stockData);
+    }
+
     renderViewMode = () => {
         return (
             <React.Fragment>
@@ -62,6 +106,7 @@ export default class StockCard extends React.Component {
                     <RadioGroup 
                         items={[1, 2, 3, 4, 5]}
                         CustomRadio={CustomRadio}
+                        onChange={this.handleHorizonChange}
                     />
 
                     <MetricLabel 
@@ -75,6 +120,7 @@ export default class StockCard extends React.Component {
                     <RadioGroup 
                         items={[2, 3, 5, 7, 10]}
                         CustomRadio={CustomRadio}
+                        onChange={this.handleTargetChange}
                     />
                 </div>
             </React.Fragment>
