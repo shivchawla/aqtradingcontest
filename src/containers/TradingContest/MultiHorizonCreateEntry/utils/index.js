@@ -196,7 +196,6 @@ export const getPredictionEndDate = (predictions = []) => {
     return moment(DateHelper.nextNonHolidayWeekday(previousEndDate.toDate())).format(dateFormat);
 }
 
-
 // returns a default prediction that is to be added into the positions
 export const getDefaultPrediction = position => {
     const predictions = _.get(position, 'predictions', []);
