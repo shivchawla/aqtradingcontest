@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Icon from  '@material-ui/core/Icon';
@@ -12,10 +13,12 @@ import {
     nameEllipsisStyle, 
     metricColor
 } from '../../../../../constants';
+import {getPercentageModifiedValue} from '../../../MultiHorizonCreateEntry/utils';
 import {Utils} from '../../../../../utils';
-import CustomRadio from '../../../../../components/selections/CustomRadio';
-import RadioGroup from '../../../../../components/selections/RadioGroup';
+import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
+
+const readableDateFormat = 'Do MMM';
 
 export default class StockCard extends React.Component {
     constructor(props) {
@@ -42,51 +45,43 @@ export default class StockCard extends React.Component {
 
     handleTargetChange = value => {
         let stockData = this.props.stockData;
+        let target = 2;
         switch(value) {
             case 0:
-                stockData = {
-                    ...stockData,
-                    target: 2
-                };
+                target = 2;
                 break;
             case 1:
-                stockData = {
-                    ...stockData,
-                    target: 3
-                };
+                target = 3;
                 break;
             case 2:
-                stockData = {
-                    ...stockData,
-                    target: 5
-                };
+                target = 5;
                 break;
             case 3:
-                stockData = {
-                    ...stockData, 
-                    target: 7
-                };
+                target = 7;
                 break;
             case 4:
-                stockData = {
-                    ...stockData, 
-                    target: 10
-                };
+                target = 10;
                 break;
+        };
+        stockData = {
+            ...stockData,
+            target,
         };
         this.props.modifyStockData(stockData);
     }
 
     renderViewMode = () => {
+        const {horizon = 1, target = 2} = this.props.stockData;
+
         return (
             <React.Fragment>
                 <MetricPreview 
                     label='Target'
-                    value='2%'
+                    value={`${target}%`}
                 />
                 <MetricPreview 
                     label='Horizon'
-                    value='5 Days'
+                    value={`${horizon} days`}
                     style={{marginLeft: '40px'}}
                 />
             </React.Fragment>
@@ -94,6 +89,22 @@ export default class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
+        const {target = 2, horizon = 2} = this.props;
+        const targetItems = [
+            {key: 2, label: null},
+            {key: 3, label: null},
+            {key: 5, label: null},
+            {key: 7, label: null},
+            {key: 10, label: null},
+        ];
+        const horizonItems = [
+            {key: 1, label: moment().add(1, 'days').format(readableDateFormat)},
+            {key: 2, label: moment().add(2, 'days').format(readableDateFormat)},
+            {key: 3, label: moment().add(3, 'days').format(readableDateFormat)},
+            {key: 4, label: moment().add(4, 'days').format(readableDateFormat)},
+            {key: 5, label: moment().add(5, 'days').format(readableDateFormat)},
+        ];
+
         return (
             <React.Fragment>
                 <div 
@@ -103,10 +114,10 @@ export default class StockCard extends React.Component {
                         }}
                 >
                     <MetricLabel style={{marginBottom: '10px'}}>Horizon in Days</MetricLabel>
-                    <RadioGroup 
-                        items={[1, 2, 3, 4, 5]}
-                        CustomRadio={CustomRadio}
+                    <StockCardRadioGroup 
+                        items={horizonItems}
                         onChange={this.handleHorizonChange}
+                        defaultSelected={horizon - 1}
                     />
 
                     <MetricLabel 
@@ -117,10 +128,11 @@ export default class StockCard extends React.Component {
                     >
                         Target in %
                     </MetricLabel>
-                    <RadioGroup 
-                        items={[2, 3, 5, 7, 10]}
-                        CustomRadio={CustomRadio}
+                    <StockCardRadioGroup 
+                        items={targetItems}
                         onChange={this.handleTargetChange}
+                        defaultSelected={0}
+                        hideLabel={true}
                     />
                 </div>
             </React.Fragment>
@@ -142,9 +154,9 @@ export default class StockCard extends React.Component {
             symbol = '', 
             lastPrice = 0, 
             changePct = 0,
-            buyTarget = 0,
-            sellTarget = 0,
-            loading = false
+            target = 2,
+            loading = false,
+            horizon = 1
         } = this.props.stockData;
 
         return (
@@ -161,7 +173,10 @@ export default class StockCard extends React.Component {
                                 <MainText>{symbol}</MainText>
                                 {
                                     this.state.editMode &&
-                                    <ActionIcon type="search"/>
+                                    <ActionIcon 
+                                        type="search"
+                                        onClick={this.props.toggleSearchStocksDialog}
+                                    />
                                 }
                             </div>
                             <h3 style={nameStyle}>{name}</h3>
@@ -227,7 +242,7 @@ export default class StockCard extends React.Component {
                                     marginLeft: '5px'
                                 }}
                         >
-                            5 days
+                            {horizon} days
                         </span>?
                     </QuestionText>
                     <div 
@@ -238,14 +253,18 @@ export default class StockCard extends React.Component {
                                 marginTop: '20px'
                             }}
                     >
-                        <Button variant="contained" color="secondary">
-                            <Icon style={{fontSize: '18px'}}>expand_more</Icon>
-                            LOWER
-                        </Button>
-                        <Button variant="contained" color="primary">
-                            <Icon style={{fontSize: '18px'}}>expand_less</Icon>
-                            HIGHER
-                        </Button>
+                        <SubmitButton 
+                            onClick={() => this.props.createPrediction('sell')}
+                            target={target}
+                            lastPrice={lastPrice}
+                            type="sell"
+                        />
+                        <SubmitButton 
+                            onClick={() => this.props.createPrediction('buy')}
+                            target={target}
+                            lastPrice={lastPrice}
+                            type="buy"
+                        />
                     </div>
                     <Button 
                             style={{marginTop: '20px'}} 
@@ -262,18 +281,47 @@ export default class StockCard extends React.Component {
     render() {
         return (
             <Container container>
-                {
-                    this.props.loading &&
-                    <LoaderContainer>
-                        <CircularProgress />
-                    </LoaderContainer>
-                }
+                {this.props.loading && <Loader />}
+                {this.props.loadingCreate && <Loader text='Creating Prediction' />}
                 <Grid item xs={12} style={{padding: 10}}>
                     {this.renderContent()}
                 </Grid>
             </Container>
         );
     }
+}
+
+const SubmitButton = ({target, lastPrice, onClick, type = 'buy'}) => {
+    const icon = type === 'buy' ? 'expand_less' : 'expand_more';
+    const label = type === 'buy' ? 'HIGHER' : 'LOWER';
+    const color = type === 'buy' ? metricColor.positive : metricColor.negative;
+    const targetValue = getPercentageModifiedValue(target, lastPrice, type === 'buy');
+    
+    return (
+        <div style={{...verticalBox}}>
+            <Target color={color}>₹{Utils.formatMoneyValueMaxTwoDecimals(targetValue)}</Target>
+            <Button 
+                    variant="contained" 
+                    color="primary"
+                    onClick={onClick}
+            >
+                <Icon style={{fontSize: '18px'}}>{icon}</Icon>
+                {label}
+            </Button>
+        </div>
+    );
+}
+
+const Loader = ({text = null}) => {
+    return (
+        <LoaderContainer>
+            {
+                text !== null &&
+                <h3 style={{marginBottom: '10px'}}>{text}</h3>
+            }
+            <CircularProgress />
+        </LoaderContainer>
+    );
 }
 
 const MetricPreview = ({label, value, style={}}) => {
@@ -343,6 +391,7 @@ const QuestionText = styled.h3`
 
 const LoaderContainer = styled.div`
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     position: absolute;
@@ -351,4 +400,10 @@ const LoaderContainer = styled.div`
     height: 100%;
     z-index: 1000;
     border-radius: 4px;
+`;
+
+const Target = styled.h3`
+    font-size: 14px;
+    color: ${props => props.color || metricColor.positive};
+    margin-bottom: 10px;
 `;

@@ -228,7 +228,6 @@ class CreateEntry extends React.Component {
             return this.getDailyPredictionsOnDateChange();
         })
         .then(() => {
-            console.log('Entered Here')
             this.setState({
                 snackbarOpenStatus: true, 
                 snackbarMessage: `Predictions successfully ${shouldCreate ? 'created' : 'updated'} :)`

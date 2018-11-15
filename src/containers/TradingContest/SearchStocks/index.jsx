@@ -176,7 +176,9 @@ export class SearchStocks extends React.Component {
         const industry = _.get(this.props, 'filters.industry', '').length === 0
                 ?   this.state.filter.industry
                 :   _.get(this.props, 'filters.industry', '');
-        const url = `${requestUrl}/stock?search=${encodeURIComponent(searchQuery)}&populate=${populate}&universe=${universe}&sector=${sector}&industry=${industry}&skip=${skip}&limit=${limit}`;
+        const stocksToSkip = _.get(this.props, 'skippedStocks', []).join(',');
+        const url = `${requestUrl}/stock?search=${encodeURIComponent(searchQuery)}&populate=${populate}&universe=${universe}&sector=${sector}&industry=${industry}&skip=${skip}&limit=${limit}&exclude=${stocksToSkip}`;
+
         this.setState({loadingStocks: true});
         fetchAjax(url, this.props.history, this.props.pageUrl)
         .then(({data: stockResponseData}) => {

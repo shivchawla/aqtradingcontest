@@ -1,5 +1,8 @@
 import _ from 'lodash';
+import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
+
+const dateFormat = 'YYYY-MM-DD';
 
 export const formatIndividualStock = stockData => {
     const name = _.get(stockData, 'detail.Nse_Name', '');
@@ -26,6 +29,43 @@ export const formatIndividualStock = stockData => {
         target, 
         horizon,
         buyTarget, 
-        sellTarget
+        sellTarget,
+        predictions: [
+            {new: true, locked: false}, 
+            {new: true, locked: false}, 
+            {new: true, locked: false}
+        ] // adding predictions so that it get's checked in searchs stocks
     };
+}
+
+export const constructPrediction = (stockData, type = 'buy') => {
+    let {target = 0, lastPrice = 0, symbol = '', horizon = 1} = stockData;
+    const targetValue = getTargetFromLastPrice(lastPrice, target, type);
+    const startDate = moment().format(dateFormat);
+    const endDate = moment().add(horizon, 'days').format(dateFormat);
+    
+    return [
+        {
+            position: {
+                security: {
+                    ticker: symbol,
+                    securityType: "EQ",
+                    country: "IN",
+                    exchange: "NSE"
+                },
+                    investment: (type === 'buy' ? 1 : -1) * 100,
+                    quantity: 0,
+                    avgPrice: 0
+                },
+            startDate,
+            endDate,
+            target: targetValue
+        }
+    ];
+}
+
+export const getTargetFromLastPrice = (lastPrice, percentage, type = 'buy') => {
+    const valueToBeChanged = (type === 'buy' ? 1 : -1) * (percentage * lastPrice) / 100;
+
+    return lastPrice + valueToBeChanged;
 }
