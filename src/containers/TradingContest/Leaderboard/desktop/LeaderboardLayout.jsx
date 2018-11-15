@@ -10,7 +10,7 @@ export default class TopPicksLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listType: 'long'
+            listType: 'total'
         };
     }
 

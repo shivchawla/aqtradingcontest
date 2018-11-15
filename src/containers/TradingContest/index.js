@@ -110,12 +110,12 @@ class TradingContest extends React.Component {
         this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
         const date = this.params.get('date');
         if (date !== null) {
+            console.log(date);
             this.setState({selectedDate: moment(date, dateFormat)});
         }
         if (!Utils.isLoggedIn()) {
             window.location.assign('/login');
         }
-        console.log(this.props.location)
         this.setState({selectedTab: this.getSelectedTab(this.props.location.pathname)});
     }
 
