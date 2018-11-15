@@ -1,16 +1,19 @@
 import React from 'react';
 import _ from 'lodash';
-import moment from 'moment';
 import styled from 'styled-components';
+import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
 import StockCard from './components/mobile/StockCard';
 import StockSelection from './components/mobile/StockSelection';
+import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
+import ActionIcon from '../Misc/ActionIcons';
 import Snackbar from '../../../components/Alerts/SnackbarComponent';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
+import {horizontalBox} from '../../../constants';
 
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
@@ -31,7 +34,8 @@ class StockCardPredictions extends React.Component {
                 open: false,
                 message: ''
             },
-            editMode: false
+            editMode: false,
+            defaultSettingsOpen: false
         };
     }
     
@@ -135,6 +139,10 @@ class StockCardPredictions extends React.Component {
         this.setState({searchStockOpen: !this.state.searchStockOpen});
     }
 
+    toggleDefaultSettingsBottomSheet = () => {
+        this.setState({defaultSettingsOpen: !this.state.defaultSettingsOpen});
+    }
+
     toggleEditMode = () => {
         this.setState({editMode: !this.state.editMode});
     }
@@ -150,12 +158,18 @@ class StockCardPredictions extends React.Component {
     }
 
     renderContent = () => {
+        const alignContainerItems = this.state.editMode ? 'flex-start' : 'center';
+
         return (
-            <Container container>
+            <Container container alignItems={alignContainerItems}>
                 <Snackbar 
                     openStatus={this.state.snackbar.open}
                     message={this.state.snackbar.message}
                     handleClose={() => this.setState({snackbar: {...this.state.snackbar, open: false}})}
+                />
+                <DefaultSettings 
+                    open={this.state.defaultSettingsOpen}
+                    onClose={this.toggleDefaultSettingsBottomSheet}
                 />
                 <StockSelection 
                     open={this.state.searchStockOpen}
@@ -165,6 +179,12 @@ class StockCardPredictions extends React.Component {
                     skippedStocks={this.state.skippedStocks}
                 />
                 <Grid item xs={12}>
+                    <div style={settingsContainer}>
+                        <ActionIcon 
+                            type='settings_input_composite' 
+                            onClick={this.toggleDefaultSettingsBottomSheet}
+                        />
+                    </div>
                     <StockCard 
                         stockData={this.state.stockData}
                         skipStock={this.skipStock}
@@ -204,5 +224,15 @@ const Container = styled(Grid)`
     background-color: #fff;
     width: 100%;
     height: calc(100vh - 106px);
-    align-items: center;
+    align-items: ${props => props.alignItems || 'center'};
+    position: relative;
 `;
+
+const settingsContainer = {
+    ...horizontalBox,
+    justifyContent: 'flex-end',
+    width: '100%',
+    position: 'absolute',
+    top: '5px',
+    right: '5px'
+}

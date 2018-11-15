@@ -24,14 +24,14 @@ const theme = createMuiTheme({
                 borderRadius: 3,
                 border: 0,
                 height: 48,
-                padding: '0 30px',
+                padding: '0 20px',
                 boxShadow: 'none'
             },
             containedSecondary: {
                 borderRadius: 3,
                 border: 0,
                 height: 48,
-                padding: '0 30px',
+                padding: '0 20px',
                 boxShadow: 'none'
             },
             label: {

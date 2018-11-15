@@ -81,7 +81,7 @@ export default class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
-        const {target = 2, horizon = 2} = this.props;
+        const {horizon = 2} = this.props;
         const targetItems = [
             {key: 2, label: null},
             {key: 3, label: null},
@@ -108,7 +108,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: '15px'
+                                marginTop: '0'
                             }}
                     >
                         Horizon in Days
@@ -122,7 +122,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: '40px'
+                                marginTop: '10px'
                             }}
                     >
                         Target in %
@@ -180,6 +180,9 @@ export default class StockCard extends React.Component {
                                     <ActionIcon
                                         type="search"
                                         onClick={this.props.toggleSearchStocksDialog}
+                                        style={{
+                                            padding: 0
+                                        }}
                                     />
                                 }
                             </div>
@@ -234,7 +237,7 @@ export default class StockCard extends React.Component {
                         style={{
                             ...verticalBox,
                             borderTop: '1px solid #E2E2E2',
-                            marginTop: '30px',
+                            marginTop: '20px',
                             paddingTop: '20px'
                         }}
                 >
@@ -255,7 +258,7 @@ export default class StockCard extends React.Component {
                                 ...horizontalBox, 
                                 justifyContent: 'space-between',
                                 width: '100%',
-                                marginTop: '20px'
+                                marginTop: '10px'
                             }}
                     >
                         <SubmitButton 
@@ -264,6 +267,13 @@ export default class StockCard extends React.Component {
                             lastPrice={lastPrice}
                             type="sell"
                         />
+                        <Button 
+                                style={skipButtonStyle} 
+                                variant="outlined"
+                                onClick={this.skipStock}
+                        >
+                            SKIP
+                        </Button>
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('buy')}
                             target={target}
@@ -271,13 +281,6 @@ export default class StockCard extends React.Component {
                             type="buy"
                         />
                     </div>
-                    <Button 
-                            style={skipButtonStyle} 
-                            variant="outlined"
-                            onClick={this.skipStock}
-                    >
-                        SKIP
-                    </Button>
                 </Grid>
             </React.Fragment>
         );
@@ -336,13 +339,14 @@ const nameStyle = {
 };
 
 const skipButtonStyle = {
-    marginTop: '20px',
+    marginTop: '30px',
     padding: '4px 8px',
     minWidth: '54px',
     minHeight: '26px',
-    color: '#8B8B8B',
+    color: '#898989',
+    border: '1px solid #898989',
     borderRadius: '2px',
-    fontSize: '12px',
+    fontSize: '14px',
     fontFamily: 'Lato, sans-serif'
 };
 
@@ -383,7 +387,7 @@ const Change = styled.h3`
 
 const MetricLabel = styled.h3`
     font-size: 16px;
-    color: #9D9D9D;
+    color: #5D5D5D;
     font-weight: 600;
     text-align: start;
     font-weight: 400;
