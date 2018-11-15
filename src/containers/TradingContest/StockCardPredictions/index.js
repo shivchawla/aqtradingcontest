@@ -7,6 +7,7 @@ import {withRouter} from 'react-router-dom';
 import StockCard from './components/mobile/StockCard';
 import StockSelection from './components/mobile/StockSelection';
 import LoaderComponent from '../Misc/Loader';
+import Snackbar from '../../../components/Alerts/SnackbarComponent';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
@@ -17,7 +18,6 @@ const dateFormat = 'YYYY-MM-DD';
 class StockCardPredictions extends React.Component {
     constructor(props) {
         super(props);
-        // console.log(this.initializeSkipStocks());
         this.state = {
             stocks: [],
             loading: false,
@@ -26,7 +26,12 @@ class StockCardPredictions extends React.Component {
             currentStockIndex: -1, // This points to the current stock index in stocks array that is to be rendered
             loadingCreatePredictions: false,
             searchStockOpen: false,
-            skippedStocks: this.initializeSkipStocks()
+            skippedStocks: this.initializeSkipStocks(),
+            snackbar: {
+                open: false,
+                message: ''
+            },
+            editMode: false
         };
     }
     
@@ -39,21 +44,10 @@ class StockCardPredictions extends React.Component {
         return moment(currentDate, dateFormat).isSame(moment(date, dateFormat)) ? stocks : []
     }
 
-    fetchStocks = () => {
-        const url = `${requestUrl}/stock?skip=0&limit=30`;
-        return fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
-        .then(response => {
-            const stocks = _.get(response, 'data', []).map(stock => stock.ticker);
-            this.setState({stocks});
-        })
-        .catch(err => {
-            console.log(err);
-        })
-    }
-
     fetchNextStock = () => {
-        const stocksToSkip = this.state.skippedStocks.join(',');
+        const stocksToSkip = encodeURIComponent(this.state.skippedStocks.join(','));
         const url = `${requestUrl}/dailycontest/nextstock?exclude=${stocksToSkip}&populate=true`;
+        console.log(url);
         
         return fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
@@ -67,17 +61,25 @@ class StockCardPredictions extends React.Component {
     }
 
     updateNextStock = () => {
+        let skippedStocks = _.map(this.state.skippedStocks, _.cloneDeep);
         return this.fetchNextStock()
         .then(stockData => {
-            console.log(stockData);
+            const symbol = _.get(stockData, 'symbol', '');
+            const isStockAlreadySkipped = _.findIndex(skippedStocks, stock => stock === symbol) > -1;
+            if (!isStockAlreadySkipped) {
+                skippedStocks = [...skippedStocks, symbol];
+            }
             this.setState({
-                skippedStocks: [...this.state.skippedStocks, _.get(stockData, 'symbol', '')],
-                stockData
+                skippedStocks,
+                stockData,
+                editMode: false
             }, () => {
                 this.saveSkippedStocksToLocalStorage(this.state.skippedStocks);
             })
         })
-        .catch(err => {console.log(err)})
+        .catch(err => {
+            this.updateSnackbar('Error Occured');
+        })
     }
 
     saveSkippedStocksToLocalStorage = (stocks = []) => {
@@ -115,10 +117,13 @@ class StockCardPredictions extends React.Component {
         this.setState({loadingCreatePredictions: true});
         createPredictions(predictions)
         .then(response => {
-            console.log(response.data);
+            return this.updateNextStock();
+        })
+        .then(() => {
+            this.updateSnackbar('Prediction created successfully :)');
         })
         .catch(error => {
-            console.log(error);
+            this.updateSnackbar('Error Occured while creating predictions');
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
         .finally(() => {
@@ -130,9 +135,28 @@ class StockCardPredictions extends React.Component {
         this.setState({searchStockOpen: !this.state.searchStockOpen});
     }
 
+    toggleEditMode = () => {
+        this.setState({editMode: !this.state.editMode});
+    }
+
+    updateSnackbar = (message) => {
+        this.setState({
+            snackbar: {
+                ...this.state.snackbar,
+                open: true,
+                message
+            }
+        });
+    }
+
     renderContent = () => {
         return (
-            <Container>
+            <Container container>
+                <Snackbar 
+                    openStatus={this.state.snackbar.open}
+                    message={this.state.snackbar.message}
+                    handleClose={() => this.setState({snackbar: {...this.state.snackbar, open: false}})}
+                />
                 <StockSelection 
                     open={this.state.searchStockOpen}
                     toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
@@ -149,10 +173,21 @@ class StockCardPredictions extends React.Component {
                         modifyStockData={this.modifyStockData}
                         createPrediction={this.createDailyContestPrediction}
                         toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
+                        updateSnackbar={this.updateSnackbar}
+                        editMode={this.state.editMode}
+                        toggleEditMode={this.toggleEditMode}
                     />
                 </Grid>
             </Container>
         );
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
+            return true;
+        }
+
+        return false;
     }
 
     render() {
@@ -167,4 +202,7 @@ export default withRouter(StockCardPredictions);
 const Container = styled(Grid)`
     padding: 10px;
     background-color: #fff;
+    width: 100%;
+    height: calc(100vh - 106px);
+    align-items: center;
 `;

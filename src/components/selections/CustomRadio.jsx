@@ -11,12 +11,14 @@ const styles = {
         padding: '4px',
         border: `1px solid ${primaryColor}`,
         color: primaryColor,
+        borderRadius: '2px'
     },
     contained: {
         minWidth: '35px',
         padding: '4px',
         color: '#fff',
         boxShadow: 'none',
+        borderRadius: '2px'
     },
     label: {
         fontSize: '14px',
@@ -54,7 +56,7 @@ class CustomRadio extends React.Component {
                             label: classes.label
                         }}
                 >
-                    {label}
+                    <span style={{fontFamily: 'Lato, sans-serif'}}>{label}</span>
                 </Button>
                 {
                     !hideLabel && <Label style={{marginTop: '5px'}}>{secondaryLabel}</Label>
@@ -70,4 +72,5 @@ const Label = styled.h3`
     font-size: 12px;
     color: #8B8B8B;
     font-weight: 500;
+    font-family: 'Lato', sans-serif;
 `;

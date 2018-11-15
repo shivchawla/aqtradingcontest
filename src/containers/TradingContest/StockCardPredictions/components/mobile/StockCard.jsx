@@ -3,7 +3,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import Icon from  '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {
@@ -13,21 +12,14 @@ import {
     nameEllipsisStyle, 
     metricColor
 } from '../../../../../constants';
-import {getPercentageModifiedValue} from '../../../MultiHorizonCreateEntry/utils';
 import {Utils} from '../../../../../utils';
 import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
+import SubmitButton from './SubmitButton';
 
 const readableDateFormat = 'Do MMM';
 
 export default class StockCard extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            editMode: false
-        };
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -113,7 +105,14 @@ export default class StockCard extends React.Component {
                             alignItems: 'flex-start'
                         }}
                 >
-                    <MetricLabel style={{marginBottom: '10px'}}>Horizon in Days</MetricLabel>
+                    <MetricLabel 
+                            style={{
+                                marginBottom: '10px',
+                                marginTop: '15px'
+                            }}
+                    >
+                        Horizon in Days
+                    </MetricLabel>
                     <StockCardRadioGroup 
                         items={horizonItems}
                         onChange={this.handleHorizonChange}
@@ -123,7 +122,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: '30px'
+                                marginTop: '40px'
                             }}
                     >
                         Target in %
@@ -140,7 +139,7 @@ export default class StockCard extends React.Component {
     }
 
     toggleEditMode = () => {
-        this.setState({editMode: !this.state.editMode});
+        this.setState({editMode: !this.props.editMode});
     }
 
     skipStock = () => {
@@ -162,7 +161,12 @@ export default class StockCard extends React.Component {
         return (
             <React.Fragment>
                 <Grid item xs={12}>
-                    <div style={{...horizontalBox, justifyContent: 'space-between'}}>
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'space-between'
+                            }}
+                    >
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
                             <div 
                                     style={{
@@ -172,8 +176,8 @@ export default class StockCard extends React.Component {
                             >
                                 <MainText>{symbol}</MainText>
                                 {
-                                    this.state.editMode &&
-                                    <ActionIcon 
+                                    this.props.editMode &&
+                                    <ActionIcon
                                         type="search"
                                         onClick={this.props.toggleSearchStocksDialog}
                                     />
@@ -185,12 +189,12 @@ export default class StockCard extends React.Component {
                             <MainText style={{marginRight: '5px'}}>
                                 ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                             </MainText>
-                            <Change color={metricColor.positive}>{changePct}</Change>
+                            <Change color={metricColor.positive}>{changePct}%</Change>
                         </div>
                     </div>
                 </Grid>
                 {
-                    !this.state.editMode &&
+                    !this.props.editMode &&
                     <Grid 
                             item 
                             xs={12} 
@@ -200,12 +204,13 @@ export default class StockCard extends React.Component {
                                 margin: '10px 0'
                             }}
                     >
-                        <EditButton 
+                        <Button 
+                                style={editButtonStyle}
                                 variant="outlined"
-                                onClick={this.toggleEditMode}
+                                onClick={this.props.toggleEditMode}
                         >
                             EDIT
-                        </EditButton>
+                        </Button>
                     </Grid>
                 }
                 <Grid 
@@ -218,7 +223,7 @@ export default class StockCard extends React.Component {
                         }}
                 >
                     {
-                        this.state.editMode 
+                        this.props.editMode 
                         ? this.renderEditMode()
                         : this.renderViewMode()
                     }
@@ -267,7 +272,7 @@ export default class StockCard extends React.Component {
                         />
                     </div>
                     <Button 
-                            style={{marginTop: '20px'}} 
+                            style={skipButtonStyle} 
                             variant="outlined"
                             onClick={this.skipStock}
                     >
@@ -291,33 +296,20 @@ export default class StockCard extends React.Component {
     }
 }
 
-const SubmitButton = ({target, lastPrice, onClick, type = 'buy'}) => {
-    const icon = type === 'buy' ? 'expand_less' : 'expand_more';
-    const label = type === 'buy' ? 'HIGHER' : 'LOWER';
-    const color = type === 'buy' ? metricColor.positive : metricColor.negative;
-    const targetValue = getPercentageModifiedValue(target, lastPrice, type === 'buy');
-    
-    return (
-        <div style={{...verticalBox}}>
-            <Target color={color}>₹{Utils.formatMoneyValueMaxTwoDecimals(targetValue)}</Target>
-            <Button 
-                    variant="contained" 
-                    color="primary"
-                    onClick={onClick}
-            >
-                <Icon style={{fontSize: '18px'}}>{icon}</Icon>
-                {label}
-            </Button>
-        </div>
-    );
-}
-
 const Loader = ({text = null}) => {
     return (
         <LoaderContainer>
             {
                 text !== null &&
-                <h3 style={{marginBottom: '10px'}}>{text}</h3>
+                <h3 
+                        style={{
+                            marginBottom: '10px',
+                            fontFamily: 'Lato, sans-serif',
+                            color: primaryColor
+                        }}
+                >
+                    {text}
+                </h3>
             }
             <CircularProgress />
         </LoaderContainer>
@@ -339,7 +331,30 @@ const nameStyle = {
     textAlign: 'start',
     marginTop: '5px',
     color: '#525252',
+    fontFamily: 'Lato, sans-serif',
     fontWeight: 500,
+};
+
+const skipButtonStyle = {
+    marginTop: '20px',
+    padding: '4px 8px',
+    minWidth: '54px',
+    minHeight: '26px',
+    color: '#8B8B8B',
+    borderRadius: '2px',
+    fontSize: '12px',
+    fontFamily: 'Lato, sans-serif'
+};
+
+const editButtonStyle = {
+    padding: '4px 8px',
+    minWidth: '54px',
+    minHeight: '26px',
+    color: '#5F64ED',
+    border: '1px solid #5F64ED',
+    borderRadius: '2px',
+    fontSize: '12px',
+    fontFamily: 'Lato, sans-serif'
 };
 
 const Container = styled(Grid)`
@@ -350,16 +365,12 @@ const Container = styled(Grid)`
     position: relative;
 `;
 
-const EditButton = styled(Button)`
-    border: 1px solid ${primaryColor};
-    font-size: 12px;
-`;
-
 const MainText = styled.h3`
     font-size: 22px;
-    font-weight: 500;
+    font-weight: 700;
     color: #525252;
     text-align: start;
+    font-family: 'Lato', sans-serif;
 `;
 
 const Change = styled.h3`
@@ -367,6 +378,7 @@ const Change = styled.h3`
     font-weight: 400;
     color: ${props => props.color || metricColor.neutral};
     text-align: start;
+    font-family: 'Lato', sans-serif;
 `;
 
 const MetricLabel = styled.h3`
@@ -374,19 +386,23 @@ const MetricLabel = styled.h3`
     color: #9D9D9D;
     font-weight: 600;
     text-align: start;
+    font-weight: 400;
+    font-family: 'Lato', sans-serif;
 `;
 
 const MetricValue = styled.h3`
     font-size: 18px;
     color: #525252;
-    font-weight: 600;
+    font-weight: 700;
     text-align: start;
+    font-family: 'Lato', sans-serif;
 `;
 
 const QuestionText = styled.h3`
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     color: #8B8B8B;
+    font-family: 'Lato', sans-serif;
 `;
 
 const LoaderContainer = styled.div`
@@ -400,10 +416,4 @@ const LoaderContainer = styled.div`
     height: 100%;
     z-index: 1000;
     border-radius: 4px;
-`;
-
-const Target = styled.h3`
-    font-size: 14px;
-    color: ${props => props.color || metricColor.positive};
-    margin-bottom: 10px;
 `;
