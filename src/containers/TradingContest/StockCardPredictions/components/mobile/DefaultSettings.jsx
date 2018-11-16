@@ -17,7 +17,8 @@ import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import {benchmarks} from '../../../../../constants/benchmarks';
 import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
-import {getTarget, getTargetValue} from '../../utils';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
+import {targetKvp, horizonKvp} from '../../constants';
 
 const readableDateFormat = 'Do MMM';
 
@@ -59,7 +60,7 @@ class DefaultSettings extends React.Component {
     handleHorizonChange = value => {
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
-            horizon: value + 1
+            horizon: getHorizonValue(value)
         });
     }
 
@@ -81,20 +82,11 @@ class DefaultSettings extends React.Component {
         const {classes} = this.props;
         let {horizon = 2, target = 0, benchmark = 'NIFTY_50', editMode = false} = this.props.defaultStockData;
         target = getTarget(target);
-        const targetItems = [
-            {key: 2, label: null},
-            {key: 3, label: null},
-            {key: 5, label: null},
-            {key: 7, label: null},
-            {key: 10, label: null},
-        ];
-        const horizonItems = [
-            {key: 1, label: null},
-            {key: 2, label: null},
-            {key: 3, label: null},
-            {key: 4, label: null},
-            {key: 5, label: null},
-        ];
+        horizon = getHorizon(horizon);
+        const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
+        const horizonItems = horizonKvp.map(horizon => (
+            {key: horizon.value, label: null}
+        ));
 
         return (
             <Dialog
@@ -169,7 +161,7 @@ class DefaultSettings extends React.Component {
                                 <StockCardRadioGroup 
                                     items={horizonItems}
                                     onChange={this.handleHorizonChange}
-                                    defaultSelected={horizon - 1}
+                                    defaultSelected={horizon}
                                 />
 
                                 <MetricLabel 

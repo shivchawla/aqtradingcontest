@@ -14,7 +14,8 @@ import {
 } from '../../../../../constants';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
-import {getTarget, getTargetValue} from '../../utils';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
+import {targetKvp, horizonKvp} from '../../constants';
 import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from './SubmitButton';
@@ -31,9 +32,10 @@ export default class StockCard extends React.Component {
     }
 
     handleHorizonChange = value => {
+        let horizon = getHorizonValue(value);
         this.props.modifyStockData({
             ...this.props.stockData,
-            horizon: value + 1
+            horizon
         });
     }
 
@@ -72,20 +74,10 @@ export default class StockCard extends React.Component {
 
     renderEditMode = () => {
         const {horizon = 2, target = 2} = this.props.stockData;
-        const targetItems = [
-            {key: 2, label: null},
-            {key: 3, label: null},
-            {key: 5, label: null},
-            {key: 7, label: null},
-            {key: 10, label: null},
-        ];
-        const horizonItems = [
-            {key: 1, label: this.getReadableDateForHorizon(1)},
-            {key: 2, label: this.getReadableDateForHorizon(2)},
-            {key: 5, label: this.getReadableDateForHorizon(5)},
-            {key: 10, label: this.getReadableDateForHorizon(10)},
-            {key: 15, label: this.getReadableDateForHorizon(15)},
-        ];
+        const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
+        const horizonItems = horizonKvp.map(horizon => (
+            {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
+        ));
 
         return (
             <React.Fragment>
@@ -106,7 +98,7 @@ export default class StockCard extends React.Component {
                     <StockCardRadioGroup 
                         items={horizonItems}
                         onChange={this.handleHorizonChange}
-                        defaultSelected={horizon - 1}
+                        defaultSelected={getHorizon(horizon)}
                     />
 
                     <MetricLabel 

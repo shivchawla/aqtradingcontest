@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
-import {targetKvp} from '../constants';
+import {targetKvp, horizonKvp} from '../constants';
 const dateFormat = 'YYYY-MM-DD';
 
 export const formatIndividualStock = (stockData, defaultStockData) => {
@@ -84,11 +84,31 @@ export const getTarget = (targetValue = 0) => {
     return 0;
 }
 
+// Gives the horizon index from the horizon value
+export const getHorizon = (horizonValue = 0) => {
+    const horizonValueIndex = _.findIndex(horizonKvp, target => target.value === horizonValue);
+    if (horizonValueIndex > -1) {
+        return horizonKvp[horizonValueIndex].index;
+    }
+
+    return 0;
+}
+
 // Gives the target value from the target index
 export const getTargetValue = (value = 0) => {
     const targetValueIndex = _.findIndex(targetKvp, target => target.index === value);
     if (targetValueIndex > -1) {
         return targetKvp[targetValueIndex].value;
+    }
+
+    return 0;
+}
+
+// Gives the horizon value from the horizon index
+export const getHorizonValue = (value = 0) => {
+    const horizonValueIndex = _.findIndex(horizonKvp, target => target.index === value);
+    if (horizonValueIndex > -1) {
+        return horizonKvp[horizonValueIndex].value;
     }
 
     return 0;
