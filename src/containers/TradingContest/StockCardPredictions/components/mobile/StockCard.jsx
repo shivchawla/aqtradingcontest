@@ -13,6 +13,7 @@ import {
     metricColor
 } from '../../../../../constants';
 import {Utils} from '../../../../../utils';
+import {getTarget, getTargetValue} from '../../utils';
 import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from './SubmitButton';
@@ -35,26 +36,9 @@ export default class StockCard extends React.Component {
         });
     }
 
-    handleTargetChange = value => {
+    handleTargetChange = targetIndex => {
         let stockData = this.props.stockData;
-        let target = 2;
-        switch(value) {
-            case 0:
-                target = 2;
-                break;
-            case 1:
-                target = 3;
-                break;
-            case 2:
-                target = 5;
-                break;
-            case 3:
-                target = 7;
-                break;
-            case 4:
-                target = 10;
-                break;
-        };
+        let target = getTargetValue(targetIndex);
         stockData = {
             ...stockData,
             target,
@@ -81,7 +65,7 @@ export default class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
-        const {horizon = 2} = this.props;
+        const {horizon = 2, target = 2} = this.props.stockData;
         const targetItems = [
             {key: 2, label: null},
             {key: 3, label: null},
@@ -130,7 +114,7 @@ export default class StockCard extends React.Component {
                     <StockCardRadioGroup 
                         items={targetItems}
                         onChange={this.handleTargetChange}
-                        defaultSelected={0}
+                        defaultSelected={getTarget(target)}
                         hideLabel={true}
                     />
                 </div>
