@@ -14,6 +14,7 @@ import CreateEntryEditMobile from './components/mobile/CreateEntryEditScreen';
 import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
+import PredictionsBottomSheet from './components/mobile/PredictionsBottomSheet';
 import {DailyContestCreateMeta} from '../metas';
 import {processSelectedPosition} from '../utils';
 import {Utils, handleCreateAjaxError} from '../../../utils';
@@ -75,7 +76,9 @@ class CreateEntry extends React.Component {
             todayDataLoaded: false,
             previewPositions: [], // used to store the data for previewing,
             loadingPreview: false,
-            selectedView: 'active'
+            selectedView: 'active',
+            predictionBottomSheetOpen: false,
+            selectedPositionIndex: 0
         };
         this.mounted = false;
         this.source = CancelToken.source();
@@ -87,6 +90,16 @@ class CreateEntry extends React.Component {
                 this.searchStockComponent && this.searchStockComponent.fetchStocks();
             }
         });
+    }
+
+    togglePredictionsBottomSheet = () => {
+        console.log('togglePredictionsBottomSheet called');
+        this.setState({predictionBottomSheetOpen: !this.state.predictionBottomSheetOpen});
+    }
+
+    selectPosition = symbol => {
+        const positonIndex = _.findIndex(this.state.positions, position => position.symbol === symbol);
+        this.setState({selectedPositionIndex: positonIndex});
     }
 
     conditionallyAddPosition = async (selectedPositions, cb = null) => {
@@ -623,7 +636,9 @@ class CreateEntry extends React.Component {
             conditionallyAddPosition: this.conditionallyAddPosition,
             bottomSheetOpenStatus: this.state.bottomSheetOpenStatus,
             subscribeToPredictions: this.subscribeToPredictions,
-            selectedView: this.state.selectedView
+            selectedView: this.state.selectedView,
+            selectPosition: this.selectPosition,
+            togglePredictionsBottomSheet: this.togglePredictionsBottomSheet
         };
 
         return (
@@ -659,6 +674,11 @@ class CreateEntry extends React.Component {
                         open={this.state.entryDetailBottomSheetOpenStatus}
                         toggle={this.toggleEntryDetailBottomSheet}
                         pnlMetrics={this.state.pnlStats}
+                    />
+                    <PredictionsBottomSheet 
+                        open={this.state.predictionBottomSheetOpen}
+                        onClose={this.togglePredictionsBottomSheet}
+                        position={this.state.positions[this.state.selectedPositionIndex]}
                     />
                     <SnackbarComponent 
                         openStatus={this.state.snackbarOpenStatus} 
