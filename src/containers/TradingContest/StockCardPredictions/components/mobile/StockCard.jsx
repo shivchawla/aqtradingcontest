@@ -82,9 +82,9 @@ export default class StockCard extends React.Component {
         const horizonItems = [
             {key: 1, label: this.getReadableDateForHorizon(1)},
             {key: 2, label: this.getReadableDateForHorizon(2)},
-            {key: 3, label: this.getReadableDateForHorizon(3)},
-            {key: 4, label: this.getReadableDateForHorizon(4)},
             {key: 5, label: this.getReadableDateForHorizon(5)},
+            {key: 10, label: this.getReadableDateForHorizon(10)},
+            {key: 15, label: this.getReadableDateForHorizon(15)},
         ];
 
         return (
@@ -171,7 +171,8 @@ export default class StockCard extends React.Component {
                                         type="search"
                                         onClick={this.props.toggleSearchStocksDialog}
                                         style={{
-                                            padding: 0
+                                            padding: 0,
+                                            marginLeft: '5px'
                                         }}
                                     />
                                 }
@@ -240,7 +241,7 @@ export default class StockCard extends React.Component {
                                     marginLeft: '5px'
                                 }}
                         >
-                            {horizon} days
+                            {horizon} day{horizon > 1 ? 's' : ''}
                         </span>?
                     </QuestionText>
                     <div 
@@ -248,7 +249,7 @@ export default class StockCard extends React.Component {
                                 ...horizontalBox, 
                                 justifyContent: 'space-between',
                                 width: '100%',
-                                marginTop: '10px'
+                                marginTop: this.props.editMode ? '10px' : '30px'
                             }}
                     >
                         <SubmitButton 

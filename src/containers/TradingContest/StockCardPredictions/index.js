@@ -54,7 +54,7 @@ class StockCardPredictions extends React.Component {
         
         return {
             benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_50'),
-            horizon: _.get(defaultStockData, 'horizon', 1),
+            horizon: _.get(defaultStockData, 'horizon', 5),
             target: _.get(defaultStockData, 'target', 2),
             editMode: _.get(defaultStockData, 'editMode', false)
         }
@@ -226,19 +226,21 @@ class StockCardPredictions extends React.Component {
                         onClick={this.toggleDefaultSettingsBottomSheet}
                     />
                 </Grid>
-                <StockCard 
-                    stockData={this.state.stockData}
-                    skipStock={this.skipStock}
-                    loading={this.state.loadingStockData}
-                    loadingCreate={this.state.loadingCreatePredictions}
-                    modifyStockData={this.modifyStockData}
-                    createPrediction={this.createDailyContestPrediction}
-                    toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
-                    updateSnackbar={this.updateSnackbar}
-                    editMode={this.state.editMode}
-                    toggleEditMode={this.toggleEditMode}
-                    toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
-                />
+                <Grid item xs={12}>
+                    <StockCard 
+                        stockData={this.state.stockData}
+                        skipStock={this.skipStock}
+                        loading={this.state.loadingStockData}
+                        loadingCreate={this.state.loadingCreatePredictions}
+                        modifyStockData={this.modifyStockData}
+                        createPrediction={this.createDailyContestPrediction}
+                        toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
+                        updateSnackbar={this.updateSnackbar}
+                        editMode={this.state.editMode}
+                        toggleEditMode={this.toggleEditMode}
+                        toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
+                    />
+                </Grid>
             </Container>
         );
     }
@@ -264,8 +266,8 @@ const Container = styled(Grid)`
     padding: 10px;
     background-color: #fff;
     width: 100%;
-    height: calc(100vh - 106px);
-    align-items: ${props => props.alignItems || 'center'};
+    --height: calc(100vh - 106px);
+    align-items: ${props => props.alignItems || 'flex-start'};
     position: relative;
 `;
 

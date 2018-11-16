@@ -199,7 +199,7 @@ class DefaultSettings extends React.Component {
                                     View Mode
                                 </MetricLabel>
                                 <RadioGroup style={{margin:'0px auto 10px auto'}}
-			                        items={['Preview', 'Edit']}
+			                        items={['Normal', 'Customize']}
 			                        defaultSelected={editMode === true ? 1 : 0}
                                     onChange={this.onEditModeChanged}
                                     style={{

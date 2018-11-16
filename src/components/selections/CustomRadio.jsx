@@ -42,7 +42,7 @@ class CustomRadio extends React.Component {
         return (
             <div 
                     style={{
-                        width: '50px',
+                        width: '55px',
                         marginRight: '13px'
                     }}
             >
@@ -73,4 +73,5 @@ const Label = styled.h3`
     color: #8B8B8B;
     font-weight: 500;
     font-family: 'Lato', sans-serif;
+    minW
 `;
