@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-09-11 20:06:27
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-11-11 19:18:01
+* @Last Modified time: 2018-11-16 14:25:02
 */
 
 import React, {Fragment} from 'react'
@@ -17,7 +17,7 @@ export const scoringText = 'The theme of the Stock Prediction Contest is to awar
 export const faqs = [
     {
         header: 'How do I enter the contest?', 
-        content: 'Click “Enter Contest", Add up to 10 stocks to buy or sell. Choose target-price/horizon for each predicton. Then click “Submit".'
+        content: 'Click “Enter Contest", Add your favorite stocks to buy or sell. Choose target-price/horizon for each predicton. Then click “Submit".'
     },
     {
         header: 'What stocks/universe is allowed?',
@@ -64,7 +64,7 @@ export const faqs = [
 ];
 
 export const howItWorksContents = [
-    {image: createPortfolio, header: 'Pick your stocks', content: 'Select upto 10 stocks to Buy or Sell'},
+    {image: createPortfolio, header: 'Pick your stocks', content: 'Select your favorite stocks to Buy or Sell'},
     {image: updateEntry, header: 'Set your prediction', content: 'Choose price-target/horizon for each stock prediction.'},
     {image: winPrize, header: 'Win prizes daily', content: 'Highest realized profit win cash prizes everyday'}
 ];
