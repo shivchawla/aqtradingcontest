@@ -13,6 +13,7 @@ import {
     metricColor
 } from '../../../../../constants';
 import {Utils} from '../../../../../utils';
+import {getNextNonHolidayWeekday} from '../../../../../utils/date';
 import {getTarget, getTargetValue} from '../../utils';
 import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
@@ -64,6 +65,11 @@ export default class StockCard extends React.Component {
         );
     }
 
+    getReadableDateForHorizon = horizon => {
+        const currentDate = moment().format('YYYY-MM-DD');
+        return moment(getNextNonHolidayWeekday(currentDate, horizon)).format(readableDateFormat)
+    }
+
     renderEditMode = () => {
         const {horizon = 2, target = 2} = this.props.stockData;
         const targetItems = [
@@ -74,11 +80,11 @@ export default class StockCard extends React.Component {
             {key: 10, label: null},
         ];
         const horizonItems = [
-            {key: 1, label: moment().add(1, 'days').format(readableDateFormat)},
-            {key: 2, label: moment().add(2, 'days').format(readableDateFormat)},
-            {key: 3, label: moment().add(3, 'days').format(readableDateFormat)},
-            {key: 4, label: moment().add(4, 'days').format(readableDateFormat)},
-            {key: 5, label: moment().add(5, 'days').format(readableDateFormat)},
+            {key: 1, label: this.getReadableDateForHorizon(1)},
+            {key: 2, label: this.getReadableDateForHorizon(2)},
+            {key: 3, label: this.getReadableDateForHorizon(3)},
+            {key: 4, label: this.getReadableDateForHorizon(4)},
+            {key: 5, label: this.getReadableDateForHorizon(5)},
         ];
 
         return (

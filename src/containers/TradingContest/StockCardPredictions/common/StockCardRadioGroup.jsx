@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import CustomRadio from '../../../../components/selections/CustomRadio';
 import {horizontalBox} from '../../../../constants';
 
@@ -8,6 +9,12 @@ export default class StockCardRadioGroup extends React.Component {
         this.state = {
             selected: props.defaultSelected || 0
         };
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!_.isEqual(nextProps.defaultSelected, this.props.defaultSelected)) {
+            this.setState({selected: nextProps.defaultSelected || 0})
+        }
     }
 
     handleChange = value => {

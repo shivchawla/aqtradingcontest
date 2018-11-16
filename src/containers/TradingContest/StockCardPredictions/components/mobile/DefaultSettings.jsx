@@ -89,11 +89,11 @@ class DefaultSettings extends React.Component {
             {key: 10, label: null},
         ];
         const horizonItems = [
-            {key: 1, label: moment().add(1, 'days').format(readableDateFormat)},
-            {key: 2, label: moment().add(2, 'days').format(readableDateFormat)},
-            {key: 3, label: moment().add(3, 'days').format(readableDateFormat)},
-            {key: 4, label: moment().add(4, 'days').format(readableDateFormat)},
-            {key: 5, label: moment().add(5, 'days').format(readableDateFormat)},
+            {key: 1, label: null},
+            {key: 2, label: null},
+            {key: 3, label: null},
+            {key: 4, label: null},
+            {key: 5, label: null},
         ];
 
         return (
