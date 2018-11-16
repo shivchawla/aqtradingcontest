@@ -65,7 +65,9 @@ class StockSelection extends React.Component {
                 toggleBottomSheet={this.props.toggleSearchStocksDialog}
                 addPositions={this.addPositions}
                 portfolioPositions={[this.props.stockData]}
-                filters={{}}
+                filters={{
+                    universe: _.get(this.props, 'stockData.benchmark', 'NIFTY_500')
+                }}
                 ref={el => this.searchStockComponent = el}
                 history={this.props.history}
                 pageUrl={this.props.match.url}

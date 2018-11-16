@@ -13,6 +13,8 @@ import {
     metricColor
 } from '../../../../../constants';
 import {Utils} from '../../../../../utils';
+import {getNextNonHolidayWeekday} from '../../../../../utils/date';
+import {getTarget, getTargetValue} from '../../utils';
 import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from './SubmitButton';
@@ -35,26 +37,9 @@ export default class StockCard extends React.Component {
         });
     }
 
-    handleTargetChange = value => {
+    handleTargetChange = targetIndex => {
         let stockData = this.props.stockData;
-        let target = 2;
-        switch(value) {
-            case 0:
-                target = 2;
-                break;
-            case 1:
-                target = 3;
-                break;
-            case 2:
-                target = 5;
-                break;
-            case 3:
-                target = 7;
-                break;
-            case 4:
-                target = 10;
-                break;
-        };
+        let target = getTargetValue(targetIndex);
         stockData = {
             ...stockData,
             target,
@@ -80,8 +65,13 @@ export default class StockCard extends React.Component {
         );
     }
 
+    getReadableDateForHorizon = horizon => {
+        const currentDate = moment().format('YYYY-MM-DD');
+        return moment(getNextNonHolidayWeekday(currentDate, horizon)).format(readableDateFormat)
+    }
+
     renderEditMode = () => {
-        const {horizon = 2} = this.props;
+        const {horizon = 2, target = 2} = this.props.stockData;
         const targetItems = [
             {key: 2, label: null},
             {key: 3, label: null},
@@ -90,11 +80,11 @@ export default class StockCard extends React.Component {
             {key: 10, label: null},
         ];
         const horizonItems = [
-            {key: 1, label: moment().add(1, 'days').format(readableDateFormat)},
-            {key: 2, label: moment().add(2, 'days').format(readableDateFormat)},
-            {key: 3, label: moment().add(3, 'days').format(readableDateFormat)},
-            {key: 4, label: moment().add(4, 'days').format(readableDateFormat)},
-            {key: 5, label: moment().add(5, 'days').format(readableDateFormat)},
+            {key: 1, label: this.getReadableDateForHorizon(1)},
+            {key: 2, label: this.getReadableDateForHorizon(2)},
+            {key: 3, label: this.getReadableDateForHorizon(3)},
+            {key: 4, label: this.getReadableDateForHorizon(4)},
+            {key: 5, label: this.getReadableDateForHorizon(5)},
         ];
 
         return (
@@ -130,7 +120,7 @@ export default class StockCard extends React.Component {
                     <StockCardRadioGroup 
                         items={targetItems}
                         onChange={this.handleTargetChange}
-                        defaultSelected={0}
+                        defaultSelected={getTarget(target)}
                         hideLabel={true}
                     />
                 </div>

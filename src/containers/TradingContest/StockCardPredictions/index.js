@@ -26,6 +26,7 @@ class StockCardPredictions extends React.Component {
             loading: false,
             loadingStockData: false,
             stockData: {},
+            defaultStockData: this.initializeDefaultStockData(), // This should only be modified by DefaultSettings
             currentStockIndex: -1, // This points to the current stock index in stocks array that is to be rendered
             loadingCreatePredictions: false,
             searchStockOpen: false,
@@ -34,7 +35,7 @@ class StockCardPredictions extends React.Component {
                 open: false,
                 message: ''
             },
-            editMode: false,
+            editMode: this.initializeDefaultStockData().editMode,
             defaultSettingsOpen: false
         };
     }
@@ -48,15 +49,25 @@ class StockCardPredictions extends React.Component {
         return moment(currentDate, dateFormat).isSame(moment(date, dateFormat)) ? stocks : []
     }
 
+    initializeDefaultStockData = () => {
+        const defaultStockData = Utils.getObjectFromLocalStorage('defaultSettings');
+        
+        return {
+            benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_50'),
+            horizon: _.get(defaultStockData, 'horizon', 1),
+            target: _.get(defaultStockData, 'target', 2),
+            editMode: _.get(defaultStockData, 'editMode', false)
+        }
+    }
+
     fetchNextStock = () => {
         const stocksToSkip = encodeURIComponent(this.state.skippedStocks.join(','));
         const url = `${requestUrl}/dailycontest/nextstock?exclude=${stocksToSkip}&populate=true`;
-        console.log(url);
         
         return fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
             const data = _.get(response, 'data', {});
-            const stockData = formatIndividualStock(data[0]);
+            const stockData = formatIndividualStock(data[0], this.state.defaultStockData);
             return Promise.resolve(stockData);
         })
         .catch(err => {
@@ -76,7 +87,7 @@ class StockCardPredictions extends React.Component {
             this.setState({
                 skippedStocks,
                 stockData,
-                editMode: false
+                editMode: this.initializeDefaultStockData().editMode
             }, () => {
                 this.saveSkippedStocksToLocalStorage(this.state.skippedStocks);
             })
@@ -96,12 +107,41 @@ class StockCardPredictions extends React.Component {
         );
     }
 
+    undoStockSkips = () => {
+        this.setState({skippedStocks: []}, () => {
+            this.updateSnackbar('Stock skips cleared');
+        })
+        Utils.localStorageSaveObject(
+            'stocksToSkip',
+            {
+                date: moment().format(dateFormat),
+                stocks: []
+            }
+        );
+    }
+
+    saveDefaultSettingsToLocalStorage = (defaultStockData = this.state.defaultStockData) => {
+        Utils.localStorageSaveObject('defaultSettings', defaultStockData);
+    }
+
     skipStock = () => {
         this.setState({loadingStockData: true});
         this.updateNextStock()
         .finally(() => {
             this.setState({loadingStockData: false});
         })
+    }
+
+    modifyDefaultStockData = (defaultStockData = this.state.stockData) => {
+        this.setState({
+            defaultStockData,
+            stockData: {
+                ...this.state.stockData,
+                ...defaultStockData
+            }
+        }, () => {
+            this.saveDefaultSettingsToLocalStorage();
+        });
     }
 
     componentWillMount() {
@@ -158,10 +198,8 @@ class StockCardPredictions extends React.Component {
     }
 
     renderContent = () => {
-        const alignContainerItems = this.state.editMode ? 'flex-start' : 'center';
-
         return (
-            <Container container alignItems={alignContainerItems}>
+            <Container container alignItems='flex-start'>
                 <Snackbar 
                     openStatus={this.state.snackbar.open}
                     message={this.state.snackbar.message}
@@ -170,6 +208,10 @@ class StockCardPredictions extends React.Component {
                 <DefaultSettings 
                     open={this.state.defaultSettingsOpen}
                     onClose={this.toggleDefaultSettingsBottomSheet}
+                    defaultStockData={this.state.defaultStockData}
+                    modifyDefaultStockData={this.modifyDefaultStockData}
+                    undoStockSkips={this.undoStockSkips}
+                    skippedStocks={this.state.skippedStocks}
                 />
                 <StockSelection 
                     open={this.state.searchStockOpen}
@@ -178,26 +220,25 @@ class StockCardPredictions extends React.Component {
                     modifyStockData={this.modifyStockData}
                     skippedStocks={this.state.skippedStocks}
                 />
-                <Grid item xs={12}>
-                    <div style={settingsContainer}>
-                        <ActionIcon 
-                            type='settings_input_composite' 
-                            onClick={this.toggleDefaultSettingsBottomSheet}
-                        />
-                    </div>
-                    <StockCard 
-                        stockData={this.state.stockData}
-                        skipStock={this.skipStock}
-                        loading={this.state.loadingStockData}
-                        loadingCreate={this.state.loadingCreatePredictions}
-                        modifyStockData={this.modifyStockData}
-                        createPrediction={this.createDailyContestPrediction}
-                        toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
-                        updateSnackbar={this.updateSnackbar}
-                        editMode={this.state.editMode}
-                        toggleEditMode={this.toggleEditMode}
+                <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                    <ActionIcon 
+                        type='settings_input_composite' 
+                        onClick={this.toggleDefaultSettingsBottomSheet}
                     />
                 </Grid>
+                <StockCard 
+                    stockData={this.state.stockData}
+                    skipStock={this.skipStock}
+                    loading={this.state.loadingStockData}
+                    loadingCreate={this.state.loadingCreatePredictions}
+                    modifyStockData={this.modifyStockData}
+                    createPrediction={this.createDailyContestPrediction}
+                    toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
+                    updateSnackbar={this.updateSnackbar}
+                    editMode={this.state.editMode}
+                    toggleEditMode={this.toggleEditMode}
+                    toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
+                />
             </Container>
         );
     }

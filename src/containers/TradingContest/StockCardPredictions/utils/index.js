@@ -1,10 +1,13 @@
 import _ from 'lodash';
 import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
-
+import {targetKvp} from '../constants';
 const dateFormat = 'YYYY-MM-DD';
 
-export const formatIndividualStock = stockData => {
+export const formatIndividualStock = (stockData, defaultStockData) => {
+    const defaultTarget = _.get(defaultStockData, 'target', 2);
+    const defaultHorizon = _.get(defaultStockData, 'horizon', 1);
+    const defaultBenchmark = _.get(defaultStockData, 'benchmark', 'NIFTY_50');
     const name = _.get(stockData, 'detail.Nse_Name', '');
     const symbol = _.get(stockData, 'ticker', '');
     const lastPrice = _.get(stockData, 'latestDetailRT.current', null) || _.get(stockData, 'latestDetail.Close', 0);
@@ -12,8 +15,8 @@ export const formatIndividualStock = stockData => {
     let changePct = _.get(stockData, 'latestDetailRT.changePct', null) || _.get(stockData, 'latestDetail.ChangePct', 0);
     const sector = _.get(stockData, 'detail.Sector', '');
     const industry = _.get(stockData, 'Industry', '');
-    const target = 2;
-    const horizon = 2;
+    const target = defaultTarget;
+    const horizon = defaultHorizon;
     const buyTarget = getPercentageModifiedValue(2, lastPrice);
     const sellTarget = getPercentageModifiedValue(2, lastPrice, false)
     changePct = Number((changePct * 100).toFixed(2));
@@ -34,7 +37,8 @@ export const formatIndividualStock = stockData => {
             {new: true, locked: false}, 
             {new: true, locked: false}, 
             {new: true, locked: false}
-        ] // adding predictions so that it get's checked in searchs stocks
+        ], // adding predictions so that it get's checked in searchs stocks
+        benchmark: defaultBenchmark
     };
 }
 
@@ -68,4 +72,24 @@ export const getTargetFromLastPrice = (lastPrice, percentage, type = 'buy') => {
     const valueToBeChanged = (type === 'buy' ? 1 : -1) * (percentage * lastPrice) / 100;
 
     return lastPrice + valueToBeChanged;
+}
+
+// Gives the target index from the target value
+export const getTarget = (targetValue = 0) => {
+    const targetValueIndex = _.findIndex(targetKvp, target => target.value === targetValue);
+    if (targetValueIndex > -1) {
+        return targetKvp[targetValueIndex].index;
+    }
+
+    return 0;
+}
+
+// Gives the target value from the target index
+export const getTargetValue = (value = 0) => {
+    const targetValueIndex = _.findIndex(targetKvp, target => target.index === value);
+    if (targetValueIndex > -1) {
+        return targetKvp[targetValueIndex].value;
+    }
+
+    return 0;
 }

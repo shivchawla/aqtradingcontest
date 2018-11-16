@@ -43,9 +43,8 @@ class StockEditPredictionItem extends React.Component {
     }
 
     disabledDate = (date) => {
-        const isWeekend = date.get('day') === 0 || date.get('day') === 6;
-        const isHoliday = DateHelper.isHoliday(date);
-        return isWeekend || isHoliday;
+        const isHoliday = DateHelper.isHoliday(date.format(dateFormat));
+        return isHoliday;
     }
 
     onDateChanged = selectedDate => {

@@ -96,10 +96,9 @@ class StockEditPredictionListItem extends React.Component {
     disabledDate = (date) => {
         const selectedDate = date.format(dateFormat);
         const currentDate = moment().format(dateFormat);
-        const isWeekend = date.get('day') === 0 || date.get('day') === 6;
-        const isHoliday = DateHelper.isHoliday(date);
+        const isHoliday = DateHelper.isHoliday(selectedDate);
         const isToday = _.isEqual(selectedDate, currentDate);
-        return isWeekend || isHoliday || isToday;
+        return isHoliday || isToday;
     }
 
     render() {

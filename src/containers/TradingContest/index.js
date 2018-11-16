@@ -36,7 +36,7 @@ class TradingContest extends React.Component {
         super(props);
         this.state = {
             selectedTab: 0,
-            selectedDate: moment(DateHelper.previousNonHolidayWeekday(moment().add(1, 'days').toDate())),
+            selectedDate: moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate())),
             bottomSheetOpen: false,
         };
     }

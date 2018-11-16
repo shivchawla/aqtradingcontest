@@ -17,7 +17,7 @@ class DateComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: props.selectedDate || moment(DateHelper.previousNonHolidayWeekday(moment().add(1, 'days').toDate()))
+            selectedDate: props.selectedDate || moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate()))
         }
     }
 
@@ -26,7 +26,7 @@ class DateComponent extends React.Component {
     }
 
     navigateToPreviousDate = () => {
-        const date = moment(DateHelper.previousNonHolidayWeekday(this.state.selectedDate.toDate()));
+        const date = moment(DateHelper.getPreviousNonHolidayWeekday(this.state.selectedDate.toDate()));
         window.history.pushState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
         this.props.history.push(this.constructUrlDate(date));
         this.setState({selectedDate: date}, () => this.onDateChange());
@@ -77,9 +77,7 @@ class DateComponent extends React.Component {
     }
 
     disabledDate = (date) => {
-        const isWeekend = date.get('day') === 0 || date.get('day') === 6;
-        const isHoliday = DateHelper.isHoliday(date);
-        return isWeekend || isHoliday;
+        return DateHelper.isHoliday(date.toDate());
     }
 
     render() {
