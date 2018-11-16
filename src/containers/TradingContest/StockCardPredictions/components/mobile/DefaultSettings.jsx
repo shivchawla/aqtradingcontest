@@ -15,7 +15,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
 import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
-import {universe} from '../../../../../constants/universe';
+import {benchmarks} from '../../../../../constants/benchmarks';
 import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
@@ -76,6 +76,7 @@ class DefaultSettings extends React.Component {
             ...this.props.defaultStockData,
             editMode: value === 1
         });
+        this.props.updateEditMode(value === 1);
     }
 
     render() {
@@ -255,7 +256,7 @@ const BenchmarkMenu = ({anchorEl, selectedBenchmark = 'NIFTY_500', onClick , onC
                     onClose={onClose}
             >
                 {
-                    universe.map((benchmark, index) => (
+                    benchmarks.map((benchmark, index) => (
                         <MenuItem 
                                 onClick={e => onMenuItemClicked(e, benchmark)}
                                 selected={benchmark === selectedBenchmark}

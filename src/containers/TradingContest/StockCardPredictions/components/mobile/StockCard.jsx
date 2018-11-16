@@ -135,10 +135,12 @@ export default class StockCard extends React.Component {
             symbol = '', 
             lastPrice = 0, 
             changePct = 0,
+            change = 0,
             target = 2,
             loading = false,
             horizon = 1
         } = this.props.stockData;
+        const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
 
         return (
             <React.Fragment>
@@ -175,7 +177,7 @@ export default class StockCard extends React.Component {
                             <MainText style={{marginRight: '5px'}}>
                                 ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                             </MainText>
-                            <Change color={metricColor.positive}>{changePct}%</Change>
+                            <Change color={changeColor}>{changePct}%</Change>
                         </div>
                     </div>
                 </Grid>

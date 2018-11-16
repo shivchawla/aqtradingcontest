@@ -10,10 +10,12 @@ import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
 import ActionIcon from '../Misc/ActionIcons';
 import Snackbar from '../../../components/Alerts/SnackbarComponent';
+import MarketOpenStatusTag from '../Misc/MarketOpenStatusTag';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
-import {horizontalBox} from '../../../constants';
+import {isMarketOpen} from '../utils';
+import {horizontalBox, metricColor} from '../../../constants';
 
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
@@ -187,6 +189,10 @@ class StockCardPredictions extends React.Component {
         this.setState({editMode: !this.state.editMode});
     }
 
+    updateEditMode = (mode = false) => {
+        this.setState({editMode: mode});
+    }
+
     updateSnackbar = (message) => {
         this.setState({
             snackbar: {
@@ -212,6 +218,7 @@ class StockCardPredictions extends React.Component {
                     modifyDefaultStockData={this.modifyDefaultStockData}
                     undoStockSkips={this.undoStockSkips}
                     skippedStocks={this.state.skippedStocks}
+                    updateEditMode={this.updateEditMode}
                 />
                 <StockSelection 
                     open={this.state.searchStockOpen}
@@ -227,19 +234,25 @@ class StockCardPredictions extends React.Component {
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <StockCard 
-                        stockData={this.state.stockData}
-                        skipStock={this.skipStock}
-                        loading={this.state.loadingStockData}
-                        loadingCreate={this.state.loadingCreatePredictions}
-                        modifyStockData={this.modifyStockData}
-                        createPrediction={this.createDailyContestPrediction}
-                        toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
-                        updateSnackbar={this.updateSnackbar}
-                        editMode={this.state.editMode}
-                        toggleEditMode={this.toggleEditMode}
-                        toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
-                    />
+                    {
+                        isMarketOpen().status 
+                        ?   <StockCard 
+                                stockData={this.state.stockData}
+                                skipStock={this.skipStock}
+                                loading={this.state.loadingStockData}
+                                loadingCreate={this.state.loadingCreatePredictions}
+                                modifyStockData={this.modifyStockData}
+                                createPrediction={this.createDailyContestPrediction}
+                                toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
+                                updateSnackbar={this.updateSnackbar}
+                                editMode={this.state.editMode}
+                                toggleEditMode={this.toggleEditMode}
+                                toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
+                            />
+                        :   <MarketOpenStatusTag color='#fc4c55'>
+                                Market Closed
+                            </MarketOpenStatusTag>
+                    }
                 </Grid>
             </Container>
         );
