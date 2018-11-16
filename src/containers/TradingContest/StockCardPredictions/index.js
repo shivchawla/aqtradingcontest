@@ -210,6 +210,7 @@ class StockCardPredictions extends React.Component {
                     openStatus={this.state.snackbar.open}
                     message={this.state.snackbar.message}
                     handleClose={() => this.setState({snackbar: {...this.state.snackbar, open: false}})}
+                    position='top'
                 />
                 <DefaultSettings 
                     open={this.state.defaultSettingsOpen}
