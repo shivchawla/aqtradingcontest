@@ -55,11 +55,11 @@ export default class ContestHome extends React.Component {
                         </h3>
   
                         <SButton 
-                                onClick={() => this.props.history.push('/dailycontest/mypicks')}
+                                onClick={() => this.props.history.push('/dailycontest/stockpredictions')}
                                 variant="extendedFab"
                                 style={{marginTop: '20px', backgroundColor: secondaryColor, borderRadius:'5px', color: '#fff'}}
                         >
-                            Enter Contest
+                            Submit Prediction
                         </SButton>
                     </Grid>
                 </Grid>
