@@ -196,7 +196,7 @@ const menuCategories = [
         name: "Stock Prediction Contest", icon:'bubble_chart', url: '/dailycontest/home'
     },
     {
-        name: "Create Entry", icon:'create', url: '/dailycontest/mypicks'
+        name: "Create Entry", icon:'create', url: '/dailycontest/stockpredictions'
     },
     {
         name: "Home", url:'/home', href:true, icon:'home_outline'

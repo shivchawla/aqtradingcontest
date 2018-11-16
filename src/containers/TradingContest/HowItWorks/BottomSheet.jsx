@@ -2,13 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import {Motion, spring} from 'react-motion';
+import {withRouter} from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import {primaryColor, verticalBox, horizontalBox, metricColor} from '../../../constants';
 import {howItWorksContents} from '../constants/dailycontestconstants';
 
-export default class BottomSheet extends React.Component {
+class BottomSheet extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.state, nextState) || !_.isEqual(this.props, nextProps)) {
             return true;
@@ -50,6 +52,21 @@ export default class BottomSheet extends React.Component {
                                         })
                                     }
                                 </div>
+                                <div 
+                                        style={{
+                                            ...horizontalBox,
+                                            justifyContent: 'center',
+                                            marginTop: '30px'
+                                        }}
+                                >
+                                    <Button 
+                                            onClick={() => this.props.history.push('/dailycontest/home')}
+                                            variant='outlined'
+                                            style={{fontSize: '14px'}}
+                                    >
+                                        Learn More
+                                    </Button>
+                                </div>
                             </Grid>
                         </Grid>
                 }
@@ -57,6 +74,8 @@ export default class BottomSheet extends React.Component {
         );
     }
 }
+
+export default withRouter(BottomSheet);
 
 const Header = styled.h3`
     font-size: 18px;

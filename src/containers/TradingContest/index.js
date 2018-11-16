@@ -42,14 +42,15 @@ class TradingContest extends React.Component {
     }
 
     handleChange = (selectedTab) => {
-        //console.log('Selected Tab', selectedTab);
-        let tab = this.getSelectedPage(selectedTab);
+        let tab = global.screen.width > 600 
+            ? this.getSelectedPageDesktop(selectedTab)
+            : this.getSelectedPageMobile(selectedTab);
         const url = `${this.props.match.path}/${tab}?date=${this.state.selectedDate.format(dateFormat)}`;
         this.props.history.push(url);
         this.setState({selectedTab});
     };
 
-    getSelectedPage = (selectedTab = 0) => {
+    getSelectedPageMobile = (selectedTab = 0) => {
         switch(selectedTab) {
             case 0:
                 return 'stockpredictions'
@@ -64,7 +65,20 @@ class TradingContest extends React.Component {
         }
     } 
 
-    getSelectedTab = (url) => {
+    getSelectedPageDesktop = (selectedTab = 0) => {
+        switch(selectedTab) {
+            case 0:
+                return 'mypicks';
+            case 1:
+                return 'toppicks';
+            case 2:
+                return 'leaderboard';
+            default:
+                return 'mypicks';
+        }
+    } 
+
+    getSelectedTabDesktop = (url) => {
         switch(url) {
             case "/dailycontest/mypicks":
                 return 0;
@@ -72,6 +86,21 @@ class TradingContest extends React.Component {
                 return 1;
             case "/dailycontest/leaderboard":
                 return 2;
+            default:
+                return 0;
+        }
+    }
+
+    getSelectedTabMobile = url => {
+        switch(url) {
+            case "/dailycontest/stockpredictions":
+                return 0;
+            case "/dailycontest/mypicks":
+                return 1;
+            case "/dailycontest/toppicks":
+                return 2;
+            case "/dailycontest/leaderboard":
+                return 3;
             default:
                 return 0;
         }
@@ -109,17 +138,29 @@ class TradingContest extends React.Component {
         );
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.props.location !== prevProps.location) { // Route changed
+            const currentLocation = this.props.location.pathname;
+            const selectedTab = global.screen.width > 600 
+                ? this.getSelectedTabDesktop(currentLocation)
+                : this.getSelectedTabMobile(currentLocation);
+            this.setState({selectedTab});
+        }
+    }
+
     componentWillMount() {
+        const selectedTab = global.screen.width > 600 
+            ? this.getSelectedTabDesktop(this.props.location.pathname)
+            : this.getSelectedTabMobile(this.props.location.pathname)
         this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
         const date = this.params.get('date');
         if (date !== null) {
-            console.log(date);
             this.setState({selectedDate: moment(date, dateFormat)});
         }
         if (!Utils.isLoggedIn()) {
             window.location.assign('/login');
         }
-        this.setState({selectedTab: this.getSelectedTab(this.props.location.pathname)});
+        this.setState({selectedTab});
     }
 
     renderMobile = () => {
