@@ -186,10 +186,10 @@ class TradingContest extends React.Component {
                                 scrollable
                                 scrollButtons="auto"
                         >
-                            <STab label="STOCK PREDICTIONS"/>
+                            <STab label="PREDICT"/>
                             <STab label="MY PICKS" />
                             <STab label="TOP PICKS" />
-                            <STab label="LEADERBOARD"/>
+                            <STab label="LEADER"/>
                         </STabs>
                     </Grid>
                     <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>

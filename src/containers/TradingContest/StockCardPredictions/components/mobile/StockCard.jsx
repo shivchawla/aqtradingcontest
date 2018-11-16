@@ -163,7 +163,8 @@ export default class StockCard extends React.Component {
                                         type="search"
                                         onClick={this.props.toggleSearchStocksDialog}
                                         style={{
-                                            padding: 0
+                                            padding: 0,
+                                            marginLeft: '5px'
                                         }}
                                     />
                                 }
@@ -232,7 +233,7 @@ export default class StockCard extends React.Component {
                                     marginLeft: '5px'
                                 }}
                         >
-                            {horizon} days
+                            {horizon} day{horizon > 1 ? 's' : ''}
                         </span>?
                     </QuestionText>
                     <div 
@@ -240,7 +241,7 @@ export default class StockCard extends React.Component {
                                 ...horizontalBox, 
                                 justifyContent: 'space-between',
                                 width: '100%',
-                                marginTop: '10px'
+                                marginTop: this.props.editMode ? '10px' : '30px'
                             }}
                     >
                         <SubmitButton 
