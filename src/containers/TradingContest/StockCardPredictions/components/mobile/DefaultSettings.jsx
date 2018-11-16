@@ -14,6 +14,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
 import StockCardRadioGroup from '../../common/StockCardRadioGroup';
+import RadioGroup from '../../../../../components/selections/RadioGroup';
 import {benchmarks} from '../../../../../constants/benchmarks';
 import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
 import {getTarget, getTargetValue} from '../../utils';
@@ -69,9 +70,16 @@ class DefaultSettings extends React.Component {
         });
     }
 
+    onEditModeChanged = (value) => {
+        this.props.modifyDefaultStockData({
+            ...this.props.defaultStockData,
+            editMode: value === 1
+        });
+    }
+
     render() {
         const {classes} = this.props;
-        let {horizon = 2, target = 0, benchmark = 'NIFTY_50'} = this.props.defaultStockData;
+        let {horizon = 2, target = 0, benchmark = 'NIFTY_50', editMode = false} = this.props.defaultStockData;
         target = getTarget(target);
         const targetItems = [
             {key: 2, label: null},
@@ -133,7 +141,7 @@ class DefaultSettings extends React.Component {
                                         width: '100%'
                                     }}
                             >
-                                <MetricLabel style={{marginLeft: '20px'}}>Benchmark</MetricLabel>
+                                <MetricLabel style={{marginLeft: '20px'}}>Universe</MetricLabel>
                                 <BenchmarkMenu 
                                     anchorEl={this.state.anchorEl}
                                     onClick={this.onBenchmarkMenuClicked}
@@ -179,6 +187,44 @@ class DefaultSettings extends React.Component {
                                     hideLabel={true}
                                 />
                             </div>
+                            <div
+                                    style={{
+                                        paddingLeft: '40px',
+                                        width: '100%',
+                                        justifyContent: 'flex-start',
+                                        marginTop: '30px'
+                                    }}
+                            >
+                                <MetricLabel >
+                                    View Mode
+                                </MetricLabel>
+                                <RadioGroup style={{margin:'0px auto 10px auto'}}
+			                        items={['Preview', 'Edit']}
+			                        defaultSelected={editMode === true ? 1 : 0}
+                                    onChange={this.onEditModeChanged}
+                                    style={{
+                                        marginLeft: '-13px'
+                                    }}
+			                    />
+                            </div>
+                            {
+                                this.props.skippedStocks.length > 0 &&
+                                <div
+                                        style={{
+                                            ...horizontalBox,
+                                            width: '100%',
+                                            justifyContent: 'center',
+                                            marginTop: '30px'
+                                        }}
+                                >
+                                    <Button 
+                                            variant="outlined"
+                                            onClick={this.props.undoStockSkips}
+                                    >
+                                        Undo Skips
+                                    </Button>
+                                </div>
+                            }
                         </Grid>
                     </Grid>
                 </DialogContent>

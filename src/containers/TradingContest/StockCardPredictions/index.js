@@ -35,7 +35,7 @@ class StockCardPredictions extends React.Component {
                 open: false,
                 message: ''
             },
-            editMode: false,
+            editMode: this.initializeDefaultStockData().editMode,
             defaultSettingsOpen: false
         };
     }
@@ -56,6 +56,7 @@ class StockCardPredictions extends React.Component {
             benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_50'),
             horizon: _.get(defaultStockData, 'horizon', 1),
             target: _.get(defaultStockData, 'target', 2),
+            editMode: _.get(defaultStockData, 'editMode', false)
         }
     }
 
@@ -86,7 +87,7 @@ class StockCardPredictions extends React.Component {
             this.setState({
                 skippedStocks,
                 stockData,
-                editMode: false
+                editMode: this.initializeDefaultStockData().editMode
             }, () => {
                 this.saveSkippedStocksToLocalStorage(this.state.skippedStocks);
             })
@@ -102,6 +103,19 @@ class StockCardPredictions extends React.Component {
             {
                 date: moment().format(dateFormat),
                 stocks: stocks
+            }
+        );
+    }
+
+    undoStockSkips = () => {
+        this.setState({skippedStocks: []}, () => {
+            this.updateSnackbar('Stock skips cleared');
+        })
+        Utils.localStorageSaveObject(
+            'stocksToSkip',
+            {
+                date: moment().format(dateFormat),
+                stocks: []
             }
         );
     }
@@ -184,8 +198,6 @@ class StockCardPredictions extends React.Component {
     }
 
     renderContent = () => {
-        const alignContainerItems = this.state.editMode ? 'flex-start' : 'center';
-
         return (
             <Container container alignItems='flex-start'>
                 <Snackbar 
@@ -198,6 +210,8 @@ class StockCardPredictions extends React.Component {
                     onClose={this.toggleDefaultSettingsBottomSheet}
                     defaultStockData={this.state.defaultStockData}
                     modifyDefaultStockData={this.modifyDefaultStockData}
+                    undoStockSkips={this.undoStockSkips}
+                    skippedStocks={this.state.skippedStocks}
                 />
                 <StockSelection 
                     open={this.state.searchStockOpen}
