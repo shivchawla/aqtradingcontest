@@ -17,7 +17,7 @@ class DateComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedDate: props.selectedDate || moment(DateHelper.previousNonHolidayWeekday(moment().add(1, 'days').toDate()))
+            selectedDate: props.selectedDate || moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate()))
         }
     }
 
@@ -26,8 +26,9 @@ class DateComponent extends React.Component {
     }
 
     navigateToPreviousDate = () => {
-        const date = moment(DateHelper.previousNonHolidayWeekday(this.state.selectedDate.toDate()));
-        window.history.replaceState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
+        const date = moment(DateHelper.getPreviousNonHolidayWeekday(this.state.selectedDate.toDate()));
+        window.history.pushState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
+        this.props.history.push(this.constructUrlDate(date));
         this.setState({selectedDate: date}, () => this.onDateChange());
     }
 
@@ -38,7 +39,8 @@ class DateComponent extends React.Component {
     navigateToNextDate = () => {
         const date = moment(DateHelper.nextNonHolidayWeekday(this.state.selectedDate.toDate()));
         if (!this.isFutureDate(date)) {
-            window.history.replaceState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
+            window.history.pushState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
+            this.props.history.push(this.constructUrlDate(date));
             this.setState({selectedDate: date}, () => this.onDateChange());
             
         }
@@ -60,9 +62,10 @@ class DateComponent extends React.Component {
 
     handleDateChange = (date) => {
         const selectedDate = moment(date).format(dateFormat);
-        window.history.replaceState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
+        window.history.pushState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
         this.setState({ selectedDate: date });
         this.props.onDateChange && this.props.onDateChange(moment(selectedDate, dateFormat));
+        this.props.history.push(this.constructUrlDate(date));
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -74,9 +77,7 @@ class DateComponent extends React.Component {
     }
 
     disabledDate = (date) => {
-        const isWeekend = date.get('day') === 0 || date.get('day') === 6;
-        const isHoliday = DateHelper.isHoliday(date);
-        return isWeekend || isHoliday;
+        return DateHelper.isHoliday(date.toDate());
     }
 
     render() {
