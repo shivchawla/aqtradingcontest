@@ -53,7 +53,7 @@ class StockCardPredictions extends React.Component {
         const defaultStockData = Utils.getObjectFromLocalStorage('defaultSettings');
         
         return {
-            benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_50'),
+            benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_500'),
             horizon: _.get(defaultStockData, 'horizon', 5),
             target: _.get(defaultStockData, 'target', 2),
             editMode: _.get(defaultStockData, 'editMode', false)

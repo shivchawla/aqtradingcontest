@@ -15,7 +15,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
 import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
-import {benchmarks} from '../../../../../constants/benchmarks';
+import {universe} from '../../../../../constants/universe';
 import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
@@ -229,7 +229,7 @@ const Transition = (props) => {
     return <Slide direction="up" {...props} />;
 }
 
-const BenchmarkMenu = ({anchorEl, selectedBenchmark = 'NIFTY_50', onClick , onClose, onMenuItemClicked}) => {    
+const BenchmarkMenu = ({anchorEl, selectedBenchmark = 'NIFTY_500', onClick , onClose, onMenuItemClicked}) => {    
     return (
         <div>
             <Button
@@ -255,7 +255,7 @@ const BenchmarkMenu = ({anchorEl, selectedBenchmark = 'NIFTY_50', onClick , onCl
                     onClose={onClose}
             >
                 {
-                    benchmarks.map((benchmark, index) => (
+                    universe.map((benchmark, index) => (
                         <MenuItem 
                                 onClick={e => onMenuItemClicked(e, benchmark)}
                                 selected={benchmark === selectedBenchmark}
