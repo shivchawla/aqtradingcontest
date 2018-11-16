@@ -236,7 +236,6 @@ export class Utils{
 	}
 
 	static getAuthToken(){
-
 		this.loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']){
 			return this.loggedInUserinfo['token'];
@@ -334,12 +333,12 @@ export class Utils{
 
 	static formatMoneyValueMaxTwoDecimals(value) {
 		if (value && typeof(value) == "number"){
-			var x = (value/100000) > 1.0 ? value.toFixed(0) : value.toFixed(2);
+			var x = Math.abs(value/100000) > 1.0 ? value.toFixed(0) : value.toFixed(2);
 			var afterPoint = '';
 			if(x.indexOf('.') > 0)
 			   afterPoint = x.substring(x.indexOf('.'),x.length);
-			x = Math.floor(x);
-			x=x.toString();
+			x = value > 0 ? Math.floor(x) : Math.ceil(x)
+			x = x.toString();
 			var lastThree = x.substring(x.length-3);
 			var otherNumbers = x.substring(0,x.length-3);
 			if(otherNumbers !== '' && otherNumbers !== '-')

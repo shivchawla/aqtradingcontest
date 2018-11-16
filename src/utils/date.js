@@ -2,24 +2,23 @@
 * @Author: Shiv Chawla
 * @Date:   2018-03-31 19:38:33
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-11-08 19:14:28
+* @Last Modified time: 2018-11-16 10:24:55
 */
-"use strict";
 const moment = require('moment-timezone');
 const indiaTimeZone = "Asia/Kolkata";
 const localTimeZone = moment.tz.guess();
 
 const holidays = [
-    "2018-08-22",
-    "2018-09-13",
-    "2018-09-20",
-    "2018-10-02",
-    "2018-10-18",
-    "2018-11-07",
-    "2018-11-08",
-    "2018-11-23",
-    "2018-12-25"
-].map(item => moment(item).tz(indiaTimeZone));
+	"2018-08-22",
+	"2018-09-13",
+	"2018-09-20",
+	"2018-10-02",
+	"2018-10-18",
+	"2018-11-07",
+	"2018-11-08",
+	"2018-11-23",
+	"2018-12-25"
+].map(item => moment.tz(item, indiaTimeZone));
 
 function _isBeforeMarketClose() {
 	return moment().isBefore(exports.getMarketClose());
@@ -36,7 +35,7 @@ module.exports.getMarketOpen = function() {
 
 module.exports.getMarketClose = function() {
 	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
-	return moment.tz(`${cd} 23:30:00`, indiaTimeZone).tz(localTimeZone);
+	return moment.tz(`${cd} 15:30:00`, indiaTimeZone).tz(localTimeZone);
 }
 
 module.exports.getMarketOpenHour = function() {
@@ -56,11 +55,19 @@ module.exports.getMarketCloseMinute = function(){
 }
 
 module.exports.compareDates = function(date1, date2) {
-	var t1 = module.exports.getDate(date1).getTime();
-	var t2 = module.exports.getDate(date2).getTime();
+	var t1 = exports.getDate(date1).getTime();
+	var t2 = exports.getDate(date2).getTime();
 
 	return (t1 < t2) ? -1 : (t1 == t2) ? 0 : 1;
 };
+
+module.exports.getLocalDatetime  = function(datetime) {
+	
+	var _d = moment.tz(new Date(), "Asia/Kolkata").format();
+
+	//Get datetime in IST time zone
+	var _dtLocalStr = _d.toLocaleString("en-US", {timeZone: "Asia/Kolkata"})
+}
 
 //Return dateTime formatted to Current Date and Time as 5:30AM IST 
 //Applies offset before formatting
@@ -97,15 +104,14 @@ module.exports.getLocalDate = function(dateTime, offset) {
 
 //Return dateTime formatted to Current Date and Time as 00:00:00 IST
 module.exports.getDate = function(dateTime) {
-
-	return moment((dateTime ? moment(dateTime) : moment()).format("YYYY-MM-DD")).tz(indiaTimeZone).toDate();
-	//return module.exports.getLocalDate(dateTime, 0);
+	return (dateTime ? moment(dateTime) : moment()).tz(indiaTimeZone).set({hour:0, minute:0, second:0, millisecond:0}).toDate();
+	//return exports.getLocalDate(dateTime, 0);
 };
 
 //Return dateTime formatted to Current Date and Time as 5:30AM IST
 module.exports.getCurrentDate = function() {
 	
-	return module.exports.getDate(null);
+	return exports.getDate(null);
 };
 
 module.exports.getCurrentMonthEnd = function() {
@@ -115,12 +121,12 @@ function _getLastMonday(date) {
 	var daysPassedSinceLastMonday = date.getDay() - 1;
 	daysPassedSinceLastMonday = daysPassedSinceLastMonday  < 0 ? 6 : daysPassedSinceLastMonday; 
 	date.setDate(date.getDate() - daysPassedSinceLastMonday);
-	return module.exports.getDate(date)
+	return exports.getDate(date)
 }
 
 module.exports.getFirstMonday = function(offset) {
 	//["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-	var currentDate = module.exports.getCurrentDate();
+	var currentDate = exports.getCurrentDate();
 
 	if (offset == "1W" || offset == "1w") {
 		var lastMonday = _getLastMonday(currentDate);
@@ -133,29 +139,36 @@ module.exports.getFirstMonday = function(offset) {
 		nextDate.setDate(nextDate.getDate() + 14);
 		return nextDate;
 	} else if(offset == "1M" || offset == "1m") {
-		var firstDateNextMonth = module.exports.getDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-		return module.exports.getLatestWeekday(firstDateNextMonth);
+		var firstDateNextMonth = exports.getDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+		return exports.getLatestWeekday(firstDateNextMonth);
+		//var lastMonday = _getLastMonday(firstDateNextMonth);
+		
+		//var nextDate = lastMonday;
+		//nextDate.setDate(nextDate.getDate() + 7);
+		//return nextDate;
 	} else if(offset == "3M" || offset == "3m" || offset == "1Q" || offset == "1q") {
-        var firstDateAfterThreeMonths = module.exports.getDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 3, 1));
-		return module.exports.getLatestWeekday(firstDateAfterThreeMonths);
+		var firstDateAfterThreeMonths = exports.getDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 3, 1));
+		return exports.getLatestWeekday(firstDateAfterThreeMonths);
+		/*var lastMonday = _getLastMonday(firstDateAfterThreeMonths);
+		var nextDate = lastMonday;
+		nextDate.setDate(nextDate.getDate() + 7);
+		return nextDate;*/
 	} 
-
-	return currentDate;
 };
 
 module.exports.getLatestWeekday = function(date) {
-	date = !date ? module.exports.getCurrentDate() : date;
+	date = !date ? exports.getCurrentDate() : exports.getDate(date);
 
 	var day = date.getDay();
 	if (!(day == 0 || day == 6)){
-		return module.exports.getDate(date);
+		return exports.getDate(date);
 	} else {
-		return module.exports.getNextWeekday(date);
+		return exports.getNextWeekday(date);
 	}
 }
 
 module.exports.getNextWeekday = function(date) {
-	date = !date ? module.exports.getCurrentDate() : date;
+	date = !date ? exports.getCurrentDate() : exports.getDate(date);
 	var day = date.getDay();
 
 	if (day == 6) { //Saturday
@@ -166,55 +179,78 @@ module.exports.getNextWeekday = function(date) {
 		date.setDate(date.getDate() + 1);
 	}
 
-	return module.exports.getDate(date);
+	return exports.getDate(date);
 };
-
 
 module.exports.getPreviousWeekday = function(date) {
-	date = !date ? module.exports.getCurrentDate() : date;
-	//subtract one day
-	date.setDate(date.getDate() - 1);
+	date = !date ? exports.getCurrentDate() : exports.getDate(date);
 	var day = date.getDay();
 
-	if (day == 6) { //Saturday
-		date.setDate(date.getDate() - 1);
+	if (day == 1) { //Monday
+		date.setDate(date.getDate() - 3);
 	} else if (day == 0) { //Sunday
 		date.setDate(date.getDate() - 2);
-	} 
+	} else {
+		date.setDate(date.getDate() - 1);
+	}
 
-	return module.exports.getDate(date);
+	return exports.getDate(date);
 };
 
-module.exports.isWeekend = function(date) {
-	date = !date ? module.exports.getCurrentDate() : date;
-	return date.getDay() == 0 || date.getDay() == 6;
+module.exports.formatDate = function(date) {
+	date = !date ? exports.getCurrentDate() : exports.getDate(date); 
+	
+	var month = date.getMonth() + 1;
+    return date.getFullYear()+"-"+(month < 10 ? `0${month}` : month)+"-"+date.getDate();    
 };
 
-module.exports.previousNonHolidayWeekday = function(date, today=false) {
-	var nextWeekday = today ? module.exports.getDate(date) : module.exports.getPreviousWeekday(date);
+module.exports.getDatesInWeek = function(date, offset=0) {
 	
-	let isWeekend = module.exports.isWeekend(nextWeekday);
-	let isHoliday = !isWeekend ? module.exports.isHoliday(nextWeekday) : true;
-	
-	return isHoliday ? module.exports.previousNonHolidayWeekday(nextWeekday) : nextWeekday;
+	var _md = moment(date).tz(indiaTimeZone);
+	var week = _md.get('week');
+
+	var dates = [];
+
+	var _d = moment().day('Monday').week(week + offset);
+
+	for (var i=0;i<=5;i++) {
+		dates.push(moment(_d).add(i, 'days').toDate());
+	}
+
+	return dates;
 };
 
-module.exports.nextNonHolidayWeekday = function(date, today=false) {
-	var nextWeekday = today ? module.exports.getDate(date) : module.exports.getNextWeekday(date);
+module.exports.getPreviousNonHolidayWeekday = function(date, offset=1) {
+	var prevWeekday = offset == 0  ? module.exports.getDate(date) : module.exports.getPreviousWeekday(date);
 	
-	let isWeekend = module.exports.isWeekend(nextWeekday);
-	let isHoliday = !isWeekend ? module.exports.isHoliday(nextWeekday) : true;
+	do {
+		let isHoliday = module.exports.isHoliday(prevWeekday);
+		prevWeekday = isHoliday ? module.exports.getPreviousNonHolidayWeekday(prevWeekday) : prevWeekday;
+		offset--;
+	} while (offset > 0) 
 
-	return isHoliday ? module.exports.nextNonHolidayWeekday(nextWeekday) : nextWeekday;
+	return prevWeekday;
+};
+
+module.exports.getNextNonHolidayWeekday = function(date, offset = 1) {
+	var nextWeekday = offset == 0  ? module.exports.getDate(date) : module.exports.getNextWeekday(date);
+	
+	do {
+		let isHoliday = exports.isHoliday(nextWeekday);	
+		nextWeekday = isHoliday ? exports.getNextNonHolidayWeekday(nextWeekday) : nextWeekday;
+		offset--;
+	} while(offset > 0)
+
+	return nextWeekday;
+};
+
+module.exports.getCurrentIndiaDateTime = function() {
+	return moment.tz(new Date(), "Asia/Kolkata"); 
 };
 
 module.exports.isHoliday = function(date) {
-	date = !date ? module.exports.getCurrentDate() : exports.getDate(date);
-	return holidays.findIndex(item => {return item.isSame(moment(date))}) !== -1;
-};
-
-module.exports.getHolidays = function() {
-	return holidays;
+	date = !date ? module.exports.getCurrentDate() : date;
+	return date.getDay() == 0 || date.getDay() == 6 || holidays.findIndex(item => {return item.isSame(moment(date));}) !== -1;
 };
 
 module.exports.getMarketCloseDateTime = function(date) {
