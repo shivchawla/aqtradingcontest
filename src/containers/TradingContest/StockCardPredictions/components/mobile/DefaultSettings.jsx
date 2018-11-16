@@ -54,6 +54,7 @@ class DefaultSettings extends React.Component {
                 ...this.props.defaultStockData,
                 benchmark: selectedBenchmark
             });
+            this.props.undoStockSkips();
         });
     }
 

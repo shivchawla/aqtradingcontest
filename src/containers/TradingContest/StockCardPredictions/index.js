@@ -64,7 +64,8 @@ class StockCardPredictions extends React.Component {
 
     fetchNextStock = () => {
         const stocksToSkip = encodeURIComponent(this.state.skippedStocks.join(','));
-        const url = `${requestUrl}/dailycontest/nextstock?exclude=${stocksToSkip}&populate=true`;
+        const benchmark = _.get(this.state, 'stockData.benchmark', 'NIFTY_IT');
+        const url = `${requestUrl}/dailycontest/nextstock?exclude=${stocksToSkip}&populate=true&universe=${benchmark}`;
         
         return fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
@@ -109,18 +110,23 @@ class StockCardPredictions extends React.Component {
         );
     }
 
-    undoStockSkips = () => {
-        this.setState({skippedStocks: []}, () => {
-            this.updateSnackbar('Stock skips cleared');
-        })
-        Utils.localStorageSaveObject(
-            'stocksToSkip',
-            {
-                date: moment().format(dateFormat),
-                stocks: []
-            }
-        );
-    }
+    undoStockSkips = (cb = null) => new Promise((resolve, reject) => {
+        try {
+            this.setState({skippedStocks: []}, () => {
+                resolve(true);
+                this.updateSnackbar('Stock skips cleared');
+            });
+            Utils.localStorageSaveObject(
+                'stocksToSkip',
+                {
+                    date: moment().format(dateFormat),
+                    stocks: []
+                }
+            );
+        } catch(err) {
+            reject(err);
+        }
+    })
 
     saveDefaultSettingsToLocalStorage = (defaultStockData = this.state.defaultStockData) => {
         Utils.localStorageSaveObject('defaultSettings', defaultStockData);
@@ -248,6 +254,7 @@ class StockCardPredictions extends React.Component {
                                 updateSnackbar={this.updateSnackbar}
                                 editMode={this.state.editMode}
                                 toggleEditMode={this.toggleEditMode}
+                                undoStockSkips={this.undoStockSkips}
                                 toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
                             />
                         :   <MarketOpenStatusTag color='#fc4c55'>
