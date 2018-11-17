@@ -74,7 +74,7 @@ class StockCardPredictions extends React.Component {
     })
 
     // skippedStocks, defaultStockData, editMode should be changed
-    initialStateFromLocalStorage = () => {
+    initializeStateFromLocalStorage = () => {
         return Promise.all([
                 this.initializeSkipStocks(),
                 this.initializeDefaultStockData()
@@ -138,7 +138,7 @@ class StockCardPredictions extends React.Component {
         );
     }
 
-    undoStockSkips = (cb = null) => new Promise((resolve, reject) => {
+    undoStockSkips = () => new Promise((resolve, reject) => {
         try {
             this.setState({skippedStocks: []}, () => {
                 resolve(true);
@@ -182,7 +182,7 @@ class StockCardPredictions extends React.Component {
 
     componentWillMount() {
         this.setState({loading: true});
-        this.initialStateFromLocalStorage()
+        this.initializeStateFromLocalStorage()
         .then(() => {
             const isMarketTrading = DateHelper.isMarketTrading();
             const shouldGetNextStock = isMarketTrading && isMarketOpen().status;
