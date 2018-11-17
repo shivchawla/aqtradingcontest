@@ -7,7 +7,6 @@ import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 
 export default class PredictionsBottomSheet extends React.Component {
     render() {
-        console.log(this.props);
         const {predictions = []} = _.get(this.props, 'position', {});
 
         return (

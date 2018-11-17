@@ -9,6 +9,7 @@ import StockSelection from './components/mobile/StockSelection';
 import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
 import ActionIcon from '../Misc/ActionIcons';
+import TimerComponent from '../Misc/TimerComponent';
 import Snackbar from '../../../components/Alerts/SnackbarComponent';
 import MarketOpenStatusTag from '../Misc/MarketOpenStatusTag';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
@@ -17,6 +18,7 @@ import {formatIndividualStock, constructPrediction} from './utils';
 import {isMarketOpen} from '../utils';
 import {horizontalBox, sectors} from '../../../constants';
 
+const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
 
@@ -181,7 +183,11 @@ class StockCardPredictions extends React.Component {
     componentWillMount() {
         this.setState({loading: true});
         this.initialStateFromLocalStorage()
-        .then(() => this.updateNextStock())
+        .then(() => {
+            const isMarketTrading = DateHelper.isMarketTrading();
+            const shouldGetNextStock = isMarketTrading && isMarketOpen().status;
+            return shouldGetNextStock ? this.updateNextStock() : null;
+        })
         .finally(() => {
             this.setState({loading: false});
         })
@@ -236,7 +242,29 @@ class StockCardPredictions extends React.Component {
         });
     }
 
+    renderTimer = (dateTime, text) => {
+        return (
+            <TimerComponent 
+                style={{marginTop: '60%'}}
+                date={dateTime.toDate()}  
+                tag={text}
+            />   
+        );
+    }
+
+    renderMarketClose = () => {
+        return (
+            <MarketOpenStatusTag color='#fc4c55' style={{marginTop: '60%'}}>
+                Market Closed
+            </MarketOpenStatusTag>
+        );
+    }
+
     renderContent = () => {
+        const marketOpenDateTime = DateHelper.getMarketOpenDateTime();
+        const isMarketTrading = DateHelper.isMarketTrading();
+        const nextNonHolidayWeekday = DateHelper.getMarketOpenDateTime(DateHelper.getNextNonHolidayWeekday());
+
         return (
             <Container container alignItems='flex-start'>
                 <Snackbar 
@@ -262,7 +290,7 @@ class StockCardPredictions extends React.Component {
                     skippedStocks={this.state.skippedStocks}
                 />
                 {
-                    isMarketOpen().status &&
+                    isMarketOpen().status && isMarketTrading &&
                     <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
                         <ActionIcon 
                             type='settings_input_composite' 
@@ -272,24 +300,27 @@ class StockCardPredictions extends React.Component {
                 }
                 <Grid item xs={12}>
                     {
-                        isMarketOpen().status 
-                        ?   <StockCard 
-                                stockData={this.state.stockData}
-                                skipStock={this.skipStock}
-                                loading={this.state.loadingStockData}
-                                loadingCreate={this.state.loadingCreatePredictions}
-                                modifyStockData={this.modifyStockData}
-                                createPrediction={this.createDailyContestPrediction}
-                                toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
-                                updateSnackbar={this.updateSnackbar}
-                                editMode={this.state.editMode}
-                                toggleEditMode={this.toggleEditMode}
-                                undoStockSkips={this.undoStockSkips}
-                                toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
-                            />
-                        :   <MarketOpenStatusTag color='#fc4c55' style={{marginTop: '60%'}}>
-                                Market Closed
-                            </MarketOpenStatusTag>
+                        isMarketTrading
+                        ?   isMarketOpen().status
+                                ?   <StockCard 
+                                        stockData={this.state.stockData}
+                                        skipStock={this.skipStock}
+                                        loading={this.state.loadingStockData}
+                                        loadingCreate={this.state.loadingCreatePredictions}
+                                        modifyStockData={this.modifyStockData}
+                                        createPrediction={this.createDailyContestPrediction}
+                                        toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
+                                        updateSnackbar={this.updateSnackbar}
+                                        editMode={this.state.editMode}
+                                        toggleEditMode={this.toggleEditMode}
+                                        undoStockSkips={this.undoStockSkips}
+                                        toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
+                                    />
+                                :    moment().isBefore(marketOpenDateTime)
+                                        ?   this.renderTimer(marketOpenDateTime, 'Market will open in')
+                                        :   this.renderMarketClose()
+                        :   this.renderTimer(nextNonHolidayWeekday, 'You can enter predictions in')
+
                     }
                 </Grid>
             </Container>
