@@ -37,7 +37,7 @@ class DateComponent extends React.Component {
     }
 
     navigateToNextDate = () => {
-        const date = moment(DateHelper.nextNonHolidayWeekday(this.state.selectedDate.toDate()));
+        const date = moment(DateHelper.getNextNonHolidayWeekday(this.state.selectedDate.toDate()));
         if (!this.isFutureDate(date)) {
             window.history.pushState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
             this.props.history.push(this.constructUrlDate(date));

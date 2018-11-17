@@ -151,7 +151,7 @@ const PnlComponent = ({totalPnl, pnlPct}) => {
     return (
         <div style={{...verticalBox, alignItems: 'flex-start'}}>
             <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                <LastPrice>₹{totalPnl}</LastPrice>
+                <LastPrice style={{color: pnlColor}}>₹{totalPnl}</LastPrice>
                 <ChangeDivider>|</ChangeDivider>
                 <Change color={pnlColor}>({pnlPct})</Change>
             </div>
