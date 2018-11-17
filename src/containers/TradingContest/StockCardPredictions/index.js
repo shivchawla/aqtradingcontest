@@ -16,7 +16,7 @@ import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
 import {isMarketOpen} from '../utils';
-import {horizontalBox, sectors} from '../../../constants';
+import {horizontalBox, sectors, verticalBox} from '../../../constants';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -242,13 +242,21 @@ class StockCardPredictions extends React.Component {
         });
     }
 
-    renderTimer = (dateTime, text) => {
+    renderTimer = (dateTime, text, showMarketClosed = false) => {
         return (
-            <TimerComponent 
-                style={{marginTop: '60%'}}
-                date={dateTime.toDate()}  
-                tag={text}
-            />   
+            <div style={{...verticalBox, marginTop: '55%'}}>
+                {
+                    showMarketClosed &&
+                    <MarketOpenStatusTag color='#fc4c55'>
+                        Market Closed
+                    </MarketOpenStatusTag>
+                }
+                <TimerComponent 
+                    date={dateTime.toDate()}  
+                    tag={text}
+                    style={{marginTop: '10px'}}
+                />   
+            </div>
         );
     }
 
@@ -314,13 +322,13 @@ class StockCardPredictions extends React.Component {
                                         editMode={this.state.editMode}
                                         toggleEditMode={this.toggleEditMode}
                                         undoStockSkips={this.undoStockSkips}
+                                        skippedStocks={this.state.skippedStocks}
                                         toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
                                     />
                                 :    moment().isBefore(marketOpenDateTime)
                                         ?   this.renderTimer(marketOpenDateTime, 'Market will open in')
                                         :   this.renderMarketClose()
-                        :   this.renderTimer(nextNonHolidayWeekday, 'You can enter predictions in')
-
+                        :   this.renderTimer(nextNonHolidayWeekday, 'You can enter predictions in', true)
                     }
                 </Grid>
             </Container>

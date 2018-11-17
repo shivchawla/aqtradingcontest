@@ -280,6 +280,8 @@ export default class StockCard extends React.Component {
     }
 
     renderNoContent = () => {
+        const {skippedStocks = []} = this.props;
+
         return (
             <Grid container>
                 <Grid 
@@ -291,12 +293,21 @@ export default class StockCard extends React.Component {
                         }}
                 >
                     <NoDataText>End of list reached</NoDataText>
-                    <ActionIcon 
-                        type='replay' 
-                        size={40}
-                        style={{marginTop: '5px'}}
-                        onClick={this.reloadStocks}
-                    />
+                    {
+                        skippedStocks.length === 0 
+                        ?   <Button 
+                                    variant="outlined"
+                                    onClick={this.props.toggleDefaultSettingsBottomSheet}
+                            >
+                                Change Sectors
+                            </Button>
+                        :   <ActionIcon 
+                                type='replay' 
+                                size={40}
+                                style={{marginTop: '5px'}}
+                                onClick={this.reloadStocks}
+                            />
+                    }
                 </Grid>
             </Grid>
         );
