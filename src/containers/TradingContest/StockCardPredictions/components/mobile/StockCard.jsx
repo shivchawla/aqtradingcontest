@@ -295,12 +295,16 @@ export default class StockCard extends React.Component {
                     <NoDataText>End of list reached</NoDataText>
                     {
                         skippedStocks.length === 0 
-                        ?   <Button 
-                                    variant="outlined"
-                                    onClick={this.props.toggleDefaultSettingsBottomSheet}
+                        ?   <h3 
+                                    style={{
+                                        fontSize: '14px', 
+                                        fontFamily: 'Lato, sans-serif',
+                                        fontWeight: 400,
+                                        marginTop: '10px'
+                                    }}
                             >
-                                Change Sectors
-                            </Button>
+                                Please update settings
+                            </h3>
                         :   <ActionIcon 
                                 type='replay' 
                                 size={40}

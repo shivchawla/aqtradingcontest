@@ -255,7 +255,7 @@ const SectorMenu = ({anchorEl, selectedSector = sectors[0], onClick , onClose, o
                     onClose={onClose}
             >
                 {
-                    sectors.map((sector, index) => (
+                    ['', ...sectors].map((sector, index) => (
                         <MenuItem 
                                 onClick={e => onMenuItemClicked(e, sector)}
                                 selected={sector === selectedSector}
