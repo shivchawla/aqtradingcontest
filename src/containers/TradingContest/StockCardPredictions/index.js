@@ -15,7 +15,7 @@ import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
 import {isMarketOpen} from '../utils';
-import {horizontalBox, metricColor} from '../../../constants';
+import {horizontalBox, sectors} from '../../../constants';
 
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
@@ -28,44 +28,70 @@ class StockCardPredictions extends React.Component {
             loading: false,
             loadingStockData: false,
             stockData: {},
-            defaultStockData: this.initializeDefaultStockData(), // This should only be modified by DefaultSettings
+            defaultStockData: [], // This should only be modified by DefaultSettings
             currentStockIndex: -1, // This points to the current stock index in stocks array that is to be rendered
             loadingCreatePredictions: false,
             searchStockOpen: false,
-            skippedStocks: this.initializeSkipStocks(),
+            skippedStocks: [],
             snackbar: {
                 open: false,
                 message: ''
             },
-            editMode: this.initializeDefaultStockData().editMode,
+            editMode: false,
             defaultSettingsOpen: false
         };
     }
     
-    initializeSkipStocks = () => {
-        const skipStocksData = Utils.getObjectFromLocalStorage('stocksToSkip');
-        const date = _.get(skipStocksData, 'date', moment().format(dateFormat));
-        const stocks = _.get(skipStocksData, 'stocks', []);
-        const currentDate = moment().format(dateFormat);
+    initializeSkipStocks = () => new Promise((resolve, reject) => {
+        try {
+            const skipStocksData = Utils.getObjectFromLocalStorage('stocksToSkip');
+            const date = _.get(skipStocksData, 'date', moment().format(dateFormat));
+            const stocks = _.get(skipStocksData, 'stocks', []);
+            const currentDate = moment().format(dateFormat);
 
-        return moment(currentDate, dateFormat).isSame(moment(date, dateFormat)) ? stocks : []
-    }
-
-    initializeDefaultStockData = () => {
-        const defaultStockData = Utils.getObjectFromLocalStorage('defaultSettings');
-        
-        return {
-            benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_500'),
-            horizon: _.get(defaultStockData, 'horizon', 5),
-            target: _.get(defaultStockData, 'target', 2),
-            editMode: _.get(defaultStockData, 'editMode', false)
+            resolve(moment(currentDate, dateFormat).isSame(moment(date, dateFormat)) ? stocks : []);
+        } catch(err) {
+            reject(err);
         }
+    })
+
+    initializeDefaultStockData = () => new Promise((resolve, reject) => {
+        try {
+            const defaultStockData = Utils.getObjectFromLocalStorage('defaultSettings');
+        
+            resolve({
+                benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_500'),
+                horizon: _.get(defaultStockData, 'horizon', 5),
+                target: _.get(defaultStockData, 'target', 2),
+                editMode: _.get(defaultStockData, 'editMode', false),
+                sector: _.get(defaultStockData, 'sector', sectors[0])
+            });
+        } catch (err) {
+            reject(err);
+        }
+    })
+
+    // skippedStocks, defaultStockData, editMode should be changed
+    initialStateFromLocalStorage = () => {
+        return Promise.all([
+                this.initializeSkipStocks(),
+                this.initializeDefaultStockData()
+            ])
+            .then(([skippedStocks, defaultStockData]) => {
+                this.setState({
+                    skippedStocks,
+                    defaultStockData,
+                    stockData: defaultStockData,
+                    editMode: _.get(defaultStockData, 'editMode', false)
+                })
+            });
     }
 
     fetchNextStock = () => {
         const stocksToSkip = encodeURIComponent(this.state.skippedStocks.join(','));
-        const benchmark = _.get(this.state, 'stockData.benchmark', 'NIFTY_IT');
-        const url = `${requestUrl}/dailycontest/nextstock?exclude=${stocksToSkip}&populate=true&universe=${benchmark}`;
+        const sector = _.get(this.state, 'stockData.sector', null);
+
+        const url = `${requestUrl}/dailycontest/nextstock?exclude=${stocksToSkip}&populate=true&sector=${sector}`;
         
         return fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
@@ -81,7 +107,7 @@ class StockCardPredictions extends React.Component {
     updateNextStock = () => {
         let skippedStocks = _.map(this.state.skippedStocks, _.cloneDeep);
         return this.fetchNextStock()
-        .then(stockData => {
+        .then(async stockData => {
             const symbol = _.get(stockData, 'symbol', '');
             const isStockAlreadySkipped = _.findIndex(skippedStocks, stock => stock === symbol) > -1;
             if (!isStockAlreadySkipped) {
@@ -90,7 +116,7 @@ class StockCardPredictions extends React.Component {
             this.setState({
                 skippedStocks,
                 stockData,
-                editMode: this.initializeDefaultStockData().editMode
+                editMode: await this.initializeDefaultStockData().editMode
             }, () => {
                 this.saveSkippedStocksToLocalStorage(this.state.skippedStocks);
             })
@@ -154,7 +180,8 @@ class StockCardPredictions extends React.Component {
 
     componentWillMount() {
         this.setState({loading: true});
-        this.updateNextStock()
+        this.initialStateFromLocalStorage()
+        .then(() => this.updateNextStock())
         .finally(() => {
             this.setState({loading: false});
         })
@@ -234,12 +261,15 @@ class StockCardPredictions extends React.Component {
                     modifyStockData={this.modifyStockData}
                     skippedStocks={this.state.skippedStocks}
                 />
-                <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                    <ActionIcon 
-                        type='settings_input_composite' 
-                        onClick={this.toggleDefaultSettingsBottomSheet}
-                    />
-                </Grid>
+                {
+                    isMarketOpen().status &&
+                    <Grid item xs={12} style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                        <ActionIcon 
+                            type='settings_input_composite' 
+                            onClick={this.toggleDefaultSettingsBottomSheet}
+                        />
+                    </Grid>
+                }
                 <Grid item xs={12}>
                     {
                         isMarketOpen().status 
@@ -257,7 +287,7 @@ class StockCardPredictions extends React.Component {
                                 undoStockSkips={this.undoStockSkips}
                                 toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
                             />
-                        :   <MarketOpenStatusTag color='#fc4c55'>
+                        :   <MarketOpenStatusTag color='#fc4c55' style={{marginTop: '60%'}}>
                                 Market Closed
                             </MarketOpenStatusTag>
                     }
@@ -291,12 +321,3 @@ const Container = styled(Grid)`
     align-items: ${props => props.alignItems || 'flex-start'};
     position: relative;
 `;
-
-const settingsContainer = {
-    ...horizontalBox,
-    justifyContent: 'flex-end',
-    width: '100%',
-    position: 'absolute',
-    top: '5px',
-    right: '5px'
-}

@@ -12,7 +12,7 @@ const styles = {
             backgroundColor: primaryColor,
             color: '#fff'
         },
-        width: '100px',
+        width: '150px',
         fontSize: '18px',
         transition: 'all 0.3s ease-in-out'
     },

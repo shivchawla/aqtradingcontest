@@ -14,8 +14,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
 import StockCardRadioGroup from '../../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
-import {benchmarks} from '../../../../../constants/benchmarks';
-import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
+import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
 
@@ -39,19 +38,19 @@ class DefaultSettings extends React.Component {
         };
     }
 
-    onBenchmarkMenuClicked = event => {
+    onSectorkMenuClicked = event => {
         this.setState({ anchorEl: event.currentTarget });
     }
 
-    onBenchmarkMenuClose = event => {
+    onSectorMenuClose = event => {
         this.setState({ anchorEl: null });
     }
 
-    onBenchmarkMenuItemClicked = (event, selectedBenchmark) => {
+    onSectorMenuItemClicked = (event, selectedSector) => {
         this.setState({anchorEl: null}, () => {
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
-                benchmark: selectedBenchmark
+                sector: selectedSector
             });
             this.props.undoStockSkips();
         });
@@ -81,7 +80,7 @@ class DefaultSettings extends React.Component {
 
     render() {
         const {classes} = this.props;
-        let {horizon = 2, target = 0, benchmark = 'NIFTY_50', editMode = false} = this.props.defaultStockData;
+        let {horizon = 2, target = 0, sector = sectors[0], editMode = false} = this.props.defaultStockData;
         target = getTarget(target);
         horizon = getHorizon(horizon);
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
@@ -134,13 +133,13 @@ class DefaultSettings extends React.Component {
                                         width: '100%'
                                     }}
                             >
-                                <MetricLabel style={{marginLeft: '20px'}}>Universe</MetricLabel>
-                                <BenchmarkMenu 
+                                <MetricLabel style={{marginLeft: '20px'}}>Sectors</MetricLabel>
+                                <SectorMenu 
                                     anchorEl={this.state.anchorEl}
-                                    onClick={this.onBenchmarkMenuClicked}
-                                    onClose={this.onBenchmarkMenuClose}
-                                    onMenuItemClicked={this.onBenchmarkMenuItemClicked}
-                                    selectedBenchmark={benchmark}
+                                    onClick={this.onSectorkMenuClicked}
+                                    onClose={this.onSectorMenuClose}
+                                    onMenuItemClicked={this.onSectorMenuItemClicked}
+                                    selectedSector={sector}
                                 />
                             </div>
                             <div 
@@ -230,7 +229,7 @@ const Transition = (props) => {
     return <Slide direction="up" {...props} />;
 }
 
-const BenchmarkMenu = ({anchorEl, selectedBenchmark = 'NIFTY_500', onClick , onClose, onMenuItemClicked}) => {    
+const SectorMenu = ({anchorEl, selectedSector = sectors[0], onClick , onClose, onMenuItemClicked}) => {    
     return (
         <div>
             <Button
@@ -246,7 +245,7 @@ const BenchmarkMenu = ({anchorEl, selectedBenchmark = 'NIFTY_500', onClick , onC
                     marginLeft:'-15px'
                 }}
             >
-                {selectedBenchmark}
+                {selectedSector}
                 <Icon style={{color: primaryColor}}>chevron_right</Icon>
             </Button>
             <Menu
@@ -256,13 +255,13 @@ const BenchmarkMenu = ({anchorEl, selectedBenchmark = 'NIFTY_500', onClick , onC
                     onClose={onClose}
             >
                 {
-                    benchmarks.map((benchmark, index) => (
+                    sectors.map((sector, index) => (
                         <MenuItem 
-                                onClick={e => onMenuItemClicked(e, benchmark)}
-                                selected={benchmark === selectedBenchmark}
+                                onClick={e => onMenuItemClicked(e, sector)}
+                                selected={sector === selectedSector}
                                 key={index}
                         >
-                            {benchmark}
+                            {sector}
                         </MenuItem>
                     ))
                 }
