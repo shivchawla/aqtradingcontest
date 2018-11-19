@@ -28,6 +28,8 @@ const styles = theme => ({
     }
 });
 
+const isDesktop = global.screen.width > 600 ? true : false;
+
 class DefaultSettings extends React.Component {
     constructor(props) {
         super(props);
@@ -130,11 +132,18 @@ class DefaultSettings extends React.Component {
                             <div 
                                     style={{
                                         ...horizontalBox, 
-                                        justifyContent: 'space-between',
+                                        justifyContent: isDesktop ? 'flex-start': 'space-between',
                                         width: '100%'
                                     }}
                             >
-                                <MetricLabel style={{marginLeft: '20px'}}>Sectors</MetricLabel>
+                                <MetricLabel 
+                                        style={{
+                                            marginLeft: '20px',
+                                            marginRight: isDesktop ? '20px' : 0
+                                        }}
+                                >
+                                    Sectors
+                                </MetricLabel>
                                 <SectorMenu 
                                     anchorEl={this.state.anchorEl}
                                     onClick={this.onSectorkMenuClicked}
