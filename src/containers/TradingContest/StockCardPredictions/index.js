@@ -30,7 +30,7 @@ class StockCardPredictions extends React.Component {
             loading: false,
             loadingStockData: false,
             stockData: {},
-            defaultStockData: [], // This should only be modified by DefaultSettings
+            defaultStockData: {}, // This should only be modified by DefaultSettings
             currentStockIndex: -1, // This points to the current stock index in stocks array that is to be rendered
             loadingCreatePredictions: false,
             searchStockOpen: false,
@@ -40,7 +40,8 @@ class StockCardPredictions extends React.Component {
                 message: ''
             },
             editMode: false,
-            defaultSettingsOpen: false
+            defaultSettingsOpen: false,
+            showSuccess: false
         };
     }
     
@@ -66,7 +67,7 @@ class StockCardPredictions extends React.Component {
                 horizon: _.get(defaultStockData, 'horizon', 5),
                 target: _.get(defaultStockData, 'target', 2),
                 editMode: _.get(defaultStockData, 'editMode', false),
-                sector: _.get(defaultStockData, 'sector', sectors[0])
+                sector: _.get(defaultStockData, 'sector', '')
             });
         } catch (err) {
             reject(err);
@@ -118,7 +119,7 @@ class StockCardPredictions extends React.Component {
             this.setState({
                 skippedStocks,
                 stockData,
-                editMode: await this.initializeDefaultStockData().editMode
+                editMode: _.get(this.state, 'defaultStockData.editMode', false)
             }, () => {
                 this.saveSkippedStocksToLocalStorage(this.state.skippedStocks);
             })
@@ -138,11 +139,11 @@ class StockCardPredictions extends React.Component {
         );
     }
 
-    undoStockSkips = () => new Promise((resolve, reject) => {
+    undoStockSkips = (updateSnackbar = true) => new Promise((resolve, reject) => {
         try {
             this.setState({skippedStocks: []}, () => {
                 resolve(true);
-                this.updateSnackbar('Stock skips cleared');
+                updateSnackbar && this.updateSnackbar('Stock skips cleared');
             });
             Utils.localStorageSaveObject(
                 'stocksToSkip',
@@ -168,17 +169,22 @@ class StockCardPredictions extends React.Component {
         })
     }
 
-    modifyDefaultStockData = (defaultStockData = this.state.stockData) => {
-        this.setState({
-            defaultStockData,
-            stockData: {
-                ...this.state.stockData,
-                ...defaultStockData
-            }
-        }, () => {
-            this.saveDefaultSettingsToLocalStorage();
-        });
-    }
+    modifyDefaultStockData = (defaultStockData = this.state.stockData) => new Promise((resolve, reject) => {
+        try {
+            this.setState({
+                defaultStockData,
+                stockData: {
+                    ...this.state.stockData,
+                    ...defaultStockData
+                }
+            }, () => {
+                resolve(true);
+                this.saveDefaultSettingsToLocalStorage();
+            });
+        } catch(err) {
+            reject(err);
+        }
+    })
 
     componentWillMount() {
         this.setState({loading: true});
@@ -197,6 +203,13 @@ class StockCardPredictions extends React.Component {
         this.setState({stockData});
     }
 
+    showSuccess = () => {
+        this.setState({showSuccess: true});
+        setTimeout(() => {
+            this.setState({showSuccess: false})
+        }, 1400);
+    }
+
     createDailyContestPrediction = (type = 'buy') => {
         const predictions = constructPrediction(this.state.stockData, type);
         this.setState({loadingCreatePredictions: true});
@@ -205,7 +218,7 @@ class StockCardPredictions extends React.Component {
             return this.updateNextStock();
         })
         .then(() => {
-            this.updateSnackbar('Prediction created successfully :)');
+            this.showSuccess();
         })
         .catch(error => {
             let errorMessage = _.get(error, 'response.data.msg', '');
@@ -293,6 +306,7 @@ class StockCardPredictions extends React.Component {
                     undoStockSkips={this.undoStockSkips}
                     skippedStocks={this.state.skippedStocks}
                     updateEditMode={this.updateEditMode}
+                    skipStock={this.skipStock}
                 />
                 <StockSelection 
                     open={this.state.searchStockOpen}
@@ -328,6 +342,7 @@ class StockCardPredictions extends React.Component {
                                         undoStockSkips={this.undoStockSkips}
                                         skippedStocks={this.state.skippedStocks}
                                         toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
+                                        showSuccess={this.state.showSuccess}
                                     />
                                 :    moment().isBefore(marketOpenDateTime)
                                         ?   this.renderTimer(marketOpenDateTime, 'Market will open in')

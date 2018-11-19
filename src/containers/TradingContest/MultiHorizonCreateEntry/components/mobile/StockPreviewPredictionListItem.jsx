@@ -94,7 +94,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                     color={type === 'buy' ? metricColor.positive : metricColor.negative}
                                     style={{marginTop: '-4px'}}
                             >
-                                {targetPct}%
+                                {Math.round(targetPct)}%
                             </ArrowHeaderText>
                         </div>
                         <PriceComponent 

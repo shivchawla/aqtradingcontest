@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as Icons from "@fortawesome/free-solid-svg-icons";
 import {
     primaryColor, 
     verticalBox, 
@@ -324,7 +326,13 @@ export default class StockCard extends React.Component {
         return (
             <Container container>
                 {this.props.loading && <Loader />}
-                {this.props.loadingCreate && <Loader text='Creating Prediction' />}
+                {
+                    (this.props.loadingCreate || this.props.showSuccess) && 
+                    <Loader 
+                        text='Creating Prediction' 
+                        success={this.props.showSuccess}
+                    />
+                }
                 <Grid item xs={12} style={{padding: 10}}>
                     {
                         noData
@@ -337,23 +345,33 @@ export default class StockCard extends React.Component {
     }
 }
 
-const Loader = ({text = null}) => {
+const Loader = ({text = null, success= false}) => {
     return (
         <LoaderContainer>
+            <h3 
+                    style={{
+                        marginBottom: '10px',
+                        fontFamily: 'Lato, sans-serif',
+                        color: primaryColor
+                    }}
+            >
+                {success === true ? 'Successful' : text}
+            </h3>
             {
-                text !== null &&
-                <h3 
-                        style={{
-                            marginBottom: '10px',
-                            fontFamily: 'Lato, sans-serif',
-                            color: primaryColor
-                        }}
-                >
-                    {text}
-                </h3>
+                success
+                    ?   <Success />
+                    :   <CircularProgress />
             }
-            <CircularProgress />
         </LoaderContainer>
+    );
+}
+
+const Success = ({text = null}) => {
+    return (
+        <FontAwesomeIcon 
+            icon={Icons.faCheckCircle} 
+            style={{fontSize: '70px', marginRight: '10px', color: '#05B177'}}
+        />
     );
 }
 
@@ -405,6 +423,7 @@ const Container = styled(Grid)`
     box-shadow: 0 4px 16px #C3C3C3;
     background-color: #fff;
     position: relative;
+    transition: all 0.4s ease-in-out;
 `;
 
 const MainText = styled.h3`

@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import Icon from  '@material-ui/core/Icon';
 import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as Icons from "@fortawesome/free-solid-svg-icons"
+import * as Icons from "@fortawesome/free-solid-svg-icons";
 import {Utils} from '../../../../../utils';
 import {getPercentageModifiedValue} from '../../../MultiHorizonCreateEntry/utils';
 import {verticalBox, metricColor} from '../../../../../constants';

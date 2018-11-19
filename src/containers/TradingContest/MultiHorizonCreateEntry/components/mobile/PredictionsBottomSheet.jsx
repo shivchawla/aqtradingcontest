@@ -6,6 +6,7 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import StockPreviewPredictionList from './StockPreviewPredictionList';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {horizontalBox, verticalBox, nameEllipsisStyle} from '../../../../../constants';
+import {Utils} from '../../../../../utils';
 
 export default class PredictionsBottomSheet extends React.Component {
     renderHeader = () => {
@@ -28,7 +29,7 @@ export default class PredictionsBottomSheet extends React.Component {
                     style={{
                         ...verticalBox, 
                         alignItems: 'flex-start',
-                        background: 'linear-gradient(to right, #335AF0, #5443F0)',
+                        background: 'linear-gradient(to right, #5443F0, #335AF0)',
                         width: '100%',
                         marginBottom: '10px'
                     }}
@@ -59,8 +60,8 @@ export default class PredictionsBottomSheet extends React.Component {
                                 marginRight: '10px'
                             }}
                     >
-                        <LastPrice>₹{lastPrice}</LastPrice>
-                        <Change color={changeColor}>{chg.toFixed(2)} ({chgPct}%)</Change>
+                        <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
+                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(chg)} ({chgPct}%)</Change>
                     </div>
                 </div>
             </div>

@@ -51,8 +51,11 @@ class DefaultSettings extends React.Component {
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
                 sector: selectedSector
+            })
+            .then(() => {
+                this.props.skipStock();
+                this.props.undoStockSkips(false);
             });
-            this.props.undoStockSkips();
         });
     }
 
@@ -80,7 +83,7 @@ class DefaultSettings extends React.Component {
 
     render() {
         const {classes} = this.props;
-        let {horizon = 2, target = 0, sector = sectors[0], editMode = false} = this.props.defaultStockData;
+        let {horizon = 2, target = 0, sector = '', editMode = false} = this.props.defaultStockData;
         target = getTarget(target);
         horizon = getHorizon(horizon);
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
@@ -229,7 +232,7 @@ const Transition = (props) => {
     return <Slide direction="up" {...props} />;
 }
 
-const SectorMenu = ({anchorEl, selectedSector = sectors[0], onClick , onClose, onMenuItemClicked}) => {    
+const SectorMenu = ({anchorEl, selectedSector = '', onClick , onClose, onMenuItemClicked}) => {    
     return (
         <div>
             <Button
