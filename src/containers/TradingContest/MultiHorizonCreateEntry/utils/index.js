@@ -41,7 +41,6 @@ export const createPredictions = (predictions = [], create = true) => {
     // const operation = create ? 'insert' : 'update';
     const operation = 'insert';
     const url = `${requestUrl}/dailycontest/prediction?operation=${operation}`;
-
     return axios({
         method: 'POST',
         url,

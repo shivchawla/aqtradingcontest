@@ -74,7 +74,7 @@ export const constructPrediction = (stockData, type = 'buy') => {
 export const getTargetFromLastPrice = (lastPrice, percentage, type = 'buy') => {
     const valueToBeChanged = (type === 'buy' ? 1 : -1) * (percentage * lastPrice) / 100;
 
-    return lastPrice + valueToBeChanged;
+    return Number((lastPrice + valueToBeChanged).toFixed(2));
 }
 
 // Gives the target index from the target value
