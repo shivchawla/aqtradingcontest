@@ -33,7 +33,7 @@ export default class PredictionsBottomSheet extends React.Component {
                         marginBottom: '10px'
                     }}
             >
-                <ActionIcon type='close' onClick={this.props.onClose} color='#fff'/>
+                <ActionIcon size={24} type='close' onClick={this.props.onClose} color='#fff'/>
                 <div 
                         style={{
                             ...horizontalBox, 
