@@ -230,7 +230,7 @@ export class Utils{
 	static isLoggedIn() {
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']) {
 			return true;
-		}else{
+		} else{
 			return false;
 		}
 	}
@@ -358,8 +358,8 @@ export class Utils{
 			var roundLacs = valueLac - Math.floor(valueLac) > 0;
 			var roundCrs = valueCr - Math.floor(valueCr) > 0;
 
-			return valueLac > 1.0 ?  
-				valueCr > 1.0 ? 
+			return valueLac >= 1.0 ?  
+				valueCr >= 1.0 ? 
 				(roundCrs > 0 ? `${(valueCr).toFixed(2)}Cr` : `${valueCr.toFixed(0)}Cr`) : 
 			 	(roundLacs ? `${valueLac.toFixed(2)}L` : `${valueLac.toFixed(0)}L`) : 
 				(roundVal ? `${value.toFixed(2)}K` : `${value.toFixed(0)}K`);

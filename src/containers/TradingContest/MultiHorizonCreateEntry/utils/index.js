@@ -193,7 +193,7 @@ export const getPredictionEndDate = (predictions = []) => {
     const previousEndDate = predictions.length > 0 
         ? moment(predictions[predictions.length - 1].endDate, dateFormat)
         : moment();
-    return moment(DateHelper.nextNonHolidayWeekday(previousEndDate.toDate())).format(dateFormat);
+    return moment(DateHelper.getNextNonHolidayWeekday(previousEndDate.toDate())).format(dateFormat);
 }
 
 // returns a default prediction that is to be added into the positions
