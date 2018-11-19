@@ -21,6 +21,7 @@ import {horizontalBox, sectors, verticalBox} from '../../../constants';
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
+const isDesktop = global.screen.width > 600 ;
 
 class StockCardPredictions extends React.Component {
     constructor(props) {
@@ -300,7 +301,9 @@ class StockCardPredictions extends React.Component {
 
     renderMarketClose = () => {
         return (
-            <MarketOpenStatusTag color='#fc4c55' style={{marginTop: '60%'}}>
+            <MarketOpenStatusTag 
+                    color='#fc4c55' 
+                    style={{marginTop: isDesktop ? '30%' : '60%'}}>
                 Market Closed
             </MarketOpenStatusTag>
         );
