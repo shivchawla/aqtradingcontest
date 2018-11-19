@@ -108,11 +108,12 @@ class DisplayPredictions extends React.Component {
 			                    />
 		                    </div>
 
-                    		{positions.length === 0 ?
-			                    <EmptyPositionsText>
-			                        No Predictions Found!!
-			                    </EmptyPositionsText>
-			                :
+                    		{
+                                (positions.length === 0 || this.props.noEntryFound)
+                                ?   <EmptyPositionsText>
+                                        No Predictions Found!!
+                                    </EmptyPositionsText>
+			                    :
 			                	<React.Fragment>
 		                            {
 		                                pnlFound &&
