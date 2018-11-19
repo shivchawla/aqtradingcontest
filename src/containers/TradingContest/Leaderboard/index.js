@@ -5,7 +5,7 @@ import moment from 'moment';
 import {withRouter} from 'react-router';
 import LeaderboardLayoutMobile from './mobile/LeaderboardLayout';
 import LeaderboardLayoutDesktop from './desktop/LeaderboardLayout';
-import {DailyContestCreateMeta} from '../metas';
+import {DailyContestLeaderboardMeta} from '../metas';
 import {getContestSummary, processParticipants, getLeaderboard, processLeaderboardWinners} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -75,7 +75,7 @@ class Participants extends React.Component {
 
         return (
             <React.Fragment>
-                <DailyContestCreateMeta />
+                <DailyContestLeaderboardMeta />
                 <Media 
                     query="(max-width: 600px)"
                     render={() => <LeaderboardLayoutMobile {...props}/>}

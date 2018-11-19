@@ -8,6 +8,7 @@ import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
 import TradingContest from './containers/TradingContest';
+import StockCardPredictions from './containers/TradingContest/StockCardPredictions';
 import TradingContestHomeMobile from './containers/TradingContest/Home';
 import TradingContestHomeDesktop from './containers/TradingContest/CreateEntry/components/desktop/Home';
 import DummyLogin from './containers/DummyLogin';
@@ -32,6 +33,14 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                     <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
+                                    <Route
+                                        path='/contest'
+                                        render={() => {
+                                            return Utils.isLoggedIn()
+                                                ? <StockCardPredictions />
+                                                : <DummyLogin />
+                                        }}
+                                    />
                                     <Route 
                                         path='/dailycontest' 
                                         render={() => {
