@@ -284,7 +284,7 @@ export default class StockCard extends React.Component {
                         }}
                 >
                     {
-                        this.props.editMode 
+                        (this.props.editMode || isDesktop)
                         ? this.renderEditMode()
                         : this.renderViewMode()
                     }
