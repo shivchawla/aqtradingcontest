@@ -15,7 +15,7 @@ import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import PredictionsBottomSheet from './components/mobile/PredictionsBottomSheet';
-import {DailyContestCreateMeta} from '../metas';
+import {DailyContestmyPicksMeta} from '../metas';
 import {processSelectedPosition} from '../utils';
 import {Utils, handleCreateAjaxError} from '../../../utils';
 import {maxPredictionLimit} from './constants';
@@ -662,7 +662,7 @@ class CreateEntry extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <DailyContestCreateMeta />
+                <DailyContestmyPicksMeta />
                 <SGrid container>
                     <DuplicatePredictionsDialog 
                         open={this.state.duplicateHorizonDialogOpenStaus}
