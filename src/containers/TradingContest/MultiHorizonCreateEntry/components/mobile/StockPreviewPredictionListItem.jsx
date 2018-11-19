@@ -64,152 +64,121 @@ export default class StockPreviewPredictionListItem extends React.Component {
             index = 0,
         } = this.props.prediction;
         
-        const typeBackgroundColor = '#fff';
         const typeColor = type === 'buy' ? 'green' : '#FE6662';
-        const borderColor = type === 'buy' ? 'green' : '#FE6662'
-        const typeText = type === 'buy' ? 'LONG' : 'SHORT';
+        const typeText = type === 'buy' ? 'HIGHER' : 'LOWER';
         const iconConfig = this.getIconConfig(targetAchieved, active);
 
         const directionUnit = type === 'buy' ? 1 : -1;
         const changeInvestment = directionUnit * ((lastPrice - avgPrice) / avgPrice) * investment;
         const changedInvestment = investment + changeInvestment;
 
+        const duration = moment(endDate, dateFormat).diff(moment(startDate, dateFormat), 'days');
+
         const changedInvestmentColor = changeInvestment > 0 ? metricColor.positive : changeInvestment < 0 ? metricColor.negative : metricColor.neutral;
 
         return (
 
-            <Container container alignItems="center" justify="space-around" wrap="wrap">
-                
-                <Grid item xs={12} style={{...horizontalBox, alignItems: 'flex-start', justify:'space-between', justifyContent:'space-between', padding:'5px 10px'}}>
-                    <h3 style={{color: 'teal', fontSize:'24px', fontWeight:'400'}}><span style={{fontSize:'20px'}}>#</span>{index}</h3>
-                </Grid>
-
-                <Grid item xs={12} style={{...horizontalBox, alignItems: 'flex-start', justify:'space-between', justifyContent:'space-between', padding:'5px 10px'}}>
-                    <MetricLabel>Target Price</MetricLabel>
-                    <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText>
-                </Grid>
-
-                <Grid item xs={12} style={{...horizontalBox, alignItems: 'flex-start', justify:'space-between', justifyContent:'space-between', padding:'5px 10px'}}>
-                    <MetricLabel>Ending on</MetricLabel>
-                    <CallDate>{moment(endDate, dateFormat).format(readableDateFormat)}</CallDate>
-                </Grid>
-
-                <Grid item xs={12} style={{...horizontalBox, alignItems: 'flex-start', justify:'space-between', justifyContent:'space-between', padding:'5px 10px'}}>
-                    <MetricLabel>Call Price</MetricLabel>
-                    <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
-                </Grid>
-
-                <Grid item xs={12} style={{...horizontalBox, alignItems: 'flex-start', justify:'space-between', justifyContent:'space-between', padding:'5px 10px'}}>
-                    <MetricLabel>Call Date</MetricLabel>
-                    <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
-                </Grid>
-
-                <Grid item xs={12} style={{...horizontalBox, alignItems: 'flex-start', justify:'space-between', justifyContent:'space-between', padding:'5px 10px'}}>
-                    <MetricLabel>Direction</MetricLabel>
-                    <TypeTag 
-                        backgroundColor={typeBackgroundColor}
-                        color={typeColor}
-                        borderColor={borderColor}
+            <Container container alignItems="flex-end">
+                <Grid item xs={12} style={{...verticalBox, alignItems: 'center'}}>
+                    <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
+                        <PriceComponent 
+                            label='Call Price'
+                            price={Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}
+                            date={moment(startDate, dateFormat).format(readableDateFormat)}
+                        />
+                        <div style={verticalBox}>
+                            <DurationText>{duration} Days</DurationText>
+                            <Icon>trending_flat</Icon>
+                        </div>
+                        <PriceComponent 
+                            label='Target Price'
+                            price={Utils.formatMoneyValueMaxTwoDecimals(target)}
+                            date={moment(endDate, dateFormat).format(readableDateFormat)}
+                        />
+                    </div>
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'space-between',
+                                width: '100%', 
+                                borderTop: '1px solid #e7e7e7',
+                                marginTop: '10px',
+                                paddingTop: '10px'
+                            }}
                     >
-                        {typeText}
-                    </TypeTag>
-
-                </Grid>
-                
-                <Grid item xs={12} style={{...horizontalBox, alignItems: 'flex-start', justify:'space-between', justifyContent:'space-between', padding:'5px 10px'}}>
-                    <MetricLabel>Status</MetricLabel>
-                    <TypeTag 
-                        backgroundColor={typeBackgroundColor}
-                        color={iconConfig.color}
-                        borderColor={iconConfig.color}
-                    >
-                        {iconConfig.type}
-                    </TypeTag>
-                </Grid>
-
-                <Grid item xs={12} style={{...horizontalBox, alignItems: 'flex-start', justify:'space-between', justifyContent:'space-between', padding:'5px 10px'}}>
-                    <MetricLabel>Chg. Investment</MetricLabel>
-                    <div style={{...horizontalBox}}>
-                        <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
-                        <Icon>arrow_right_alt</Icon>
-                        <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
+                        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                            <MetricLabel>Chg. Investment</MetricLabel>
+                            <div style={{...horizontalBox}}>
+                                <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
+                                <Icon>arrow_right_alt</Icon>
+                                <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
+                            </div>
+                        </div>
+                        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                            <MetricLabel>Direction</MetricLabel>
+                            <MetricText color={typeColor}>{typeText}</MetricText>
+                        </div>
+                        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                            <MetricLabel>Prediction</MetricLabel>
+                            <MetricText color={iconConfig.color}>{iconConfig.type}</MetricText>
+                        </div>
                     </div>
                 </Grid>
-
-            
             </Container>
         );
     }
 }
 
-
-const MetricComponent = ({value, label}) => {
-    return (
-        <div style={{...verticalBox, alignItems: 'flex-start'}}>
-            <MetricValue>{value}</MetricValue>
-            <span style={labelStyle}>{label}</span>
-        </div>
-    );
-}
+const PriceComponent = ({label, price, date}) => (
+    <div style={{...verticalBox, alignItems: 'flex-start'}}>
+        <MetricLabel>{label}</MetricLabel>
+        <PriceText style={{marginTop: '5px'}}>₹{price}</PriceText>
+        <DateText style={{marginTop: '5px'}}>{date}</DateText>
+    </div>
+)
 
 const MetricLabel = styled.div`
     text-align: start;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 12px;
     color: #535353;
 `;
-
-
-const MetricValue = styled.div`
-    text-align: start;
-    font-weight: 400;
-    font-size: 16px;
-    color: #535353;
-`;
-
-const labelStyle = {
-    color: '#464646', 
-    textAlign: 'start', 
-    marginTop:'2px',
-    fontSize: '11px',
-    fontWeight: 400,
-    marginBottom: 0
-};
 
 const Container = styled(Grid)`
     background-color: #fff;
     border-radius: 4px;
     margin-bottom: 20px;
-    border: 1px solid #F3F3F3;
+    border: 1px solid #f9f9f9;
     min-height: 84px;
+    box-shadow: 0 6px 18px #e2e2e2;
+    padding: 10px
 `;
 
 const MetricText = styled.h3`
-    font-size: 16px;
-    color: ${props => props.color || '#4B4A4A'};
-    font-weight: 400;
+    font-size: 14px;
+    color: ${props => props.color || '#464646'};
     text-align: start;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
 `;
 
-const TypeTag = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
+const DateText = styled.h3`
+    font-size: 13px;
+    color: #1646BA;
+    text-align: start;
+    font-weight: 400;
+`;
+
+const PriceText= styled.h3`
+    font-weight: 700;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    color: #464646;
+`;
+
+const DurationText = styled.h3`
     font-size: 12px;
-    font-weight: 400;
-    height: 20px;
-    width: 50px;
-    color: ${props => props.color || '#fff'};
-    padding: 4px 4px;
-    border-radius: 4px;
-    background-color: ${props => props.backgroundColor || '#3EF79B'};
-    box-sizing: border-box;
-    border: 1px solid ${props => props.borderColor || props.backgroundColor || '#3EF79B'};
-`;
-
-const CallDate = styled.h3`
-    font-size: 15px;
-    color: #4B4A4A;
-    text-align: start;
-    font-weight: 400;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    color: #535353;
 `;

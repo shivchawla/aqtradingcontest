@@ -8,8 +8,12 @@ import silver from '../../../assets/silver.svg';
 import bronze from '../../../assets/bronze.svg';
 import fourth from '../../../assets/fourth.svg';
 import fifth from '../../../assets/fifth.svg';
-import {isMarketTrading} from '../../../utils/date';
-
+import {
+    getMarketCloseHour, 
+    getMarketCloseMinute, 
+    getMarketOpenHour, 
+    getMarketOpenMinute
+} from '../../../utils/date';
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
 const currentDate = moment().format(dateFormat);
@@ -163,8 +167,8 @@ export const getMultiStockData = (stocks = []) => {
 }
 
 export const isMarketOpen = (currentTime = moment()) => {
-    const marketOpenTime = moment().hours(9).minutes(15);
-    const marketCloseTime = moment().hours(15).minutes(30);
+    const marketOpenTime = moment().hours(getMarketOpenHour()).minutes(getMarketOpenMinute());
+    const marketCloseTime = moment().hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
     if (currentTime.isSameOrAfter(marketOpenTime) && currentTime.isSameOrBefore(marketCloseTime)) {
         return {status: true};
     } else if (currentTime.isBefore(marketOpenTime)) {

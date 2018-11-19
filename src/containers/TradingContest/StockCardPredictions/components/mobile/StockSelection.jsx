@@ -46,14 +46,13 @@ class StockSelection extends React.Component {
         const lastPrice = _.get(selectedPositions, `[${0}].lastPrice`, '');
         const change = _.get(selectedPositions, `[${0}].chg`, '');
         const changePct = _.get(selectedPositions, `[${0}].chgPct`, '');
-
         stockData = {
             ...stockData,
             symbol,
             name,
             lastPrice,
             change,
-            changePct
+            changePct: Number((changePct * 100).toFixed(2))
         };
 
         this.props.modifyStockData(stockData);

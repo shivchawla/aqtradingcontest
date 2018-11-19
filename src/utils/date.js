@@ -267,4 +267,6 @@ module.exports.isMarketTrading = function() {
 	if (!exports.isHoliday()) {
 		return _isAfterMarketOpen() && _isBeforeMarketClose();
 	}
+
+	return false;
 };

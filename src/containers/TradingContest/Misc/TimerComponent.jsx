@@ -45,9 +45,17 @@ export default class TimeComponent extends React.Component {
         const {small = false} = this.props;
         
         return (
-            <Grid container>
+            <Grid container style={this.props.style}>
                 {this.props.tag  &&
-                    <h3 style={{fontSize: '16px', color: '#4B4B4B', fontWeight: 300, margin: '0 auto', width:'70%'}}>
+                    <h3 
+                            style={{
+                                fontSize: '16px', 
+                                color: '#4B4B4B', 
+                                fontWeight: 300, 
+                                margin: '0 auto', 
+                                width:'70%'
+                            }}
+                    >
                         {this.props.tag}
                     </h3>
                 }

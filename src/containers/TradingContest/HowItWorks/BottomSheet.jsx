@@ -45,7 +45,7 @@ class BottomSheet extends React.Component {
                                         <Icon style={{color: metricColor.negative}}>highlight_off</Icon>
                                     </IconButton>
                                 </div>
-                                <div style={{...verticalBox, marginTop: '30px'}}>
+                                <div style={{...verticalBox}}>
                                     {
                                         howItWorksContents.map((item, index) => {
                                             return <HowItWorksCard key={index} {...item} />

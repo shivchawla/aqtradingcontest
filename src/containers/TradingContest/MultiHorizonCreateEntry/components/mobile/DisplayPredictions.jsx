@@ -19,7 +19,7 @@ class DisplayPredictions extends React.Component {
         super(props);
         this.state = {
             listView: 0,
-            anchorEl: null
+            anchorEl: null,
         };
     }
 
@@ -123,7 +123,11 @@ class DisplayPredictions extends React.Component {
     		                                />
                                         </div>
 		                            }
-		                            <StockPreviewList positions={positions} />
+                                    <StockPreviewList  
+                                        positions={positions} 
+                                        selectPosition={this.props.selectPosition}
+                                        togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
+                                    />
 	                        	</React.Fragment>
                             }
                             {

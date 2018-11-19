@@ -2,12 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {withStyles} from '@material-ui/core/styles';
-import StockPreviewPredictionList from './StockPreviewPredictionList';
 import {horizontalBox, metricColor, nameEllipsisStyle, verticalBox} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
 
@@ -18,6 +13,7 @@ const styles = theme => ({
         border: '1px solid #EAEAEA',
         borderRadius: '4px',
         boxShadow: 'none',
+        padding: '14px 10px',
         '&::before': {
             backgroundColor: 'transparent'
         }
@@ -35,6 +31,11 @@ class StockPreviewListItem extends React.Component {
         }
 
         return false;
+    }
+
+    handlePositionClick = (symbol) => {
+        this.props.selectPosition(symbol);
+        this.props.togglePredictionsBottomSheet();
     }
     
     render() {
@@ -69,52 +70,37 @@ class StockPreviewListItem extends React.Component {
         totalPnl = Utils.formatMoneyValueMaxTwoDecimals(totalPnl*1000);
 
         return (
-            <ExpansionPanel
-                    classes={{
-                        root: classes.expansionPanelRoot
-                    }}
+            <Grid 
+                    container 
+                    alignItems="center" 
+                    justify="space-between"
+                    className={classes.expansionPanelRoot}
+                    onClick={() => this.handlePositionClick(symbol)}
             >
-                <ExpansionPanelSummary 
-                        expandIcon={<ExpandMoreIcon />}
-                        style={{paddingLeft: '10px'}}
-
+                <Grid 
+                        item xs={5} 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'flex-start', 
+                            alignItems: 'flex-start',
+                        }}
                 >
-                    <Grid container alignItems="center" justify="space-between">
-                        <Grid 
-                                item xs={5} 
-                                style={{
-                                    ...horizontalBox, 
-                                    justifyContent: 'flex-start', 
-                                    alignItems: 'flex-start',
-                                }}
-                        >
-                            <SymbolComponent symbol={`${symbol} (${nPredictions})`} name={name} />
-                        </Grid>
-                        <Grid item xs={4}>
-                            <ChangeComponent 
-                                lastPrice={lastPrice}
-                                change={chg}
-                                changePct={chgPct}
-                            />
-                        </Grid>
-                        <Grid item xs={2}>
-                            <div style={{color: pnlColor, fontSize: '15px', display:'grid'}}>
-                                ₹{totalPnl}
-                                <span style={{fontSize:'12px'}}>{totalPnlPct}</span>
-                            </div>
-                        </Grid>
-                    </Grid>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails classes={{root: classes.expansionPanelDetailRoot}}>
-                    <Grid container>
-                        <StockPreviewPredictionList 
-                            predictions={predictions} 
-                            modifyPrediction={this.props.modifyPrediction}
-                            deletePrediction={this.props.deletePrediction}
-                        />
-                    </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                    <SymbolComponent symbol={`${symbol} (${nPredictions})`} name={name} />
+                </Grid>
+                <Grid item xs={4}>
+                    <ChangeComponent 
+                        lastPrice={lastPrice}
+                        change={chg}
+                        changePct={chgPct}
+                    />
+                </Grid>
+                <Grid item xs={3}>
+                    <div style={{color: pnlColor, fontSize: '15px', display:'grid'}}>
+                        ₹{totalPnl}
+                        <span style={{fontSize:'12px'}}>{totalPnlPct}</span>
+                    </div>
+                </Grid>
+            </Grid>
         );
     }
 }
@@ -137,12 +123,8 @@ const ChangeComponent = ({lastPrice, change, changePct}) => {
 
     return (
         <div style={{...verticalBox, alignItems: 'flex-start'}}>
-            {/*<div style={{...horizontalBox, justifyContent: 'flex-start'}}>*/}
                 <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
-                {/*<ChangeDivider>|</ChangeDivider>*/}
                 <Change color={changeColor}>₹{formattedChange} ({formattedChangePct}%)</Change>
-            {/*</div>*/}
-            {/*<LastPriceLabel>Last Price</LastPriceLabel>*/}
         </div>
     );
 }

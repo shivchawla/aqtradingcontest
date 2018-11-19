@@ -271,13 +271,66 @@ export default class StockCard extends React.Component {
         );
     }
 
+    reloadStocks = () => {
+        console.log('Called');
+        this.props.undoStockSkips()
+        .then(() => {
+            this.props.skipStock();
+        })
+    }
+
+    renderNoContent = () => {
+        const {skippedStocks = []} = this.props;
+
+        return (
+            <Grid container>
+                <Grid 
+                        item xs={12} 
+                        style={{
+                            ...verticalBox, 
+                            padding: '10px',
+                            minHeight: '318px'
+                        }}
+                >
+                    <NoDataText>End of list reached</NoDataText>
+                    {
+                        skippedStocks.length === 0 
+                        ?   <h3 
+                                    style={{
+                                        fontSize: '14px', 
+                                        fontFamily: 'Lato, sans-serif',
+                                        fontWeight: 400,
+                                        marginTop: '10px'
+                                    }}
+                            >
+                                Please update settings
+                            </h3>
+                        :   <ActionIcon 
+                                type='replay' 
+                                size={40}
+                                style={{marginTop: '5px'}}
+                                onClick={this.reloadStocks}
+                            />
+                    }
+                </Grid>
+            </Grid>
+        );
+    }
+
     render() {
+        const {symbol = null} = this.props.stockData;
+        const noData = symbol === null || (symbol.length === 0);
+
         return (
             <Container container>
                 {this.props.loading && <Loader />}
                 {this.props.loadingCreate && <Loader text='Creating Prediction' />}
                 <Grid item xs={12} style={{padding: 10}}>
-                    {this.renderContent()}
+                    {
+                        noData
+                        ? this.renderNoContent()
+                        : this.renderContent()
+                    }
                 </Grid>
             </Container>
         );
@@ -405,4 +458,10 @@ const LoaderContainer = styled.div`
     height: 100%;
     z-index: 1000;
     border-radius: 4px;
+`;
+
+const NoDataText = styled.div`
+    font-family: 'Lato', sans-serif;
+    font-size: 20px;
+    color: #3D3D3D;
 `;
