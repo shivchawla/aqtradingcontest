@@ -1,10 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import Media from 'react-media';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as Icons from "@fortawesome/free-solid-svg-icons";
 import {
     primaryColor, 
     verticalBox, 
@@ -16,11 +19,12 @@ import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
-import StockCardRadioGroup from '../../common/StockCardRadioGroup';
+import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
-import SubmitButton from './SubmitButton';
+import SubmitButton from '../mobile/SubmitButton';
 
 const readableDateFormat = 'Do MMM';
+const isDesktop = global.screen.width > 600 ? true : false;
 
 export default class StockCard extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -104,7 +108,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: '10px'
+                                marginTop: isDesktop ? '40px' : '10px'
                             }}
                     >
                         Target in %
@@ -129,6 +133,69 @@ export default class StockCard extends React.Component {
         this.props.skipStock();
     }
 
+    getLowerContainerStyleMobile = () => {
+        return ({
+            ...horizontalBox, 
+            justifyContent: 'space-around',
+            width: '100%',
+            marginTop: this.props.editMode ? '10px' : '30px'
+        });
+    }
+
+    getLowerContainerStyleDesktop = () => {
+        return ({
+            ...horizontalBox, 
+            justifyContent: 'space-around',
+            width: '70%',
+            marginTop: '50px',
+            paddingTop: '40px'
+        });
+    }
+
+    renderPriceMetricsDesktop = () => {
+        const {
+            lastPrice = 0,
+            changePct = 0,
+            change = 0,
+        } = this.props.stockData;
+        const changeColor = change > 0 
+            ? metricColor.positive 
+            : change === 0 
+                ? metricColor.neutral 
+                : metricColor.negative;
+
+        return (
+            <div style={{...verticalBox, alignItems: 'flex-end'}}>
+                <MainText style={{marginRight: '5px', fontSize: '26px'}}>
+                    ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
+                </MainText>
+                <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)} ({changePct}%)</Change>
+            </div>
+        );
+    }
+
+    renderPriceMetricsMobile = () => {
+        const {
+            lastPrice = 0,
+            changePct = 0,
+            change = 0,
+        } = this.props.stockData;
+        const changeColor = change > 0 
+            ? metricColor.positive 
+            : change === 0 
+                ? metricColor.neutral 
+                : metricColor.negative;
+
+        return (
+            <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                <MainText style={{marginRight: '5px'}}>
+                    ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
+                </MainText>
+                <Change color={changeColor}>{changePct}%</Change>
+            </div>
+        );
+    }
+
     renderContent = () => {
         const {
             name = '', 
@@ -140,7 +207,12 @@ export default class StockCard extends React.Component {
             loading = false,
             horizon = 1
         } = this.props.stockData;
-        const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
+        const changeColor = change > 0 
+            ? metricColor.positive 
+            : change === 0 
+                ? metricColor.neutral 
+                : metricColor.negative;
+        const editMode = isDesktop || this.props.editMode;
 
         return (
             <React.Fragment>
@@ -160,7 +232,7 @@ export default class StockCard extends React.Component {
                             >
                                 <MainText>{symbol}</MainText>
                                 {
-                                    this.props.editMode &&
+                                    editMode &&
                                     <ActionIcon
                                         type="search"
                                         onClick={this.props.toggleSearchStocksDialog}
@@ -173,16 +245,18 @@ export default class StockCard extends React.Component {
                             </div>
                             <h3 style={nameStyle}>{name}</h3>
                         </div>
-                        <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                            <MainText style={{marginRight: '5px'}}>
-                                ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
-                            </MainText>
-                            <Change color={changeColor}>{changePct}%</Change>
-                        </div>
+                        <Media 
+                            query="(max-width: 599px)"
+                            render={() => this.renderPriceMetricsMobile()}
+                        />
+                        <Media 
+                            query="(min-width: 600px)"
+                            render={() => this.renderPriceMetricsDesktop()}
+                        />
                     </div>
                 </Grid>
                 {
-                    !this.props.editMode &&
+                    !editMode &&
                     <Grid 
                             item 
                             xs={12} 
@@ -211,7 +285,7 @@ export default class StockCard extends React.Component {
                         }}
                 >
                     {
-                        this.props.editMode 
+                        editMode
                         ? this.renderEditMode()
                         : this.renderViewMode()
                     }
@@ -222,8 +296,8 @@ export default class StockCard extends React.Component {
                         style={{
                             ...verticalBox,
                             borderTop: '1px solid #E2E2E2',
-                            marginTop: '20px',
-                            paddingTop: '20px'
+                            marginTop: isDesktop ? '40px' : '20px',
+                            paddingTop: isDesktop ? '40px' : '20px'
                         }}
                 >
                     <QuestionText>
@@ -241,8 +315,8 @@ export default class StockCard extends React.Component {
                     <div 
                             style={{
                                 ...horizontalBox, 
-                                justifyContent: 'space-between',
-                                width: '100%',
+                                justifyContent: 'space-around',
+                                width: isDesktop ? '70%' : '100%',
                                 marginTop: this.props.editMode ? '10px' : '30px'
                             }}
                     >
@@ -324,7 +398,13 @@ export default class StockCard extends React.Component {
         return (
             <Container container>
                 {this.props.loading && <Loader />}
-                {this.props.loadingCreate && <Loader text='Creating Prediction' />}
+                {
+                    (this.props.loadingCreate || this.props.showSuccess) && 
+                    <Loader 
+                        text='Creating Prediction' 
+                        success={this.props.showSuccess}
+                    />
+                }
                 <Grid item xs={12} style={{padding: 10}}>
                     {
                         noData
@@ -337,23 +417,33 @@ export default class StockCard extends React.Component {
     }
 }
 
-const Loader = ({text = null}) => {
+const Loader = ({text = null, success= false}) => {
     return (
         <LoaderContainer>
+            <h3 
+                    style={{
+                        marginBottom: '10px',
+                        fontFamily: 'Lato, sans-serif',
+                        color: primaryColor
+                    }}
+            >
+                {success === true ? 'Successful' : text}
+            </h3>
             {
-                text !== null &&
-                <h3 
-                        style={{
-                            marginBottom: '10px',
-                            fontFamily: 'Lato, sans-serif',
-                            color: primaryColor
-                        }}
-                >
-                    {text}
-                </h3>
+                success
+                    ?   <Success />
+                    :   <CircularProgress />
             }
-            <CircularProgress />
         </LoaderContainer>
+    );
+}
+
+const Success = ({text = null}) => {
+    return (
+        <FontAwesomeIcon 
+            icon={Icons.faCheckCircle} 
+            style={{fontSize: '70px', marginRight: '10px', color: '#05B177'}}
+        />
     );
 }
 
@@ -368,12 +458,13 @@ const MetricPreview = ({label, value, style={}}) => {
 
 const nameStyle = {
     ...nameEllipsisStyle,
-    width: '150px',
+    width: isDesktop ? '300px' : '150px',
     textAlign: 'start',
     marginTop: '5px',
     color: '#525252',
     fontFamily: 'Lato, sans-serif',
     fontWeight: 500,
+    fontSize: isDesktop ? '16px' : '14xp'
 };
 
 const skipButtonStyle = {
@@ -402,13 +493,16 @@ const editButtonStyle = {
 const Container = styled(Grid)`
     width: ${global.screen.width};
     border-radius: 4px;
-    box-shadow: 0 4px 16px #C3C3C3;
+    box-shadow: ${isDesktop ? 'none' : '0 4px 16px #C3C3C3'};
     background-color: #fff;
     position: relative;
+    transition: all 0.4s ease-in-out;
+    padding: 10px 0;
+    padding-top: ${isDesktop ? 0 : '10px'};
 `;
 
 const MainText = styled.h3`
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
     color: #525252;
     text-align: start;
@@ -441,7 +535,7 @@ const MetricValue = styled.h3`
 `;
 
 const QuestionText = styled.h3`
-    font-size: 16px;
+    font-size: ${isDesktop ? '18px' : '16px'};
     font-weight: 700;
     color: #8B8B8B;
     font-family: 'Lato', sans-serif;

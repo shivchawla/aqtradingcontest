@@ -9,7 +9,7 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultTarget = _.get(defaultStockData, 'target', 2);
     const defaultHorizon = _.get(defaultStockData, 'horizon', 1);
     const defaultBenchmark = _.get(defaultStockData, 'benchmark', 'NIFTY_50');
-    const defaultSector = _.get(defaultStockData, 'sector', sectors[0])
+    const defaultSector = _.get(defaultStockData, 'sector', '')
     const name = _.get(stockData, 'detail.Nse_Name', '');
     const symbol = _.get(stockData, 'ticker', '');
     const lastPrice = _.get(stockData, 'latestDetailRT.current', null) || _.get(stockData, 'latestDetail.Close', 0);
@@ -74,7 +74,7 @@ export const constructPrediction = (stockData, type = 'buy') => {
 export const getTargetFromLastPrice = (lastPrice, percentage, type = 'buy') => {
     const valueToBeChanged = (type === 'buy' ? 1 : -1) * (percentage * lastPrice) / 100;
 
-    return lastPrice + valueToBeChanged;
+    return Number((lastPrice + valueToBeChanged).toFixed(2));
 }
 
 // Gives the target index from the target value

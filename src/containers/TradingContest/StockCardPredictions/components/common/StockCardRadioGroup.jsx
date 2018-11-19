@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
-import CustomRadio from '../../../../components/selections/CustomRadio';
-import {horizontalBox} from '../../../../constants';
+import CustomRadio from '../../../../../components/selections/CustomRadio';
+import {horizontalBox} from '../../../../../constants';
 
 export default class StockCardRadioGroup extends React.Component {
     constructor(props) {

@@ -73,6 +73,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const changedInvestment = investment + changeInvestment;
 
         const duration = moment(endDate, dateFormat).diff(moment(startDate, dateFormat), 'days');
+        const targetPct = Number((((target - avgPrice) * 100) / avgPrice).toFixed(2));
 
         const changedInvestmentColor = changeInvestment > 0 ? metricColor.positive : changeInvestment < 0 ? metricColor.negative : metricColor.neutral;
 
@@ -87,8 +88,14 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             date={moment(startDate, dateFormat).format(readableDateFormat)}
                         />
                         <div style={verticalBox}>
-                            <DurationText>{duration} Days</DurationText>
+                            <ArrowHeaderText style={{marginBottom: '-4px'}}>{duration} Days</ArrowHeaderText>
                             <Icon>trending_flat</Icon>
+                            <ArrowHeaderText 
+                                    color={type === 'buy' ? metricColor.positive : metricColor.negative}
+                                    style={{marginTop: '-4px'}}
+                            >
+                                {Math.round(targetPct)}%
+                            </ArrowHeaderText>
                         </div>
                         <PriceComponent 
                             label='Target Price'
@@ -176,9 +183,9 @@ const PriceText= styled.h3`
     color: #464646;
 `;
 
-const DurationText = styled.h3`
+const ArrowHeaderText = styled.h3`
     font-size: 12px;
     font-family: 'Lato', sans-serif;
     font-weight: 500;
-    color: #535353;
+    color: ${props => props.color || '#535353'};
 `;

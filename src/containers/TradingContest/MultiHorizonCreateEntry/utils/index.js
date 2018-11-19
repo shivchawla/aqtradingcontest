@@ -41,7 +41,6 @@ export const createPredictions = (predictions = [], create = true) => {
     // const operation = create ? 'insert' : 'update';
     const operation = 'insert';
     const url = `${requestUrl}/dailycontest/prediction?operation=${operation}`;
-
     return axios({
         method: 'POST',
         url,
@@ -105,7 +104,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
             type: investment > 0 ? 'buy' : 'sell',
             locked: lockPredictions,
             new: newPrediction,
-            lastPrice: _.get(prediction, 'position.lastPrice', null),
+            lastPrice: _.get(prediction, 'position.security.latestDetailRT.current', 0) || _.get(prediction, 'position.security.latestDetail.Close', 0),
             avgPrice: _.get(prediction, 'position.avgPrice', null),
             startDate: moment(startDate).format(dateFormat),
             endDate: moment(endDate).format(dateFormat),
@@ -117,10 +116,10 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
         if (positionIndex < 0) {
             positions.push({
                 chg: _.get(prediction, 'position.security.latestDetailRT.change', 0) || _.get(prediction, 'position.security.latestDetail.Change', 0),
-                chgPct: _.get(prediction, 'position.security.latestDetailRT.changePct', 0) || _.get(prediction, 'position.security.latestDetail.ChangePct', null),
+                chgPct: _.get(prediction, 'position.security.latestDetailRT.changePct', 0) || _.get(prediction, 'position.security.latestDetail.ChangePct', 0),
                 industry: _.get(prediction, 'position.security.detail.Industry', null),
                 key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-                lastPrice: _.get(prediction, 'position.lastPrice', null),
+                lastPrice: _.get(prediction, 'position.security.latestDetailRT.current', 0) || _.get(prediction, 'position.security.latestDetail.Close', 0),
                 name: _.get(prediction, 'position.security.detail.Nse_Name', null),
                 points: 10,
                 sector: _.get(prediction, 'position.security.detail.Sector', null),

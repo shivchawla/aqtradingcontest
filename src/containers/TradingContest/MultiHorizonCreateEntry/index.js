@@ -15,7 +15,7 @@ import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import PredictionsBottomSheet from './components/mobile/PredictionsBottomSheet';
-import {DailyContestCreateMeta} from '../metas';
+import {DailyContestmyPicksMeta} from '../metas';
 import {processSelectedPosition} from '../utils';
 import {Utils, handleCreateAjaxError} from '../../../utils';
 import {maxPredictionLimit} from './constants';
@@ -97,7 +97,7 @@ class CreateEntry extends React.Component {
     }
 
     selectPosition = symbol => {
-        const positonIndex = _.findIndex(this.state.positions, position => position.symbol === symbol);
+        const positonIndex = _.findIndex(this.state.previewPositions, position => position.symbol === symbol);
         this.setState({selectedPositionIndex: positonIndex});
     }
 
@@ -662,7 +662,7 @@ class CreateEntry extends React.Component {
     render() {
         return (
             <React.Fragment>
-                <DailyContestCreateMeta />
+                <DailyContestmyPicksMeta />
                 <SGrid container>
                     <DuplicatePredictionsDialog 
                         open={this.state.duplicateHorizonDialogOpenStaus}
@@ -677,7 +677,7 @@ class CreateEntry extends React.Component {
                     <PredictionsBottomSheet 
                         open={this.state.predictionBottomSheetOpen}
                         onClose={this.togglePredictionsBottomSheet}
-                        position={this.state.positions[this.state.selectedPositionIndex]}
+                        position={this.state.previewPositions[this.state.selectedPositionIndex]}
                     />
                     <SnackbarComponent 
                         openStatus={this.state.snackbarOpenStatus} 
