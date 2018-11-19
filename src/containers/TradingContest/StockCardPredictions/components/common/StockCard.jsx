@@ -212,6 +212,7 @@ export default class StockCard extends React.Component {
             : change === 0 
                 ? metricColor.neutral 
                 : metricColor.negative;
+        const editMode = isDesktop || this.props.editMode;
 
         return (
             <React.Fragment>
@@ -231,7 +232,7 @@ export default class StockCard extends React.Component {
                             >
                                 <MainText>{symbol}</MainText>
                                 {
-                                    this.props.editMode &&
+                                    editMode &&
                                     <ActionIcon
                                         type="search"
                                         onClick={this.props.toggleSearchStocksDialog}
@@ -255,7 +256,7 @@ export default class StockCard extends React.Component {
                     </div>
                 </Grid>
                 {
-                    !this.props.editMode &&
+                    !editMode &&
                     <Grid 
                             item 
                             xs={12} 
@@ -284,7 +285,7 @@ export default class StockCard extends React.Component {
                         }}
                 >
                     {
-                        (this.props.editMode || isDesktop)
+                        editMode
                         ? this.renderEditMode()
                         : this.renderViewMode()
                     }
