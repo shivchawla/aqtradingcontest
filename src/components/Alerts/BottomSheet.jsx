@@ -15,14 +15,14 @@ const styles = theme => ({
         // overflowY: 'scroll',
         padding: 0,
         '&:first-child': {
-            paddingTop: 5
+            paddingTop: 0
         }        
     }
 });
 
 class BottomSheet extends React.Component {
     render() {
-        const {classes, header = 'Header', open = false} = this.props;
+        const {classes, header = 'Header', open = false, customHeader = null} = this.props;
 
         return (
             <Dialog
@@ -45,14 +45,21 @@ class BottomSheet extends React.Component {
                             alignItems: 'center'
                         }}
                     >
-                        <Header>{header}</Header>
-                        <IconButton 
-                                color="inherit" 
-                                onClick={this.props.onClose} 
-                                aria-label="Close"
-                        >
-                            <CloseIcon />
-                        </IconButton>
+                        {
+                            customHeader === null
+                            ?   <Header>{header}</Header>
+                            :   customHeader()
+                        }
+                        {
+                            customHeader === null &&
+                            <IconButton 
+                                    color="inherit" 
+                                    onClick={this.props.onClose} 
+                                    aria-label="Close"
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        }
                     </div>
                     {this.props.children}
                 </DialogContent>

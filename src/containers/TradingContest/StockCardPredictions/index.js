@@ -270,7 +270,7 @@ class StockCardPredictions extends React.Component {
 
     renderContent = () => {
         const marketOpenDateTime = DateHelper.getMarketOpenDateTime();
-        const isMarketTrading = DateHelper.isMarketTrading();
+        const isMarketTrading = !DateHelper.isHoliday();
         const nextNonHolidayWeekday = DateHelper.getMarketOpenDateTime(DateHelper.getNextNonHolidayWeekday());
 
         return (

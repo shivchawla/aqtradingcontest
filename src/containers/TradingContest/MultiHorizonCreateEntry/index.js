@@ -93,7 +93,6 @@ class CreateEntry extends React.Component {
     }
 
     togglePredictionsBottomSheet = () => {
-        console.log('togglePredictionsBottomSheet called');
         this.setState({predictionBottomSheetOpen: !this.state.predictionBottomSheetOpen});
     }
 

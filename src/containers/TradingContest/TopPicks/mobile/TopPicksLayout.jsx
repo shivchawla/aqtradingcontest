@@ -93,12 +93,10 @@ const SGrid = styled(Grid)`
 `;
 
 const topPicksDetailStyle = {
-    height: 'calc(100vh - 180px)',
     minHeight: '480px',
     justifyContent: 'center',
     margin: '10px auto',
-    width:'95%',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+    width:'100%',
     backgroundColor:'#fff'
 };
 
