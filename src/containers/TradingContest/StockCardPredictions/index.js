@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
-import StockCard from './components/mobile/StockCard';
+import StockCard from './components/common/StockCard';
 import StockSelection from './components/mobile/StockSelection';
 import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
@@ -277,6 +277,27 @@ class StockCardPredictions extends React.Component {
         );
     }
 
+    renderStockCard = () => {
+        return (
+            <StockCard 
+                stockData={this.state.stockData}
+                skipStock={this.skipStock}
+                loading={this.state.loadingStockData}
+                loadingCreate={this.state.loadingCreatePredictions}
+                modifyStockData={this.modifyStockData}
+                createPrediction={this.createDailyContestPrediction}
+                toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
+                updateSnackbar={this.updateSnackbar}
+                editMode={this.state.editMode}
+                toggleEditMode={this.toggleEditMode}
+                undoStockSkips={this.undoStockSkips}
+                skippedStocks={this.state.skippedStocks}
+                toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
+                showSuccess={this.state.showSuccess}
+            />
+        );
+    }
+
     renderMarketClose = () => {
         return (
             <MarketOpenStatusTag color='#fc4c55' style={{marginTop: '60%'}}>
@@ -328,22 +349,7 @@ class StockCardPredictions extends React.Component {
                     {
                         isMarketTrading
                         ?   isMarketOpen().status
-                                ?   <StockCard 
-                                        stockData={this.state.stockData}
-                                        skipStock={this.skipStock}
-                                        loading={this.state.loadingStockData}
-                                        loadingCreate={this.state.loadingCreatePredictions}
-                                        modifyStockData={this.modifyStockData}
-                                        createPrediction={this.createDailyContestPrediction}
-                                        toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
-                                        updateSnackbar={this.updateSnackbar}
-                                        editMode={this.state.editMode}
-                                        toggleEditMode={this.toggleEditMode}
-                                        undoStockSkips={this.undoStockSkips}
-                                        skippedStocks={this.state.skippedStocks}
-                                        toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
-                                        showSuccess={this.state.showSuccess}
-                                    />
+                                ?   this.renderStockCard()
                                 :    moment().isBefore(marketOpenDateTime)
                                         ?   this.renderTimer(marketOpenDateTime, 'Market will open in')
                                         :   this.renderMarketClose()
@@ -375,7 +381,7 @@ const Container = styled(Grid)`
     padding: 10px;
     background-color: #fff;
     width: 100%;
-    --height: calc(100vh - 106px);
     align-items: ${props => props.alignItems || 'flex-start'};
     position: relative;
+    margin-top: ${global.screen.width > 600 ? '-3%' : 0}
 `;

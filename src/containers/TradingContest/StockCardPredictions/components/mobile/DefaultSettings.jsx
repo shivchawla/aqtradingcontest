@@ -12,13 +12,11 @@ import Slide from '@material-ui/core/Slide';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
-import StockCardRadioGroup from '../../common/StockCardRadioGroup';
+import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
-
-const readableDateFormat = 'Do MMM';
 
 const styles = theme => ({
     dialogContentRoot: {

@@ -44,7 +44,11 @@ export default class StockListComponent extends React.Component {
                                         key={index} 
                                         {...stock} 
                                         onClick={this.props.handleStockListItemClick} 
-                                        onAddIconClick={this.props.conditionallyAddItemToSelectedArray}
+                                        onAddIconClick={
+                                            this.props.toggleAdd
+                                            ? this.props.conditionallyAddToggleStock
+                                            : this.props.conditionallyAddItemToSelectedArray
+                                        }
                                         onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
                                         selected={stock.symbol === this.props.selectedStock}
                                     />
