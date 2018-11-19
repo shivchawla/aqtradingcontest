@@ -238,6 +238,7 @@ export class SearchStocks extends React.Component {
                 conditionallyAddItemToSelectedArray={this.conditionallyAddStock}
                 conditionallyAddToggleStock={this.conditionallyAddToggleStock}
                 conditionallyAddItemToSellSelectedArray={this.conditionallyAddItemToSellSelectedArray}
+                toggleAdd={true}
             />
         )
     }

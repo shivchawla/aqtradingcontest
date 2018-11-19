@@ -17,9 +17,14 @@ const styles = theme => ({
     dialogContentRoot: {
         overflow: 'hidden',
         padding: 0,
-        paddingTop: '56px'
-    }
+        paddingTop: '56px',
+        '&:first-child': {
+            paddingTop: 0
+        }
+    },
 });
+
+const isDesktop = global.screen.width > 600;
 
 class StockSelection extends React.Component {
     searchStockComponent = null;
@@ -97,30 +102,33 @@ class StockSelection extends React.Component {
                 TransitionComponent={Transition}
                 style={{overflow: 'hidden'}}
             >
-                <AppBar>
-                    <Toolbar>
-                        {
-                            this.state.performanceOpen &&
-                            <ActionIcon 
-                                color='#fff' 
-                                type='chevron_left' 
-                                onClick={this.toggleStockPerformance} 
-                                size={26}
-                            />
-                        }
-                        <Typography variant="h6" color="inherit">
-                            SELECT STOCK
-                        </Typography>
-                        <IconButton 
-                                color="inherit" 
-                                onClick={this.props.toggleSearchStocksDialog} 
-                                aria-label="Close"
-                                style={{position: 'absolute', right: '10px'}}
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </Toolbar>
-                </AppBar>
+                {
+                    !isDesktop &&
+                    <AppBar>
+                        <Toolbar>
+                            {
+                                this.state.performanceOpen &&
+                                <ActionIcon 
+                                    color='#fff' 
+                                    type='chevron_left' 
+                                    onClick={this.toggleStockPerformance} 
+                                    size={26}
+                                />
+                            }
+                            <Typography variant="h6" color="inherit">
+                                SELECT STOCK
+                            </Typography>
+                            <IconButton 
+                                    color="inherit" 
+                                    onClick={this.props.toggleSearchStocksDialog} 
+                                    aria-label="Close"
+                                    style={{position: 'absolute', right: '10px'}}
+                            >
+                                <CloseIcon />
+                            </IconButton>
+                        </Toolbar>
+                    </AppBar>
+                }
                 <DialogContent
                         classes={{
                             root: classes.dialogContentRoot

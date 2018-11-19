@@ -12,13 +12,11 @@ import Slide from '@material-ui/core/Slide';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
-import StockCardRadioGroup from '../../common/StockCardRadioGroup';
+import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
-
-const readableDateFormat = 'Do MMM';
 
 const styles = theme => ({
     dialogContentRoot: {
@@ -29,6 +27,8 @@ const styles = theme => ({
         }        
     }
 });
+
+const isDesktop = global.screen.width > 600 ? true : false;
 
 class DefaultSettings extends React.Component {
     constructor(props) {
@@ -51,8 +51,11 @@ class DefaultSettings extends React.Component {
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
                 sector: selectedSector
+            })
+            .then(() => {
+                this.props.skipStock();
+                this.props.undoStockSkips(false);
             });
-            this.props.undoStockSkips();
         });
     }
 
@@ -80,7 +83,7 @@ class DefaultSettings extends React.Component {
 
     render() {
         const {classes} = this.props;
-        let {horizon = 2, target = 0, sector = sectors[0], editMode = false} = this.props.defaultStockData;
+        let {horizon = 2, target = 0, sector = '', editMode = false} = this.props.defaultStockData;
         target = getTarget(target);
         horizon = getHorizon(horizon);
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
@@ -129,11 +132,18 @@ class DefaultSettings extends React.Component {
                             <div 
                                     style={{
                                         ...horizontalBox, 
-                                        justifyContent: 'space-between',
+                                        justifyContent: isDesktop ? 'flex-start': 'space-between',
                                         width: '100%'
                                     }}
                             >
-                                <MetricLabel style={{marginLeft: '20px'}}>Sectors</MetricLabel>
+                                <MetricLabel 
+                                        style={{
+                                            marginLeft: '20px',
+                                            marginRight: isDesktop ? '20px' : 0
+                                        }}
+                                >
+                                    Sectors
+                                </MetricLabel>
                                 <SectorMenu 
                                     anchorEl={this.state.anchorEl}
                                     onClick={this.onSectorkMenuClicked}
@@ -229,7 +239,7 @@ const Transition = (props) => {
     return <Slide direction="up" {...props} />;
 }
 
-const SectorMenu = ({anchorEl, selectedSector = sectors[0], onClick , onClose, onMenuItemClicked}) => {    
+const SectorMenu = ({anchorEl, selectedSector = '', onClick , onClose, onMenuItemClicked}) => {    
     return (
         <div>
             <Button

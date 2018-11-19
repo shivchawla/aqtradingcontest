@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
-import StockCard from './components/mobile/StockCard';
+import StockCard from './components/common/StockCard';
 import StockSelection from './components/mobile/StockSelection';
 import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
@@ -30,7 +30,7 @@ class StockCardPredictions extends React.Component {
             loading: false,
             loadingStockData: false,
             stockData: {},
-            defaultStockData: [], // This should only be modified by DefaultSettings
+            defaultStockData: {}, // This should only be modified by DefaultSettings
             currentStockIndex: -1, // This points to the current stock index in stocks array that is to be rendered
             loadingCreatePredictions: false,
             searchStockOpen: false,
@@ -40,7 +40,8 @@ class StockCardPredictions extends React.Component {
                 message: ''
             },
             editMode: false,
-            defaultSettingsOpen: false
+            defaultSettingsOpen: false,
+            showSuccess: false
         };
     }
     
@@ -66,7 +67,7 @@ class StockCardPredictions extends React.Component {
                 horizon: _.get(defaultStockData, 'horizon', 5),
                 target: _.get(defaultStockData, 'target', 2),
                 editMode: _.get(defaultStockData, 'editMode', false),
-                sector: _.get(defaultStockData, 'sector', sectors[0])
+                sector: _.get(defaultStockData, 'sector', '')
             });
         } catch (err) {
             reject(err);
@@ -118,7 +119,7 @@ class StockCardPredictions extends React.Component {
             this.setState({
                 skippedStocks,
                 stockData,
-                editMode: await this.initializeDefaultStockData().editMode
+                editMode: _.get(this.state, 'defaultStockData.editMode', false)
             }, () => {
                 this.saveSkippedStocksToLocalStorage(this.state.skippedStocks);
             })
@@ -138,11 +139,11 @@ class StockCardPredictions extends React.Component {
         );
     }
 
-    undoStockSkips = () => new Promise((resolve, reject) => {
+    undoStockSkips = (updateSnackbar = true) => new Promise((resolve, reject) => {
         try {
             this.setState({skippedStocks: []}, () => {
                 resolve(true);
-                this.updateSnackbar('Stock skips cleared');
+                updateSnackbar && this.updateSnackbar('Stock skips cleared');
             });
             Utils.localStorageSaveObject(
                 'stocksToSkip',
@@ -168,17 +169,22 @@ class StockCardPredictions extends React.Component {
         })
     }
 
-    modifyDefaultStockData = (defaultStockData = this.state.stockData) => {
-        this.setState({
-            defaultStockData,
-            stockData: {
-                ...this.state.stockData,
-                ...defaultStockData
-            }
-        }, () => {
-            this.saveDefaultSettingsToLocalStorage();
-        });
-    }
+    modifyDefaultStockData = (defaultStockData = this.state.stockData) => new Promise((resolve, reject) => {
+        try {
+            this.setState({
+                defaultStockData,
+                stockData: {
+                    ...this.state.stockData,
+                    ...defaultStockData
+                }
+            }, () => {
+                resolve(true);
+                this.saveDefaultSettingsToLocalStorage();
+            });
+        } catch(err) {
+            reject(err);
+        }
+    })
 
     componentWillMount() {
         this.setState({loading: true});
@@ -197,6 +203,13 @@ class StockCardPredictions extends React.Component {
         this.setState({stockData});
     }
 
+    showSuccess = () => {
+        this.setState({showSuccess: true});
+        setTimeout(() => {
+            this.setState({showSuccess: false})
+        }, 1400);
+    }
+
     createDailyContestPrediction = (type = 'buy') => {
         const predictions = constructPrediction(this.state.stockData, type);
         this.setState({loadingCreatePredictions: true});
@@ -205,10 +218,14 @@ class StockCardPredictions extends React.Component {
             return this.updateNextStock();
         })
         .then(() => {
-            this.updateSnackbar('Prediction created successfully :)');
+            this.showSuccess();
         })
         .catch(error => {
-            this.updateSnackbar('Error Occured while creating predictions');
+            let errorMessage = _.get(error, 'response.data.msg', '');
+            errorMessage = errorMessage.length === 0 
+                ? 'Error Occured while creating predictions'
+                : `Error: ${errorMessage}`
+            this.updateSnackbar(errorMessage);
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
         .finally(() => {
@@ -260,6 +277,27 @@ class StockCardPredictions extends React.Component {
         );
     }
 
+    renderStockCard = () => {
+        return (
+            <StockCard 
+                stockData={this.state.stockData}
+                skipStock={this.skipStock}
+                loading={this.state.loadingStockData}
+                loadingCreate={this.state.loadingCreatePredictions}
+                modifyStockData={this.modifyStockData}
+                createPrediction={this.createDailyContestPrediction}
+                toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
+                updateSnackbar={this.updateSnackbar}
+                editMode={this.state.editMode}
+                toggleEditMode={this.toggleEditMode}
+                undoStockSkips={this.undoStockSkips}
+                skippedStocks={this.state.skippedStocks}
+                toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
+                showSuccess={this.state.showSuccess}
+            />
+        );
+    }
+
     renderMarketClose = () => {
         return (
             <MarketOpenStatusTag color='#fc4c55' style={{marginTop: '60%'}}>
@@ -289,6 +327,7 @@ class StockCardPredictions extends React.Component {
                     undoStockSkips={this.undoStockSkips}
                     skippedStocks={this.state.skippedStocks}
                     updateEditMode={this.updateEditMode}
+                    skipStock={this.skipStock}
                 />
                 <StockSelection 
                     open={this.state.searchStockOpen}
@@ -310,21 +349,7 @@ class StockCardPredictions extends React.Component {
                     {
                         isMarketTrading
                         ?   isMarketOpen().status
-                                ?   <StockCard 
-                                        stockData={this.state.stockData}
-                                        skipStock={this.skipStock}
-                                        loading={this.state.loadingStockData}
-                                        loadingCreate={this.state.loadingCreatePredictions}
-                                        modifyStockData={this.modifyStockData}
-                                        createPrediction={this.createDailyContestPrediction}
-                                        toggleSearchStocksDialog={this.toggleSearchStocksBottomSheet}
-                                        updateSnackbar={this.updateSnackbar}
-                                        editMode={this.state.editMode}
-                                        toggleEditMode={this.toggleEditMode}
-                                        undoStockSkips={this.undoStockSkips}
-                                        skippedStocks={this.state.skippedStocks}
-                                        toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
-                                    />
+                                ?   this.renderStockCard()
                                 :    moment().isBefore(marketOpenDateTime)
                                         ?   this.renderTimer(marketOpenDateTime, 'Market will open in')
                                         :   this.renderMarketClose()
@@ -356,7 +381,7 @@ const Container = styled(Grid)`
     padding: 10px;
     background-color: #fff;
     width: 100%;
-    --height: calc(100vh - 106px);
     align-items: ${props => props.alignItems || 'flex-start'};
     position: relative;
+    margin-top: ${global.screen.width > 600 ? '-3%' : 0}
 `;

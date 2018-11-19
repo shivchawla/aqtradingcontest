@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {withRouter} from 'react-router-dom';
 import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
 import ActionIcon from '../../../Misc/ActionIcons';
@@ -19,7 +20,7 @@ import {getPositionsWithNewPredictions} from '../../utils';
 
 const dateFormat = 'YYYY-MM-DD';
 
-export default class CreateEntryEditScreen extends React.Component {
+class CreateEntryEditScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -272,7 +273,7 @@ export default class CreateEntryEditScreen extends React.Component {
                                             size='small' 
                                             variant="contained" 
                                             aria-label="Delete" 
-                                            onClick={this.props.toggleSearchStockBottomSheet}
+                                            onClick={() => this.props.history.push('/dailycontest/stockpredictions')}
                                     >
                                         <Icon style={{marginRight: '5px'}}>add_circle</Icon>
                                         ADD PREDICTION
@@ -292,7 +293,7 @@ export default class CreateEntryEditScreen extends React.Component {
             (positions === 0 && activePredictions.length === 0)
             ?   this.renderEmptySelections()
             :   <Grid container justify="space-between" style={{backgroundColor:'#fff'}}>
-                    {this.renderPredictedTodayStockList()}
+                    {/* {this.renderPredictedTodayStockList()} */}
                     {this.renderOtherStocksList()}
                 </Grid>
         );
@@ -302,6 +303,8 @@ export default class CreateEntryEditScreen extends React.Component {
         return this.props.loading ? <LoaderComponent /> : this.renderContent();
     }
 }
+
+export default withRouter(CreateEntryEditScreen);
 
 const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMenuItemClicked}) => {
     let buttonText = 'Started Today';

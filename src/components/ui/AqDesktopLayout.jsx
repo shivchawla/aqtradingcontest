@@ -44,11 +44,36 @@ class AqDesktopLayout extends React.Component {
         this.props.handleTabChange && this.props.handleTabChange(value);
     }
 
-    render() {
-        const {loading} = this.props;
+    componentWillReceiveProps(nextProps, nextState) {
+        if (!_.isEqual(nextProps.defaultSelected, this.props.defaultSelected)) {
+            this.setState({activeSegment: nextProps.defaultSelected});
+        }
+    }
+
+    renderTab = (label, index) => {
         const {activeSegment = 0} = this.state;
         const selectedColor = '#1763c6';
         const notSelectedColor = '#fff';
+
+        return (
+            <Tab 
+                label={label} 
+                style={{
+                    backgroundColor: activeSegment === index 
+                        ? selectedColor 
+                        : notSelectedColor,
+                    color: activeSegment === index 
+                        ? notSelectedColor 
+                        : selectedColor,
+                    border:'1px solid #1763c6',
+                    height: '20px'
+                }}
+            />
+        );
+    }
+
+    render() {
+        const {loading} = this.props;
 
         return (
             <ContainerGrid container>
@@ -65,49 +90,16 @@ class AqDesktopLayout extends React.Component {
                                 alignItems='center'
                                 style={{width: '100%'}}
                         >
-                            <Grid item xs={7}>
+                            <Grid item xs={9}>
                                 <Tabs 
                                         value={this.state.activeSegment} 
                                         onChange={this.handleTabChange}
                                         indicatorColor="primary"
                                 >
-                                    <Tab 
-                                        label="My Picks" 
-                                        style={{
-                                            backgroundColor: activeSegment === 0 
-                                                ? selectedColor 
-                                                : notSelectedColor,
-                                            color: activeSegment === 0 
-                                                ? notSelectedColor 
-                                                : selectedColor,
-                                            border:'1px solid #1763c6'
-                                        }}
-                                    />
-                                    <Tab 
-                                        label="Top Picks" 
-                                        style={{
-                                            backgroundColor: activeSegment === 1
-                                                ? selectedColor 
-                                                : notSelectedColor,
-                                            color: activeSegment === 1
-                                                ? notSelectedColor 
-                                                : selectedColor,
-                                            border:'1px solid #1763c6'
-                                            
-                                        }}
-                                    />
-                                    <Tab 
-                                        label="Leaderboard" 
-                                        style={{
-                                            backgroundColor: activeSegment === 2
-                                                ? selectedColor 
-                                                : notSelectedColor,
-                                            color: activeSegment === 2 
-                                                ? notSelectedColor 
-                                                : selectedColor,
-                                            border:'1px solid #1763c6'
-                                        }}
-                                    />
+                                    {this.renderTab('Predict', 0)}
+                                    {this.renderTab('My Picks', 1)}
+                                    {this.renderTab('Top Picks', 2)}
+                                    {this.renderTab('Leaderboard', 3)}
                                 </Tabs>
                             </Grid>
                             <Grid item xs={3}>
@@ -128,7 +120,7 @@ class AqDesktopLayout extends React.Component {
                             }}
                     >
                         {
-                            this.state.activeSegment === 0 &&
+                            this.state.activeSegment === 1 &&
                             <MartketOpenTag 
                                     color={isMarketOpen().status 
                                         ? metricColor.positive 
@@ -158,7 +150,7 @@ const ContainerGrid = styled(Grid)`
     min-height: calc(100vh - 80px);
     width: 100%; 
     justify-content: 'center';
-    padding-top: 10px;
+    padding-top: ${global.screen.width > 600 ? 0 : '10px'};
     margin-bottom: 20px;
     padding-left: 20px;
     background-color: #fff;
@@ -174,7 +166,6 @@ const LeftContainer = styled(Grid)`
     background-color: #fff;
     border-color: #F1F1F1;
     border-radius: 4px;
-    /* box-shadow: 0 4px 13px #DEE3FF; */
 `;
 
 const AbsoluteContainer = styled.div`
