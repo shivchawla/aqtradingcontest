@@ -11,7 +11,17 @@ export default class PredictionsBottomSheet extends React.Component {
     renderHeader = () => {
         const positiveColor = '#32FFD8';
         const negativeColor = '#FF7B7B';
-        const {symbol='', name='', lastPrice=0, predictions = []} = _.get(this.props, 'position', {});
+        const neutralCOlor = '#DFDFDF';
+        let {
+            symbol='', 
+            name='', 
+            lastPrice=0, 
+            predictions = [],
+            chg=0,
+            chgPct=0
+        } = _.get(this.props, 'position', {});
+        chgPct = Number((chgPct * 100).toFixed(2));
+        const changeColor = chg > 0 ? positiveColor : chg === 0 ? neutralCOlor : negativeColor;
 
         return (
             <div 
@@ -45,11 +55,12 @@ export default class PredictionsBottomSheet extends React.Component {
                     <div 
                             style={{
                                 ...verticalBox, 
-                                alignItems: 'flex-start',
+                                alignItems: 'flex-end',
                                 marginRight: '10px'
                             }}
                     >
                         <LastPrice>₹{lastPrice}</LastPrice>
+                        <Change color={changeColor}>{chg.toFixed(2)} ({chgPct}%)</Change>
                     </div>
                 </div>
             </div>
@@ -111,5 +122,5 @@ const Change = styled.h3`
     color: ${props => props.color || '#fff'};
     font-family: 'Lato', sans-serif;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 15px;
 `;
