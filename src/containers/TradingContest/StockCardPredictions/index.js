@@ -208,7 +208,8 @@ class StockCardPredictions extends React.Component {
             this.updateSnackbar('Prediction created successfully :)');
         })
         .catch(error => {
-            this.updateSnackbar('Error Occured while creating predictions');
+            const errorMessage = _.get(error, 'response.data.msg', 'Error Occured while creating predictions');
+            this.updateSnackbar(errorMessage);
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
         .finally(() => {
