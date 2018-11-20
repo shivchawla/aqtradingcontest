@@ -129,7 +129,7 @@ class NavigationDrawerImpl extends React.Component {
                                     fontSize: '16px'
                                 }}
                         >
-                            {Utils.getLoggedInUserInitials()}
+                            {Utils.getLoggedInUserName()}
                         </h3>
                     </div>
                 }
