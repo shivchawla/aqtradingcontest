@@ -24,16 +24,23 @@ class DisplayPredictions extends React.Component {
     }
 
     getListViewFromUrl = (listViewType) => {
+        let listView = 0;
         switch(listViewType) {
             case "active":
-                return 0;
+                listView = 0;
+                break;
             case "ended":
-                return 1;
+                listView = 1;
+                break;
             case "started":
-                return 2;
+                listView = 2;
+                break;
             default:
-                return 0;
+                listView = 0;
+                break;
         }
+
+        return listView;
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -43,6 +50,12 @@ class DisplayPredictions extends React.Component {
 
         return false;
     }
+
+    // componentWillReceiveProps(nextProps) {
+    //     if (!_.isEqual(this.props, nextProps)) {
+    //         this.setState({listView: this.getListViewFromUrl(nextProps.listViewType)})
+    //     }
+    // }
 
     onPredictionTypeMenuClicked = event => {
         this.setState({ anchorEl: event.currentTarget });

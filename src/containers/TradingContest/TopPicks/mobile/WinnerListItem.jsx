@@ -54,42 +54,49 @@ export default class WinnerListItem extends React.Component {
                         </div>
                         <img src={medal} width={20}/>
                     </div>
-                    <div style={{...horizontalBox, justifyContent: 'flex-start', marginTop: '10px'}}>
-                        <PriceText>₹{lastPrice}</PriceText>
-                        <div 
-                                style={{
-                                    fontFamily: 'Lato, sans-serif',
-                                    fontWeight: 300,
-                                    color: '#c4c4c4',
-                                    fontSize: '20px',
-                                    margin: '0 8px',
-                                    marginTop: '-5px'
-                                }}
-                        >
-                            |
-                        </div>
-                        <PriceText style={{color: changeColor}}>
-                            ₹{change} {changePct}
-                        </PriceText>
-                    </div>
                     <div 
                             style={{
-                                ...horizontalBox,
-                                marginTop: '10px',
-                                width: '100%',
+                                ...horizontalBox, 
+                                justifyContent: 'space-between',
                                 borderTop: '1px solid #e7e7e7',
-                                paddingTop: '10px'
+                                width: '100%',
+                                marginTop: '10px'
                             }}
                     >
-                        <MetricContainer 
-                            label='Votes'
-                            value={`${numUsers.total} (${numUsers.long}/${numUsers.short})`}
-                        />
-                        <MetricContainer 
-                            style={{marginLeft: '35px'}}
-                            label='Investment'
-                            value={`${Utils.formatInvestmentValue(investment.gross)} (${Utils.formatInvestmentValue(investment.long)}/${Utils.formatInvestmentValue(investment.short)})`}
-                        />
+                        <div 
+                                style={{
+                                    ...horizontalBox,
+                                    marginTop: '10px',
+                                }}
+                        >
+                            <MetricContainer 
+                                label='Votes'
+                                value={`${numUsers.total} (${numUsers.long}/${numUsers.short})`}
+                            />
+                            <MetricContainer 
+                                style={{marginLeft: '30px'}}
+                                label='Investment'
+                                value={`${Utils.formatInvestmentValue(investment.gross)} (${Utils.formatInvestmentValue(investment.long)}/${Utils.formatInvestmentValue(investment.short)})`}
+                            />
+                        </div>
+                        <div style={{...horizontalBox, justifyContent: 'flex-start', marginTop: '10px'}}>
+                            <PriceText>₹{lastPrice}</PriceText>
+                            <div 
+                                    style={{
+                                        fontFamily: 'Lato, sans-serif',
+                                        fontWeight: 300,
+                                        color: '#c4c4c4',
+                                        fontSize: '20px',
+                                        margin: '0 3px',
+                                        marginTop: '-5px'
+                                    }}
+                            >
+                                |
+                            </div>
+                            <PriceText style={{color: changeColor}}>
+                                ₹{change} {changePct}
+                            </PriceText>
+                        </div>
                     </div>
                 </Grid>
             </SGrid>
@@ -152,6 +159,6 @@ const MetricLabel = styled.div`
 const PriceText= styled.h3`
     font-weight: 500;
     font-family: 'Lato', sans-serif;
-    font-size: 18px;
+    font-size: 15px;
     color: #464646;
 `;

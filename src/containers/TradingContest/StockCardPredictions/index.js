@@ -250,9 +250,10 @@ class StockCardPredictions extends React.Component {
         this.setState({loading: true});
         this.initializeStateFromLocalStorage()
         .then(() => {
-            const isMarketTrading = DateHelper.isMarketTrading();
-            const shouldGetNextStock = isMarketTrading && isMarketOpen().status;
-            return shouldGetNextStock ? this.updateNextStock() : null;
+            return this.updateNextStock()
+            // const isMarketTrading = DateHelper.isMarketTrading();
+            // const shouldGetNextStock = isMarketTrading && isMarketOpen().status;
+            // return shouldGetNextStock ? this.updateNextStock() : null;
         })
         .finally(() => {
             this.setState({loading: false});
@@ -412,7 +413,7 @@ class StockCardPredictions extends React.Component {
                     skippedStocks={this.state.skippedStocks}
                 />
                 {
-                    isMarketOpen().status && isMarketTrading &&
+                    // isMarketOpen().status && isMarketTrading &&
                     <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-between'}}>
                         <IconButton 
                                 onClick={() => {
@@ -433,7 +434,8 @@ class StockCardPredictions extends React.Component {
                     </Grid>
                 }
                 <Grid item xs={12}>
-                    {
+                    {this.renderStockCard()}
+                    {/* {
                         isMarketTrading
                         ?   isMarketOpen().status
                                 ?   this.renderStockCard()
@@ -441,7 +443,7 @@ class StockCardPredictions extends React.Component {
                                         ?   this.renderTimer(marketOpenDateTime, 'Market will open in', true)
                                         :   this.renderMarketClose()
                         :   this.renderTimer(nextNonHolidayWeekday, 'You can enter predictions in', true)
-                    }
+                    } */}
                 </Grid>
             </Container>
         );
