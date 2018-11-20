@@ -498,11 +498,11 @@ const Container = styled(Grid)`
     position: relative;
     transition: all 0.4s ease-in-out;
     padding: 10px 0;
-    padding-top: ${isDesktop ? 0 : '10px'};
+    padding-top: 0;
 `;
 
 const MainText = styled.h3`
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
     color: #525252;
     text-align: start;

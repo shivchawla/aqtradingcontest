@@ -29,6 +29,7 @@ const DateHelper = require('../../utils/date');
 
 const URLSearchParamsPoly = require('url-search-params');
 const dateFormat = 'YYYY-MM-DD';
+const defaultDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate()));
 
 class TradingContest extends React.Component {
     params = {}
@@ -36,7 +37,7 @@ class TradingContest extends React.Component {
         super(props);
         this.state = {
             selectedTab: 0,
-            selectedDate: moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate())),
+            selectedDate: defaultDate,
             bottomSheetOpen: false,
         };
     }
@@ -53,9 +54,16 @@ class TradingContest extends React.Component {
 
     handleChange = (selectedTab) => {
         let tab = this.getSelectedPageMobile(selectedTab);
-        const url = `${this.props.match.path}/${tab}?date=${this.state.selectedDate.format(dateFormat)}`;
+        let url = `${this.props.match.path}/${tab}`;
+        let selectedDate = this.state.selectedDate;
+        if (selectedTab !== 0) {
+            url = `${url}?date=${this.state.selectedDate.format(dateFormat)}`;
+            
+        } else {
+            selectedDate = defaultDate;
+        }
         this.props.history.push(url);
-        this.setState({selectedTab});
+        this.setState({selectedTab, selectedDate});
     };
 
     getSelectedPageMobile = (selectedTab = 0) => {

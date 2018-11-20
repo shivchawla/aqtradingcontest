@@ -58,29 +58,12 @@ export default class WinnerListItem extends React.Component {
                             style={{
                                 ...horizontalBox, 
                                 justifyContent: 'space-between',
-                                borderTop: '1px solid #e7e7e7',
                                 width: '100%',
                                 marginTop: '10px'
                             }}
                     >
-                        <div 
-                                style={{
-                                    ...horizontalBox,
-                                    marginTop: '10px',
-                                }}
-                        >
-                            <MetricContainer 
-                                label='Votes'
-                                value={`${numUsers.total} (${numUsers.long}/${numUsers.short})`}
-                            />
-                            <MetricContainer 
-                                style={{marginLeft: '30px'}}
-                                label='Investment'
-                                value={`${Utils.formatInvestmentValue(investment.gross)} (${Utils.formatInvestmentValue(investment.long)}/${Utils.formatInvestmentValue(investment.short)})`}
-                            />
-                        </div>
                         <div style={{...horizontalBox, justifyContent: 'flex-start', marginTop: '10px'}}>
-                            <PriceText>₹{lastPrice}</PriceText>
+                            <PriceText>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</PriceText>
                             <div 
                                     style={{
                                         fontFamily: 'Lato, sans-serif',
@@ -94,8 +77,24 @@ export default class WinnerListItem extends React.Component {
                                 |
                             </div>
                             <PriceText style={{color: changeColor}}>
-                                ₹{change} {changePct}
+                                ₹{Utils.formatMoneyValueMaxTwoDecimals(change)} {changePct}
                             </PriceText>
+                        </div>
+                        <div 
+                                style={{
+                                    ...horizontalBox,
+                                    marginTop: '10px',
+                                }}
+                        >
+                            <MetricContainer 
+                                label='Votes'
+                                value={`${numUsers.total} (${numUsers.long}/${numUsers.short})`}
+                            />
+                            {/* <MetricContainer 
+                                style={{marginLeft: '30px'}}
+                                label='Investment'
+                                value={`${Utils.formatInvestmentValue(investment.gross)} (${Utils.formatInvestmentValue(investment.long)}/${Utils.formatInvestmentValue(investment.short)})`}
+                            /> */}
                         </div>
                     </div>
                 </Grid>

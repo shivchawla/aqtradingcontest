@@ -3,6 +3,7 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
 import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
@@ -19,6 +20,7 @@ import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
 import {isMarketOpen} from '../utils';
+import {getDailyContestPredictions} from '../MultiHorizonCreateEntry/utils';
 import {horizontalBox, primaryColor, verticalBox} from '../../../constants';
 
 const DateHelper = require('../../../utils/date');
@@ -43,7 +45,7 @@ class StockCardPredictions extends React.Component {
                 open: false,
                 message: ''
             },
-            stockCart: [],
+            stockCartCount: 0,
             editMode: false,
             defaultSettingsOpen: false,
             showSuccess: false
@@ -83,7 +85,7 @@ class StockCardPredictions extends React.Component {
             resolve({
                 benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_500'),
                 horizon: _.get(defaultStockData, 'horizon', 5),
-                target: _.get(defaultStockData, 'target', 2),
+                target: _.get(defaultStockData, 'target', 5),
                 editMode: _.get(defaultStockData, 'editMode', false),
                 sector: _.get(defaultStockData, 'sector', '')
             });
@@ -97,14 +99,12 @@ class StockCardPredictions extends React.Component {
         return Promise.all([
                 this.initializeSkipStocks(),
                 this.initializeDefaultStockData(),
-                this.initializeSkipStocks()
             ])
-            .then(([skippedStocks, defaultStockData, stockCart]) => {
+            .then(([skippedStocks, defaultStockData]) => {
                 this.setState({
                     skippedStocks,
                     defaultStockData,
                     stockData: defaultStockData,
-                    stockCart,
                     editMode: _.get(defaultStockData, 'editMode', false)
                 })
             });
@@ -198,11 +198,7 @@ class StockCardPredictions extends React.Component {
 
     // adds to stock to cart
     addCurrentStockToCart = (type = 'buy') => {
-        let clonedStockCart = _.map(this.state.stockCart, _.cloneDeep);
-        clonedStockCart = [...clonedStockCart, {...this.state.stockData, type}];
-        this.setState({stockCart: clonedStockCart}, () => {
-            this.saveStockCartToLocalStorage();
-        });
+        this.setState({stockCartCount: this.state.stockCartCount + 1});
     }
 
     updateStocksToSkip = () => new Promise((resolve, reject) => {
@@ -219,7 +215,6 @@ class StockCardPredictions extends React.Component {
 
     getStocksToSkip = () => {
         const symbol = _.get(this.state.stockData, 'symbol', '');
-        console.log('Skipping Stock', symbol);
         let skippedStocks = _.map(this.state.skippedStocks, _.cloneDeep);
         const isStockAlreadySkipped = _.findIndex(skippedStocks, stock => stock === symbol) > -1;
         if (!isStockAlreadySkipped) {
@@ -246,14 +241,25 @@ class StockCardPredictions extends React.Component {
         }
     })
 
+    getCurrentTradingDay = () => {
+        return moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate()));
+    }
+
     componentWillMount() {
+        const currentTradingDay = this.getCurrentTradingDay();
         this.setState({loading: true});
         this.initializeStateFromLocalStorage()
         .then(() => {
-            return this.updateNextStock()
-            // const isMarketTrading = DateHelper.isMarketTrading();
-            // const shouldGetNextStock = isMarketTrading && isMarketOpen().status;
-            // return shouldGetNextStock ? this.updateNextStock() : null;
+            return Promise.all([
+                getDailyContestPredictions(currentTradingDay, 'started', false, this.props.history, this.props.match.url, false),
+                this.updateNextStock()
+            ])
+        })
+        .then(([predictions]) => {
+            this.setState({stockCartCount: _.get(predictions, 'data', []).length})
+        })
+        .catch(error => {
+            console.log('Error', error);
         })
         .finally(() => {
             this.setState({loading: false});
@@ -276,7 +282,7 @@ class StockCardPredictions extends React.Component {
         this.setState({loadingCreatePredictions: true});
         createPredictions(predictions)
         .then(() => {
-            this.addCurrentStockToCart(type);
+            this.addCurrentStockToCart();
             return this.updateStocksToSkip();
         })
         .then(() => {
@@ -415,22 +421,27 @@ class StockCardPredictions extends React.Component {
                 {
                     // isMarketOpen().status && isMarketTrading &&
                     <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-between'}}>
-                        <IconButton 
-                                onClick={() => {
-                                    this.props.history.push(`/dailycontest/mypicks?type=started`)
-                                }}
-                        >
-                            <Badge 
-                                    badgeContent={this.state.stockCart.length} 
-                                    style={{color: primaryColor, fontSize: '14px'}}
+                        <Tooltip title="Started Today" placement="bottom">
+                            <IconButton 
+                                    onClick={() => {
+                                        this.props.history.push(`/dailycontest/mypicks?&date=${this.getCurrentTradingDay().format(dateFormat)}&type=started`)
+                                    }}
                             >
-                                <Icon style={{color: primaryColor}}>shopping_cart</Icon>
-                            </Badge>
-                        </IconButton>
-                        <ActionIcon 
-                            type='settings_input_composite' 
-                            onClick={this.toggleDefaultSettingsBottomSheet}
-                        />
+                                <Badge 
+                                        badgeContent={this.state.stockCartCount} 
+                                        style={{color: primaryColor, fontSize: '14px'}}
+                                >
+                                    <Icon style={{color: primaryColor}}>shopping_cart</Icon>
+                                </Badge>
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Default Settings" placement="bottom">
+                            <IconButton 
+                                    onClick={this.toggleDefaultSettingsBottomSheet}
+                            >
+                                <Icon style={{color: primaryColor}}>settings_input_composite</Icon>
+                            </IconButton>
+                        </Tooltip>
                     </Grid>
                 }
                 <Grid item xs={12}>
@@ -468,6 +479,7 @@ export default withRouter(StockCardPredictions);
 
 const Container = styled(Grid)`
     padding: 10px;
+    padding-top: 0px;
     background-color: #fff;
     width: 100%;
     align-items: ${props => props.alignItems || 'flex-start'};
