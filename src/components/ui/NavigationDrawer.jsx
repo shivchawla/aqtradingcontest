@@ -14,7 +14,7 @@ import ExpandMore from '@material-ui/icons/ExpandMore';
 import Icon from '@material-ui/core/Icon';
 
 import {Utils} from '../../utils';
-import {horizontalBox} from '../../constants';
+import {horizontalBox, verticalBox, primaryColor} from '../../constants';
 import logo from "../../assets/logo-advq-new.png";
 
 
@@ -35,7 +35,11 @@ class NavigationDrawerImpl extends React.Component {
         const {open = false, onToggle = null} = this.props;
 
         return (
-            <Drawer open={open} onClose={() => {onToggle && onToggle()}}>
+            <Drawer 
+                    open={open} 
+                    onClose={() => {onToggle && onToggle()}}
+                    style={{position: 'relative'}}
+            >
                 
                 <div onClick={() => {window.location.href='/home'}} 
                     style={{...horizontalBox, height:'56px', padding:'0 16px'}}>
@@ -83,6 +87,52 @@ class NavigationDrawerImpl extends React.Component {
                                 
                     </List>
                 </div>
+                {
+                    Utils.isLoggedIn() && 
+                    <div 
+                            style={{
+                                ...horizontalBox,
+                                width: '100%',
+                                backgroundColor: '#F7F7F7',
+                                height: '55px',
+                                position: 'absolute',
+                                bottom: 0
+                            }}
+                    >
+                        <div 
+                                style={{
+                                    ...verticalBox , 
+                                    width: '40px', 
+                                    height: '40px',
+                                    borderRadius: '100%',
+                                    backgroundColor: primaryColor,
+                                    marginLeft: '10px'
+                                }}
+                        >
+                            <h3 
+                                    style={{
+                                        fontFamily: 'Lato, sans-serif',
+                                        fontWeight: '14px',
+                                        fontWeight: 500,
+                                        color: '#fff'
+                                    }}
+                            >
+                                {Utils.getLoggedInUserInitials()}
+                            </h3>
+                        </div>
+                        <h3 
+                                style={{
+                                    marginLeft: '10px', 
+                                    color: primaryColor,
+                                    fontFamily: 'Lato, sans-serif',
+                                    fontWeight: 500,
+                                    fontSize: '16px'
+                                }}
+                        >
+                            {Utils.getLoggedInUserName()}
+                        </h3>
+                    </div>
+                }
             </Drawer>
         );
     }

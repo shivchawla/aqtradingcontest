@@ -108,7 +108,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '40px' : '10px'
+                                marginTop: isDesktop ? '30px' : '10px'
                             }}
                     >
                         Target in %
@@ -296,8 +296,8 @@ export default class StockCard extends React.Component {
                         style={{
                             ...verticalBox,
                             borderTop: '1px solid #E2E2E2',
-                            marginTop: isDesktop ? '40px' : '20px',
-                            paddingTop: isDesktop ? '40px' : '20px'
+                            marginTop: isDesktop ? '20px' : '20px',
+                            paddingTop: isDesktop ? '15px' : '20px'
                         }}
                 >
                     <QuestionText>
@@ -317,7 +317,7 @@ export default class StockCard extends React.Component {
                                 ...horizontalBox, 
                                 justifyContent: 'space-around',
                                 width: isDesktop ? '70%' : '100%',
-                                marginTop: this.props.editMode ? '10px' : '30px'
+                                marginTop: editMode ? '10px' : '15px'
                             }}
                     >
                         <SubmitButton 

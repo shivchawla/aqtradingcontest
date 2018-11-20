@@ -8,14 +8,6 @@ import momentTimezone from 'moment-timezone';
 import {horizontalBox, primaryColor} from '../../../constants';
 
 export default class TimeComponent extends React.Component {
-    constructor(props) {
-        super(props);
-        this.timer = null;
-        this.state = {
-            difference: null
-        }
-    }
-
     renderCountdown = ({total, days, hours, minutes, seconds}) => {
         return (
             <div style={{...horizontalBox, width: '100%', justifyContent: 'center'}}>
@@ -40,6 +32,10 @@ export default class TimeComponent extends React.Component {
         );
     }
 
+    onCountdownEnded = () => {
+        this.props.onCountdownEnded && this.props.onCountdownEnded();
+    }
+
     render() {
         const date = this.props.date;
         const {small = false} = this.props;
@@ -62,6 +58,7 @@ export default class TimeComponent extends React.Component {
                 <Countdown 
                     date = {date} 
                     renderer={small ? this.renderCountdownSmall : this.renderCountdown}
+                    onComplete={this.onCountdownEnded}
                 /> 
             </Grid>
         );

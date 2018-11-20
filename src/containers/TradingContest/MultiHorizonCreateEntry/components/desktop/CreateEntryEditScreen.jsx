@@ -24,7 +24,7 @@ class CreateEntryEditScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: 'active',
+            listView: this.props.listViewType || 'active',
             anchorEl: null
         };
     }

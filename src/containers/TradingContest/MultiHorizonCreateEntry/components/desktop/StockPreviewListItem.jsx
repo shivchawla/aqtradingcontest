@@ -56,12 +56,12 @@ class StockPreviewListItem extends React.Component {
         predictions.forEach(item => {
             investment += item.investment;
             var direction = item.type == "buy" ? 1 : -1;
-            totalPnl += item.avgPrice > 0 ? direction*(item.investment/item.avgPrice)*(item.lastPrice - item.avgPrice) : 0;
+            totalPnl += item.avgPrice > 0 ? direction*(item.investment/item.avgPrice)*(item.pnlLastPrice - item.avgPrice) : 0;
         });
 
 
         totalPnlPct = `${((investment > 0 ? totalPnl/investment : 0.0)*100).toFixed(2)}%`;
-        totalPnl = Utils.formatMoneyValueMaxTwoDecimals(totalPnl*1000);
+        totalPnl = totalPnl*1000;
 
         return (
             <ExpansionPanel
@@ -151,7 +151,9 @@ const PnlComponent = ({totalPnl, pnlPct}) => {
     return (
         <div style={{...verticalBox, alignItems: 'flex-start'}}>
             <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                <LastPrice style={{color: pnlColor}}>₹{totalPnl}</LastPrice>
+                <LastPrice style={{color: pnlColor}}>
+                    ₹{Utils.formatMoneyValueMaxTwoDecimals(totalPnl)}
+                </LastPrice>
                 <ChangeDivider>|</ChangeDivider>
                 <Change color={pnlColor}>({pnlPct})</Change>
             </div>

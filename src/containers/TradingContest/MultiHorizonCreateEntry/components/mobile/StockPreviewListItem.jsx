@@ -49,6 +49,7 @@ class StockPreviewListItem extends React.Component {
             min = 10, 
             max = 60,
             type = 'buy',
+            pnlLastPrice = 0,
             predictions = []
         } = this.props.position;
 
@@ -61,7 +62,7 @@ class StockPreviewListItem extends React.Component {
         predictions.forEach(item => {
             investment += item.investment;
             var direction = item.type == "buy" ? 1 : -1;
-            totalPnl += item.avgPrice > 0 ? direction*(item.investment/item.avgPrice)*(item.lastPrice - item.avgPrice) : 0;
+            totalPnl += item.avgPrice > 0 ? direction*(item.investment/item.avgPrice)*(item.pnlLastPrice - item.avgPrice) : 0;
         });
 
         var pnlColor = totalPnl > 0 ? metricColor.positive : totalPnl < 0 ? metricColor.negative : metricColor.neutral;
