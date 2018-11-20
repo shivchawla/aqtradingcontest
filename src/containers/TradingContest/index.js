@@ -38,15 +38,23 @@ class TradingContest extends React.Component {
             selectedTab: 0,
             selectedDate: moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate())),
             bottomSheetOpen: false,
+            listViewType: 'active'
         };
     }
 
+    getListViewType = (type) => {
+        const allowedTypes = ['active', 'started', 'ended'];
+        const allowedTypeIndex = allowedTypes.indexOf(type)
+        if (allowedTypeIndex === -1) {
+            return 'active';
+        }
+
+        return allowedTypes[allowedTypeIndex];
+    }
+
     handleChange = (selectedTab) => {
-        // let tab = global.screen.width > 600 
-        //     ? this.getSelectedPageDesktop(selectedTab)
-        //     : this.getSelectedPageMobile(selectedTab);
         let tab = this.getSelectedPageMobile(selectedTab);
-        const url = `${this.props.match.path}/${tab}?date=${this.state.selectedDate.format(dateFormat)}`;
+        const url = `${this.props.match.path}/${tab}?date=${this.state.selectedDate.format(dateFormat)}&type=${this.state.listViewType}`;
         this.props.history.push(url);
         this.setState({selectedTab});
     };
@@ -65,32 +73,6 @@ class TradingContest extends React.Component {
                 return 'mypicks';
         }
     } 
-
-    getSelectedPageDesktop = (selectedTab = 0) => {
-        switch(selectedTab) {
-            case 0:
-                return 'mypicks';
-            case 1:
-                return 'toppicks';
-            case 2:
-                return 'leaderboard';
-            default:
-                return 'mypicks';
-        }
-    } 
-
-    getSelectedTabDesktop = (url) => {
-        switch(url) {
-            case "/dailycontest/mypicks":
-                return 0;
-            case "/dailycontest/toppicks":
-                return 1;
-            case "/dailycontest/leaderboard":
-                return 2;
-            default:
-                return 0;
-        }
-    }
 
     getSelectedTabMobile = url => {
         switch(url) {
@@ -138,23 +120,27 @@ class TradingContest extends React.Component {
     componentDidUpdate(prevProps) {
         if (this.props.location !== prevProps.location) { // Route changed
             const currentLocation = this.props.location.pathname;
-            // const selectedTab = global.screen.width > 600 
-            //     ? this.getSelectedTabDesktop(currentLocation)
-            //     : this.getSelectedTabMobile(currentLocation);
             const selectedTab = this.getSelectedTabMobile(currentLocation);
+            if (this.params) {
+                const listViewType = this.params.get('type');
+                if (listViewType !== null) {
+                    this.setState({listViewType: this.getListViewType(listViewType)});
+                }
+            }
             this.setState({selectedTab});
         }
     }
 
     componentWillMount() {
-        // const selectedTab = global.screen.width > 600 
-        //     ? this.getSelectedTabDesktop(this.props.location.pathname)
-        //     : this.getSelectedTabMobile(this.props.location.pathname);
         const selectedTab = this.getSelectedTabMobile(this.props.location.pathname);
         this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
         const date = this.params.get('date');
+        const listViewType = this.params.get('type');
         if (date !== null) {
             this.setState({selectedDate: moment(date, dateFormat)});
+        }
+        if (listViewType !== null) {
+            this.setState({listViewType: this.getListViewType(listViewType)});
         }
         if (!Utils.isLoggedIn()) {
             window.location.assign('/login');
@@ -226,6 +212,7 @@ class TradingContest extends React.Component {
                                 ?   <CreateEntry 
                                         selectedDate={this.state.selectedDate}
                                         componentType='preview'
+                                        listViewType={this.state.listViewType}
                                     />
                                 :   <Redirect push to='/login'/>
                             }
@@ -234,7 +221,10 @@ class TradingContest extends React.Component {
                             exact
                             path={`${this.props.match.path}/toppicks`}
                             render={() => Utils.isLoggedIn()
-                                ?   <TopPicks selectedDate={this.state.selectedDate}/>
+                                ?   <TopPicks 
+                                        selectedDate={this.state.selectedDate}
+                                        listViewType={this.state.listViewType}
+                                    />
                                 :   <Redirect push to='/login'/>
                             }
                         />
@@ -242,7 +232,10 @@ class TradingContest extends React.Component {
                             exact
                             path={`${this.props.match.path}/leaderboard`}
                             render={() => Utils.isLoggedIn()
-                                ?   <Leaderboard selectedDate={this.state.selectedDate}/>
+                                ?   <Leaderboard 
+                                        selectedDate={this.state.selectedDate}
+                                        listViewType={this.state.listViewType}
+                                    />
                                 :   <Redirect push to='/login'/>
                             }
                         />
@@ -252,6 +245,7 @@ class TradingContest extends React.Component {
                             render={() => Utils.isLoggedIn()
                                 ?   <StockPredictions 
                                         selectedDate={this.state.selectedDate}
+                                        listViewType={this.state.listViewType}
                                     />
                                 :   <Redirect push to='/login'/>
                             }
@@ -263,6 +257,7 @@ class TradingContest extends React.Component {
                                 ?   <CreateEntry 
                                         selectedDate={this.state.selectedDate}
                                         componentType='preview'
+                                        listViewType={this.state.listViewType}
                                     />
                                 :   <Redirect push to='/login'/>
                             }
@@ -313,6 +308,7 @@ class TradingContest extends React.Component {
                                 ?   <CreateEntry 
                                         selectedDate={this.state.selectedDate}
                                         componentType='preview'
+                                        listViewType={this.state.listViewType}
                                     />
                                 :   <Redirect push to='/login'/>
                             }
@@ -324,6 +320,7 @@ class TradingContest extends React.Component {
                                 ?   <CreateEntry 
                                         selectedDate={this.state.selectedDate}
                                         componentType='preview'
+                                        listViewType={this.state.listViewType}
                                     />
                                 :   <Redirect push to='/login'/>
                             }
@@ -332,7 +329,10 @@ class TradingContest extends React.Component {
                             exact
                             path={`${this.props.match.path}/toppicks`}
                             render={() => Utils.isLoggedIn()
-                                ?   <TopPicks selectedDate={this.state.selectedDate}/>
+                                ?   <TopPicks 
+                                        selectedDate={this.state.selectedDate}
+                                        listViewType={this.state.listViewType}
+                                    />
                                 :   <Redirect push to='/login'/>
                             }
                         />
@@ -340,7 +340,10 @@ class TradingContest extends React.Component {
                             exact
                             path={`${this.props.match.path}/leaderboard`}
                             render={() => Utils.isLoggedIn()
-                                ? <Leaderboard selectedDate={this.state.selectedDate}/>
+                                ?   <Leaderboard 
+                                        selectedDate={this.state.selectedDate}
+                                        listViewType={this.state.listViewType}
+                                    />
                                 : <Redirect />
                             }
                         />
@@ -350,6 +353,7 @@ class TradingContest extends React.Component {
                             render={() => Utils.isLoggedIn()
                                 ?   <StockPredictions 
                                         selectedDate={this.state.selectedDate}
+                                        listViewType={this.state.listViewType}
                                     />
                                 :   <Redirect push to='/login'/>
                             }
