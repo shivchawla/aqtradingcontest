@@ -76,12 +76,22 @@ class CreateEntry extends React.Component {
             todayDataLoaded: false,
             previewPositions: [], // used to store the data for previewing,
             loadingPreview: false,
-            selectedView: 'active',
+            selectedView: this.getListViewType(props.listViewType) || 'active',
             predictionBottomSheetOpen: false,
             selectedPositionIndex: 0
         };
         this.mounted = false;
         this.source = CancelToken.source();
+    }
+
+    getListViewType = (type) => {
+        const allowedTypes = ['active', 'started', 'ended'];
+        const allowedTypeIndex = allowedTypes.indexOf(type)
+        if (allowedTypeIndex === -1) {
+            return 'active';
+        }
+
+        return allowedTypes[allowedTypeIndex];
     }
 
     toggleSearchStockBottomSheet = () => {
@@ -637,7 +647,8 @@ class CreateEntry extends React.Component {
             subscribeToPredictions: this.subscribeToPredictions,
             selectedView: this.state.selectedView,
             selectPosition: this.selectPosition,
-            togglePredictionsBottomSheet: this.togglePredictionsBottomSheet
+            togglePredictionsBottomSheet: this.togglePredictionsBottomSheet,
+            listViewType: this.props.listViewType
         };
 
         return (

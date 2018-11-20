@@ -18,9 +18,22 @@ class DisplayPredictions extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: 0,
+            listView: this.getListViewFromUrl(props.listViewType),
             anchorEl: null,
         };
+    }
+
+    getListViewFromUrl = (listViewType) => {
+        switch(listViewType) {
+            case "active":
+                return 0;
+            case "ended":
+                return 1;
+            case "started":
+                return 2;
+            default:
+                return 0;
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
