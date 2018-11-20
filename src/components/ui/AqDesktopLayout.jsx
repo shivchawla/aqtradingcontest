@@ -102,13 +102,16 @@ class AqDesktopLayout extends React.Component {
                                     {this.renderTab('Leaderboard', 3)}
                                 </Tabs>
                             </Grid>
-                            <Grid item xs={3}>
-                                <DateComponent 
-                                    selectedDate={this.props.selectedDate}
-                                    color='#1763c6'
-                                    onDateChange={this.props.handleDateChange}
-                                />
-                            </Grid>
+                            {
+                                this.state.activeSegment !== 0 &&
+                                <Grid item xs={3}>
+                                    <DateComponent 
+                                        selectedDate={this.props.selectedDate}
+                                        color='#1763c6'
+                                        onDateChange={this.props.handleDateChange}
+                                    />
+                                </Grid>
+                            }
                         </Grid>
                     </AbsoluteContainer>
                     <AbsoluteContainer 
