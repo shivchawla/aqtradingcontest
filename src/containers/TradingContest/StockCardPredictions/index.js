@@ -262,7 +262,7 @@ class StockCardPredictions extends React.Component {
 
     renderTimer = (dateTime, text, showMarketClosed = false) => {
         return (
-            <div style={{...verticalBox, marginTop: '55%'}}>
+            <div style={{...verticalBox, marginTop: isDesktop ? '25%': '55%'}}>
                 {
                     showMarketClosed &&
                     <MarketOpenStatusTag color='#fc4c55'>

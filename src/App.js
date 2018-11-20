@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactGA from 'react-ga';
 import Media from 'react-media';
 import Route from 'react-router/Route';
 import Redirect from 'react-router/Redirect';
@@ -17,9 +18,28 @@ import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
 import Watchlist from './containers/Watchlist';
 import './App.css';
 
-const {develop = false} = require('./localConfig');
+const {develop = false, gaTrackingId = null} = require('./localConfig');
 
 class App extends Component {
+    constructor(props) {
+        super(props);
+        ReactGA.initialize(gaTrackingId); //Unique Google Analytics tracking number
+    }
+
+    fireTracking = () => {
+        ReactGA.pageview(window.location.href);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.location !== prevProps.location) { // Route changed
+            this.fireTracking();
+        }
+    }
+
+    componentDidMount() {
+        this.fireTracking();
+    }
+
     render() {
         return (
             <MuiPickersUtilsProvider utils={MomentUtils}>
