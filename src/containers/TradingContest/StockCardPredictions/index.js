@@ -354,7 +354,7 @@ class StockCardPredictions extends React.Component {
                         ?   isMarketOpen().status
                                 ?   this.renderStockCard()
                                 :    moment().isBefore(marketOpenDateTime)
-                                        ?   this.renderTimer(marketOpenDateTime, 'Market will open in')
+                                        ?   this.renderTimer(marketOpenDateTime, 'Market will open in', true)
                                         :   this.renderMarketClose()
                         :   this.renderTimer(nextNonHolidayWeekday, 'You can enter predictions in', true)
                     }
