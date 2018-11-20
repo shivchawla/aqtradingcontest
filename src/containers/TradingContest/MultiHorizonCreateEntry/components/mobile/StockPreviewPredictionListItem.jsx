@@ -90,12 +90,6 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         <div style={verticalBox}>
                             <ArrowHeaderText style={{marginBottom: '-4px'}}>{duration} Days</ArrowHeaderText>
                             <Icon>trending_flat</Icon>
-                            <ArrowHeaderText 
-                                    color={type === 'buy' ? metricColor.positive : metricColor.negative}
-                                    style={{marginTop: '-4px'}}
-                            >
-                                {Math.round(targetPct)}%
-                            </ArrowHeaderText>
                         </div>
                         <PriceComponent 
                             label='Target Price'
