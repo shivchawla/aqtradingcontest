@@ -298,7 +298,7 @@ class CreateEntry extends React.Component {
         });
     }
 
-    getDailyPredictionsOnDateChange = (selectedDate = moment(), type = 'active') => {
+    getDailyPredictionsOnDateChange = (selectedDate = moment(), type = this.state.selectedView) => {
         let predictions = [];
         return Promise.all([
             getDailyContestPredictions(selectedDate, type, false, this.props.history, this.props.match.url, false),
