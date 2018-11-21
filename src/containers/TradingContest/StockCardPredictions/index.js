@@ -65,19 +65,6 @@ class StockCardPredictions extends React.Component {
         }
     })
 
-    initializeSkipStocks = () => new Promise((resolve, reject) => {
-        try {
-            const stockCart = Utils.getObjectFromLocalStorage('stockCart');
-            const date = _.get(stockCart, 'date', moment().format(dateFormat));
-            const stocks = _.get(stockCart, 'stocks', []);
-            const currentDate = moment().format(dateFormat);
-
-            resolve(moment(currentDate, dateFormat).isSame(moment(date, dateFormat)) ? stocks : []);
-        } catch(err) {
-            reject(err);
-        }
-    })
-
     initializeDefaultStockData = () => new Promise((resolve, reject) => {
         try {
             const defaultStockData = Utils.getObjectFromLocalStorage('defaultSettings');
