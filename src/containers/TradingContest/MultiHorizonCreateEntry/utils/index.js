@@ -71,18 +71,18 @@ export const checkHorizonDuplicationStatus = (predictions) => {
     return duplicatePredictions > 0;
 }
 
-export const getDailyContestPredictions = (date = null, category='started', populatePnl=false, history, currentUrl, handleError = true) => {
+export const getDailyContestPredictions = (date = null, category='started', populatePnl=false, history, currentUrl, handleError = true, cancelCb = null) => {
     const requiredDate = date === null ? moment().format(dateFormat) : date.format(dateFormat);
     const url = `${requestUrl}/dailycontest/prediction?date=${requiredDate}&category=${category}&populatePnl=${populatePnl}`;
 
-    return fetchAjaxPromise(url, history, currentUrl, handleError)
+    return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb)
 }
 
-export const getPnlStats = (date = moment(), type = 'started', history, currentUrl, handleError = true) => {
+export const getPnlStats = (date = moment(), type = 'started', history, currentUrl, handleError = true, cancelCb = null) => {
     const requiredDate = date.format(dateFormat);
     const url =`${requestUrl}/dailycontest/pnl?date=${requiredDate}&category=${type}`;
 
-    return fetchAjaxPromise(url, history, currentUrl, handleError);
+    return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
 }
 
 // converts predictions to positions obtained from the backend

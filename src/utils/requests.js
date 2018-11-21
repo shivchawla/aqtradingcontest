@@ -29,10 +29,12 @@ export const fetchAjax = (url, history, redirectUrl = '/advice', header=undefine
 };
 
 
-export const fetchAjaxPromise = (url, history, redirectUrl = '/advice', handleError=true, header=undefined, source = null) => {
+export const fetchAjaxPromise = (url, history, redirectUrl = '/advice', handleError=true, cancelCallback = null, header=undefined) => {
     return new Promise((resolve, reject) => {
         return axios.get(url, {
-            cancelToken: _.get(source, 'token', null),
+            cancelToken: new axios.CancelToken(c => {
+                cancelCallback && cancelCallback(c);
+            }),
             headers: header ? header : Utils.getAuthTokenHeader()
         })
         .then(response => resolve(response))

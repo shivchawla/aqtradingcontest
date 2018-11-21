@@ -33,12 +33,13 @@ import {
 } from './utils';
 
 const dateFormat = 'YYYY-MM-DD';
-const CancelToken = axios.CancelToken;
 
 class CreateEntry extends React.Component {
     constructor(props) {
         super(props);
         this.searchStockComponent = null;
+        this.cancelFetchPredictionsRequest = undefined;
+        this.cancelFetchPnLRequest = undefined;
         this.state = {
             bottomSheetOpenStatus: false,
             pnlStats: {}, // Daily PnL stats for the selected entry obtained due to date change
@@ -81,7 +82,6 @@ class CreateEntry extends React.Component {
             selectedPositionIndex: 0
         };
         this.mounted = false;
-        this.source = CancelToken.source();
     }
 
     getListViewType = (type) => {
@@ -300,8 +300,22 @@ class CreateEntry extends React.Component {
 
     getDailyPredictionsOnDateChange = (selectedDate = moment(), type = this.state.selectedView) => {
         let predictions = [];
+        if (this.cancelFetchPredictionsRequest) {
+            this.cancelFetchPredictionsRequest();
+        }
         return Promise.all([
-            getDailyContestPredictions(selectedDate, type, false, this.props.history, this.props.match.url, false),
+            getDailyContestPredictions(
+                selectedDate, 
+                type, 
+                false, 
+                this.props.history, 
+                this.props.match.url, 
+                false,
+                c => {
+                    this.cancelFetchPredictionsRequest = c
+                    console.log(this.cancelFetchPredictionsRequest);
+                }
+            ),
         ])
         .then(async ([response]) => {
             predictions = response.data;
@@ -311,10 +325,26 @@ class CreateEntry extends React.Component {
             console.log('Error', err)
             this.setState({noEntryFound: true});
         })
+        .finally(() => {
+            this.cancelFetchPredictionsRequest = undefined;
+        })
     }
 
     getDailyPnlStats = (selectedDate = moment(), type='active') => {
-        return getPnlStats(selectedDate, type, this.props, this.props.match.url, false)
+        if (this.cancelFetchPnLRequest) {
+            this.cancelFetchPnLRequest();
+        }
+        return getPnlStats(
+            selectedDate, 
+            type, 
+            this.props, 
+            this.props.match.url, 
+            false,
+            c => {
+                this.cancelFetchPnLRequest = c;
+                console.log(this.cancelFetchPnLRequest);
+            }
+        )
         .then(response => {
             const pnlStats = response.data;
             this.updateDailyPnLStats(pnlStats);
@@ -561,6 +591,8 @@ class CreateEntry extends React.Component {
 
     componentWillUnmount() {
         this.unSubscribeToPredictions();
+        this.cancelFetchPredictionsRequest && this.cancelFetchPredictionsRequest();
+        this.cancelFetchPnLRequest && this.cancelFetchPnLRequest();
         this.mounted = false;
     }
 
