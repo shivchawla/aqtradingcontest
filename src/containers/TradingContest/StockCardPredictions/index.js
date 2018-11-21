@@ -73,7 +73,7 @@ class StockCardPredictions extends React.Component {
                 benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_500'),
                 horizon: _.get(defaultStockData, 'horizon', 5),
                 target: _.get(defaultStockData, 'target', 5),
-                editMode: _.get(defaultStockData, 'editMode', false),
+                editMode: _.get(defaultStockData, 'editMode', true),
                 sector: _.get(defaultStockData, 'sector', '')
             });
         } catch (err) {
