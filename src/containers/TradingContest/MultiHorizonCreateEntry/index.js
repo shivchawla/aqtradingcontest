@@ -33,6 +33,8 @@ import {
 } from './utils';
 
 const dateFormat = 'YYYY-MM-DD';
+const pnlCancelledMessage = 'pnlCancelled';
+const predictionsCancelledMessage = 'predictionsCancelled';
 
 class CreateEntry extends React.Component {
     constructor(props) {
@@ -299,41 +301,36 @@ class CreateEntry extends React.Component {
     }
 
     getDailyPredictionsOnDateChange = (selectedDate = moment(), type = this.state.selectedView) => {
+        try {
+            this.cancelFetchPredictionsRequest(predictionsCancelledMessage);
+        } catch(err) {}
         let predictions = [];
-        if (this.cancelFetchPredictionsRequest) {
-            this.cancelFetchPredictionsRequest();
-        }
-        return Promise.all([
-            getDailyContestPredictions(
-                selectedDate, 
-                type, 
-                false, 
-                this.props.history, 
-                this.props.match.url, 
-                false,
-                c => {
-                    this.cancelFetchPredictionsRequest = c
-                    console.log(this.cancelFetchPredictionsRequest);
-                }
-            ),
-        ])
-        .then(async ([response]) => {
+        return getDailyContestPredictions(
+            selectedDate, 
+            type, 
+            false, 
+            this.props.history, 
+            this.props.match.url, 
+            false,
+            c => {
+                this.cancelFetchPredictionsRequest = c
+            }
+        )
+        .then(async response => {
             predictions = response.data;
             this.updateDailyPredictions(predictions);
+            return 'requestCompleted';
         })
         .catch(err => {
-            console.log('Error', err)
             this.setState({noEntryFound: true});
-        })
-        .finally(() => {
-            this.cancelFetchPredictionsRequest = undefined;
+            return err.message === predictionsCancelledMessage ? 'requestPending' : 'requestCompleted';
         })
     }
 
     getDailyPnlStats = (selectedDate = moment(), type='active') => {
-        if (this.cancelFetchPnLRequest) {
-            this.cancelFetchPnLRequest();
-        }
+        try {
+            this.cancelFetchPnLRequest(pnlCancelledMessage);
+        } catch (err){}
         return getPnlStats(
             selectedDate, 
             type, 
@@ -342,16 +339,17 @@ class CreateEntry extends React.Component {
             false,
             c => {
                 this.cancelFetchPnLRequest = c;
-                console.log(this.cancelFetchPnLRequest);
             }
         )
         .then(response => {
             const pnlStats = response.data;
             this.updateDailyPnLStats(pnlStats);
-        }) 
+            return 'requestCompleted';
+        })
         .catch(err => {
-            this.setState({pnlFound: false})
-        })       
+            this.setState({pnlFound: false});
+            return err.message === pnlCancelledMessage ? 'requestPending' : 'requestCompleted';
+        }) 
     }
 
     setUpSocketConnection = () => {
@@ -444,9 +442,18 @@ class CreateEntry extends React.Component {
             this.getDailyPredictionsOnDateChange(selectedDate, this.state.selectedView),
             this.getDailyPnlStats(selectedDate, this.state.selectedView)
         ])
-        .finally(() => {
+        .then((response) => {
+            console.log(response);
+            if (response.filter(responseItem => responseItem === 'requestCompleted').length === 2) {
+                this.setState({loading: false});
+            } else {
+                this.setState({loading: true});
+            }
+        })
+        .catch((err) => {
+            console.log(err.message);
             this.setState({loading: false});
-        });
+        })
     }
 
     addPredictionForPosition = symbol => {
