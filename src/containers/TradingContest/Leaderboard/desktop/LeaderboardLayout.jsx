@@ -43,7 +43,7 @@ export default class TopPicksLayout extends React.Component {
                             alignItems: 'flex-start'
                         }}
                 >
-                    <div 
+                    {/* <div 
                             style={{
                                 ...horizontalBox, 
                                 width: '100%', 
@@ -54,7 +54,7 @@ export default class TopPicksLayout extends React.Component {
                             items={['TOTAL', 'LONG', 'SHORT']}
                             onChange={this.onRadioChange}
                         />
-                    </div>
+                    </div> */}
                     <div 
                             style={{
                                 marginLeft: '3%', 

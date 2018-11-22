@@ -37,7 +37,7 @@ export default class LeaderboardLayout extends React.Component {
         return(
             <SGrid container>
                 <Grid item xs={12} style={listContainer}>
-                    <div 
+                    {/* <div 
                             style={{
                                 ...horizontalBox, 
                                 width: '100%', 
@@ -48,7 +48,7 @@ export default class LeaderboardLayout extends React.Component {
                             items={['TOTAL', 'LONG', 'SHORT']}
                             onChange={this.onRadioChange}
                         />
-                    </div>
+                    </div> */}
                     {
                         winners.length == 0 
                         ?   <NoDataFound /> 
