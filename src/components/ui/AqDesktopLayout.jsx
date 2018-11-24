@@ -9,6 +9,7 @@ import {withRouter} from 'react-router-dom';
 import DateComponent from '../../containers/TradingContest/Misc/DateComponent';
 import {metricColor, primaryColor} from '../../constants';
 import {isMarketOpen} from '../../containers/TradingContest/utils';
+import {isHoliday} from '../../utils';
 
 class AqDesktopLayout extends React.Component {
     constructor(props) {
@@ -74,6 +75,8 @@ class AqDesktopLayout extends React.Component {
 
     render() {
         const {loading} = this.props;
+        const isMarketTrading = !isHoliday();
+        const marketOpen = isMarketTrading && isMarketOpen().status;
 
         return (
             <ContainerGrid container>
@@ -125,13 +128,13 @@ class AqDesktopLayout extends React.Component {
                         {
                             this.state.activeSegment === 1 &&
                             <MartketOpenTag 
-                                    color={isMarketOpen().status 
+                                    color={marketOpen
                                         ? metricColor.positive 
                                         : '#fc4c55'
                                     }
                             >   
                                 {
-                                    isMarketOpen().status
+                                    marketOpen
                                         ? 'Market Open'
                                         : 'Market Closed'
                                 }

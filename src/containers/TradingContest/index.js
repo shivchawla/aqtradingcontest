@@ -165,6 +165,8 @@ class TradingContest extends React.Component {
 
     renderMobile = () => {
         const {selectedTab} = this.state;
+        const isMarketTrading = !DateHelper.isHoliday();
+        const marketOpen = isMarketTrading && isMarketOpen().status;
         
         return (
             <AqLayout
@@ -202,16 +204,16 @@ class TradingContest extends React.Component {
                             />
                         }
                         {
-                            !isMarketOpen().status &&
+                            !marketOpen &&
                             this.state.selectedTab === 1 &&
                             <MartketOpenTag 
-                                    color={isMarketOpen().status 
+                                    color={marketOpen
                                         ? metricColor.positive 
                                         : '#fc4c55'
                                     }
                             >   
                                 {
-                                    isMarketOpen().status
+                                    marketOpen
                                         ? 'Market Open'
                                         : 'Market Closed'
                                 }
