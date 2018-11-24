@@ -17,6 +17,7 @@ import Icon from '@material-ui/core/Icon';
 import TopPicks from './TopPicks';
 import Leaderboard from './Leaderboard';
 import CreateEntry from './MultiHorizonCreateEntry';
+import Dashboard from './Dashboard';
 import StockPredictions from './StockCardPredictions';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
@@ -30,6 +31,7 @@ const DateHelper = require('../../utils/date');
 const URLSearchParamsPoly = require('url-search-params');
 const dateFormat = 'YYYY-MM-DD';
 const defaultDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate()));
+const tabsWithDate = [1, 2, 3]; // mypicks, toppicks, leaderboard
 
 class TradingContest extends React.Component {
     params = {}
@@ -53,10 +55,10 @@ class TradingContest extends React.Component {
     }
 
     handleChange = (selectedTab) => {
-        let tab = this.getSelectedPageMobile(selectedTab);
+        let tab = this.getSelectedPage(selectedTab);
         let url = `${this.props.match.path}/${tab}`;
         let selectedDate = this.state.selectedDate;
-        if (selectedTab !== 0) {
+        if (tabsWithDate.indexOf(selectedTab) > -1) { // Only append date query if it is present in tabsWithDate array
             url = `${url}?date=${this.state.selectedDate.format(dateFormat)}`;
             
         } else {
@@ -66,7 +68,7 @@ class TradingContest extends React.Component {
         this.setState({selectedTab, selectedDate});
     };
 
-    getSelectedPageMobile = (selectedTab = 0) => {
+    getSelectedPage = (selectedTab = 1) => {
         switch(selectedTab) {
             case 0:
                 return 'stockpredictions'
@@ -76,12 +78,14 @@ class TradingContest extends React.Component {
                 return 'toppicks';
             case 3:
                 return 'leaderboard';
+            case 4:
+                return 'metrics';
             default:
                 return 'mypicks';
         }
     } 
 
-    getSelectedTabMobile = url => {
+    getSelectedTab = url => {
         switch(url) {
             case "/dailycontest/stockpredictions":
                 return 0;
@@ -91,6 +95,8 @@ class TradingContest extends React.Component {
                 return 2;
             case "/dailycontest/leaderboard":
                 return 3;
+            case "/dailycontest/metrics":
+                return 4;
             default:
                 return 0;
         }
@@ -127,7 +133,7 @@ class TradingContest extends React.Component {
     componentWillUpdate(nextProps) {
         if (this.props.location !== nextProps.location) { // Route changed
             const currentLocation = nextProps.location.pathname;
-            const selectedTab = this.getSelectedTabMobile(currentLocation);
+            const selectedTab = this.getSelectedTab(currentLocation);
             this.setState({selectedTab});
         }
     }
@@ -147,7 +153,7 @@ class TradingContest extends React.Component {
     }
 
     componentWillMount() {
-        const selectedTab = this.getSelectedTabMobile(this.props.location.pathname);
+        const selectedTab = this.getSelectedTab(this.props.location.pathname);
         this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
         const date = this.params.get('date');
         const listViewType = this.params.get('type');
@@ -165,6 +171,8 @@ class TradingContest extends React.Component {
 
     renderMobile = () => {
         const {selectedTab} = this.state;
+        const isMarketTrading = !DateHelper.isHoliday();
+        const marketOpen = isMarketTrading && isMarketOpen().status;
         
         return (
             <AqLayout
@@ -190,11 +198,12 @@ class TradingContest extends React.Component {
                             <STab label="MY PICKS" />
                             <STab label="TOP PICKS" />
                             <STab label="LEADER"/>
+                            <STab label="Metrics"/>
                         </STabs>
                     </Grid>
                     <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
                         {
-                            this.state.selectedTab !== 0 &&
+                            tabsWithDate.indexOf(selectedTab) > -1 &&
                             <DateComponent 
                                 selectedDate={this.state.selectedDate}
                                 color='grey'
@@ -202,16 +211,18 @@ class TradingContest extends React.Component {
                             />
                         }
                         {
-                            !isMarketOpen().status &&
+                            // !isMarketTrading &&
+                            // !isMarketOpen().status &&
+                            !marketOpen &&
                             this.state.selectedTab === 1 &&
                             <MartketOpenTag 
-                                    color={isMarketOpen().status 
+                                    color={marketOpen
                                         ? metricColor.positive 
                                         : '#fc4c55'
                                     }
                             >   
                                 {
-                                    isMarketOpen().status
+                                    marketOpen
                                         ? 'Market Open'
                                         : 'Market Closed'
                                 }
@@ -259,6 +270,14 @@ class TradingContest extends React.Component {
                                 ?   <StockPredictions 
                                         selectedDate={this.state.selectedDate}
                                     />
+                                :   <Redirect push to='/login'/>
+                            }
+                        />
+                        <Route 
+                            exact
+                            path={`${this.props.match.path}/metrics`}
+                            render={() => Utils.isLoggedIn()
+                                ?   <Dashboard />
                                 :   <Redirect push to='/login'/>
                             }
                         />
@@ -405,6 +424,7 @@ const STabs = styled(Tabs)`
 
 const STab = styled(Tab)`
     font-weight: 400;
+    min-width: 100px;
 `;
 
 const desktopStyles = {
