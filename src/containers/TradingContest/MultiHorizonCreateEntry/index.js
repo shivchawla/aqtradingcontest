@@ -279,17 +279,13 @@ class CreateEntry extends React.Component {
         const positions = convertPredictionsToPositions(predictions, true, false);
         this.setState({
             // If data already loaded then don't modify for predictions that are to be edited
-            predictions: this.state.todayDataLoaded ? this.state.predictions : formattedPredictions, 
-            stalePositions: this.state.todayDataLoaded ? this.state.stalePositions : stalePositions,
+            predictions: formattedPredictions, 
+            stalePositions: stalePositions,
             todayDataLoaded: this.state.todayDataLoaded === false ? true : this.state.todayDataLoaded,
             previewPositions: positions,
-            positions: this.state.todayDataLoaded 
-                ? this.state.positions.map(position => ({...position, new: false}))
-                : positions,
-            staticPositions: this.state.todayDataLoaded 
-                ? this.state.positions.map(position => ({...position, new: false}))
-                : positions,
-            noEntryFound: this.state.todayDataLoaded ? this.state.predictions.length === 0 : predictions.length === 0
+            positions: positions,
+            staticPositions: positions,
+            noEntryFound: predictions.length === 0
         });
     }
 
