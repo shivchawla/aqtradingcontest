@@ -18,10 +18,16 @@ export const formatDailyStatsData = responseData => {
 }
 
 export const getDailyStatsDataForKey = dailycontestStats => {
-    const pnl = {
-        total: getPnl(_.get(dailycontestStats, 'net.pnl', null)),
-        long: getPnl(_.get(dailycontestStats, 'long.pnl', null)),
-        short: getPnl(_.get(dailycontestStats, 'short.pnl', null)),
+    console.log(dailycontestStats);
+    const avgPnl = {
+        total: getPnl(_.get(dailycontestStats, 'net.avgPnl', null)),
+        long: getPnl(_.get(dailycontestStats, 'long.avgPnl', null)),
+        short: getPnl(_.get(dailycontestStats, 'short.avgPnl', null)),
+    };
+    const avgPnlPct = {
+        total: getPct(_.get(dailycontestStats, 'net.avgPnlPct', null)),
+        long: getPct(_.get(dailycontestStats, 'long.avgPnlPct', null)),
+        short: getPct(_.get(dailycontestStats, 'short.avgPnlPct', null)),
     };
     const profitFactor = {
         total: _.get(dailycontestStats, 'net.profitFactor', -1),
@@ -78,7 +84,8 @@ export const getDailyStatsDataForKey = dailycontestStats => {
     };
 
     return {
-        pnl, 
+        avgPnl,
+        avgPnlPct, 
         profitFactor,
         mostProftableStock,
         leastProfitableStock,
@@ -89,6 +96,10 @@ export const getDailyStatsDataForKey = dailycontestStats => {
 
 export const getPnl = pnl => {
     return pnl !== null ? pnl * 1000 : -1;
+}
+
+export const getPct = value => {
+    return value !== null ? Number((value * 100).toFixed(2)) : 0;
 }
 
 export const getDailyContestStats = (history, currentUrl, handleError = true) => {

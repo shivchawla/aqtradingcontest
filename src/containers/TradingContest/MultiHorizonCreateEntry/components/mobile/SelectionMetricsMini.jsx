@@ -29,8 +29,7 @@ export default class SelectionMetricsMini extends React.Component {
     }
 
     render() {
-        const metrics = this.props.cumulative || {};
-        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, cost = 0} = _.get(metrics, 'total', {});
+        const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, cost = 0} = _.get(this.props, 'net', {});
         
         return (
             <SGrid container justify="center" alignItems="center" style={{border:'1px solid lightgrey'}}>

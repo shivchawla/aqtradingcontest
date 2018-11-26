@@ -6,6 +6,7 @@ import Header from './Header';
 import MetricLabel from './MetricLabel';
 import MetricValue from './MetricValue';
 import {labelColor, metricColor} from '../styles';
+import {Utils} from '../../../../../utils';
 import {verticalBox, horizontalBox, primaryColor, nameEllipsisStyle} from '../../../../../constants';
 
 export default class VerticalCard extends React.Component {
@@ -71,7 +72,7 @@ const Metric = ({symbol, name, type='total', pnl={}}) => {
                 : metricColor.negative;
     let pnlValue = _.get(pnl, 'value', 0);
     let pnlPct = _.get(pnl, 'pct', 0);
-    pnlValue = (pnlValue === -1 || pnlValue === null) ? 'N/A' : pnlValue.toFixed(2);
+    pnlValue = (pnlValue === -1 || pnlValue === null) ? 'N/A' : Utils.formatMoneyValueMaxTwoDecimals(pnlValue);
     pnlPct = (pnlPct === -1 || pnlPct === null) ? 'N/A' : `${pnlPct.toFixed(2)}%`;
 
     return (
@@ -96,12 +97,13 @@ const Metric = ({symbol, name, type='total', pnl={}}) => {
                         xs={5}
                         style={{
                             ...horizontalBox,
-                            justifyContent: 'space-around'
+                            // justifyContent: 'space-around'
+                            justifyContent: 'flex-end'
                         }}
                 >
-                    <MetricValue>{pnlValue}</MetricValue>
-                    <Spacer>|</Spacer>
-                    <MetricValue>{pnlPct}</MetricValue>
+                    <MetricValue>₹{pnlValue}</MetricValue>
+                    {/* <Spacer>|</Spacer>
+                    <MetricValue style={{fontSize: '14px'}}>{pnlPct}</MetricValue> */}
                 </Grid>
             </Grid>
             {/* <div style={{...verticalBox, alignItems: 'flex-start'}}>
@@ -125,11 +127,12 @@ const Metric = ({symbol, name, type='total', pnl={}}) => {
 
 const nameStyle = {
     ...nameEllipsisStyle,
-    width: '120px',
+    width: '90px',
     fontWeight: 500,
     fontFamily: 'Lato, sans-serif',
     fontSize: '12px',
-    color: labelColor
+    color: labelColor,
+    textAlign: 'start'
 }
 
 const Container = styled(Grid)`

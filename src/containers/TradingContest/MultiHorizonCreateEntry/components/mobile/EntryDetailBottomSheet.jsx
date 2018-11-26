@@ -33,7 +33,7 @@ export default class EntryDetailBottomSheet extends React.Component {
 
     render() {
         const {open = false, pnlMetrics ={}} = this.props; 
-        const metrics = this.state.selectedView === 0 ? _.get(pnlMetrics, 'daily', {}) : _.get(pnlMetrics, 'cumulative', {});
+        const metrics = this.state.selectedView === 0 ? _.get(pnlMetrics, 'daily', {}) : _.get(pnlMetrics, 'cumulative.all', {});
 
         return (
             <Motion style={{x: spring(open ? 0 : -global.screen.height)}}>
@@ -60,7 +60,7 @@ export default class EntryDetailBottomSheet extends React.Component {
                                 </Grid>
                                 <Grid item xs={12} style={verticalBox}>
                                     <MetricsHeader>Total</MetricsHeader>
-                                    <SelectionMetrics {...metrics.total} bordered/>
+                                    <SelectionMetrics {...metrics.net} bordered/>
                                 </Grid>
                                 <Grid item xs={12} style={verticalBox}>
                                     <MetricsHeader>Long</MetricsHeader>

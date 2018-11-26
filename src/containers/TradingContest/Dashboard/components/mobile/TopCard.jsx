@@ -19,14 +19,20 @@ export default class TopCard extends React.Component {
     }
 
     render() {
-        let {header='Header', total=0, long=0, short=0, barColor=primaryColor, money = false} = this.props;
-        total = Utils.formatMoneyValueMaxTwoDecimals(total);
-        long = Utils.formatMoneyValueMaxTwoDecimals(long);
-        short = Utils.formatMoneyValueMaxTwoDecimals(short);
+        let {header='Header', total=0, long=0, short=0, barColor=primaryColor, money = false, percentage = false} = this.props;
+        total = !money ? total : Utils.formatMoneyValueMaxTwoDecimals(total);
+        long = !money ? long : Utils.formatMoneyValueMaxTwoDecimals(long);
+        short = !money ? short : Utils.formatMoneyValueMaxTwoDecimals(short);
         if (money) {
             total = `₹${total}`;
             long = `₹${long}`;
             short = `₹${short}`;
+        }
+
+        if (percentage) {
+            total = `${total}%`;
+            long = `${long}%`;
+            short = `${short}%`;
         }
 
         return (
@@ -78,8 +84,8 @@ const Container = styled(Grid)`
 `;
 
 const NetText = styled.h3`
-    font-size: 30px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 700;
     font-family: 'Lato', sans-serif;
     color: ${props => props.color || valueColor};
     margin-left: 10px;

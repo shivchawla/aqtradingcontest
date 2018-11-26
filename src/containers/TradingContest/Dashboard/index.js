@@ -27,7 +27,6 @@ export default class Dashboard extends React.Component {
         this.fetchDailyContestStats()
         .then(dailyContestStats => {
             const formattedDailyContestStats = formatDailyStatsData(dailyContestStats);
-            console.log(formattedDailyContestStats);
             this.setState({dashboardData: formattedDailyContestStats})
         })
         .finally(() => {

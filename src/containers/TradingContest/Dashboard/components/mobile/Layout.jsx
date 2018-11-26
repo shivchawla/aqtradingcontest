@@ -12,10 +12,12 @@ import {horizontalBox, verticalBox} from '../../../../../constants';
 export default class Layout extends React.Component {
     renderContent() {
         const {
-            pnl = {}, 
+            avgPnlPct = {}, 
             profitFactor = {}, 
             leastProfitableStock = {},
-            mostProftableStock = {}
+            mostProftableStock = {},
+            predictions = {},
+            winRatio = {}
         } = this.props.dashboardData;
 
         return (
@@ -24,11 +26,11 @@ export default class Layout extends React.Component {
                         style={{
                             ...horizontalBox, 
                             width: '100%', 
-                            justifyContent: 'flex-end'
+                            justifyContent: 'center'
                         }}
                 >
                     <RadioGroup 
-                        items={['TOTAL', 'REALIZED', 'UN REALIZED']}
+                        items={['TOTAL', 'REALIZED']}
                         onChange={this.props.onRadioChange}
                         fontSize='12px'
                     />
@@ -41,6 +43,7 @@ export default class Layout extends React.Component {
                         <TopCard 
                             header='Predictions'
                             barColor='#4468FF'
+                            {...predictions}
                         />
                     </Grid>
                     <Grid 
@@ -48,10 +51,10 @@ export default class Layout extends React.Component {
                             xs={6}
                     >
                         <TopCard 
-                            header='PnL'
+                            header='Avg. PnL (%)'
                             barColor='#E6B74C'
-                            money
-                            {...pnl}
+                            percentage
+                            {...avgPnlPct}
                         />
                     </Grid>
                 </Grid>
@@ -62,6 +65,7 @@ export default class Layout extends React.Component {
                     />
                     <HorizontalCard 
                         header='Win Ratio' 
+                        {...winRatio}
                         style={{
                             marginTop: '10px'
                         }}
