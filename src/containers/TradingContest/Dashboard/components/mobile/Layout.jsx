@@ -66,7 +66,7 @@ export default class Layout extends React.Component {
                         ratio
                     />
                     <HorizontalCard 
-                        header='Win Ratio' 
+                        header='Success Rate' 
                         {...winRatio}
                         style={{
                             marginTop: '10px'
@@ -76,7 +76,7 @@ export default class Layout extends React.Component {
                 </div>
                 <div style={{marginTop: '20px'}}>
                     <VerticalCard 
-                        header='Most Proftable'
+                        header='Most Profitable'
                         trade={mostProftableStock}
                     />
                     <VerticalCard 

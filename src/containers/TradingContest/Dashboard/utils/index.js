@@ -30,9 +30,9 @@ export const getDailyStatsDataForKey = dailycontestStats => {
         short: getPct(_.get(dailycontestStats, 'short.avgPnlPct', null)),
     };
     const profitFactor = {
-        total: _.get(dailycontestStats, 'net.profitFactor', -1),
-        long: _.get(dailycontestStats, 'long.profitFactor', -1),
-        short: _.get(dailycontestStats, 'short.profitFactor', -1),
+        total: toDecimal(_.get(dailycontestStats, 'net.profitFactor', -1)),
+        long: toDecimal(_.get(dailycontestStats, 'long.profitFactor', -1)),
+        short: toDecimal(_.get(dailycontestStats, 'short.profitFactor', -1)),
     };
 
     const predictions = {
@@ -102,6 +102,10 @@ export const getPct = value => {
     return value !== null ? Number((value * 100).toFixed(2)) : 0;
 }
 
+export const toDecimal = value => {
+    return value !== null ? Number(value.toFixed(2)) : 0;
+}
+
 export const getPctFromRatio = value => {
     return getPct(value / (1 + value));
 }
@@ -125,9 +129,9 @@ export const getFormattedValue = (value = 0, money = false, percentage = false) 
     return formattedValue;
 }
 
-export const getValueColor = (value, number = false) => {
+export const getValueColor = (value, number = false, color = metricColor) => {
     if (!number) {
-        return value > 0 ? metricColor.positive : value === 0 ? valueColor : metricColor.negative;
+        return value > 0 ? color.positive : value === 0 ? valueColor : color.negative;
     }
 
     return valueColor;

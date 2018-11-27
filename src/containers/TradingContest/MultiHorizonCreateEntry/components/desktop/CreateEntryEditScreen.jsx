@@ -242,7 +242,7 @@ class CreateEntryEditScreen extends React.Component {
                                 pnlFound && positions.length > 0 &&
                                 <div style={{padding:'0 10px 20px 10px'}}>
                                     <SelectionMetricsMini 
-                                        {..._.get(getRequiredMetrics(), 'cumulative.all.net', {})}
+                                        {..._.get(getRequiredMetrics(), 'cumulative.all', {})}
                                         onClick={toggleEntryDetailBottomSheet}
                                     />
                                 </div>

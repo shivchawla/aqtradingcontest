@@ -68,6 +68,20 @@ class TradingContest extends React.Component {
         this.setState({selectedTab, selectedDate});
     };
 
+    handleChangeMobile = selectedTab => {
+        let tab = this.getSelectedPageMobile(selectedTab);
+        let url = `${this.props.match.path}/${tab}`;
+        let selectedDate = this.state.selectedDate;
+        if (selectedTab === 1) {
+            url = `${url}?date=${this.state.selectedDate.format(dateFormat)}`;
+            
+        } else {
+            selectedDate = defaultDate;
+        }
+        this.props.history.push(url);
+        this.setState({selectedTab, selectedDate});
+    }
+
     getSelectedPage = (selectedTab = 1) => {
         switch(selectedTab) {
             case 0:
@@ -85,6 +99,19 @@ class TradingContest extends React.Component {
         }
     } 
 
+    getSelectedPageMobile = (selectedTab = 1) => {
+        switch(selectedTab) {
+            case 0:
+                return 'stockpredictions'
+            case 1:
+                return 'mypicks';
+            case 2:
+                return 'metrics';
+            default:
+                return 'mypicks';
+        }
+    }
+
     getSelectedTab = url => {
         switch(url) {
             case "/dailycontest/stockpredictions":
@@ -99,6 +126,19 @@ class TradingContest extends React.Component {
                 return 4;
             default:
                 return 0;
+        }
+    }
+
+    getSelectedTabMobile = url => {
+        switch(url) {
+            case "/dailycontest/stockpredictions":
+                return 0;
+            case "/dailycontest/mypicks":
+                return 1;
+            case "/dailycontest/metrics":
+                return 2;
+            default:
+                return 1;
         }
     }
 
@@ -133,7 +173,9 @@ class TradingContest extends React.Component {
     componentWillUpdate(nextProps) {
         if (this.props.location !== nextProps.location) { // Route changed
             const currentLocation = nextProps.location.pathname;
-            const selectedTab = this.getSelectedTab(currentLocation);
+            const selectedTab = global.screen.width > 600 
+                ? this.getSelectedTab(currentLocation) 
+                : this.getSelectedTabMobile(currentLocation);
             this.setState({selectedTab});
         }
     }
@@ -153,7 +195,9 @@ class TradingContest extends React.Component {
     }
 
     componentWillMount() {
-        const selectedTab = this.getSelectedTab(this.props.location.pathname);
+        const selectedTab = global.screen.width > 600 
+            ? this.getSelectedTab(this.props.location.pathname)
+            : this.getSelectedTabMobile(this.props.location.pathname);
         this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
         const date = this.params.get('date');
         const listViewType = this.params.get('type');
@@ -188,7 +232,7 @@ class TradingContest extends React.Component {
                     <Grid item xs={12}>
                         <STabs
                                 value={selectedTab}
-                                onChange={(e, selectedTab) => this.handleChange(selectedTab)}
+                                onChange={(e, selectedTab) => this.handleChangeMobile(selectedTab)}
                                 indicatorColor="secondary"
                                 fullWidth
                                 scrollable
@@ -196,8 +240,8 @@ class TradingContest extends React.Component {
                         >
                             <STab label="PREDICT"/>
                             <STab label="MY PICKS" />
-                            <STab label="TOP PICKS" />
-                            <STab label="LEADER"/>
+                            {/* <STab label="TOP PICKS" /> */}
+                            {/* <STab label="LEADER"/> */}
                             <STab label="Metrics"/>
                         </STabs>
                     </Grid>
@@ -239,26 +283,6 @@ class TradingContest extends React.Component {
                                         selectedDate={this.state.selectedDate}
                                         componentType='preview'
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
-                                    />
-                                :   <Redirect push to='/login'/>
-                            }
-                        />
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}/toppicks`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <TopPicks 
-                                        selectedDate={this.state.selectedDate}
-                                    />
-                                :   <Redirect push to='/login'/>
-                            }
-                        />
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}/leaderboard`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <Leaderboard 
-                                        selectedDate={this.state.selectedDate}
                                     />
                                 :   <Redirect push to='/login'/>
                             }

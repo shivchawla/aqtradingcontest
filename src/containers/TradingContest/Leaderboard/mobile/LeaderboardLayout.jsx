@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import ParticipantList from '../common/ParticipantList';
 import LoaderComponent from '../../Misc/Loader';
 import RadioGroup from '../../../../components/selections/RadioGroup';
+import UserProfileBottomSheet from '../../UserProfile';
 import {verticalBox, horizontalBox} from '../../../../constants';
 import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
@@ -11,7 +12,7 @@ export default class LeaderboardLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listType: 'total'
+            listType: 'total',
         };
     }
 
@@ -37,6 +38,11 @@ export default class LeaderboardLayout extends React.Component {
 
         return(
             <SGrid container>
+                <UserProfileBottomSheet 
+                    open={this.props.userProfileBottomSheetOpenStatus}
+                    onClose={this.props.toggleUserProfileBottomSheet}
+                    advisor={this.props.selectedAdvisor}
+                />
                 <Grid item xs={12} style={listContainer}>
                     {/* <div 
                             style={{
@@ -56,6 +62,7 @@ export default class LeaderboardLayout extends React.Component {
                         :   <ParticipantList 
                                 winners={winners}
                                 listType={this.state.listType}
+                                toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
                             />
                     }
                 </Grid>

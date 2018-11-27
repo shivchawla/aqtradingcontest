@@ -11,7 +11,7 @@ export default class TopPicksLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            view: 'byInvestment'
+            view: 'byUsers'
         };
     }
 
@@ -39,7 +39,7 @@ export default class TopPicksLayout extends React.Component {
                     (winnerStocksByInvestment.length === 0 && winnerStocksByUsers.length === 0)
                     ?   <NoDataFound />
                     :   <Grid item xs={12} style={containerColStyle}>
-                            <div 
+                            {/* <div 
                                     style={{
                                         ...horizontalBox, 
                                         width: '100%',
@@ -50,7 +50,7 @@ export default class TopPicksLayout extends React.Component {
                                     items={['By Investment', 'By Users']} 
                                     onChange={this.onRadioChange}
                                 />
-                            </div>
+                            </div> */}
                             <div 
                                     style={{
                                         width: '95%',
