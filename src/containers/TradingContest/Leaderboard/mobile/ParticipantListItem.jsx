@@ -18,6 +18,7 @@ export default class ParticipantListItem extends React.Component {
     render() {
         const {
             userName = '',
+            advisorId = null,
             cost = {}, 
             pnl = {}, 
             rank = {}, 
@@ -30,7 +31,7 @@ export default class ParticipantListItem extends React.Component {
         const changeColor = pnl[listType] > 0 ? metricColor.positive : pnl[listType] === 0 ? metricColor.neutral : metricColor.negative;
         
         return (
-            <SGrid container>
+            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(userName, advisorId)}>
                 <Grid item xs={1} style={{textAlign: 'start'}}>
                     <img src={medal} width={20}/>
                 </Grid>
@@ -42,7 +43,7 @@ export default class ParticipantListItem extends React.Component {
                         {Utils.formatInvestmentValue(cost[listType])}
                     </Score>
                 </Grid>
-                <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>
+                <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start', marginTop: '5px'}}>
                     <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
                         <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
                             ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl[listType] * 1000)}
@@ -80,12 +81,12 @@ const SGrid = styled(Grid)`
 const Name = styled.h3`
     font-size: 16px;
     font-weight: 500;
-    color: #717171;
+    color: #232323;
 `;
 
 const SecondaryText = styled.h3`
-    font-size: 16px;
-    font-weight: 300;
+    font-size: 18px;
+    font-weight: 500;
     color: ${props => props.color || '#717171'};
     text-align: start;
 `;
@@ -100,5 +101,5 @@ const Score = styled.h3`
 const labelStyle = {
     fontSize:'12px',
     marginTop:'-2px',
-    color: '#444'
+    color: '#878787'
 };

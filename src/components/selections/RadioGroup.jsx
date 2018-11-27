@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Radio from '@material-ui/core/Radio';
-import { horizontalBox, primaryColor } from '../../constants';
+import {horizontalBox, primaryColor} from '../../constants';
 
 export default class RadioGroup extends React.Component {
     constructor(props) {
@@ -37,6 +37,7 @@ export default class RadioGroup extends React.Component {
                                 label={item}
                                 checked={this.state.selected === index}
                                 onChange={() => this.handleChange(index)}
+                                fontSize={this.props.fontSize || '14px'}
                             />
                         );
                     })
@@ -46,11 +47,11 @@ export default class RadioGroup extends React.Component {
     }
 }
 
-const RadioComponent = ({label, checked, onChange}) => {
+const RadioComponent = ({label, checked, onChange, fontSize = 14}) => {
     return (
         <div style={radioContainerStyle}>
             <Radio checked={checked} onChange={onChange}/>
-            <RadioLabel onClick={onChange}>{label}</RadioLabel>
+            <RadioLabel fontSize={fontSize} onClick={onChange}>{label}</RadioLabel>
         </div>
     );
 }
@@ -63,7 +64,7 @@ const radioContainerStyle = {
 
 const RadioLabel = styled.h3`
     cursor: pointer;
-    font-size: 14px;
+    font-size: ${props => props.fontSize || '14px'};
     color: ${primaryColor};
     font-weight: 400
 `;

@@ -12,6 +12,8 @@ import TradingContest from './containers/TradingContest';
 import StockCardPredictions from './containers/TradingContest/StockCardPredictions';
 import TradingContestHomeMobile from './containers/TradingContest/Home';
 import TradingContestHomeDesktop from './containers/TradingContest/CreateEntry/components/desktop/Home';
+import TradingContestLeaderboard from './containers/TradingContestLeaderboard';
+import TradingContestTopPicks from './containers/TradingContestTopPicks';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
@@ -53,6 +55,8 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                     <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
+                                    <Route exact={true} path='/dailycontest/leaderboard' component={TradingContestLeaderboard} /> 
+                                    <Route exact={true} path='/dailycontest/toppicks' component={TradingContestTopPicks} /> 
                                     <Route
                                         path='/contest'
                                         render={() => {

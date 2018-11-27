@@ -243,15 +243,15 @@ const listItemTextStyle = {
 
 const menuCategories = [
     {
-        name: "Stock Prediction Contest", icon:'bubble_chart', url: '/dailycontest/home'
-    },
-    {
         name: "Create Entry", icon:'create', url: '/dailycontest/stockpredictions'
     },
     {
-        name: "Home", url:'/home', href:true, icon:'home_outline'
+        name: "Top Picks", url:'/dailycontest/toppicks', icon:'assignment'
     },
     {
-        name: "Watchlist", url:'/dailycontest/watchlist', href:true, icon:'visibility'
+        name: "Leaderboard", url:'/dailycontest/leaderboard', icon:'multiline_chart'
+    },
+    {
+        name: "Watchlist", url:'/dailycontest/watchlist', icon:'visibility'
     }
 ];

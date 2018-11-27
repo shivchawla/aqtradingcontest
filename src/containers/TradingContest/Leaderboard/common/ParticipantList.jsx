@@ -23,6 +23,7 @@ export default class ParticipantList extends React.Component {
                 key={index} 
                 {...winner} 
                 listType={listType}
+                toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
             />
         ));
     }
