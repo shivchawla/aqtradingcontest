@@ -44,6 +44,7 @@ export default class Layout extends React.Component {
                             header='Predictions'
                             barColor='#4468FF'
                             {...predictions}
+                            number
                         />
                     </Grid>
                     <Grid 
@@ -62,6 +63,7 @@ export default class Layout extends React.Component {
                     <HorizontalCard 
                         header='Profit Factor' 
                         {...profitFactor}
+                        ratio
                     />
                     <HorizontalCard 
                         header='Win Ratio' 
@@ -69,6 +71,7 @@ export default class Layout extends React.Component {
                         style={{
                             marginTop: '10px'
                         }}
+                        percentage
                     />
                 </div>
                 <div style={{marginTop: '20px'}}>

@@ -1,6 +1,7 @@
 import _ from 'lodash';
-import {securityData} from '../sampleData/dashboard';
 import {fetchAjaxPromise} from '../../../../utils';
+import {valueColor, metricColor} from '../components/styles';
+import {Utils} from '../../../../utils';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -18,7 +19,6 @@ export const formatDailyStatsData = responseData => {
 }
 
 export const getDailyStatsDataForKey = dailycontestStats => {
-    console.log(dailycontestStats);
     const avgPnl = {
         total: getPnl(_.get(dailycontestStats, 'net.avgPnl', null)),
         long: getPnl(_.get(dailycontestStats, 'long.avgPnl', null)),
@@ -42,9 +42,9 @@ export const getDailyStatsDataForKey = dailycontestStats => {
     };
 
     const winRatio = {
-        total: _.get(dailycontestStats, 'net.winRatio', -1),
-        long: _.get(dailycontestStats, 'long.winRatio', -1),
-        short: _.get(dailycontestStats, 'short.winRatio', -1),
+        total: getPctFromRatio(_.get(dailycontestStats, 'net.winRatio', -1)),
+        long: getPctFromRatio(_.get(dailycontestStats, 'long.winRatio', -1)),
+        short: getPctFromRatio(_.get(dailycontestStats, 'short.winRatio', -1))
     }
 
     const mostProftableStock = {
@@ -102,8 +102,33 @@ export const getPct = value => {
     return value !== null ? Number((value * 100).toFixed(2)) : 0;
 }
 
+export const getPctFromRatio = value => {
+    return getPct(value / (1 + value));
+}
+
 export const getDailyContestStats = (history, currentUrl, handleError = true) => {
     const url = `${requestUrl}/dailycontest/stats`;
 
     return fetchAjaxPromise(url, history, currentUrl, handleError);
+}
+
+export const getFormattedValue = (value = 0, money = false, percentage = false) => {
+    let formattedValue = value;
+    if (money) {
+        formattedValue = Utils.formatMoneyValueMaxTwoDecimals(formattedValue)
+        formattedValue = `₹${formattedValue}`;
+    }
+    if (percentage) {
+        formattedValue = `${formattedValue}%`;
+    }
+
+    return formattedValue;
+}
+
+export const getValueColor = (value, number = false) => {
+    if (!number) {
+        return value > 0 ? metricColor.positive : value === 0 ? valueColor : metricColor.negative;
+    }
+
+    return valueColor;
 }

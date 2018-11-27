@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Header from './Header';
 import MetricLabel from './MetricLabel';
 import MetricValue from './MetricValue';
-import {labelColor, metricColor} from '../styles';
+import {labelColor, metricColor, valueColor} from '../styles';
 import {Utils} from '../../../../../utils';
 import {verticalBox, horizontalBox, primaryColor, nameEllipsisStyle} from '../../../../../constants';
 
@@ -72,6 +72,7 @@ const Metric = ({symbol, name, type='total', pnl={}}) => {
                 : metricColor.negative;
     let pnlValue = _.get(pnl, 'value', 0);
     let pnlPct = _.get(pnl, 'pct', 0);
+    const valueTextColor = pnlValue > 0 ? metricColor.positive : pnlValue === 0 ? valueColor : metricColor.negative;
     pnlValue = (pnlValue === -1 || pnlValue === null) ? 'N/A' : Utils.formatMoneyValueMaxTwoDecimals(pnlValue);
     pnlPct = (pnlPct === -1 || pnlPct === null) ? 'N/A' : `${pnlPct.toFixed(2)}%`;
 
@@ -97,30 +98,12 @@ const Metric = ({symbol, name, type='total', pnl={}}) => {
                         xs={5}
                         style={{
                             ...horizontalBox,
-                            // justifyContent: 'space-around'
                             justifyContent: 'flex-end'
                         }}
                 >
-                    <MetricValue>₹{pnlValue}</MetricValue>
-                    {/* <Spacer>|</Spacer>
-                    <MetricValue style={{fontSize: '14px'}}>{pnlPct}</MetricValue> */}
+                    <MetricValue style={{color: valueTextColor}}>₹{pnlValue}</MetricValue>
                 </Grid>
             </Grid>
-            {/* <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                <MetricValue>{symbol}</MetricValue>
-                <h3 style={nameStyle}>{name}</h3>
-            </div>
-            <Tag color={tagColor}>{type}</Tag>
-            <div 
-                    style={{
-                        ...horizontalBox,
-                        justifyContent: 'space-between'
-                    }}
-            >
-                <MetricValue>{pnlValue}</MetricValue>
-                <Spacer>|</Spacer>
-                <MetricValue>{pnlPct}%</MetricValue>
-            </div> */}
         </Grid>
     );
 }

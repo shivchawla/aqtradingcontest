@@ -5,6 +5,7 @@ import ParticipantList from '../common/ParticipantList';
 import LoaderComponent from '../../Misc/Loader';
 import RadioGroup from '../../../../components/selections/RadioGroup';
 import {verticalBox, horizontalBox} from '../../../../constants';
+import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
 export default class LeaderboardLayout extends React.Component {
     constructor(props) {
@@ -85,9 +86,10 @@ export default class LeaderboardLayout extends React.Component {
 
 const NoDataFound = () => {
     return (
-        <Grid container style={{marginTop: '50%'}}>
-            <Grid item xs={12} style={verticalBox}>
-                <ContestNotAvailableText>No Data Found..</ContestNotAvailableText>
+        <Grid container>
+            <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
+                <img src={notFoundLogo} />
+                <ContestNotAvailableText style={{marginTop: '20px'}}>No Data Found</ContestNotAvailableText>
             </Grid>
         </Grid>
     );
@@ -107,9 +109,6 @@ const leaderboardDetailStyle = {
     height: 'calc(100vh - 180px)',
     minHeight: '480px',
     justifyContent: 'center',
-    margin: '10px auto',
-    width:'95%',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
     backgroundColor:'#fff'
 };
 

@@ -7,8 +7,7 @@ import MetricLabel from './MetricLabel';
 import MetricValue from './MetricValue';
 import {valueColor, metricColor} from '../styles';
 import {verticalBox, horizontalBox, primaryColor} from '../../../../../constants';
-import {Utils} from '../../../../../utils';
-
+import {getFormattedValue, getValueColor} from '../../utils';
 export default class TopCard extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
@@ -19,21 +18,19 @@ export default class TopCard extends React.Component {
     }
 
     render() {
-        let {header='Header', total=0, long=0, short=0, barColor=primaryColor, money = false, percentage = false} = this.props;
-        total = !money ? total : Utils.formatMoneyValueMaxTwoDecimals(total);
-        long = !money ? long : Utils.formatMoneyValueMaxTwoDecimals(long);
-        short = !money ? short : Utils.formatMoneyValueMaxTwoDecimals(short);
-        if (money) {
-            total = `₹${total}`;
-            long = `₹${long}`;
-            short = `₹${short}`;
-        }
-
-        if (percentage) {
-            total = `${total}%`;
-            long = `${long}%`;
-            short = `${short}%`;
-        }
+        let {
+            header='Header', 
+            total=0, 
+            long=0, 
+            short=0, 
+            barColor = primaryColor, 
+            money = false, 
+            percentage = false,
+            number = false
+        } = this.props;
+        const valueProps = {money, percentage, number};
+        const netColor = getValueColor(total, number);
+        total = getFormattedValue(total, money, percentage);
 
         return (
             <Container container>
@@ -45,18 +42,32 @@ export default class TopCard extends React.Component {
                         }}
                 >
                     <Header>{header}</Header>
-                    <NetText>{total}</NetText>
-                    <Metric label='Long' value={long} marginTop={5}/>
-                    <Metric label='Short' value={short} marginTop={15}/>
-                    <Bar barColor={barColor} style={{marginTop: '10px'}}/>
+                    <NetText style={{color: netColor}}>{total}</NetText>
+                    <Metric 
+                        label='Long' 
+                        value={long} 
+                        marginTop={5} 
+                        {...valueProps} 
+                    />
+                    <Metric 
+                        label='Short' 
+                        value={short} 
+                        marginTop={15} 
+                        {...valueProps} 
+                    />
+                    <Bar 
+                        barColor={barColor} 
+                        style={{marginTop: '10px'}} 
+                    />
                 </Grid>
             </Container>
         );
     }
 }
 
-const Metric = ({label, value, marginTop = '0px'}) => {
-    const valueColor = label.toLowerCase() === 'long' ? metricColor.positive : metricColor.negative;
+const Metric = ({label, value, marginTop = '0px', money = false, percentage = false, number = false}) => {
+    const valueColor = getValueColor(value, number);
+    const formattedValue = getFormattedValue(value, money, percentage);
 
     return (
         <div 
@@ -68,7 +79,7 @@ const Metric = ({label, value, marginTop = '0px'}) => {
                 }}
         >
             <MetricLabel style={{marginLeft: '10px'}}>{label}</MetricLabel>
-            <MetricValue style={{marginRight: '10px'}} color={valueColor}>{value}</MetricValue>
+            <MetricValue style={{marginRight: '10px', fontWeight: 700}} color={valueColor}>{formattedValue}</MetricValue>
         </div>
     );
 }

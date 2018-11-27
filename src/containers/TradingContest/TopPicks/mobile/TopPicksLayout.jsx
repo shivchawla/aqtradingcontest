@@ -5,6 +5,7 @@ import WinnerList from '../common/WinnerList';
 import LoaderComponent from '../../Misc/Loader';
 import RadioGroup from '../../../../components/selections/RadioGroup';
 import {verticalBox, horizontalBox} from '../../../../constants';
+import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
 export default class TopPicksLayout extends React.Component {
     constructor(props) {
@@ -31,6 +32,7 @@ export default class TopPicksLayout extends React.Component {
     renderContent() {
         const winnerStocksByInvestment = this.props.winnerStocksByInvestment;
         const winnerStocksByUsers = this.props.winnerStocksByUsers;
+        const winners = this.state.view === 'byInvestment' ? winnerStocksByInvestment : winnerStocksByUsers;
 
         return (
             <SGrid container>
@@ -51,11 +53,7 @@ export default class TopPicksLayout extends React.Component {
                                 />
                             </div>
                             <WinnerList 
-                                winners={
-                                    this.state.view === 'byInvestment' 
-                                        ? winnerStocksByInvestment 
-                                        : winnerStocksByUsers
-                                    }
+                                winners={winners}
                             />
                         </Grid>
                 }
@@ -81,8 +79,9 @@ export default class TopPicksLayout extends React.Component {
 const NoDataFound = () => {
     return (
         <Grid container>
-            <Grid item xs={12} style={verticalBox}>
-                <ContestNotAvailableText>No Data Found..</ContestNotAvailableText>
+            <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
+                <img src={notFoundLogo} />
+                <ContestNotAvailableText style={{marginTop: '20px'}}>No Data Found</ContestNotAvailableText>
             </Grid>
         </Grid>
     );
@@ -95,7 +94,6 @@ const SGrid = styled(Grid)`
 const topPicksDetailStyle = {
     minHeight: '480px',
     justifyContent: 'center',
-    margin: '10px auto',
     width:'100%',
     backgroundColor:'#fff'
 };
@@ -105,4 +103,5 @@ const ContestNotAvailableText = styled.h3`
     font-size: 18px;
     font-weight: 400;
     color: primaryColor;
+    background-color: #fff;
 `;

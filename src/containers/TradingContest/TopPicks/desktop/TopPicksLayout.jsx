@@ -5,6 +5,7 @@ import LoaderComponent from '../../Misc/Loader';
 import TopPicksTable from './TopPicksTable';
 import RadioGroup from '../../../../components/selections/RadioGroup';
 import {verticalBox, horizontalBox} from '../../../../constants';
+import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
 export default class TopPicksLayout extends React.Component {
     constructor(props) {
@@ -78,9 +79,10 @@ export default class TopPicksLayout extends React.Component {
 
 const NoDataFound = () => {
     return (
-        <Grid container style={{height: 'calc(100vh - 300px)', width: '100%'}}>
-            <Grid item xs={12} style={verticalBox}>
-                <NoDataText>No Data Found.</NoDataText>
+        <Grid container>
+            <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
+                <img src={notFoundLogo} />
+                <NoDataText style={{marginTop: '20px'}}>No Data Found</NoDataText>
             </Grid>
         </Grid>
     );

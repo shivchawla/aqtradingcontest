@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import WinnerListItemMobile from '../mobile/WinnerListItem';
 import WinnerListItemDesktop from '../desktop/WinnerListItem';
+import notFoundLogo from '../../../../assets/NoDataFound.svg';
+import {verticalBox} from '../../../../constants';
 
 export default class WinnerList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -35,13 +37,24 @@ export default class WinnerList extends React.Component {
                 <Grid item xs={12}>
                     {
                         winners.length === 0
-                        ? <Error>No Data Found</Error>
+                        ? <NoDataFound />
                         : this.renderWinners()
                     }
                 </Grid>
             </Grid>
         );
     }
+}
+
+const NoDataFound = () => {
+    return (
+        <Grid container>
+            <Grid item xs={12} style={{height: 'calc(100vh - 250px)', ...verticalBox}}>
+                <img src={notFoundLogo} />
+                <Error style={{marginTop: '20px'}}>No Data Found</Error>
+            </Grid>
+        </Grid>
+    );
 }
 
 const Error = styled.h3`
