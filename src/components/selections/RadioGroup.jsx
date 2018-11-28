@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import styled from 'styled-components';
 import Radio from '@material-ui/core/Radio';
 import {horizontalBox, primaryColor} from '../../constants';
@@ -14,6 +15,12 @@ export default class RadioGroup extends React.Component {
     handleChange = value => {
         this.setState({selected: value});
         this.props.onChange && this.props.onChange(value);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!_.isEqual(nextProps.defaultSelected, this.props.defaultSelected)) {
+            this.setState({selected: nextProps.defaultSelected || 0})
+        }
     }
 
     render() {

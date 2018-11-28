@@ -2,16 +2,51 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Icon from '@material-ui/core/Icon';
 import TopCard from './TopCard';
 import HorizontalCard from './HorizontalCard';
 import VerticalCard from './VerticalCard';
+import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
+import AutoComplete from '../../../../../components/input/AutoComplete';
+import TopSheet from '../../../../../components/Alerts/TopSheet';
 import {horizontalBox, verticalBox} from '../../../../../constants';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
 
 export default class Layout extends React.Component {
-    renderContent() {
+    constructor(props) {
+        super(props);
+        this.state = {
+            searchTopSheetOpen: false,
+            searchSymbolValue: ''
+        };
+    }
+
+    toggleSearchTopSheet = () => {
+        this.setState({searchTopSheetOpen: !this.state.searchTopSheetOpen}, () => {
+            !this.state.searchTopSheetOpen
+            && this.state.searchSymbolValue.length > 0
+            && this.props.updateDailyContestStats()
+        });
+    }
+
+    onSearchItemSelected = item => {
+        if (item.value !== null) {
+            this.setState({searchSymbolValue: item.value});
+            this.props.updateDailyContestStats(item.value, true)
+        }
+    }
+
+    formatTickersToAutoCompleteOptions = tickers => {
+        return tickers.map(ticker => ({
+            value: ticker, label: ticker
+        }));
+    }
+
+    renderInternalData = () => {
         const {dashboardData = {}} = this.props;
         const {
             avgPnlPct = {}, 
@@ -19,79 +54,133 @@ export default class Layout extends React.Component {
             leastProfitableStock = {},
             mostProftableStock = {},
             predictions = {},
-            winRatio = {}
+            winRatio = {},
+            tickers = []
         } = dashboardData;
 
         return (
-            <Grid item xs={12}>
+            <React.Fragment>
+                <Grid container spacing={16}>
+                    <Grid 
+                            item 
+                            xs={6}
+                    >
+                        <TopCard 
+                            header='Predictions'
+                            barColor='#4468FF'
+                            {...predictions}
+                            number
+                        />
+                    </Grid>
+                    <Grid 
+                            item 
+                            xs={6}
+                    >
+                        <TopCard 
+                            header='Avg. PnL (%)'
+                            barColor='#E6B74C'
+                            percentage
+                            {...avgPnlPct}
+                        />
+                    </Grid>
+                </Grid>
+                <div style={{marginTop: '30px', marginBottom: '20px'}}>
+                    <HorizontalCard 
+                        header='Profit Factor' 
+                        {...profitFactor}
+                        ratio
+                    />
+                    <HorizontalCard 
+                        header='Success Rate' 
+                        {...winRatio}
+                        style={{
+                            marginTop: '10px'
+                        }}
+                        percentage
+                    />
+                </div>
+                <div style={{marginTop: '20px'}}>
+                    <VerticalCard 
+                        header='Most Profitable'
+                        trade={mostProftableStock}
+                    />
+                    <VerticalCard 
+                        header='Least Proftable' 
+                        style={{marginTop: '15px'}}
+                        trade={leastProfitableStock}
+                    />
+                </div>
+                <div style={{height: '100px'}}></div>
+            </React.Fragment>
+        );
+    }
+
+    renderContent() {
+        const {dashboardData = {}} = this.props;
+        const {
+
+            tickers = []
+        } = dashboardData;
+
+        return (
+            <Grid item xs={12} style={{width: '100%'}}>
                 {
                     this.props.noDataFound
-                    ?   <NoDataFound />
+                    ?   <NoDataFound 
+                            onSearch={this.toggleSearchTopSheet}
+                            onReload={() => this.props.updateDailyContestStats()}
+                        />
                     :   <React.Fragment>
-                            <div 
-                                    style={{
-                                        ...horizontalBox, 
-                                        width: '100%', 
-                                        justifyContent: 'center'
-                                    }}
-                            >
+                            {
+                                this.state.searchTopSheetOpen &&
+                                <div 
+                                        style={{
+                                            ...horizontalBox, 
+                                            width: '100%', 
+                                            justifyContent: 'center',
+                                            position: 'relative'
+                                        }}
+                                >
+                                    <AutoComplete 
+                                        options={this.formatTickersToAutoCompleteOptions(tickers)}
+                                        onSelect={item => console.log(item)}
+                                        async={false}
+                                        onClick={this.onSearchItemSelected}
+                                    />
+                                    <ActionIcon 
+                                        type={this.state.searchTopSheetOpen ? 'close' : 'search'} 
+                                        onClick={this.toggleSearchTopSheet} 
+                                        style={{
+                                            position: 'absolute',
+                                            right: 0
+                                        }}
+                                    />
+                                </div>
+                            }
+                            <div>
                                 <RadioGroup 
                                     items={['TOTAL', 'REALIZED']}
                                     onChange={this.props.onRadioChange}
                                     fontSize='12px'
+                                    defaultSelected={this.props.selectedType === 'total' ? 0 : 1}
                                 />
-                            </div>
-                            <Grid container spacing={16}>
-                                <Grid 
-                                        item 
-                                        xs={6}
-                                >
-                                    <TopCard 
-                                        header='Predictions'
-                                        barColor='#4468FF'
-                                        {...predictions}
-                                        number
+                                {
+                                    !this.state.searchTopSheetOpen &&
+                                    <ActionIcon 
+                                        type={this.state.searchTopSheetOpen ? 'close' : 'search'} 
+                                        onClick={this.toggleSearchTopSheet} 
+                                        style={{
+                                            position: 'absolute',
+                                            right: 0
+                                        }}
                                     />
-                                </Grid>
-                                <Grid 
-                                        item 
-                                        xs={6}
-                                >
-                                    <TopCard 
-                                        header='Avg. PnL (%)'
-                                        barColor='#E6B74C'
-                                        percentage
-                                        {...avgPnlPct}
-                                    />
-                                </Grid>
-                            </Grid>
-                            <div style={{marginTop: '30px', marginBottom: '20px'}}>
-                                <HorizontalCard 
-                                    header='Profit Factor' 
-                                    {...profitFactor}
-                                    ratio
-                                />
-                                <HorizontalCard 
-                                    header='Success Rate' 
-                                    {...winRatio}
-                                    style={{
-                                        marginTop: '10px'
-                                    }}
-                                    percentage
-                                />
+                                }
                             </div>
-                            <div style={{marginTop: '20px'}}>
-                                <VerticalCard 
-                                    header='Most Profitable'
-                                    trade={mostProftableStock}
-                                />
-                                <VerticalCard 
-                                    header='Least Proftable' 
-                                    style={{marginTop: '15px'}}
-                                    trade={leastProfitableStock}
-                                />
-                            </div>
-                            <div style={{height: '100px'}}></div>
+                            {
+                                !this.props.internalLoading
+                                ? this.renderInternalData()
+                                : <LoaderComponent />
+                            }
                         </React.Fragment>
                 }
             </Grid>
@@ -100,12 +189,14 @@ export default class Layout extends React.Component {
 
     render() {
         return (
-            <Container container style={{padding: '0 10px'}}>
+            <Container container>
                 <Grid 
                         item xs={12} 
                         style={{
                             ...verticalBox, 
-                            justifyContent: 'flex-start'
+                            justifyContent: 'flex-start',
+                            padding: '0 10px',
+                            width: '100%'
                         }}
                 >
                     {
@@ -122,14 +213,23 @@ export default class Layout extends React.Component {
 const Container = styled(Grid)`
     background-color: #fff;
     padding-top: 10px;
+    width: 100%;
 `;
 
-const NoDataFound = () => {
+const NoDataFound = ({onReload, onSearch}) => {
+    const iconStyle = {fontSize: '14px', marginLeft: '2px'};
+
     return (
-        <Grid container>
+        <Grid container style={{width: '100%'}}>
             <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
                 <img src={notFoundLogo} />
                 <NoDataText style={{marginTop: '20px'}}>No Data Found</NoDataText>
+                <div style={{...horizontalBox, width: '80%', justifyContent: 'space-around', marginTop: '30px'}}>
+                    <Button variant="outlined" size="small" color="primary" onClick={onReload}>
+                        Reload
+                        <Icon style={iconStyle}>replay</Icon>
+                    </Button>
+                </div>
             </Grid>
         </Grid>
     );

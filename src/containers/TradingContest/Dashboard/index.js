@@ -4,7 +4,7 @@ import Media from 'react-media';
 import {withRouter} from 'react-router-dom';
 import DashboardLayoutMobile from './components/mobile/Layout';
 import DashboardLayoutDesktop from './components/desktop/Layout';
-import {formatDailyStatsData, getDailyContestStats} from './utils';
+import {formatDailyStatsData, getDailyContestStats, getDailyContestStatsBySymbol, getDailyStatsDataForKey} from './utils';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -13,7 +13,9 @@ class Dashboard extends React.Component {
             dashboardData: {},
             selectedType: 'total',
             loading: false,
-            noDataFound: false
+            internalLoading: false,
+            noDataFound: false,
+            tickers: []
         };
     }
 
@@ -24,21 +26,38 @@ class Dashboard extends React.Component {
         })
     }
 
-    updateDailyContestStats = () => {
-        this.setState({loading: true});
-        this.fetchDailyContestStats()
+    fetchDailyContestStatsBySymbol = (symbol = '') => {
+        return getDailyContestStatsBySymbol(symbol, this.props.history, this.props.match.url, false)
+        .then(response => {
+            return response.data;
+        })
+    }
+
+    updateDailyContestStats = (symbol = null, internal = false) => new Promise((resolve, reject) => {
+        const loaderKey = internal === true ? 'internalLoading' : 'loading';
+        this.setState({[loaderKey]: true});
+        const fetchData = symbol === null ? this.fetchDailyContestStats : this.fetchDailyContestStatsBySymbol;
+
+        return fetchData(symbol)
         .then(dailyContestStats => {
             const formattedDailyContestStats = formatDailyStatsData(dailyContestStats);
-            this.setState({dashboardData: formattedDailyContestStats, noDataFound: false})
+            console.log(formattedDailyContestStats);
+            this.setState({
+                dashboardData: formattedDailyContestStats, 
+                // tickers: symbol === null ? _.get(formattedDailyContestStats, 'tickers')
+                noDataFound: false
+            });
+            resolve(true);
         })
         .catch(err => {
             this.setState({noDataFound: true});
+            reject(err);
             console.log(err);
         })
         .finally(() => {
-            this.setState({loading: false});
+            this.setState({[loaderKey]: false});
         })
-    }
+    })
 
     componentWillMount() {
         this.updateDailyContestStats();
@@ -69,7 +88,10 @@ class Dashboard extends React.Component {
             dashboardData: this.state.dashboardData[this.state.selectedType],
             onRadioChange: this.onRadioChange,
             loading: this.state.loading,
-            noDataFound: this.state.noDataFound
+            internalLoading: this.state.internalLoading,
+            noDataFound: this.state.noDataFound,
+            updateDailyContestStats: this.updateDailyContestStats,
+            selectedType: this.state.selectedType
         };
 
         return (

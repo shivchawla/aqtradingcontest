@@ -11,7 +11,7 @@ export const formatDailyStatsData = responseData => {
     keys.map(key => {
         data = {
             ...data,
-            [key]: getDailyStatsDataForKey(responseData[key])
+            [key]: getDailyStatsDataForKey(responseData[key]),
         }
     });
 
@@ -19,6 +19,7 @@ export const formatDailyStatsData = responseData => {
 }
 
 export const getDailyStatsDataForKey = dailycontestStats => {
+    const tickers = _.get(dailycontestStats, `tickers`, []);
     const avgPnl = {
         total: getPnl(_.get(dailycontestStats, 'net.avgPnl', null)),
         long: getPnl(_.get(dailycontestStats, 'long.avgPnl', null)),
@@ -90,7 +91,8 @@ export const getDailyStatsDataForKey = dailycontestStats => {
         mostProftableStock,
         leastProfitableStock,
         predictions,
-        winRatio
+        winRatio,
+        tickers
     }
 }
 
@@ -112,6 +114,12 @@ export const getPctFromRatio = value => {
 
 export const getDailyContestStats = (history, currentUrl, handleError = true) => {
     const url = `${requestUrl}/dailycontest/stats`;
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError);
+}
+
+export const getDailyContestStatsBySymbol = (symbol = '', history, currentUrl, handleError = true) => {
+    const url = `${requestUrl}/dailycontest/stats?symbol=${symbol}`;
 
     return fetchAjaxPromise(url, history, currentUrl, handleError);
 }

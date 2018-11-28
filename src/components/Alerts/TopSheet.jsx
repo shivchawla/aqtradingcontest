@@ -18,7 +18,7 @@ export default class Top extends React.Component {
     }
 
     render() {
-        const {open = false, header = 'Header', leftIconType = null} = this.props;
+        const {open = false, header = 'Header', leftIconType = null, style = {}, hideCloseButton = false} = this.props;
         return (
             <Motion style={{x: spring(open ? 0 : -global.screen.height)}}>
                 {
@@ -28,7 +28,8 @@ export default class Top extends React.Component {
                                     transform: `translate3d(0, ${x}px, 0)`,
                                     ...bottomSheetStyle,
                                     marginLeft: 0,
-                                    width: '100%'
+                                    width: '100%',
+                                    ...style
                                 }}
                         >
                             <Grid container>
@@ -50,12 +51,15 @@ export default class Top extends React.Component {
                                         </IconButton>
                                     }
                                     <Header>{header}</Header>
-                                    <IconButton 
-                                            style={{position: 'absolute', right: 0}} 
-                                            onClick={this.onClose}
-                                    >
-                                        <Icon style={{color: metricColor.negative}}>highlight_off</Icon>
-                                    </IconButton>
+                                    {
+                                        !hideCloseButton &&
+                                        <IconButton 
+                                                style={{position: 'absolute', right: 0}} 
+                                                onClick={this.onClose}
+                                        >
+                                            <Icon style={{color: metricColor.negative}}>highlight_off</Icon>
+                                        </IconButton>
+                                    }
                                 </Grid>
                                 <Grid item xs={12}>
                                     {this.props.children}
