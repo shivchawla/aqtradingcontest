@@ -70,11 +70,11 @@ const SGrid = styled(Grid)`
     align-items: center;
     padding: 10px;
     margin-bottom: 20px;
-    background-color: #FAFCFF;
     border-radius: 4px;
     margin-top: 20px;
-    border: 1px solid #F2F5FF;
+    border: 1px solid #f7f4f4;
     background-color: #fff;
+    box-shadow: 0 2px 6px #f1f1f1;
     padding-bottom: 0px;
 `;
 

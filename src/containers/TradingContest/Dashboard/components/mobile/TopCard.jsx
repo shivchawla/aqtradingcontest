@@ -91,7 +91,7 @@ const Container = styled(Grid)`
     border: 1px solid #F3F3F3;
     margin-top: 10px;
     border-bottom: none;
-    background-color: #fafafa;
+    background-color: #fff;
 `;
 
 const NetText = styled.h3`

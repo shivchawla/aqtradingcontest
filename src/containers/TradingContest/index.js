@@ -247,7 +247,7 @@ class TradingContest extends React.Component {
                     </Grid>
                     <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
                         {
-                            tabsWithDate.indexOf(selectedTab) > -1 &&
+                            selectedTab === 1 &&
                             <DateComponent 
                                 selectedDate={this.state.selectedDate}
                                 color='grey'

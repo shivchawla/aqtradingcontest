@@ -111,12 +111,12 @@ const MetricContainer = ({label, value, style={}}) => (
 )
 
 const SGrid = styled(Grid)`
-    background-color: #fff;
     border-radius: 4px;
     margin-bottom: 20px;
-    border: 1px solid #f9f9f9;
     min-height: 84px;
-    box-shadow: 0 6px 18px #e2e2e2;
+    border: 1px solid #f7f4f4;
+    background-color: #fff;
+    box-shadow: 0 2px 6px #f1f1f1;
     padding: 10px
 `;
 

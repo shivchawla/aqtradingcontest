@@ -121,8 +121,8 @@ const nameStyle = {
 const Container = styled(Grid)`
     border-radius: 4px;
     overflow: hidden;
-    border: 1px solid #E6E6E6;
-    background-color: #fafafa;
+    border: 1px solid #EAEAEA;
+    background-color: #FBFCFF;
 `;
 
 const Tag = styled.div`

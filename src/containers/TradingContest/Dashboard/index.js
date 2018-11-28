@@ -12,7 +12,8 @@ class Dashboard extends React.Component {
         this.state = {
             dashboardData: {},
             selectedType: 'total',
-            loading: false
+            loading: false,
+            noDataFound: false
         };
     }
 
@@ -21,9 +22,6 @@ class Dashboard extends React.Component {
         .then(response => {
             return response.data;
         })
-        .catch(err => {
-            console.log(err);
-        })
     }
 
     updateDailyContestStats = () => {
@@ -31,7 +29,11 @@ class Dashboard extends React.Component {
         this.fetchDailyContestStats()
         .then(dailyContestStats => {
             const formattedDailyContestStats = formatDailyStatsData(dailyContestStats);
-            this.setState({dashboardData: formattedDailyContestStats})
+            this.setState({dashboardData: formattedDailyContestStats, noDataFound: false})
+        })
+        .catch(err => {
+            this.setState({noDataFound: true});
+            console.log(err);
         })
         .finally(() => {
             this.setState({loading: false});
@@ -66,7 +68,8 @@ class Dashboard extends React.Component {
         const props = {
             dashboardData: this.state.dashboardData[this.state.selectedType],
             onRadioChange: this.onRadioChange,
-            loading: this.state.loading
+            loading: this.state.loading,
+            noDataFound: this.state.noDataFound
         };
 
         return (
