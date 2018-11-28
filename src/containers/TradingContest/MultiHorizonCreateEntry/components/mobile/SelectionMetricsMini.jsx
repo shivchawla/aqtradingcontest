@@ -44,7 +44,7 @@ export default class SelectionMetricsMini extends React.Component {
                     <Grid container spacing={8}>
                         {
                             global.screen.width > 600 &&
-                            <MetricItem label='Investment' value={Utils.formatInvestmentValue(cost)} />
+                            <MetricItem string label='Investment' value={Utils.formatInvestmentValue(cost)} />
                         }
                         <MetricItem label='Profit Factor' value={(profitFactor || 0).toFixed(2)} />
                         <MetricItem money coloured label='Profit/Loss' value={((pnl || 0) * 1000)} />
@@ -61,9 +61,10 @@ export default class SelectionMetricsMini extends React.Component {
     }
 }
 
-const MetricItem = ({label, value, percentage = false, coloured = false, money = false}) => {
-    const color = coloured ? value < 0 ? metricColor.negative : value === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
-    let nValue = money ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(value)}` : value;
+const MetricItem = ({label, value, percentage = false, coloured = false, money = false, string = false}) => {
+    let nValue = string ? value : Number(value);
+    const color = coloured ? nValue < 0 ? metricColor.negative : nValue === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
+    nValue = money ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(nValue)}` : nValue;
     nValue = percentage ? `${nValue} %` : nValue;
     const xs = global.screen.width > 600 ? 3 : 4;
 

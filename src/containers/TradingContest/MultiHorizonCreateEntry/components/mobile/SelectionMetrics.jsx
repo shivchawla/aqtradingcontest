@@ -37,8 +37,9 @@ export default class SelectionMetrics extends React.Component {
 }
 
 const MetricItem = ({label, value, percentage = false, coloured = false, money = false}) => {
-    const color = coloured ? value < 0 ? metricColor.negative : value === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
-    let nValue = money ? `₹${Utils.formatMoneyValueMaxTwoDecimals(value)}` : value;
+    let nValue = Number(value);
+    const color = coloured ? nValue < 0 ? metricColor.negative : nValue === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
+    nValue = money ? `₹${Utils.formatMoneyValueMaxTwoDecimals(nValue)}` : nValue;
     nValue = percentage ? `${nValue}%` : nValue;
 
     return (
