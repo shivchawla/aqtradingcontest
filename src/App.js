@@ -55,8 +55,22 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                     <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
-                                    <Route exact={true} path='/dailycontest/leaderboard' component={TradingContestLeaderboard} /> 
-                                    <Route exact={true} path='/dailycontest/toppicks' component={TradingContestTopPicks} /> 
+                                    <Route
+                                        path='/dailycontest/leaderboard'
+                                        render={() => {
+                                            return Utils.isLoggedIn()
+                                                ? <TradingContestLeaderboard />
+                                                : <DummyLogin />
+                                        }}
+                                    />
+                                    <Route
+                                        path='/dailycontest/toppicks'
+                                        render={() => {
+                                            return Utils.isLoggedIn()
+                                                ? <TradingContestTopPicks />
+                                                : <DummyLogin />
+                                        }}
+                                    />
                                     <Route
                                         path='/contest'
                                         render={() => {
