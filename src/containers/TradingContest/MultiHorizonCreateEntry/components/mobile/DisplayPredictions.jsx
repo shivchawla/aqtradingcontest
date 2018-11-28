@@ -158,8 +158,8 @@ class DisplayPredictions extends React.Component {
 	                        	</React.Fragment>
                             }
                             {
-                                isSelectedDateSameAsCurrentDate(this.props.selectedDate) 
-                                && marketOpen.status &&
+                                isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
+                                // && marketOpen.status &&
                                 <div 
                                         style={{
                                             ...fabContainerStyle,
