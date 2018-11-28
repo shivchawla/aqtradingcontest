@@ -23,8 +23,8 @@ export default class Layout extends React.Component {
         let {userName = ''} = this.props.metrics;
         userName = userName.split(' ').filter(item => item.length !== 0);
         if (userName.length >= 2) {
-            const firstNameIntiail = userName[0][0];
-            const lastNameInitial = userName[1][0];
+            const firstNameIntiail = _.get(userName, '[0][0]', '').toUpperCase();
+            const lastNameInitial = _.get(userName, '[1][0]', '').toUpperCase();
             return `${firstNameIntiail}${lastNameInitial}`;
         }
 
