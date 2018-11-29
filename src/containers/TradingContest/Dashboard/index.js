@@ -107,7 +107,7 @@ class Dashboard extends React.Component {
     render() {
         const props = {
             dashboardData: this.state.dashboardData[this.state.selectedType],
-            tickers: this.unionOfTickers(),
+            tickers: this.unionOfTickers().splice(0, 10),
             onRadioChange: this.onRadioChange,
             loading: this.state.loading,
             internalLoading: this.state.internalLoading,
