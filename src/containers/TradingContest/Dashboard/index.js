@@ -13,9 +13,12 @@ class Dashboard extends React.Component {
             dashboardData: {},
             selectedType: 'total',
             loading: false,
-            internalLoading: false,
-            noDataFound: false,
-            tickers: []
+            internalLoading: false, // This used when the user selects a symbol from the AutoComplete
+            noDataFound: false, // This is used to check if the stats is available for the required user
+            dashboardDataNotFound: { // This is used to check if the data is not present for either total or realized
+                total: false,
+                realized: false
+            }
         };
     }
 
@@ -41,11 +44,13 @@ class Dashboard extends React.Component {
         return fetchData(symbol)
         .then(dailyContestStats => {
             const formattedDailyContestStats = formatDailyStatsData(dailyContestStats);
-            console.log(formattedDailyContestStats);
             this.setState({
                 dashboardData: formattedDailyContestStats, 
-                // tickers: symbol === null ? _.get(formattedDailyContestStats, 'tickers')
-                noDataFound: false
+                noDataFound: false,
+                dashboardDataNotFound: {
+                    total: this.checkDataAvailable(_.get(dailyContestStats, 'total', {})),
+                    realized: this.checkDataAvailable(_.get(dailyContestStats, 'realized', {})),
+                }
             });
             resolve(true);
         })
@@ -58,6 +63,14 @@ class Dashboard extends React.Component {
             this.setState({[loaderKey]: false});
         })
     })
+
+    checkDataAvailable = (data = {}) => {
+        const net = _.get(data, 'net', null);
+        const long = _.get(data, 'long', null);
+        const short = _.get(data, 'short', null);
+
+        return net === null && long === null && short === null;
+    }
 
     componentWillMount() {
         this.updateDailyContestStats();
@@ -83,13 +96,23 @@ class Dashboard extends React.Component {
         
     }
 
+    unionOfTickers = () => {
+        const totalTickers =_.get(this.state, 'dashboardData.total.tickers', []);
+        const realizedTickers =_.get(this.state, 'dashboardData.realized.tickers', []);
+        const allTickers = _.uniq([...totalTickers], [...realizedTickers]);
+
+        return allTickers;
+    }
+
     render() {
         const props = {
             dashboardData: this.state.dashboardData[this.state.selectedType],
+            tickers: this.unionOfTickers(),
             onRadioChange: this.onRadioChange,
             loading: this.state.loading,
             internalLoading: this.state.internalLoading,
-            noDataFound: this.state.noDataFound,
+            noDataFound: this.state.noDataFound, // Used to check if dailyconteststats is available for the user
+            internalDataNotFound: this.state.dashboardDataNotFound[this.state.selectedType], // Used to check if total or realized is available
             updateDailyContestStats: this.updateDailyContestStats,
             selectedType: this.state.selectedType
         };

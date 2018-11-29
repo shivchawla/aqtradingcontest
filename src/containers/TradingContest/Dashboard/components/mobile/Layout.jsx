@@ -27,9 +27,10 @@ export default class Layout extends React.Component {
 
     toggleSearchTopSheet = () => {
         this.setState({searchTopSheetOpen: !this.state.searchTopSheetOpen}, () => {
-            !this.state.searchTopSheetOpen
-            && this.state.searchSymbolValue.length > 0
-            && this.props.updateDailyContestStats()
+            if (!this.state.searchTopSheetOpen && this.state.searchSymbolValue.length > 0) {
+                this.props.updateDailyContestStats();
+                this.setState({searchSymbolValue: ''});
+            }
         });
     }
 
@@ -59,75 +60,75 @@ export default class Layout extends React.Component {
         } = dashboardData;
 
         return (
-            <React.Fragment>
-                <Grid container spacing={16}>
-                    <Grid 
-                            item 
-                            xs={6}
-                    >
-                        <TopCard 
-                            header='Predictions'
-                            barColor='#4468FF'
-                            {...predictions}
-                            number
-                        />
-                    </Grid>
-                    <Grid 
-                            item 
-                            xs={6}
-                    >
-                        <TopCard 
-                            header='Avg. PnL (%)'
-                            barColor='#E6B74C'
-                            percentage
-                            {...avgPnlPct}
-                        />
-                    </Grid>
-                </Grid>
-                <div style={{marginTop: '30px', marginBottom: '20px'}}>
-                    <HorizontalCard 
-                        header='Profit Factor' 
-                        {...profitFactor}
-                        ratio
+            this.props.internalDataNotFound
+                ?   <NoDataFound 
+                        onReload={() => this.props.updateDailyContestStats()}
+                        hideReload
                     />
-                    <HorizontalCard 
-                        header='Success Rate' 
-                        {...winRatio}
-                        style={{
-                            marginTop: '10px'
-                        }}
-                        percentage
-                    />
-                </div>
-                <div style={{marginTop: '20px'}}>
-                    <VerticalCard 
-                        header='Most Profitable'
-                        trade={mostProftableStock}
-                    />
-                    <VerticalCard 
-                        header='Least Proftable' 
-                        style={{marginTop: '15px'}}
-                        trade={leastProfitableStock}
-                    />
-                </div>
-                <div style={{height: '100px'}}></div>
-            </React.Fragment>
+                :   <React.Fragment>
+                        <Grid container spacing={16}>
+                            <Grid 
+                                    item 
+                                    xs={6}
+                            >
+                                <TopCard 
+                                    header='Predictions'
+                                    barColor='#4468FF'
+                                    {...predictions}
+                                    number
+                                />
+                            </Grid>
+                            <Grid 
+                                    item 
+                                    xs={6}
+                            >
+                                <TopCard 
+                                    header='Avg. PnL (%)'
+                                    barColor='#E6B74C'
+                                    percentage
+                                    {...avgPnlPct}
+                                />
+                            </Grid>
+                        </Grid>
+                        <div style={{marginTop: '30px', marginBottom: '20px'}}>
+                            <HorizontalCard 
+                                header='Profit Factor' 
+                                {...profitFactor}
+                                ratio
+                            />
+                            <HorizontalCard 
+                                header='Success Rate' 
+                                {...winRatio}
+                                style={{
+                                    marginTop: '10px'
+                                }}
+                                percentage
+                            />
+                        </div>
+                        <div style={{marginTop: '20px'}}>
+                            <VerticalCard 
+                                header='Most Profitable'
+                                trade={mostProftableStock}
+                            />
+                            <VerticalCard 
+                                header='Least Proftable' 
+                                style={{marginTop: '15px'}}
+                                trade={leastProfitableStock}
+                            />
+                        </div>
+                        <div style={{height: '100px'}}></div>
+                    </React.Fragment>
         );
     }
 
     renderContent() {
-        const {dashboardData = {}} = this.props;
-        const {
-
-            tickers = []
-        } = dashboardData;
+        const {tickers = []} = this.props;
 
         return (
             <Grid item xs={12} style={{width: '100%'}}>
                 {
                     this.props.noDataFound
                     ?   <NoDataFound 
-                            onSearch={this.toggleSearchTopSheet}
                             onReload={() => this.props.updateDailyContestStats()}
                         />
                     :   <React.Fragment>
@@ -216,7 +217,7 @@ const Container = styled(Grid)`
     width: 100%;
 `;
 
-const NoDataFound = ({onReload, onSearch}) => {
+const NoDataFound = ({onReload, hideReload = false}) => {
     const iconStyle = {fontSize: '14px', marginLeft: '2px'};
 
     return (
@@ -224,19 +225,22 @@ const NoDataFound = ({onReload, onSearch}) => {
             <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
                 <img src={notFoundLogo} />
                 <NoDataText style={{marginTop: '20px'}}>No Data Found</NoDataText>
-                <div style={{...horizontalBox, width: '80%', justifyContent: 'space-around', marginTop: '30px'}}>
-                    <Button variant="outlined" size="small" color="primary" onClick={onReload}>
-                        Reload
-                        <Icon style={iconStyle}>replay</Icon>
-                    </Button>
-                </div>
+                {
+                    !hideReload &&
+                    <div style={{...horizontalBox, width: '80%', justifyContent: 'space-around', marginTop: '30px'}}>
+                        <Button variant="outlined" size="small" color="primary" onClick={onReload}>
+                            Reload
+                            <Icon style={iconStyle}>replay</Icon>
+                        </Button>
+                    </div>
+                }
             </Grid>
         </Grid>
     );
 }
 
 const NoDataText = styled.h3`
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 400;
     color: primaryColor;
 `;

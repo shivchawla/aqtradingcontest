@@ -12,7 +12,7 @@ import styles from './styles';
 
 class AutoComplete extends React.Component {
     state = {
-        selectedValue: ''
+        selectedValue: null
     };
 
     handleChange = value => {
@@ -25,7 +25,6 @@ class AutoComplete extends React.Component {
     
     render() {
         const {classes, theme, async = true, options = []} = this.props;
-        const { selectedValue } = this.state;
         const selectStyles = {
             input: base => ({
               ...base,
@@ -75,13 +74,15 @@ class AutoComplete extends React.Component {
                     {
                       !async && 
                       <Select
-                          value={selectedValue}
+                          value={this.state.selectedValue}
                           classes={classes}
                           styles={selectStyles}
                           options={options}
                           components={components}
                           onChange={this.handleChange}
                           placeholder="Search Stocks"
+                          autoFocus={false}
+                          defaultMenuIsOpen={true}
                       />
                     }
                 </NoSsr>
