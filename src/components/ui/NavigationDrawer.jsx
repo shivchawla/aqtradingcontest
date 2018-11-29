@@ -61,6 +61,7 @@ class NavigationDrawerImpl extends React.Component {
                                     key={index} 
                                     depth={1}
                                     onClick={this.routeUrl}
+                                    toggleDrawer={this.props.onToggle}
                                 />
                             ))
                         }
@@ -191,7 +192,10 @@ class ListItemComponent extends React.Component {
         return (
             <ListItem
                 button
-                onClick={() => {onClick && onClick(url, href)}}
+                onClick={() => {
+                    this.props.toggleDrawer()
+                    onClick && onClick(url, href)
+                }}
                 style={{...listItemTextStyle, ...style}}>
                 {icon &&
                     <ListItemIcon>
@@ -244,6 +248,12 @@ const listItemTextStyle = {
 const menuCategories = [
     {
         name: "Create Entry", icon:'create', url: '/dailycontest/stockpredictions'
+    },
+    {
+        name: "My Picks", icon:'view_list', url: '/dailycontest/mypicks'
+    },
+    {
+        name: "Metrics", icon:'assessment', url: '/dailycontest/metrics'
     },
     {
         name: "Top Picks", url:'/dailycontest/toppicks', icon:'assignment'
