@@ -106,6 +106,7 @@ export default class Layout extends React.Component {
                                         backgroundColor='#5E81FF'
                                         percentage
                                         {...winRatio}
+                                        baseValue={50}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
@@ -113,7 +114,7 @@ export default class Layout extends React.Component {
                                         header='Profit Factor'
                                         backgroundColor='#FFE720'
                                         {...profitFactor}
-                                        defaultValue={0}
+                                        defaultValue={null}
                                         defaultValueToShow='-'
                                         ratio
                                     />

@@ -95,7 +95,7 @@ export default class Layout extends React.Component {
                                 header='Profit Factor' 
                                 {...profitFactor}
                                 ratio
-                                defaultValue={0}
+                                defaultValue={null}
                                 defaultValueToShow='-'
                             />
                             <HorizontalCard 
@@ -105,6 +105,7 @@ export default class Layout extends React.Component {
                                     marginTop: '10px'
                                 }}
                                 percentage
+                                baseValue={50}
                             />
                         </div>
                         <div style={{marginTop: '20px'}}>

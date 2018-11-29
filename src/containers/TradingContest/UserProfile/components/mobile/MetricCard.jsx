@@ -37,11 +37,12 @@ export default class MetricCard extends React.Component {
             light = false,
             defaultValue = null,
             defaultValueToShow='-',
-            ratio = false
+            ratio = false,
+            baseValue=0
         } = this.props;
         const valueProps = {money, percentage, number, defaultValue, defaultValueToShow};
-        const netColor = getValueColor(total, number, netMetricColor, ratio);
-        total = getFormattedValue(total, money, percentage, defaultValue, defaultValueToShow);
+        const netColor = getValueColor(total, number, netMetricColor, ratio, baseValue);
+        total = getFormattedValue(total, money, percentage, defaultValue, defaultValueToShow, ratio);
         const headerColor = light ? '#fff' : '#767676';
 
         return (
@@ -66,6 +67,7 @@ export default class MetricCard extends React.Component {
                                 {...valueProps} 
                                 light={light}
                                 ratio={ratio}
+                                baseValue={baseValue}
                             />
                         </Grid>
                         <Grid item xs={6}>
@@ -75,6 +77,7 @@ export default class MetricCard extends React.Component {
                                 {...valueProps} 
                                 light={light}
                                 ratio={ratio}
+                                baseValue={baseValue}
                             />
                         </Grid>
                     </Grid>
@@ -98,10 +101,11 @@ const Metric = ({
         light = false,
         defaultValue = 0, 
         defaultValueToShow = '-',
-        ratio = false
+        ratio = false,
+        baseValue = 0
 }) => {
-    const valueColor = getValueColor(value, number, metricColor, ratio);
-    const formattedValue = getFormattedValue(value, money, percentage, defaultValue, defaultValueToShow);
+    const valueColor = getValueColor(value, number, metricColor, ratio, baseValue);
+    const formattedValue = getFormattedValue(value, money, percentage, defaultValue, defaultValueToShow, ratio);
     const labelColor = light ? '#fff' : '#858585';
 
     return (

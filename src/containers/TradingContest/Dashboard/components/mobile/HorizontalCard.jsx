@@ -11,7 +11,7 @@ import {verticalBox, horizontalBox, primaryColor} from '../../../../../constants
 
 export default class HorizontalCard extends React.Component {
     render() {
-        const {header='Header', total=0, long=0, short=0, percentage = false, ratio = false, defaultValue = null, defaultValueToShow = '-'} = this.props;
+        const {header='Header', total=0, long=0, short=0, percentage = false, ratio = false, defaultValue = null, defaultValueToShow = '-', baseValue = 0} = this.props;
         return (
             <Container style={this.props.style}>
                 <Grid 
@@ -31,31 +31,34 @@ export default class HorizontalCard extends React.Component {
                     >
                         <Metric 
                             label="Total" 
-                            value={(total || 0).toFixed(2)} 
+                            value={total} 
                             bordered
                             percentage={percentage}
                             ratio={ratio}
                             defaultValue={defaultValue}
                             defaultValueToShow={defaultValueToShow}
+                            baseValue={baseValue}
                         />
                         <Metric 
                             label="Long" 
-                            value={(long || 0).toFixed(2)} 
+                            value={long} 
                             center 
                             bordered
                             percentage={percentage}
                             ratio={ratio}
                             defaultValue={defaultValue}
                             defaultValueToShow={defaultValueToShow}
+                            baseValue={baseValue}
                         />
                         <Metric 
                             label="Short" 
-                            value={(short || 0).toFixed(2)} 
+                            value={short} 
                             center
                             percentage={percentage}
                             ratio={ratio}
                             defaultValue={defaultValue}
                             defaultValueToShow={defaultValueToShow}
+                            baseValue={baseValue}
                         />
                     </Grid>
                 </Grid>
@@ -64,9 +67,19 @@ export default class HorizontalCard extends React.Component {
     }
 }
 
-const Metric = ({label, value, center=false, bordered=false, percentage = false, ratio = false, defaultValue = 0, defaultValueToShow = '-'}) => {
-    let valueColor = Number(value) === defaultValue ? valueColor : getValueColor(Number(value), false, metricColor, ratio);
-    value = getFormattedValue(Number(value), false, percentage, defaultValue, defaultValueToShow);
+const Metric = ({
+            label, value, 
+            center=false, 
+            bordered=false, 
+            percentage = false, 
+            ratio = false, 
+            defaultValue = 0, 
+            defaultValueToShow = '-', 
+            baseValue = 0
+        }
+) => {
+    let valueColor = value === defaultValue ? valueColor : getValueColor(Number(value), false, metricColor, ratio, baseValue);
+    value = getFormattedValue(value, false, percentage, defaultValue, defaultValueToShow, ratio);
 
     return (
         <Grid 

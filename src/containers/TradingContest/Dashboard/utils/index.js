@@ -31,9 +31,9 @@ export const getDailyStatsDataForKey = dailycontestStats => {
         short: getPct(_.get(dailycontestStats, 'short.avgPnlPct', null)),
     };
     const profitFactor = {
-        total: toDecimal(_.get(dailycontestStats, 'net.profitFactor', -1)),
-        long: toDecimal(_.get(dailycontestStats, 'long.profitFactor', -1)),
-        short: toDecimal(_.get(dailycontestStats, 'short.profitFactor', -1)),
+        total: _.get(dailycontestStats, 'net.profitFactor', -1),
+        long: _.get(dailycontestStats, 'long.profitFactor', -1),
+        short: _.get(dailycontestStats, 'short.profitFactor', -1),
     };
 
     const predictions = {
@@ -101,7 +101,7 @@ export const getPnl = pnl => {
 }
 
 export const getPct = value => {
-    return value !== null ? Number((value * 100).toFixed(2)) : 0;
+    return value !== null ? Number((value * 100)) : 0;
 }
 
 export const toDecimal = value => {
@@ -128,30 +128,46 @@ export const getDailyContestStatsBySymbol = (symbol = '', history, currentUrl, h
     return fetchAjaxPromise(url, history, currentUrl, handleError);
 }
 
-export const getFormattedValue = (value = 0, money = false, percentage = false, defaultValue = null, defaultValueToShow = '-') => {
+export const getFormattedValue = (
+        value = 0, 
+        money = false, 
+        percentage = false, 
+        defaultValue = null, 
+        defaultValueToShow = '-', 
+        ratio = false,
+) => {
     let formattedValue = value;
     if (formattedValue === defaultValue) { // If value is same as default value
         formattedValue = defaultValueToShow;
     } else {
+        let roundedValue = (value || 0).toFixed(2);
+        roundedValue = Math.abs(Number(roundedValue)) === 0 ? '0.00' : roundedValue;
         if ((money && percentage) || (!money && !percentage)) { // If both money and percentage is given
-            formattedValue = value;
+            formattedValue = ratio === true ? roundedValue : value;
         } else if (money && !percentage) { // If money is given
             formattedValue = Utils.formatMoneyValueMaxTwoDecimals(formattedValue)
             formattedValue = `₹${formattedValue}`;
         }
         else { // If percentage is given
-            formattedValue = `${formattedValue}%`;
+            formattedValue = `${roundedValue}%`;
         }
     }
 
     return formattedValue;
 }
 
-export const getValueColor = (value, number = false, color = metricColor, ratio = false) => {
+export const getValueColor = (
+        value, 
+        number = false, 
+        color = metricColor, 
+        ratio = false,
+        baseValue = 0
+) => {
+    value = Number((value || 0).toFixed(2));
     if (!number && !ratio) {
-        return value > 0 ? color.positive : value === 0 ? valueColor : color.negative;
+        return value > baseValue ? color.positive : value === 0 ? valueColor : color.negative;
     } else if (ratio) {
-        return value > 1 ? color.positive : color.negative;
+        return value > 1 ? color.positive : value === 0 ? valueColor : color.negative;
     }
 
     return valueColor;
