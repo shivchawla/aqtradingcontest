@@ -7,7 +7,6 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import MetricCard from '../mobile/MetricCard';
 import LoaderComponent from '../../../Misc/Loader';
 import {horizontalBox, verticalBox} from '../../../../../constants';
-import {Utils} from '../../../../../utils';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
 
 export default class Layout extends React.Component {
@@ -59,7 +58,6 @@ export default class Layout extends React.Component {
                     <InitialContainer>{initials}</InitialContainer>
                     <div style={{...verticalBox, alignItems: 'flex-start', marginLeft: '10px'}}>
                         <UserName>{userName}</UserName>
-                        {/* <UserEmail>saru.sreyo@gmail.com</UserEmail> */}
                     </div>
                 </div>
             </div>
@@ -115,6 +113,8 @@ export default class Layout extends React.Component {
                                         header='Profit Factor'
                                         backgroundColor='#FFE720'
                                         {...profitFactor}
+                                        defaultValue={0}
+                                        defaultValueToShow='-'
                                     />
                                 </Grid>
                             </Grid>

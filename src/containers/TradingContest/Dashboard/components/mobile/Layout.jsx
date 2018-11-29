@@ -95,6 +95,8 @@ export default class Layout extends React.Component {
                                 header='Profit Factor' 
                                 {...profitFactor}
                                 ratio
+                                defaultValue={0}
+                                defaultValueToShow='-'
                             />
                             <HorizontalCard 
                                 header='Success Rate' 

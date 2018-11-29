@@ -5,13 +5,13 @@ import Grid from '@material-ui/core/Grid';
 import Header from './Header';
 import MetricLabel from './MetricLabel';
 import MetricValue from './MetricValue';
-import {Utils} from '../../../../../utils';
 import {valueColor, metricColor} from '../styles';
+import {getValueColor, getFormattedValue} from '../../utils';
 import {verticalBox, horizontalBox, primaryColor} from '../../../../../constants';
 
 export default class HorizontalCard extends React.Component {
     render() {
-        const {header='Header', total=0, long=0, short=0, percentage = false, ratio = false} = this.props;
+        const {header='Header', total=0, long=0, short=0, percentage = false, ratio = false, defaultValue = null, defaultValueToShow = '-'} = this.props;
         return (
             <Container style={this.props.style}>
                 <Grid 
@@ -35,6 +35,8 @@ export default class HorizontalCard extends React.Component {
                             bordered
                             percentage={percentage}
                             ratio={ratio}
+                            defaultValue={defaultValue}
+                            defaultValueToShow={defaultValueToShow}
                         />
                         <Metric 
                             label="Long" 
@@ -43,6 +45,8 @@ export default class HorizontalCard extends React.Component {
                             bordered
                             percentage={percentage}
                             ratio={ratio}
+                            defaultValue={defaultValue}
+                            defaultValueToShow={defaultValueToShow}
                         />
                         <Metric 
                             label="Short" 
@@ -50,6 +54,8 @@ export default class HorizontalCard extends React.Component {
                             center
                             percentage={percentage}
                             ratio={ratio}
+                            defaultValue={defaultValue}
+                            defaultValueToShow={defaultValueToShow}
                         />
                     </Grid>
                 </Grid>
@@ -58,16 +64,9 @@ export default class HorizontalCard extends React.Component {
     }
 }
 
-const Metric = ({label, value, center=false, bordered=false, percentage = false, ratio = false}) => {
-    let valueColor = valueColor;
-    if (ratio) {
-        valueColor = value > 1 ? metricColor.positive : metricColor.negative;
-    }
-
-    if (percentage) {
-        valueColor = value > 0 ? metricColor.positive : value === 0 ? valueColor : metricColor.negative;
-        value = `${value}%`
-    }
+const Metric = ({label, value, center=false, bordered=false, percentage = false, ratio = false, defaultValue = 0, defaultValueToShow = '-'}) => {
+    let valueColor = Number(value) === defaultValue ? valueColor : getValueColor(Number(value), false, metricColor, ratio);
+    value = getFormattedValue(Number(value), false, percentage, defaultValue, defaultValueToShow);
 
     return (
         <Grid 

@@ -34,11 +34,13 @@ export default class MetricCard extends React.Component {
             percentage = false,
             number = false,
             backgroundColor = '#16B09A',
-            light = false
+            light = false,
+            defaultValue = null,
+            defaultValueToShow='-'
         } = this.props;
-        const valueProps = {money, percentage, number};
+        const valueProps = {money, percentage, number, defaultValue, defaultValueToShow};
         const netColor = getValueColor(total, number, metricColor);
-        total = getFormattedValue(total, money, percentage);
+        total = getFormattedValue(total, money, percentage, defaultValue, defaultValueToShow);
         const headerColor = light ? '#fff' : '#767676';
 
         return (
@@ -83,9 +85,9 @@ export default class MetricCard extends React.Component {
     }
 }
 
-const Metric = ({label, value, marginTop = '0px', money = false, percentage = false, number = false, light = false}) => {
+const Metric = ({label, value, marginTop = '0px', money = false, percentage = false, number = false, light = false, defaultValue = 0, defaultValueToShow = '-'}) => {
     const valueColor = getValueColor(value, number);
-    const formattedValue = getFormattedValue(value, money, percentage);
+    const formattedValue = getFormattedValue(value, money, percentage, defaultValue, defaultValueToShow);
     const labelColor = light ? '#fff' : '#858585';
 
     return (

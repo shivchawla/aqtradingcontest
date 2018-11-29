@@ -43,9 +43,9 @@ export const getDailyStatsDataForKey = dailycontestStats => {
     };
 
     const winRatio = {
-        total: getPctFromRatio(_.get(dailycontestStats, 'net.winRatio', -1)),
-        long: getPctFromRatio(_.get(dailycontestStats, 'long.winRatio', -1)),
-        short: getPctFromRatio(_.get(dailycontestStats, 'short.winRatio', -1))
+        total: getPctFromRatio(_.get(dailycontestStats, 'net.winRatio', null)),
+        long: getPctFromRatio(_.get(dailycontestStats, 'long.winRatio', null)),
+        short: getPctFromRatio(_.get(dailycontestStats, 'short.winRatio', null))
     }
 
     const mostProftableStock = {
@@ -109,6 +109,10 @@ export const toDecimal = value => {
 }
 
 export const getPctFromRatio = value => {
+    if (value === null) {
+        return 100;
+    }
+
     return getPct(value / (1 + value));
 }
 
@@ -124,22 +128,30 @@ export const getDailyContestStatsBySymbol = (symbol = '', history, currentUrl, h
     return fetchAjaxPromise(url, history, currentUrl, handleError);
 }
 
-export const getFormattedValue = (value = 0, money = false, percentage = false) => {
+export const getFormattedValue = (value = 0, money = false, percentage = false, defaultValue = null, defaultValueToShow = '-') => {
     let formattedValue = value;
-    if (money) {
-        formattedValue = Utils.formatMoneyValueMaxTwoDecimals(formattedValue)
-        formattedValue = `₹${formattedValue}`;
-    }
-    if (percentage) {
-        formattedValue = `${formattedValue}%`;
+    if (formattedValue === defaultValue) { // If value is same as default value
+        formattedValue = defaultValueToShow;
+    } else {
+        if ((money && percentage) || (!money && !percentage)) { // If both money and percentage is given
+            formattedValue = value;
+        } else if (money && !percentage) { // If money is given
+            formattedValue = Utils.formatMoneyValueMaxTwoDecimals(formattedValue)
+            formattedValue = `₹${formattedValue}`;
+        }
+        else { // If percentage is given
+            formattedValue = `${formattedValue}%`;
+        }
     }
 
     return formattedValue;
 }
 
-export const getValueColor = (value, number = false, color = metricColor) => {
-    if (!number) {
+export const getValueColor = (value, number = false, color = metricColor, ratio = false) => {
+    if (!number && !ratio) {
         return value > 0 ? color.positive : value === 0 ? valueColor : color.negative;
+    } else if (ratio) {
+        return value > 1 ? metricColor.positive : metricColor.negative;
     }
 
     return valueColor;
