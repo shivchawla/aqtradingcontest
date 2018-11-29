@@ -247,7 +247,7 @@ const listItemTextStyle = {
 
 const menuCategories = [
     {
-        name: "Create Entry", icon:'create', url: '/dailycontest/stockpredictions'
+        name: "Submit Predictions", icon:'create', url: '/dailycontest/stockpredictions'
     },
     {
         name: "My Picks", icon:'view_list', url: '/dailycontest/mypicks'

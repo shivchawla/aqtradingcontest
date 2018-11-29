@@ -15,7 +15,7 @@ export default class EntryDetailBottomSheet extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedView: 0
+            selectedView: 1
         }
     }
 
@@ -56,6 +56,7 @@ export default class EntryDetailBottomSheet extends React.Component {
                                     <SegmentedControl 
                                         labels={['Daily', 'CUMULATIVE']}
                                         onChange={this.handleSegmentChange}
+                                        selected={this.state.selectedView}
                                     />
                                 </Grid>
                                 <Grid item xs={12} style={verticalBox}>
