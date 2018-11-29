@@ -201,7 +201,7 @@ class CreateEntry extends React.Component {
         return (
             <React.Fragment>
                 <Media 
-                    query="(min-width: 601px)"
+                    query="(min-width: 801px)"
                     render={() => (
                         <SwipeableBottomSheet 
                                 fullScreen 
@@ -688,12 +688,12 @@ class CreateEntry extends React.Component {
         return (
             <React.Fragment>
                 <Media 
-                    query="(max-width: 600px)"
+                    query="(max-width: 800px)"
                     render={() => this.renderMobileLayout(props)}
                 />
 
                 <Media 
-                    query="(min-width: 601px)"
+                    query="(min-width: 801px)"
                     render={() => this.renderDesktopLayout(props)}
                 />
             </React.Fragment>

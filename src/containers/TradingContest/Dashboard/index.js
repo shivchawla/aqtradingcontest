@@ -120,11 +120,11 @@ class Dashboard extends React.Component {
         return (
             <React.Fragment>
                 <Media 
-                    query="(max-width: 600px)"
+                    query="(max-width: 800px)"
                     render={() => <DashboardLayoutMobile {...props} />}
                 />
                 <Media 
-                    query="(min-width: 601px)"
+                    query="(min-width: 801px)"
                     render={() => <DashboardLayoutDesktop />}
                 />
             </React.Fragment>

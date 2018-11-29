@@ -48,7 +48,7 @@ class App extends Component {
                 <div className="App">
                     <Notifications style={{zIndex: 3000}}/>
                     <Media 
-                        query="(max-width: 599px)"
+                        query="(max-width: 800px)"
                         render={() => {
                             return (
                                 <Switch>
@@ -103,7 +103,7 @@ class App extends Component {
                         }}
                     />
                     <Media 
-                        query="(min-width: 600px)"
+                        query="(min-width: 801px)"
                         render={() => {
                             return (
                                 <Switch>

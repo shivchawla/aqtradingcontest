@@ -98,11 +98,11 @@ class Participants extends React.Component {
             <React.Fragment>
                 <DailyContestLeaderboardMeta />
                 <Media 
-                    query="(max-width: 600px)"
+                    query="(max-width: 800px)"
                     render={() => <LeaderboardLayoutMobile {...props}/>}
                 />
                 <Media 
-                    query="(min-width: 601px)"
+                    query="(min-width: 801px)"
                     render={() => <LeaderboardLayoutDesktop {...props} />}
                 />
             </React.Fragment>

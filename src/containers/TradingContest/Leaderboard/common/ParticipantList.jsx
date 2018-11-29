@@ -16,7 +16,7 @@ export default class ParticipantList extends React.Component {
 
     renderWinners = () => {
         const {winners = [], listType = 'long'} = this.props;
-        const ParticipantListItem = global.screen.width < 600 ? ParticipantListItemMobile : ParticipantListItemDesktop;
+        const ParticipantListItem = global.screen.width < 801 ? ParticipantListItemMobile : ParticipantListItemDesktop;
 
         return winners.map((winner, index) => (
             <ParticipantListItem 
@@ -48,6 +48,6 @@ export default class ParticipantList extends React.Component {
 const Error = styled.h3`
     color: #717171;
     font-weight: 500;
-    font-size: ${global.screen.width < 600 ? '15px' : '20px'};
-    margin-top: ${global.screen.width > 600 ? '20%' : 0}
+    font-size: ${global.screen.width < 801 ? '15px' : '20px'};
+    margin-top: ${global.screen.width > 800 ? '20%' : 0}
 `;

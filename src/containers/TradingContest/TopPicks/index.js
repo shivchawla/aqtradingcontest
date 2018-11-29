@@ -93,11 +93,11 @@ class Winners extends React.Component {
             <React.Fragment>
                 <DailyContestCreateMeta />
                 <Media 
-                    query="(max-width: 600px)"
+                    query="(max-width: 800px)"
                     render={() => <TopPicksLayoutMobile {...props}/>}
                 />
                 <Media 
-                    query="(min-width: 601px)"
+                    query="(min-width: 801px)"
                     render={() => <TopPicksLayoutDesktop {...props} />}
                 />
             </React.Fragment>

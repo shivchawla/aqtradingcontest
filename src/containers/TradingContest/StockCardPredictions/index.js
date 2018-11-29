@@ -26,7 +26,7 @@ import {horizontalBox, primaryColor, verticalBox} from '../../../constants';
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
-const isDesktop = global.screen.width > 600 ;
+const isDesktop = global.screen.width > 800 ;
 
 class StockCardPredictions extends React.Component {
     constructor(props) {
@@ -471,5 +471,5 @@ const Container = styled(Grid)`
     width: 100%;
     align-items: ${props => props.alignItems || 'flex-start'};
     position: relative;
-    margin-top: ${global.screen.width > 600 ? '-3%' : 0}
+    margin-top: ${global.screen.width > 800 ? '-3%' : 0}
 `;

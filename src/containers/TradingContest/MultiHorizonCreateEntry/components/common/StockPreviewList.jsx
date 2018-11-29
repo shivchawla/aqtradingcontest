@@ -18,7 +18,7 @@ export default class StockPreviewList extends React.Component {
 
     render() {
         const {positions = [], type='buy'} = this.props;
-        const StockPreviewListItem = global.screen.width < 600 ? StockPreviewListItemMobile : StockPreviewListItemDesktop;
+        const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewListItemDesktop;
         const errorText = 'No predictions found';
         return (
             <Grid 

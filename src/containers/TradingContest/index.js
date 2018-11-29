@@ -173,7 +173,7 @@ class TradingContest extends React.Component {
     componentWillUpdate(nextProps) {
         if (this.props.location !== nextProps.location) { // Route changed
             const currentLocation = nextProps.location.pathname;
-            const selectedTab = global.screen.width > 600 
+            const selectedTab = global.screen.width > 800 
                 ? this.getSelectedTab(currentLocation) 
                 : this.getSelectedTabMobile(currentLocation);
             this.setState({selectedTab});
@@ -195,7 +195,7 @@ class TradingContest extends React.Component {
     }
 
     componentWillMount() {
-        const selectedTab = global.screen.width > 600 
+        const selectedTab = global.screen.width > 800 
             ? this.getSelectedTab(this.props.location.pathname)
             : this.getSelectedTabMobile(this.props.location.pathname);
         this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
@@ -425,11 +425,11 @@ class TradingContest extends React.Component {
         return (
             <React.Fragment>
                 <Media 
-                    query="(max-width: 599px)"
+                    query="(max-width: 800px)"
                     render={() => this.renderMobile()}
                 />
                 <Media 
-                    query="(min-width: 600px)"
+                    query="(min-width: 801px)"
                     render={() => this.renderDesktop()}
                 />
             </React.Fragment>
