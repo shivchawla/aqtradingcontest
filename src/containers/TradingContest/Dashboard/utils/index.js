@@ -151,7 +151,7 @@ export const getValueColor = (value, number = false, color = metricColor, ratio 
     if (!number && !ratio) {
         return value > 0 ? color.positive : value === 0 ? valueColor : color.negative;
     } else if (ratio) {
-        return value > 1 ? metricColor.positive : metricColor.negative;
+        return value > 1 ? color.positive : color.negative;
     }
 
     return valueColor;

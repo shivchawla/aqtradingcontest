@@ -115,6 +115,7 @@ export default class Layout extends React.Component {
                                         {...profitFactor}
                                         defaultValue={0}
                                         defaultValueToShow='-'
+                                        ratio
                                     />
                                 </Grid>
                             </Grid>

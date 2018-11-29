@@ -5,11 +5,11 @@ import Grid from '@material-ui/core/Grid';
 import Header from '../../../Dashboard/components/mobile/Header';
 import MetricLabel from '../../../Dashboard/components/mobile/MetricLabel';
 import MetricValue from '../../../Dashboard/components/mobile/MetricValue';
-import {valueColor} from '../../../Dashboard/components/styles';
+import {valueColor, metricColor} from '../../../Dashboard/components/styles';
 import {verticalBox, horizontalBox, primaryColor} from '../../../../../constants';
 import {getFormattedValue, getValueColor} from '../../../Dashboard/utils';
 
-const metricColor = {
+const netMetricColor = {
     positive: '#127a5b',
     negative: '#c02323',
     neutral: '#5b5b5b'
@@ -36,10 +36,11 @@ export default class MetricCard extends React.Component {
             backgroundColor = '#16B09A',
             light = false,
             defaultValue = null,
-            defaultValueToShow='-'
+            defaultValueToShow='-',
+            ratio = false
         } = this.props;
         const valueProps = {money, percentage, number, defaultValue, defaultValueToShow};
-        const netColor = getValueColor(total, number, metricColor);
+        const netColor = getValueColor(total, number, netMetricColor, ratio);
         total = getFormattedValue(total, money, percentage, defaultValue, defaultValueToShow);
         const headerColor = light ? '#fff' : '#767676';
 
@@ -64,6 +65,7 @@ export default class MetricCard extends React.Component {
                                 value={long} 
                                 {...valueProps} 
                                 light={light}
+                                ratio={ratio}
                             />
                         </Grid>
                         <Grid item xs={6}>
@@ -72,6 +74,7 @@ export default class MetricCard extends React.Component {
                                 value={short} 
                                 {...valueProps} 
                                 light={light}
+                                ratio={ratio}
                             />
                         </Grid>
                     </Grid>
@@ -85,8 +88,19 @@ export default class MetricCard extends React.Component {
     }
 }
 
-const Metric = ({label, value, marginTop = '0px', money = false, percentage = false, number = false, light = false, defaultValue = 0, defaultValueToShow = '-'}) => {
-    const valueColor = getValueColor(value, number);
+const Metric = ({
+        label, 
+        value, 
+        marginTop = '0px', 
+        money = false, 
+        percentage = false, 
+        number = false, 
+        light = false,
+        defaultValue = 0, 
+        defaultValueToShow = '-',
+        ratio = false
+}) => {
+    const valueColor = getValueColor(value, number, metricColor, ratio);
     const formattedValue = getFormattedValue(value, money, percentage, defaultValue, defaultValueToShow);
     const labelColor = light ? '#fff' : '#858585';
 
