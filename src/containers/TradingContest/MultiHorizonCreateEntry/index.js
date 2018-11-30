@@ -439,7 +439,6 @@ class CreateEntry extends React.Component {
             this.getDailyPnlStats(selectedDate, this.state.selectedView)
         ])
         .then((response) => {
-            console.log(response);
             if (response.filter(responseItem => responseItem === 'requestCompleted').length === 2) {
                 this.setState({loading: false});
             } else {

@@ -5,12 +5,13 @@ import LoaderComponent from '../../Misc/Loader';
 import TopPicksTable from './TopPicksTable';
 import RadioGroup from '../../../../components/selections/RadioGroup';
 import {verticalBox, horizontalBox} from '../../../../constants';
+import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
 export default class TopPicksLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            view: 'byInvestment'
+            view: 'byUsers'
         };
     }
 
@@ -38,7 +39,7 @@ export default class TopPicksLayout extends React.Component {
                     (winnerStocksByInvestment.length === 0 && winnerStocksByUsers.length === 0)
                     ?   <NoDataFound />
                     :   <Grid item xs={12} style={containerColStyle}>
-                            <div 
+                            {/* <div 
                                     style={{
                                         ...horizontalBox, 
                                         width: '100%',
@@ -49,7 +50,7 @@ export default class TopPicksLayout extends React.Component {
                                     items={['By Investment', 'By Users']} 
                                     onChange={this.onRadioChange}
                                 />
-                            </div>
+                            </div> */}
                             <div 
                                     style={{
                                         width: '95%',
@@ -78,9 +79,10 @@ export default class TopPicksLayout extends React.Component {
 
 const NoDataFound = () => {
     return (
-        <Grid container style={{height: 'calc(100vh - 300px)', width: '100%'}}>
-            <Grid item xs={12} style={verticalBox}>
-                <NoDataText>No Data Found.</NoDataText>
+        <Grid container>
+            <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
+                <img src={notFoundLogo} />
+                <NoDataText style={{marginTop: '20px'}}>No Data Found</NoDataText>
             </Grid>
         </Grid>
     );

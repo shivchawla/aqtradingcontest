@@ -73,5 +73,4 @@ const Label = styled.h3`
     color: #8B8B8B;
     font-weight: 500;
     font-family: 'Lato', sans-serif;
-    minW
 `;

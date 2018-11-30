@@ -145,7 +145,7 @@ class DisplayPredictions extends React.Component {
 		                                pnlFound &&
                                         <div style={{width:'95%', margin: '0 auto'}}>
     		                                <SelectionMetricsMini 
-    		                                    {...getRequiredMetrics()}
+    		                                    {..._.get(getRequiredMetrics(), 'cumulative.all', {})}
     		                                    onClick={toggleEntryDetailBottomSheet}
     		                                />
                                         </div>
@@ -158,8 +158,8 @@ class DisplayPredictions extends React.Component {
 	                        	</React.Fragment>
                             }
                             {
-                                isSelectedDateSameAsCurrentDate(this.props.selectedDate) 
-                                && marketOpen.status &&
+                                isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
+                                // && marketOpen.status &&
                                 <div 
                                         style={{
                                             ...fabContainerStyle,

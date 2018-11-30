@@ -17,7 +17,25 @@ class Participants extends React.Component {
             selectedDate: props.selectedDate || moment(),
             winners: [],
             loading: false,
+            userProfileBottomSheetOpenStatus: false,
+            selectedAdvisor: {
+                userName: '',
+                advisorId: null
+            } 
         };
+    }
+
+    toggleUserProfileBottomSheet = (userName = null, advisorId = null) => {
+        
+        this.setState({
+            userProfileBottomSheetOpenStatus: !this.state.userProfileBottomSheetOpenStatus,
+            selectedAdvisor: {
+                userName: (userName !== null && typeof userName === 'string') 
+                    ? userName 
+                    : this.state.selectedAdvisor.userName,
+                advisorId: advisorId !== null ? advisorId : this.state.selectedAdvisor.advisorId,
+            }
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -70,7 +88,10 @@ class Participants extends React.Component {
             timelineView: this.state.timelineView,
             resultDate: this.state.resultDate,
             selectedDate: this.state.selectedDate,
-            loading: this.state.loading
+            loading: this.state.loading,
+            userProfileBottomSheetOpenStatus: this.state.userProfileBottomSheetOpenStatus,
+            selectedAdvisor: this.state.selectedAdvisor,
+            toggleUserProfileBottomSheet: this.toggleUserProfileBottomSheet
         };
 
         return (

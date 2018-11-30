@@ -25,7 +25,7 @@ export default class SelectionMetrics extends React.Component {
                             <MetricItem money label='Profit' value={((pnlPositive || 0) * 1000)} />
                             <MetricItem money label='Loss' value={((pnlNegative || 0) * 1000)} />
                             <MetricItem label='Profit Factor' value={(profitFactor || 0).toFixed(2)} />
-                            <MetricItem label='Cost' value={Utils.formatInvestmentValue(cost || 0)} />
+                            <MetricItem string label='Cost' value={Utils.formatInvestmentValue(cost || 0)} />
                             <MetricItem money label='Net PnL' coloured value={((pnl || 0) * 1000)} />
                             <MetricItem label='Net PnL %' coloured percentage value={((pnlPct || 0) * 100).toFixed(2)} />
                         </Grid>
@@ -36,9 +36,10 @@ export default class SelectionMetrics extends React.Component {
     }
 }
 
-const MetricItem = ({label, value, percentage = false, coloured = false, money = false}) => {
-    const color = coloured ? value < 0 ? metricColor.negative : value === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
-    let nValue = money ? `₹${Utils.formatMoneyValueMaxTwoDecimals(value)}` : value;
+const MetricItem = ({label, value, percentage = false, coloured = false, money = false, string = false}) => {
+    let nValue = string ? value : Number(value);
+    const color = coloured ? nValue < 0 ? metricColor.negative : nValue === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
+    nValue = money ? `₹${Utils.formatMoneyValueMaxTwoDecimals(nValue)}` : nValue;
     nValue = percentage ? `${nValue}%` : nValue;
 
     return (

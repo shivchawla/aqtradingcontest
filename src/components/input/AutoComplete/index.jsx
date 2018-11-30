@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import AsyncSelect from 'react-select/lib/Async';
+import Select from 'react-select';
 import {withStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import NoSsr from '@material-ui/core/NoSsr';
@@ -11,27 +12,19 @@ import styles from './styles';
 
 class AutoComplete extends React.Component {
     state = {
-        single: null,
-        multi: null,
-        inputValue: ''
+        selectedValue: null
     };
 
-    handleChange = name => value => {
+    handleChange = value => {
         this.setState({
-            [name]: value,
+            selectedValue: value
         }, () => {
             this.props.onClick && this.props.onClick(value);
         });
     };
-
-    handleInputChange = (newValue) => {
-        const inputValue = newValue.replace(/\W/g, '');
-        this.setState({inputValue});
-        return inputValue;
-    };
     
     render() {
-        const {classes, theme} = this.props;
+        const {classes, theme, async = true, options = []} = this.props;
         const selectStyles = {
             input: base => ({
               ...base,
@@ -41,25 +34,57 @@ class AutoComplete extends React.Component {
               },
               position: 'relative',
               width: '100%',
-              dropdownIndicator: {
-                display: 'none'
-              }
+              textAlign: 'start'
+            }),
+            control: base => ({
+              ...base,
+              borderRadius: '4px',
+              borderColor: '#EBEBEB',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+              textAlign: 'start',
+              padding: '7px 0px',
+              paddingLeft: '4px',
+            }),
+            indicatorsContainer: base => ({
+              ...base,
+              display: 'none'
+            }),
+            placeholder: base => ({
+              ...base,
+              paddingLeft: '10px'
             }),
         };
 
         return (
             <div className={classes.root}>
                 <NoSsr>
-                    <AsyncSelect
-                        classes={classes}
-                        styles={selectStyles}
-                        loadOptions={this.props.handleSearch}
-                        cacheOptions 
-                        defaultOptions
-                        components={components}
-                        onChange={this.handleChange('single')}
-                        placeholder="Search Stocks"
-                    />
+                    {
+                      async && 
+                      <AsyncSelect
+                          classes={classes}
+                          styles={selectStyles}
+                          loadOptions={this.props.handleSearch}
+                          cacheOptions 
+                          defaultOptions
+                          components={components}
+                          onChange={this.handleChange('single')}
+                          placeholder="Search Stocks"
+                      />
+                    }
+                    {
+                      !async && 
+                      <Select
+                          value={this.state.selectedValue}
+                          classes={classes}
+                          styles={selectStyles}
+                          options={options}
+                          components={components}
+                          onChange={this.handleChange}
+                          placeholder="Search Stocks"
+                          autoFocus={false}
+                          defaultMenuIsOpen={true}
+                      />
+                    }
                 </NoSsr>
             </div>
         );
@@ -151,11 +176,11 @@ function NoOptionsMessage(props) {
   }
   
   const components = {
-    Control,
-    Menu,
+    // Control,
+    // Menu,
     NoOptionsMessage,
     Option,
     Placeholder,
-    SingleValue,
-    ValueContainer,
+    // SingleValue,
+    // ValueContainer,
   };

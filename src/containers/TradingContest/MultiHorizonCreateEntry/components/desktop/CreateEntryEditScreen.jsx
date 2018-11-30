@@ -15,8 +15,9 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
-import {isMarketOpen} from '../../../utils';
+import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
 import {getPositionsWithNewPredictions} from '../../utils';
+import notFoundLogo from '../../../../../assets/NoDataFound.svg';
 
 const dateFormat = 'YYYY-MM-DD';
 
@@ -242,7 +243,7 @@ class CreateEntryEditScreen extends React.Component {
                                 pnlFound && positions.length > 0 &&
                                 <div style={{padding:'0 10px 20px 10px'}}>
                                     <SelectionMetricsMini 
-                                        {...getRequiredMetrics()}
+                                        {..._.get(getRequiredMetrics(), 'cumulative.all', {})}
                                         onClick={toggleEntryDetailBottomSheet}
                                     />
                                 </div>
@@ -260,6 +261,7 @@ class CreateEntryEditScreen extends React.Component {
                                 </div>
                             }
                             {
+                                isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
                                 this.props.positions.length === 0 && positions.length === 0 &&
                                 <div style={{...verticalBox, marginTop: '20%'}}>
                                     <Button 
@@ -279,6 +281,11 @@ class CreateEntryEditScreen extends React.Component {
                                         ADD PREDICTION
                                     </Button>
                                 </div>
+                            }
+                            {
+                                !isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
+                                this.props.positions.length === 0 && positions.length === 0 &&
+                                <NoDataFound />
                             }
                         </React.Fragment>
                 }
@@ -365,6 +372,17 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
     );
 }
 
+const NoDataFound = () => {
+    return (
+        <Grid container>
+            <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
+                <img src={notFoundLogo} />
+                <NoDataText style={{marginTop: '20px'}}>No Data Found</NoDataText>
+            </Grid>
+        </Grid>
+    );
+}
+
 const emptyPortfolioButtonStyle = {
     backgroundColor: primaryColor,
     color: '#fff',
@@ -432,5 +450,11 @@ const SectionHeader = styled.h3`
 const NoPreviewPositionsFound = styled.h3`
     font-size: 16px;
     color: #444;
+    font-weight: 400;
+`;
+
+const NoDataText = styled.h3`
+    font-size: 18px;
+    color: #535353;
     font-weight: 400;
 `;

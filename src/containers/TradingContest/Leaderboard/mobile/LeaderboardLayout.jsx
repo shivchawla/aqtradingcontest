@@ -4,13 +4,15 @@ import Grid from '@material-ui/core/Grid';
 import ParticipantList from '../common/ParticipantList';
 import LoaderComponent from '../../Misc/Loader';
 import RadioGroup from '../../../../components/selections/RadioGroup';
+import UserProfileBottomSheet from '../../UserProfile';
 import {verticalBox, horizontalBox} from '../../../../constants';
+import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
 export default class LeaderboardLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listType: 'total'
+            listType: 'total',
         };
     }
 
@@ -36,6 +38,11 @@ export default class LeaderboardLayout extends React.Component {
 
         return(
             <SGrid container>
+                <UserProfileBottomSheet 
+                    open={this.props.userProfileBottomSheetOpenStatus}
+                    onClose={this.props.toggleUserProfileBottomSheet}
+                    advisor={this.props.selectedAdvisor}
+                />
                 <Grid item xs={12} style={listContainer}>
                     {/* <div 
                             style={{
@@ -55,6 +62,7 @@ export default class LeaderboardLayout extends React.Component {
                         :   <ParticipantList 
                                 winners={winners}
                                 listType={this.state.listType}
+                                toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
                             />
                     }
                 </Grid>
@@ -85,9 +93,10 @@ export default class LeaderboardLayout extends React.Component {
 
 const NoDataFound = () => {
     return (
-        <Grid container style={{marginTop: '50%'}}>
-            <Grid item xs={12} style={verticalBox}>
-                <ContestNotAvailableText>No Data Found..</ContestNotAvailableText>
+        <Grid container>
+            <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
+                <img src={notFoundLogo} />
+                <ContestNotAvailableText style={{marginTop: '20px'}}>No Data Found</ContestNotAvailableText>
             </Grid>
         </Grid>
     );
@@ -107,9 +116,6 @@ const leaderboardDetailStyle = {
     height: 'calc(100vh - 180px)',
     minHeight: '480px',
     justifyContent: 'center',
-    margin: '10px auto',
-    width:'95%',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
     backgroundColor:'#fff'
 };
 
