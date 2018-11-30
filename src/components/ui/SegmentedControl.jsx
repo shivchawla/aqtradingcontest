@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import {withStyles} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
@@ -28,7 +29,13 @@ class TimelineSegment extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedView: 0
+            selectedView: this.props.selected || 0
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (_.isEqual(this.props, nextProps)) {
+            this.setState({selected: this.props.selected});
         }
     }
 

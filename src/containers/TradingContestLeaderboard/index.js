@@ -80,11 +80,11 @@ export class TradingContestLeaderboardMobile extends React.Component {
         return (
             <React.Fragment>
                 <Media 
-                    query="(max-width: 599px)"
+                    query="(max-width: 800px)"
                     render={() => this.renderMobile()}
                 />
                 <Media 
-                    query="(min-width: 600px)"
+                    query="(min-width: 801px)"
                     render={() => this.renderDesktop()}
                 />
             </React.Fragment>

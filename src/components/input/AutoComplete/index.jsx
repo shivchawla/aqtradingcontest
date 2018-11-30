@@ -12,7 +12,10 @@ import styles from './styles';
 
 class AutoComplete extends React.Component {
     state = {
-        selectedValue: null
+        single: null,
+        multi: null,
+        inputValue: '',
+        selectedValue: ''
     };
 
     handleChange = value => {
@@ -67,8 +70,9 @@ class AutoComplete extends React.Component {
                           cacheOptions 
                           defaultOptions
                           components={components}
-                          onChange={this.handleChange('single')}
+                          onChange={this.handleChange}
                           placeholder="Search Stocks"
+                          defaultMenuIsOpen={true}
                       />
                     }
                     {

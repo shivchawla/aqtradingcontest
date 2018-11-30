@@ -107,7 +107,7 @@ class Dashboard extends React.Component {
     render() {
         const props = {
             dashboardData: this.state.dashboardData[this.state.selectedType],
-            tickers: this.unionOfTickers(),
+            tickers: this.unionOfTickers().splice(0, 10),
             onRadioChange: this.onRadioChange,
             loading: this.state.loading,
             internalLoading: this.state.internalLoading,
@@ -120,11 +120,11 @@ class Dashboard extends React.Component {
         return (
             <React.Fragment>
                 <Media 
-                    query="(max-width: 600px)"
+                    query="(max-width: 800px)"
                     render={() => <DashboardLayoutMobile {...props} />}
                 />
                 <Media 
-                    query="(min-width: 601px)"
+                    query="(min-width: 801px)"
                     render={() => <DashboardLayoutDesktop />}
                 />
             </React.Fragment>

@@ -24,7 +24,7 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from '../mobile/SubmitButton';
 
 const readableDateFormat = 'Do MMM';
-const isDesktop = global.screen.width > 600 ? true : false;
+const isDesktop = global.screen.width > 800 ? true : false;
 
 export default class StockCard extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -246,11 +246,11 @@ export default class StockCard extends React.Component {
                             <h3 style={nameStyle}>{name}</h3>
                         </div>
                         <Media 
-                            query="(max-width: 599px)"
+                            query="(max-width: 800px)"
                             render={() => this.renderPriceMetricsMobile()}
                         />
                         <Media 
-                            query="(min-width: 600px)"
+                            query="(min-width: 801px)"
                             render={() => this.renderPriceMetricsDesktop()}
                         />
                     </div>
