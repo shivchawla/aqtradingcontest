@@ -6,15 +6,14 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from '@material-ui/core/styles';
-import {Form} from 'formik';
+import {Form, Formik} from 'formik';
 import Header from '../../Header';
 import AqLayoutMobile from '../../../components/ui/AqLayout';
-import CustomForm from '../../../components/input/Form';
 import InputComponent from '../../../components/input/Form/components/InputComponent';
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../constants';
-import {getFormProps} from '../../../utils/form';
+import {getFormProps, validateSchema} from '../../../utils/form';
 import {Utils} from '../../../utils';
-import {signupValidationSchema, loginUser, googleLogin} from './utils';
+import {getValidationSchema, registerUser} from './utils';
 import advicequbeLogo from '../../../assets/logo-advq-new.png';
 
 const tealColor = '#008080';
@@ -38,39 +37,38 @@ class SignUp extends React.Component {
         };
     }
 
-    processLogin = response => {
-        if (response.data.token) {
-            Utils.localStorageSaveObject(Utils.userInfoString, response.data);
-            Utils.setLoggedInUserInfo(response.data);
-            const redirectUrl = Utils.getRedirectAfterLoginUrl();
-            if (redirectUrl) {
-                this.props.history.push(redirectUrl);
-            } else{
-                this.props.history.push('/dailycontest/stockpredictions');
-            }
+    processSignUp = response => {
+        if(response.data.active){
+            Utils.goToLoginPage(this.props.history);
         } else {
-            this.setState({
-                error: "Unexpected error occured! Please try again.",
-                loading: false
-            });
+            const email = response.data.email;
+            const name = response.data.name;
+            this.props.history.push('/authMessage?mode=activationPending&email='+email+'&name='+name);
         }
     }
 
     processError = error => {
         console.log(error);
-        this.setState({
-            error: JSON.stringify(_.get(error, 'response.data', 'Error Occured')),
-            loading: false
-        });
+        if (error.response && error.response.status === 401){
+            this.setState({
+                loading: false,
+                'error': "Email address already registered!! Sign up with a different email."
+            });
+        } else {
+            this.setState({
+                loading: false,
+                error: error.response.data
+            });
+        }
     }
 
-    handleLogin = values => {
+    handleSignUp = values => {
         this.setState({loading: true});
-        // loginUser(values)
-        // .then(response => {
-        //     this.processLogin(response);
-        // })
-        // .catch(error => this.processError(error))
+        registerUser(values)
+        .then(response => {
+            this.processSignUp(response);
+        })
+        .catch(error => this.processError(error))
     }
 
     renderForm = ({
@@ -108,11 +106,13 @@ class SignUp extends React.Component {
                     />
                     <InputComponent 
                         label='Password'
+                        type='password'
                         {...getFormProps('password', formData)}
                         {...commonProps}
                     />
                     <InputComponent 
                         label='Confirm Password'
+                        type='password'
                         {...getFormProps('confirmPassword', formData)}
                         {...commonProps}
                     />
@@ -167,10 +167,10 @@ class SignUp extends React.Component {
                             </div>
                             {/* Name Container Ends*/}
                             <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
-                            <CustomForm 
-                                validationSchema={signupValidationSchema}
-                                renderForm={this.renderForm}
-                                onSubmit={this.handleLogin}
+                            <Formik 
+                                onSubmit={this.handleSignUp}
+                                render={this.renderForm}
+                                validate={validateSchema(getValidationSchema)}
                             />
                             <div 
                                     style={{
@@ -209,10 +209,10 @@ class SignUp extends React.Component {
                         </div>
                         {/* Name Container Ends*/}
                         <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
-                        <CustomForm 
-                            validationSchema={signupValidationSchema}
-                            renderForm={this.renderForm}
-                            onSubmit={this.handleLogin}
+                        <Formik 
+                            onSubmit={this.handleSignUp}
+                            render={this.renderForm}
+                            validate={validateSchema(getValidationSchema)}
                         />
                         <div 
                                 style={{

@@ -40,6 +40,7 @@ class InputComponent extends React.Component {
             handleChange,
             handleBlur,
             style={},
+            type='text'
         } = this.props;
         const { classes } = this.props;
 
@@ -56,6 +57,7 @@ class InputComponent extends React.Component {
                     onChange={handleChange} 
                     name={name}
                     onBlur={handleBlur}
+                    type={type}
                 />
                 <FormHelperText >
                     {touched && error && error}
