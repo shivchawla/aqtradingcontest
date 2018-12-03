@@ -2,7 +2,6 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Media from 'react-media';
-import GoogleLogin from 'react-google-login';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -15,11 +14,9 @@ import InputComponent from '../../../components/input/Form/components/InputCompo
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../constants';
 import {getFormProps} from '../../../utils/form';
 import {Utils} from '../../../utils';
-import {loginValidationSchema, loginUser, googleLogin} from './utils';
-import googleLogo from '../../../assets/google-logo.svg';
+import {signupValidationSchema, loginUser, googleLogin} from './utils';
 import advicequbeLogo from '../../../assets/logo-advq-new.png';
 
-const {googleClientId} = require('../../../localConfig');
 const tealColor = '#008080';
 const redColor = '#e06666';
 
@@ -32,7 +29,7 @@ const styles = {
     }
 }
 
-class Login extends React.Component {
+class SignUp extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -69,20 +66,11 @@ class Login extends React.Component {
 
     handleLogin = values => {
         this.setState({loading: true});
-        loginUser(values)
-        .then(response => {
-            this.processLogin(response);
-        })
-        .catch(error => this.processError(error))
-    }
-
-    responseGoogle =  (googleUser) => {
-        this.setState({loading: true});
-        googleLogin(googleUser)
-        .then(response => {
-            this.processLogin(response)
-        })
-        .catch(error => this.processError(error))
+        // loginUser(values)
+        // .then(response => {
+        //     this.processLogin(response);
+        // })
+        // .catch(error => this.processError(error))
     }
 
     renderForm = ({
@@ -104,6 +92,16 @@ class Login extends React.Component {
                         }}
                 >
                     <InputComponent 
+                        label='First Name'
+                        {...getFormProps('firstName', formData)}
+                        {...commonProps}
+                    />
+                    <InputComponent 
+                        label='Last Name'
+                        {...getFormProps('lastName', formData)}
+                        {...commonProps}
+                    />
+                    <InputComponent 
                         label='E-mail'
                         {...getFormProps('email', formData)}
                         {...commonProps}
@@ -112,7 +110,11 @@ class Login extends React.Component {
                         label='Password'
                         {...getFormProps('password', formData)}
                         {...commonProps}
-                        style={{marginTop: '5px'}}
+                    />
+                    <InputComponent 
+                        label='Confirm Password'
+                        {...getFormProps('confirmPassword', formData)}
+                        {...commonProps}
                     />
                     <Button 
                             type="submit"
@@ -126,7 +128,7 @@ class Login extends React.Component {
                                     style={{marginLeft: '5px', color: '#fff'}} 
                                     size={18} 
                                 />
-                            :   'LOG IN'
+                            :   'REGISTER'
                         }
                     </Button>
                 </div>
@@ -148,7 +150,7 @@ class Login extends React.Component {
                             alignItems: 'center'
                         }}
                 >
-                    <Container container style={{width: '390px'}} isDesktop>
+                    <Container container style={{width: '470px'}} isDesktop>
                         <Grid 
                                 item xs={12} 
                                 style={verticalBox}
@@ -165,27 +167,20 @@ class Login extends React.Component {
                             </div>
                             {/* Name Container Ends*/}
                             <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
-                            <GoogleLoginButton 
-                                marginTop='15px'
-                                onSuccess={this.responseGoogle}
-                                onFailure={this.responseGoogle}
-                                clientId={googleClientId}
-                            />
                             <CustomForm 
-                                validationSchema={loginValidationSchema}
+                                validationSchema={signupValidationSchema}
                                 renderForm={this.renderForm}
                                 onSubmit={this.handleLogin}
                             />
                             <div 
                                     style={{
                                         ...horizontalBox, 
-                                        justifyContent: 'space-between', 
+                                        justifyContent: 'center', 
                                         width: '100%',
                                         marginTop: '15px'
                                     }}
                             >
-                                <Url>Forgot Password</Url>
-                                <Url>Create Account</Url>
+                                <Url>&nbsp;Login Now!</Url>
                             </div>
                         </Grid>
                     </Container>
@@ -214,14 +209,8 @@ class Login extends React.Component {
                         </div>
                         {/* Name Container Ends*/}
                         <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
-                        <GoogleLoginButton 
-                            marginTop='15px'
-                            onSuccess={this.responseGoogle}
-                            onFailure={this.responseGoogle}
-                            clientId={googleClientId}
-                        />
                         <CustomForm 
-                            validationSchema={loginValidationSchema}
+                            validationSchema={signupValidationSchema}
                             renderForm={this.renderForm}
                             onSubmit={this.handleLogin}
                         />
@@ -258,7 +247,7 @@ class Login extends React.Component {
     }
 }
 
-export default withStyles(styles)(Login);
+export default withStyles(styles)(SignUp);
 
 const companyNameStyle = {
     'fontSize': '30px', 
@@ -293,36 +282,6 @@ const CompanyTagLine = styled.h3`
     font-style: italic;
     color: #37474f;
     font-weight: 400;
-`;
-
-const GoogleLoginButton = styled(GoogleLogin)`
-    background-color: #fff;
-    border-radius: 4px;
-    border: 1px solid;
-    border-color: transparent;
-    transition: all 0.4s ease-in-out;
-    padding: 6px 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,.2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: ${props => props.marginTop || '0px'};
-    position: relative;
-    padding-left: 28px;
-    color: #3c3c3c;
-    font-size: 14px;
-    cursor: pointer;
-
-    &:hover {
-        border-color: #4285f4;
-    };
-    &:before {
-        content: url(${googleLogo});
-        margin-right: 5px;
-        position: absolute;
-        left: 7px;
-        margin-top: 1px;
-    }
 `;
 
 const Url = styled.h3`

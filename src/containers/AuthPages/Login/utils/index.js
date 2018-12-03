@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import * as Yup from 'yup';
 import axios from 'axios';
-import {Utils} from '../../../../utils';
 
 const {requestUrl, sendErrorEmailsForLogin = false, googleClientId} = require('../../../../localConfig');
 
@@ -32,6 +31,7 @@ export const loginUser = values => {
 export const googleLogin = googleUser => {
     const accessToken = googleUser.getAuthResponse().id_token;
     const googleLoginUrl = `${requestUrl}/user/login_google`;
+    
     return axios({
         method: 'POST',
         url: googleLoginUrl,

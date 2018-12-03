@@ -15,6 +15,7 @@ import TradingContestHomeDesktop from './containers/TradingContest/CreateEntry/c
 import TradingContestLeaderboard from './containers/TradingContestLeaderboard';
 import TradingContestTopPicks from './containers/TradingContestTopPicks';
 import Login from './containers/AuthPages/Login';
+import Signup from './containers/AuthPages/SignUp';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
@@ -57,6 +58,7 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                     <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
                                     <Route exact={true} path='/login' component={Login} />
+                                    <Route exact={true} path='/signup' component={Signup} />
                                     <Route
                                         path='/dailycontest/leaderboard'
                                         render={() => {
@@ -111,6 +113,7 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} /> 
                                     <Route exact={true} path='/login' component={Login} />
+                                    <Route exact={true} path='/signup' component={Signup} />
                                     <Route 
                                         path='/dailycontest' 
                                         render={() => Utils.isLoggedIn() 
