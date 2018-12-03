@@ -8,6 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from '@material-ui/core/styles';
 import {Form, Formik} from 'formik';
 import Header from '../../Header';
+import NavLink from '../components/NavLinkButton';
 import AqLayoutMobile from '../../../components/ui/AqLayout';
 import InputComponent from '../../../components/input/Form/components/InputComponent';
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../constants';
@@ -38,13 +39,7 @@ class SignUp extends React.Component {
     }
 
     processResponse = response => {
-        if(response.data.active){
-            Utils.goToLoginPage(this.props.history);
-        } else {
-            const email = response.data.email;
-            const name = response.data.name;
-            this.props.history.push('/authMessage?mode=activationPending&email='+email+'&name='+name);
-        }
+        this.props.history.push('/authMessage?mode=resetPassword');
     }
 
     processError = error => {
@@ -165,7 +160,7 @@ class SignUp extends React.Component {
                                         marginTop: '15px'
                                     }}
                             >
-                                <Url>&nbsp;Login Now!</Url>
+                                <NavLink url='/login'>Login Now!</NavLink>
                             </div>
                         </Grid>
                     </Container>
@@ -176,7 +171,7 @@ class SignUp extends React.Component {
 
     renderMobile = () => {
         return (
-            <AqLayoutMobile pageTitle='Login'>
+            <AqLayoutMobile pageTitle='Reset Password'>
                 <Container container>
                     <Grid 
                             item xs={12} 
@@ -207,7 +202,7 @@ class SignUp extends React.Component {
                                     marginTop: '15px'
                                 }}
                         >
-                            <Url>&nbsp;Login Now!</Url>
+                            <NavLink url='/login'>Login Now!</NavLink>
                         </div>
                     </Grid>
                 </Container>
@@ -265,12 +260,5 @@ const CompanyTagLine = styled.h3`
     font-size: 15px;
     font-style: italic;
     color: #37474f;
-    font-weight: 400;
-`;
-
-const Url = styled.h3`
-    font-size: 14px;
-    color: #03A7AD;
-    font-family: 'Lato', sans-serif;
     font-weight: 400;
 `;

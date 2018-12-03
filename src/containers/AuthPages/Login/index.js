@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from '@material-ui/core/styles';
 import {Form} from 'formik';
+import NavLink from '../components/NavLinkButton';
 import Header from '../../Header';
 import AqLayoutMobile from '../../../components/ui/AqLayout';
 import CustomForm from '../../../components/input/Form';
@@ -113,6 +114,7 @@ class Login extends React.Component {
                         {...getFormProps('password', formData)}
                         {...commonProps}
                         style={{marginTop: '5px'}}
+                        type='password'
                     />
                     <Button 
                             type="submit"
@@ -184,8 +186,8 @@ class Login extends React.Component {
                                         marginTop: '15px'
                                     }}
                             >
-                                <Url>Forgot Password</Url>
-                                <Url>Create Account</Url>
+                                <NavLink url='/forgotPassword'>Forgot Password</NavLink>
+                                <NavLink url='/signup'>Create Account</NavLink>
                             </div>
                         </Grid>
                     </Container>
@@ -233,8 +235,8 @@ class Login extends React.Component {
                                     marginTop: '15px'
                                 }}
                         >
-                            <Url>Forgot Password</Url>
-                            <Url>Create Account</Url>
+                            <NavLink url='/forgotPassword'>Forgot Password</NavLink>
+                            <NavLink url='/signup'>Create Account</NavLink>
                         </div>
                     </Grid>
                 </Container>
@@ -323,11 +325,4 @@ const GoogleLoginButton = styled(GoogleLogin)`
         left: 7px;
         margin-top: 1px;
     }
-`;
-
-const Url = styled.h3`
-    font-size: 14px;
-    color: #03A7AD;
-    font-family: 'Lato', sans-serif;
-    font-weight: 400;
 `;

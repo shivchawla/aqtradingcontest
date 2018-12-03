@@ -18,6 +18,7 @@ import Login from './containers/AuthPages/Login';
 import Signup from './containers/AuthPages/SignUp';
 import ForgotPassword from './containers/AuthPages/ForgotPassword';
 import ResetPassword from './containers/AuthPages/ResetPassword';
+import AuthFeedback from './containers/AuthPages/AuthFeedback';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
@@ -63,6 +64,7 @@ class App extends Component {
                                     <Route exact={true} path='/signup' component={Signup} />
                                     <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
                                     <Route exact={true} path='/resetPassword' component={ResetPassword} />
+                                    <Route path='/authMessage' component={AuthFeedback} /> 
                                     <Route
                                         path='/dailycontest/leaderboard'
                                         render={() => {
@@ -120,6 +122,7 @@ class App extends Component {
                                     <Route exact={true} path='/signup' component={Signup} />
                                     <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
                                     <Route exact={true} path='/resetPassword' component={ResetPassword} />
+                                    <Route path='/authMessage' component={AuthFeedback} />
                                     <Route 
                                         path='/dailycontest' 
                                         render={() => Utils.isLoggedIn() 

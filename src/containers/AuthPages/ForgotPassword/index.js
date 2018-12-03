@@ -8,6 +8,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from '@material-ui/core/styles';
 import {Form} from 'formik';
 import Header from '../../Header';
+import NavLink from '../components/NavLinkButton';
 import AqLayoutMobile from '../../../components/ui/AqLayout';
 import CustomForm from '../../../components/input/Form';
 import InputComponent from '../../../components/input/Form/components/InputComponent';
@@ -153,7 +154,7 @@ class ForgotPassword extends React.Component {
                                         marginTop: '15px'
                                     }}
                             >
-                                <Url>&nbsp;Login here.</Url>
+                                <NavLink url='/login'>Login here</NavLink>
                             </div>
                         </Grid>
                     </Container>
@@ -164,7 +165,7 @@ class ForgotPassword extends React.Component {
 
     renderMobile = () => {
         return (
-            <AqLayoutMobile pageTitle='Login'>
+            <AqLayoutMobile pageTitle='Forgot Password'>
                 <Container container>
                     <Grid 
                             item xs={12} 
@@ -195,7 +196,7 @@ class ForgotPassword extends React.Component {
                                     marginTop: '15px'
                                 }}
                         >
-                            <Url>&nbsp;Login here.</Url>
+                            <NavLink url='/login'>Login here</NavLink>
                         </div>
                     </Grid>
                 </Container>
@@ -253,13 +254,5 @@ const CompanyTagLine = styled.h3`
     font-size: 15px;
     font-style: italic;
     color: #37474f;
-    font-weight: 400;
-`;
-
-
-const Url = styled.h3`
-    font-size: 14px;
-    color: #03A7AD;
-    font-family: 'Lato', sans-serif;
     font-weight: 400;
 `;
