@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactGA from 'react-ga';
+// import ReactGA from 'react-ga';
 import Media from 'react-media';
 import Route from 'react-router/Route';
 import Redirect from 'react-router/Redirect';
@@ -16,30 +16,32 @@ import TradingContestLeaderboard from './containers/TradingContestLeaderboard';
 import TradingContestTopPicks from './containers/TradingContestTopPicks';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
+import {Home} from './aq-marketplace-ui/containers/Home';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
 import Watchlist from './containers/Watchlist';
 import './App.css';
+import UnderDevelopment from './containers/UnderDevelopment';
 
 const {develop = false, gaTrackingId = null} = require('./localConfig');
 
 class App extends Component {
     constructor(props) {
         super(props);
-        ReactGA.initialize(gaTrackingId); //Unique Google Analytics tracking number
+        // ReactGA.initialize(gaTrackingId); //Unique Google Analytics tracking number
     }
 
-    fireTracking = () => {
-        ReactGA.pageview(window.location.href);
-    }
+    // fireTracking = () => {
+    //     ReactGA.pageview(window.location.href);
+    // }
 
     componentDidUpdate(prevProps) {
         if (this.props.location !== prevProps.location) { // Route changed
-            this.fireTracking();
+            // this.fireTracking();
         }
     }
 
     componentDidMount() {
-        this.fireTracking();
+        // this.fireTracking();
     }
 
     render() {
@@ -88,6 +90,10 @@ class App extends Component {
                                             }
                                         }
                                     /> 
+                                    <Route 
+                                        path='/'
+                                        component={TradingContestHomeMobile}
+                                    />
                                     {
                                         develop 
                                         ?   <Redirect push to='/404' />
@@ -117,6 +123,10 @@ class App extends Component {
                                                 : <DummyLogin />
                                         }
                                     /> 
+                                    <Route 
+                                        path='/'
+                                        component={TradingContestHomeDesktop}
+                                    />
                                     {
                                         develop 
                                         ?   <Redirect push to='/404' />

@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import Media from 'react-media';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import WinnerListItemMobile from '../mobile/WinnerListItem';
@@ -21,11 +22,28 @@ export default class WinnerList extends React.Component {
         const WinnerListItem = global.screen.width < 801 ? WinnerListItemMobile : WinnerListItemDesktop;
         
         return winners.map((winner, index) => (
-            <WinnerListItem 
-                {...winner} 
-                key={index} 
-                type={this.props.type}
-            />
+            <React.Fragment>
+                <Media 
+                    query="(max-width: 800px)" 
+                    render={() => (
+                        <WinnerListItemMobile 
+                            {...winner} 
+                            key={index} 
+                            type={this.props.type}
+                        />
+                    )}
+                />
+                <Media 
+                    query="(min-width: 801px)" 
+                    render={() => (
+                        <WinnerListItemDesktop 
+                            {...winner} 
+                            key={index} 
+                            type={this.props.type}
+                        />
+                    )}
+                />
+            </React.Fragment>
         ));
     }
     

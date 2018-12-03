@@ -36,13 +36,32 @@ export default class StockPreviewList extends React.Component {
                 {
                     positions.map((position, index) => {
                         return (
-                            <StockPreviewListItem 
-                                position={position} 
-                                key={index} 
-                                edit 
-                                selectPosition={this.props.selectPosition}
-                                togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
-                            />
+                            <React.Fragment>
+                                <Media 
+                                    query="(max-width: 800px)" 
+                                    render={() => (
+                                        <StockPreviewListItemMobile 
+                                            position={position} 
+                                            key={index} 
+                                            edit 
+                                            selectPosition={this.props.selectPosition}
+                                            togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
+                                        />
+                                    )}
+                                />
+                                <Media 
+                                    query="(min-width: 801px)" 
+                                    render={() => (
+                                        <StockPreviewListItemDesktop 
+                                            position={position} 
+                                            key={index} 
+                                            edit 
+                                            selectPosition={this.props.selectPosition}
+                                            togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
+                                        />
+                                    )}
+                                />
+                            </React.Fragment>
                         );
                     })
                 }
