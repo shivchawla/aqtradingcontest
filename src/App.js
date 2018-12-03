@@ -14,6 +14,7 @@ import TradingContestHomeMobile from './containers/TradingContest/Home';
 import TradingContestHomeDesktop from './containers/TradingContest/CreateEntry/components/desktop/Home';
 import TradingContestLeaderboard from './containers/TradingContestLeaderboard';
 import TradingContestTopPicks from './containers/TradingContestTopPicks';
+import Login from './containers/AuthPages/Login';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
@@ -55,6 +56,7 @@ class App extends Component {
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                     <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
+                                    <Route exact={true} path='/login' component={Login} />
                                     <Route
                                         path='/dailycontest/leaderboard'
                                         render={() => {
@@ -97,7 +99,6 @@ class App extends Component {
                                                 }}
                                             />
                                     }
-                                    {/* <Route component={PageNotFound} /> */}
                                 </Switch>
                             );
                         }}
@@ -107,9 +108,9 @@ class App extends Component {
                         render={() => {
                             return (
                                 <Switch>
-                                    {/* <Route path='/dailycontest/create' component={TradingContest} />  */}
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} /> 
+                                    <Route exact={true} path='/login' component={Login} />
                                     <Route 
                                         path='/dailycontest' 
                                         render={() => Utils.isLoggedIn() 
@@ -126,10 +127,6 @@ class App extends Component {
                                                 }}
                                             />
                                     }
-                                    {/* <Redirect push to='/404' /> */}
-                                    {/* <Route path='/dailycontest' component={TradingContest} />   */}
-                                    {/* <Route route='/404' component={PageNotFound} /> */}
-                                    {/* <Route component={UnderDevelopment} /> */}
                                 </Switch>
                             );
                         }}
