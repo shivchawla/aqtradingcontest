@@ -16,7 +16,6 @@ import TradingContestLeaderboard from './containers/TradingContestLeaderboard';
 import TradingContestTopPicks from './containers/TradingContestTopPicks';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
-import {Home} from './aq-marketplace-ui/containers/Home';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
 import Watchlist from './containers/Watchlist';
 import './App.css';
