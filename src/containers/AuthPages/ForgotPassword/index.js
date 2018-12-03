@@ -6,14 +6,15 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from '@material-ui/core/styles';
-import {Form, Formik} from 'formik';
+import {Form} from 'formik';
 import Header from '../../Header';
 import AqLayoutMobile from '../../../components/ui/AqLayout';
+import CustomForm from '../../../components/input/Form';
 import InputComponent from '../../../components/input/Form/components/InputComponent';
-import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../constants';
-import {getFormProps, validateSchema} from '../../../utils/form';
+import {horizontalBox, verticalBox} from '../../../constants';
+import {getFormProps} from '../../../utils/form';
 import {Utils} from '../../../utils';
-import {getValidationSchema, registerUser} from './utils';
+import {sendForgetPasswordRequest, forgotPasswordValidationSchema} from './utils';
 import advicequbeLogo from '../../../assets/logo-advq-new.png';
 
 const tealColor = '#008080';
@@ -28,7 +29,7 @@ const styles = {
     }
 }
 
-class SignUp extends React.Component {
+class ForgotPassword extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -37,36 +38,30 @@ class SignUp extends React.Component {
         };
     }
 
-    processSignUp = response => {
-        if(response.data.active){
-            Utils.goToLoginPage(this.props.history);
+    processResponse = (response, values) => {
+        if (response.data){
+            this.props.history.push('/authMessage?mode=forgotpassword&email='+values.email);
         } else {
-            const email = response.data.email;
-            const name = response.data.name;
-            this.props.history.push('/authMessage?mode=activationPending&email='+email+'&name='+name);
+            this.setState({
+                loading: false,
+                error: "Unexpected error occured! Please try again."
+            });
         }
     }
 
     processError = error => {
         console.log(error);
-        if (error.response && error.response.status === 401){
-            this.setState({
-                loading: false,
-                'error': "Email address already registered!! Sign up with a different email."
-            });
-        } else {
-            this.setState({
-                loading: false,
-                error: error.response.data
-            });
-        }
+        this.setState({
+            error: _.get(error, 'response.data', 'Unexpected Error'),
+            loading: false
+        });
     }
 
-    handleSignUp = values => {
+    handleForgetPasswordRequest = values => {
         this.setState({loading: true});
-        registerUser(values)
+        sendForgetPasswordRequest(values)
         .then(response => {
-            this.processSignUp(response);
+            this.processResponse(response, values);
         })
         .catch(error => this.processError(error))
     }
@@ -90,30 +85,8 @@ class SignUp extends React.Component {
                         }}
                 >
                     <InputComponent 
-                        label='First Name'
-                        {...getFormProps('firstName', formData)}
-                        {...commonProps}
-                    />
-                    <InputComponent 
-                        label='Last Name'
-                        {...getFormProps('lastName', formData)}
-                        {...commonProps}
-                    />
-                    <InputComponent 
                         label='E-mail'
                         {...getFormProps('email', formData)}
-                        {...commonProps}
-                    />
-                    <InputComponent 
-                        label='Password'
-                        type='password'
-                        {...getFormProps('password', formData)}
-                        {...commonProps}
-                    />
-                    <InputComponent 
-                        label='Confirm Password'
-                        type='password'
-                        {...getFormProps('confirmPassword', formData)}
                         {...commonProps}
                     />
                     <Button 
@@ -128,7 +101,7 @@ class SignUp extends React.Component {
                                     style={{marginLeft: '5px', color: '#fff'}} 
                                     size={18} 
                                 />
-                            :   'REGISTER'
+                            :   'SEND REQUEST'
                         }
                     </Button>
                 </div>
@@ -150,7 +123,7 @@ class SignUp extends React.Component {
                             alignItems: 'center'
                         }}
                 >
-                    <Container container style={{width: '470px'}} isDesktop>
+                    <Container container style={{width: '390px'}} isDesktop>
                         <Grid 
                                 item xs={12} 
                                 style={verticalBox}
@@ -167,10 +140,10 @@ class SignUp extends React.Component {
                             </div>
                             {/* Name Container Ends*/}
                             <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
-                            <Formik 
-                                onSubmit={this.handleSignUp}
-                                render={this.renderForm}
-                                validate={validateSchema(getValidationSchema)}
+                            <CustomForm 
+                                validationSchema={forgotPasswordValidationSchema}
+                                renderForm={this.renderForm}
+                                onSubmit={this.handleForgetPasswordRequest}
                             />
                             <div 
                                     style={{
@@ -180,7 +153,7 @@ class SignUp extends React.Component {
                                         marginTop: '15px'
                                     }}
                             >
-                                <Url>&nbsp;Login Now!</Url>
+                                <Url>&nbsp;Login here.</Url>
                             </div>
                         </Grid>
                     </Container>
@@ -209,10 +182,10 @@ class SignUp extends React.Component {
                         </div>
                         {/* Name Container Ends*/}
                         <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
-                        <Formik 
-                            onSubmit={this.handleSignUp}
-                            render={this.renderForm}
-                            validate={validateSchema(getValidationSchema)}
+                        <CustomForm 
+                            validationSchema={forgotPasswordValidationSchema}
+                            renderForm={this.renderForm}
+                            onSubmit={this.handleForgetPasswordRequest}
                         />
                         <div 
                                 style={{
@@ -222,7 +195,7 @@ class SignUp extends React.Component {
                                     marginTop: '15px'
                                 }}
                         >
-                            <Url>&nbsp;Login Now!</Url>
+                            <Url>&nbsp;Login here.</Url>
                         </div>
                     </Grid>
                 </Container>
@@ -246,7 +219,7 @@ class SignUp extends React.Component {
     }
 }
 
-export default withStyles(styles)(SignUp);
+export default withStyles(styles)(ForgotPassword);
 
 const companyNameStyle = {
     'fontSize': '30px', 
@@ -282,6 +255,7 @@ const CompanyTagLine = styled.h3`
     color: #37474f;
     font-weight: 400;
 `;
+
 
 const Url = styled.h3`
     font-size: 14px;

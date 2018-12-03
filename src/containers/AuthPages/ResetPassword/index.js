@@ -13,7 +13,7 @@ import InputComponent from '../../../components/input/Form/components/InputCompo
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../constants';
 import {getFormProps, validateSchema} from '../../../utils/form';
 import {Utils} from '../../../utils';
-import {getValidationSchema, registerUser} from './utils';
+import {getValidationSchema, sendResetPasswordRequest} from './utils';
 import advicequbeLogo from '../../../assets/logo-advq-new.png';
 
 const tealColor = '#008080';
@@ -37,7 +37,7 @@ class SignUp extends React.Component {
         };
     }
 
-    processSignUp = response => {
+    processResponse = response => {
         if(response.data.active){
             Utils.goToLoginPage(this.props.history);
         } else {
@@ -62,11 +62,11 @@ class SignUp extends React.Component {
         }
     }
 
-    handleSignUp = values => {
+    handleResetPasswordRequest = values => {
         this.setState({loading: true});
-        registerUser(values)
+        sendResetPasswordRequest(values, this.props.location.search)
         .then(response => {
-            this.processSignUp(response);
+            this.processResponse(response);
         })
         .catch(error => this.processError(error))
     }
@@ -89,21 +89,6 @@ class SignUp extends React.Component {
                             width: '100%'
                         }}
                 >
-                    <InputComponent 
-                        label='First Name'
-                        {...getFormProps('firstName', formData)}
-                        {...commonProps}
-                    />
-                    <InputComponent 
-                        label='Last Name'
-                        {...getFormProps('lastName', formData)}
-                        {...commonProps}
-                    />
-                    <InputComponent 
-                        label='E-mail'
-                        {...getFormProps('email', formData)}
-                        {...commonProps}
-                    />
                     <InputComponent 
                         label='Password'
                         type='password'
@@ -128,7 +113,7 @@ class SignUp extends React.Component {
                                     style={{marginLeft: '5px', color: '#fff'}} 
                                     size={18} 
                                 />
-                            :   'REGISTER'
+                            :   'SEND REQUEST'
                         }
                     </Button>
                 </div>
@@ -150,7 +135,7 @@ class SignUp extends React.Component {
                             alignItems: 'center'
                         }}
                 >
-                    <Container container style={{width: '470px'}} isDesktop>
+                    <Container container style={{width: '390px'}} isDesktop>
                         <Grid 
                                 item xs={12} 
                                 style={verticalBox}
@@ -168,7 +153,7 @@ class SignUp extends React.Component {
                             {/* Name Container Ends*/}
                             <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
                             <Formik 
-                                onSubmit={this.handleSignUp}
+                                onSubmit={this.handleResetPasswordRequest}
                                 render={this.renderForm}
                                 validate={validateSchema(getValidationSchema)}
                             />
@@ -210,7 +195,7 @@ class SignUp extends React.Component {
                         {/* Name Container Ends*/}
                         <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
                         <Formik 
-                            onSubmit={this.handleSignUp}
+                            onSubmit={this.handleResetPasswordRequest}
                             render={this.renderForm}
                             validate={validateSchema(getValidationSchema)}
                         />
