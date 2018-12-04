@@ -411,7 +411,7 @@ class StockCardPredictions extends React.Component {
                         <Tooltip title="Started Today" placement="bottom">
                             <IconButton 
                                     onClick={() => {
-                                        this.props.history.push(`/dailycontest/mypicks?&date=${this.getCurrentTradingDay().format(dateFormat)}&type=started`)
+                                        this.props.history.push(`/dailycontest/mypicks?date=${this.getCurrentTradingDay().format(dateFormat)}&type=started`)
                                     }}
                             >
                                 <Badge 
