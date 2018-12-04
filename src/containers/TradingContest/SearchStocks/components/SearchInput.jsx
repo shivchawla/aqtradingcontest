@@ -1,5 +1,6 @@
 import React from 'react';
 import InputBase from '@material-ui/core/InputBase';
+import FormControl from '@material-ui/core/FormControl';
 import {withStyles} from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -12,7 +13,12 @@ const styles = theme => ({
       transition: theme.transitions.create(['border-color', 'box-shadow']),
       boxShadow: '0 2px 4px #D5D5D5',
       marginBottom: '10px'
-    }
+    },
+    bootstrapRoot: {
+        'label + &': {
+          marginTop: theme.spacing.unit * 3,
+        },
+    },
 });
 
 class SearchInput extends React.Component {

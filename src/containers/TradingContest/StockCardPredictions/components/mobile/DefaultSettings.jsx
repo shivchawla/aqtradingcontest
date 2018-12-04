@@ -242,16 +242,26 @@ class DefaultSettings extends React.Component {
                                 <div
                                         style={{
                                             ...horizontalBox,
-                                            width: '100%',
-                                            justifyContent: 'center',
+                                            width: '90%',
+                                            justifyContent: 'space-between',
                                             marginTop: '30px'
                                         }}
                                 >
                                     <Button 
                                             variant="outlined"
                                             onClick={this.props.undoStockSkips}
+                                            style={{minWidth: '115px'}}
                                     >
                                         Undo Skips
+                                    </Button>
+                                    <Button 
+                                            variant="contained"
+                                            style={applyButtonStyle}
+                                            onClick={this.props.onClose}
+                                            variant="contained"
+                                            color="primary"
+                                    >
+                                        Apply
                                     </Button>
                                 </div>
                             }
@@ -310,6 +320,11 @@ const SectorMenu = ({anchorEl, selectedSector = '', onClick , onClose, onMenuIte
 
 
 export default withStyles(styles)(DefaultSettings);
+
+const applyButtonStyle = {
+    boxShadow: 'none',
+    width: '115px'
+}
 
 const Header = styled.h3`
     color: #0D0D0D;
