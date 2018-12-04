@@ -450,6 +450,26 @@ export default class StockCard extends React.Component {
         );
     }
 
+    renderHeader = () => {
+        return (
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        borderBottom: '1px solid #e7e7e7',
+                        width: '100%'
+                    }}
+            >
+                <Header>Add Prediction</Header>
+                <ActionIcon 
+                    onClick={this.props.onClose} 
+                    color='#444'
+                    type="close"
+                />
+            </div>
+        );
+    }
+
     renderStockCardBottomSheet = () => {
         return (
             <BottomSheet 
@@ -611,4 +631,12 @@ const NoDataText = styled.div`
     font-family: 'Lato', sans-serif;
     font-size: 20px;
     color: #3D3D3D;
+`;
+
+const Header = styled.h3`
+    color: #0D0D0D;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    margin-left: 20px;
 `;
