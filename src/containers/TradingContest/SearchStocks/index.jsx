@@ -101,25 +101,41 @@ export class SearchStocks extends React.Component {
                         item 
                         xs={12} 
                         style={{
-                            ...horizontalBox,
-                            justifyContent: 'space-between',
+                            ...verticalBox,
+                            justifyContent: 'center',
                             alignItems: 'center',
                             padding: '0 5px',
                             marginTop: '10px'
                         }}
                 >
                     <SearchInput
-                        style={{width: '90%', marginTop: 0, left: '10px'}}
-                        id="search"
-                        label="Search Stocks"
-                        type="search"
-                        margin="normal"
+                        style={{width: '100%', marginTop: 0}}
                         placeholder="Search Stocks"
+                        margin="normal"
                         onChange={value => this.handleSearchInputChange(value, 'mobile')}
                     />
                     {
                         this.state.loadingStocks &&
-                        <CircularProgress style={{width: '24px', height: '24px'}}/>
+                        <div 
+                                style={{
+                                    ...horizontalBox,
+                                    width: '100%',
+                                    justifyContent: 'center'
+                                }}
+                        >
+                            <h3 
+                                    style={{
+                                        fontSize: '12px', 
+                                        fontFamily: 'Lato, sans-serif',
+                                        fontWeight: 500
+                                    }}
+                            >
+                                Searching
+                            </h3>
+                            <CircularProgress 
+                                style={{width: '18px', height: '18px', marginLeft: '10px'}}
+                            />
+                        </div>
                     }
                 </Grid>
                 <Grid

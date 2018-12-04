@@ -264,7 +264,7 @@ export default class StockCard extends React.Component {
                     </div>
                 </Grid>
                 {
-                    !editMode &&
+                    !editMode && !bottomSheet &&
                     <Grid 
                             item 
                             xs={12} 
