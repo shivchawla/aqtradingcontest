@@ -81,9 +81,17 @@ class DefaultSettings extends React.Component {
         this.props.updateEditMode(value === 1);
     }
 
+    onListModeChanged = (value) => {
+        this.props.modifyDefaultStockData({
+            ...this.props.defaultStockData,
+            listMode: value === 1
+        });
+        this.props.updateListMode(value === 1);
+    }
+
     render() {
         const {classes} = this.props;
-        let {horizon = 2, target = 0, sector = '', editMode = false} = this.props.defaultStockData;
+        let {horizon = 2, target = 0, sector = '', editMode = false, listMode = false} = this.props.defaultStockData;
         target = getTarget(target);
         horizon = getHorizon(horizon);
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
@@ -204,6 +212,26 @@ class DefaultSettings extends React.Component {
 			                        items={['Normal', 'Customize']}
 			                        defaultSelected={editMode === true ? 1 : 0}
                                     onChange={this.onEditModeChanged}
+                                    style={{
+                                        marginLeft: '-13px'
+                                    }}
+			                    />
+                            </div>
+                            <div
+                                    style={{
+                                        paddingLeft: '40px',
+                                        width: '100%',
+                                        justifyContent: 'flex-start',
+                                        marginTop: '30px'
+                                    }}
+                            >
+                                <MetricLabel >
+                                    Selection Mode
+                                </MetricLabel>
+                                <RadioGroup style={{margin:'0px auto 10px auto'}}
+			                        items={['Card', 'List']}
+			                        defaultSelected={listMode === true ? 1 : 0}
+                                    onChange={this.onListModeChanged}
                                     style={{
                                         marginLeft: '-13px'
                                     }}

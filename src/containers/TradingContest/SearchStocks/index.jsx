@@ -3,7 +3,6 @@ import Media from 'react-media';
 import styled from 'styled-components';
 import {Motion, spring} from 'react-motion';
 import _  from 'lodash';
-import Badge from '@material-ui/core/Badge';
 import Chip from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
@@ -17,6 +16,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import SelectedStocksDialog from './components/SelectedStocksDialog';
 import SearchStockHeaderDesktop from './components/SearchStockHeaderDesktop';
 import StockList from './components/StockList';
+import SearchInput from './components/SearchInput';
 import {maxPredictionLimit} from '../MultiHorizonCreateEntry/constants'
 import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
 import {fetchAjax} from '../../../utils';
@@ -95,8 +95,6 @@ export class SearchStocks extends React.Component {
     }
 
     renderSearchStockListMobile = () => {
-        const selectedStocks = [...this.state.selectedStocks, ...this.state.sellSelectedStocks];
-
         return (
             <SGrid container>
                 <Grid
@@ -104,38 +102,25 @@ export class SearchStocks extends React.Component {
                         xs={12} 
                         style={{
                             ...horizontalBox,
-                            backgroundColor: '#efeff4',
                             justifyContent: 'space-between',
-                            padding: '0 5px'
+                            alignItems: 'center',
+                            padding: '0 5px',
+                            marginTop: '10px'
                         }}
                 >
-                    <TextField
-                        style={{width: '75%', marginTop: 0, left: '10px'}}
+                    <SearchInput
+                        style={{width: '90%', marginTop: 0, left: '10px'}}
                         id="search"
                         label="Search Stocks"
                         type="search"
                         margin="normal"
+                        placeholder="Search Stocks"
                         onChange={value => this.handleSearchInputChange(value, 'mobile')}
                     />
                     {
                         this.state.loadingStocks &&
-                        <CircularProgress size={25} />
+                        <CircularProgress style={{width: '24px', height: '24px'}}/>
                     }
-                    {
-                        !this.state.loadingStocks && 
-                        this.state.newStocks.length > 0 && 
-                        !this.props.stockPerformanceOpen &&
-                        <Button 
-                                style={{...fabButtonStyle, ...addStocksStyle}} 
-                                size='small' variant="extendedFab" 
-                                aria-label="Delete" 
-                                onClick={this.addSelectedStocksToPortfolio}
-                        >
-                            <Icon>done_all</Icon>
-                            DONE
-                        </Button>
-                    }
-
                 </Grid>
                 <Grid
                         item 
@@ -145,14 +130,13 @@ export class SearchStocks extends React.Component {
                             padding: '0 15px'
                         }}
                 >
-                    {
-                        this.renderStockList()
-                    }
+                    {this.renderStockList()}
                 </Grid>
                 {
                     this.state.stocks.length >= 8 
                     && this.renderPaginationMobile(true)
                 }
+                <div style={{height: '75px'}}></div>
             </SGrid>
         );
     }
@@ -231,15 +215,16 @@ export class SearchStocks extends React.Component {
         const selectedStock = _.get(this.state, 'selectedStock.symbol', '');
 
         return (
-            <StockList 
-                stocks={stocks}
-                selectedStock={selectedStock}
-                handleStockListItemClick={this.handleStockListItemClick}
-                conditionallyAddItemToSelectedArray={this.conditionallyAddStock}
-                conditionallyAddToggleStock={this.conditionallyAddToggleStock}
-                conditionallyAddItemToSellSelectedArray={this.conditionallyAddItemToSellSelectedArray}
-                toggleAdd={true}
-            />
+                <StockList 
+                    stocks={stocks}
+                    selectedStock={selectedStock}
+                    handleStockListItemClick={this.handleStockListItemClick}
+                    conditionallyAddItemToSelectedArray={this.conditionallyAddStock}
+                    conditionallyAddToggleStock={this.conditionallyAddSingleStock}
+                    conditionallyAddItemToSellSelectedArray={this.conditionallyAddItemToSellSelectedArray}
+                    toggleAdd={true}
+                    stockCart={this.props.stockCart}
+                />
         )
     }
 
@@ -341,6 +326,15 @@ export class SearchStocks extends React.Component {
         }
     }
 
+    conditionallyAddSingleStock = symbol => {
+        const {stocks = []} = this.state;
+        const selectedStockIndex = _.findIndex(stocks, stock => stock.symbol === symbol);
+        if (selectedStockIndex > -1) {
+            this.props.addPositions([stocks[selectedStockIndex]]);
+            this.props.toggleBottomSheet();
+        }
+    }
+
     conditionallyAddToggleStock = symbol => {
         let clonedStocks = _.map(this.state.stocks, _.cloneDeep);
         let clonedNewStocks = _.map(this.state.newStocks, _.cloneDeep);
@@ -360,10 +354,10 @@ export class SearchStocks extends React.Component {
                         clonedStocks = clonedStocks.map(stock => ({...stock, checked: false}));
                         selectedStock.checked = true;
                         clonedNewStocks = [selectedStock];
-                    } else {
+                    } /*else {
                         clonedNewStocks.splice(newStockIndex, 1);
                         selectedStock.checked = false;
-                    }
+                    }*/
                 }
             } else {
                 const newStockIndex = _.findIndex(this.state.newStocks, newStock => newStock.symbol === symbol);
@@ -371,13 +365,16 @@ export class SearchStocks extends React.Component {
                     clonedStocks = clonedStocks.map(stock => ({...stock, checked: false}));
                     selectedStock.checked = true;
                     clonedNewStocks = [selectedStock];
-                } else {
+                } /*else {
                     clonedNewStocks.splice(newStockIndex, 1);
                     selectedStock.checked = false;
-                }
+                }*/
             }
             clonedStocks[selectedStockIndex] = selectedStock;
-            this.setState({stocks: clonedStocks, newStocks: clonedNewStocks});
+            this.setState({stocks: clonedStocks, newStocks: clonedNewStocks}, () => {
+                this.addSelectedStocksToPortfolio();
+            });
+            // this.props.toggleBottomSheet();
         }
     }
 
@@ -728,46 +725,12 @@ export class SearchStocks extends React.Component {
                 <Media 
                     query={`(max-width: ${screenSize.mobile})`}
                     render={() => (
-                        <Motion
-                                style={{ 
-                                    detailX: spring((this.props.stockPerformanceOpen || this.state.stockFilterOpen) ? 0 : 600),
-                                    listX: spring((this.props.stockPerformanceOpen || this.state.stockFilterOpen) ? -600 : 0)
-                                }}>
-                            {
-                                ({detailX, listX}) => 
-                                    <React.Fragment>
-                                        <Grid
-                                                item 
-                                                xs={12} 
-                                                style={{
-                                                    transform: `translate3d(${listX}px, 0, 0)`,
-                                                    height: '100%',
-                                                    overflowX: 'hidden',
-                                                    overflowY: 'scroll',
-                                                    paddingBottom: '80px'
-                                                }}
-                                        >
-                                            {this.renderSearchStockListMobile()}
-                                            <div style={{height: '200px'}}></div>
-                                        </Grid>
-                                        <Grid 
-                                                item
-                                                xs={12} 
-                                                style={{
-                                                    transform: `translate3d(${detailX}px, 0, 0)`,
-                                                    top: this.props.stockPerformanceOpen ? '85px' : '45px',
-                                                    position: 'absolute',
-                                                    width: '100%'
-                                                }}
-                                        >
-                                            {
-                                                this.props.stockPerformanceOpen &&
-                                                <StockPerformance stock={this.state.selectedStock}/>
-                                            }
-                                        </Grid>
-                                    </React.Fragment>
-                            }
-                        </Motion>
+                        <Grid
+                                item 
+                                xs={12} 
+                        >
+                            {this.renderSearchStockListMobile()}
+                        </Grid>
                     )}
                 />
                 <Media 
@@ -861,6 +824,8 @@ export class SearchStocks extends React.Component {
     }
 
     render() { 
+        const {zIndex = 20000} = this.props;
+
         return (
             <React.Fragment>
                 <Snackbar
@@ -874,7 +839,7 @@ export class SearchStocks extends React.Component {
                         'aria-describedby': 'message-id',
                     }}
                     message={<span id="message-id">{this.state.snackbar.message}</span>}   
-                    style={{zIndex: '200000', marginBottom: '20px'}}  
+                    style={{zIndex: 200000, marginBottom: '20px'}}  
                     onClose={() => {this.setState({snackbar: {...this.state.snackbar, open: false}})}}         
                 />
                 <SelectedStocksDialog 
@@ -886,11 +851,11 @@ export class SearchStocks extends React.Component {
                 <SGrid 
                         container
                         style={{
-                            width: global.screen.width, 
+                            width: "100%", 
                             overflow: 'hidden', 
-                            height: global.screen.width <= 600 ? global.screen.height : global.screen.height - 100,
+                            height: '100%',
                             position: 'relative',
-                            zIndex: 20000
+                            // zIndex
                         }}
                 >
                     <Media 
@@ -918,15 +883,32 @@ const SGrid = styled(Grid)`
     background-color: #fff;
 `;
 
-const fabButtonStyle = {
-    borderRadius:'5px', 
-    padding: '0 10px',
-    minHeight: '36px',
-    height: '36px',
-    boxShadow: 'none'
-};
+const Loader = ({text = null, success= false}) => {
+    return (
+        <LoaderContainer>
+            <h3 
+                    style={{
+                        marginBottom: '10px',
+                        fontFamily: 'Lato, sans-serif',
+                        color: primaryColor
+                    }}
+            >
+                {success === true ? 'Successful' : text}
+            </h3>
+            <CircularProgress />
+        </LoaderContainer>
+    );
+}
 
-const addStocksStyle = {
-    backgroundColor: '#607D8B',
-    color: '#fff'
-};
+const LoaderContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    border-radius: 4px;
+`;
