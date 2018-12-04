@@ -290,7 +290,9 @@ class StockCardPredictions extends React.Component {
         createPredictions(predictions)
         .then(() => {
             this.addCurrentStockToCart();
-            return this.updateStocksToSkip();
+            return this.shouldShowListView() 
+                ? null 
+                : this.updateStocksToSkip();
         })
         .then(() => {
             return this.shouldShowListView() 

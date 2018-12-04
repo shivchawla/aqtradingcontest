@@ -111,6 +111,7 @@ export class SearchStocks extends React.Component {
                     <SearchInput
                         style={{width: '100%', marginTop: 0}}
                         placeholder="Search Stocks"
+                        type="search"
                         margin="normal"
                         onChange={value => this.handleSearchInputChange(value, 'mobile')}
                     />
@@ -133,7 +134,7 @@ export class SearchStocks extends React.Component {
                                 Searching
                             </h3>
                             <CircularProgress 
-                                style={{width: '18px', height: '18px', marginLeft: '10px'}}
+                                style={{width: '18px', height: '18px', marginLeft: '15px'}}
                             />
                         </div>
                     }

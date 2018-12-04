@@ -237,16 +237,18 @@ class DefaultSettings extends React.Component {
                                     }}
 			                    />
                             </div>
-                            {
-                                this.props.skippedStocks.length > 0 &&
-                                <div
-                                        style={{
-                                            ...horizontalBox,
-                                            width: '90%',
-                                            justifyContent: 'space-between',
-                                            marginTop: '30px'
-                                        }}
-                                >
+                            <div
+                                    style={{
+                                        ...horizontalBox,
+                                        width: '90%',
+                                        justifyContent: this.props.skippedStocks.length > 0 
+                                            ? 'space-between'
+                                            : 'center',
+                                        marginTop: '30px'
+                                    }}
+                            >
+                                {
+                                    this.props.skippedStocks.length > 0 &&
                                     <Button 
                                             variant="outlined"
                                             onClick={this.props.undoStockSkips}
@@ -254,17 +256,17 @@ class DefaultSettings extends React.Component {
                                     >
                                         Undo Skips
                                     </Button>
-                                    <Button 
-                                            variant="contained"
-                                            style={applyButtonStyle}
-                                            onClick={this.props.onClose}
-                                            variant="contained"
-                                            color="primary"
-                                    >
-                                        Apply
-                                    </Button>
-                                </div>
-                            }
+                                }
+                                <Button 
+                                        variant="contained"
+                                        style={applyButtonStyle}
+                                        onClick={this.props.onClose}
+                                        variant="contained"
+                                        color="primary"
+                                >
+                                    Apply
+                                </Button>
+                            </div>
                         </Grid>
                     </Grid>
                 </DialogContent>
