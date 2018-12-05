@@ -219,6 +219,7 @@ class DefaultSettings extends React.Component {
                                     style={{
                                         marginLeft: '-13px'
                                     }}
+                                    disabled={listMode}
 			                    />
                             </div>
                             <div
