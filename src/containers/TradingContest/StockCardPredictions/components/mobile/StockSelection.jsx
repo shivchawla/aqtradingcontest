@@ -86,14 +86,9 @@ class StockSelection extends React.Component {
                 filters={{
                     sector: _.get(this.props, 'stockData.sector', '')
                 }}
+                setFetchStocks={this.props.setFetchStocks}
             />
         );
-    }
-
-    componentDidMount() {
-        try {
-            this.props.setFetchStocks(this.searchStockComponent.fetchStocks);
-        } catch(err) {console.log(err)}
     }
 
     toggleStockPerformance = () => {

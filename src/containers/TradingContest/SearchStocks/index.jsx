@@ -832,6 +832,7 @@ export class SearchStocks extends React.Component {
     }
 
     componentDidMount() {
+        this.props.setFetchStocks(this.fetchStocks);
         setTimeout(() => {
             this.setState({showFilter: true});
         }, 400)
