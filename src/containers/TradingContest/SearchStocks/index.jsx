@@ -172,7 +172,7 @@ export class SearchStocks extends React.Component {
         }, 300);
     }
 
-    fetchStocks = (searchQuery = this.state.searchInput, shoudlConcatenate = false, shouldSync = true) => new Promise(resolve => {
+    fetchStocks = (searchQuery = this.state.searchInput, shoudlConcatenate = false, requiredSector = null) => new Promise(resolve => {
         try {
             this.cancelFetchStocks();
         } catch(err) {}
@@ -181,9 +181,12 @@ export class SearchStocks extends React.Component {
         const skip = this.state.selectedPage * limit;
         const populate = true;
         const universe = _.get(this.props, 'filters.universe', 'NIFTY_500');
-        const sector = _.get(this.props, 'filters.sector', '').length === 0
+        let sector = _.get(this.props, 'filters.sector', '').length === 0
                 ?   this.state.filter.sector
                 :   _.get(this.props, 'filters.sector', '');
+        if (requiredSector !== null) {
+            sector = requiredSector;
+        }
         const industry = _.get(this.props, 'filters.industry', '').length === 0
                 ?   this.state.filter.industry
                 :   _.get(this.props, 'filters.industry', '');

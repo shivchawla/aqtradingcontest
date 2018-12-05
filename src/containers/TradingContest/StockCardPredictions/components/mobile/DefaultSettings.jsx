@@ -47,14 +47,14 @@ class DefaultSettings extends React.Component {
     }
 
     onSectorMenuItemClicked = (event, selectedSector) => {
+        const listMode = _.get(this.props, 'defaultStockData.listMode', false);
         this.setState({anchorEl: null}, () => {
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
                 sector: selectedSector
             })
             .then(() => {
-                this.props.fetchStocks();
-                this.props.skipStock();
+                listMode ? this.props.fetchStocks('', false, selectedSector) : this.props.skipStock();
                 this.props.undoStockSkips(false);
             })
             .catch(err => {
