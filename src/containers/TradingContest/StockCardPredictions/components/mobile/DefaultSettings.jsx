@@ -81,9 +81,17 @@ class DefaultSettings extends React.Component {
         this.props.updateEditMode(value === 1);
     }
 
+    onListModeChanged = (value) => {
+        this.props.modifyDefaultStockData({
+            ...this.props.defaultStockData,
+            listMode: value === 1
+        });
+        this.props.updateListMode(value === 1);
+    }
+
     render() {
         const {classes} = this.props;
-        let {horizon = 2, target = 0, sector = '', editMode = false} = this.props.defaultStockData;
+        let {horizon = 2, target = 0, sector = '', editMode = false, listMode = false} = this.props.defaultStockData;
         target = getTarget(target);
         horizon = getHorizon(horizon);
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
@@ -209,24 +217,56 @@ class DefaultSettings extends React.Component {
                                     }}
 			                    />
                             </div>
-                            {
-                                this.props.skippedStocks.length > 0 &&
-                                <div
-                                        style={{
-                                            ...horizontalBox,
-                                            width: '100%',
-                                            justifyContent: 'center',
-                                            marginTop: '30px'
-                                        }}
-                                >
+                            <div
+                                    style={{
+                                        paddingLeft: '40px',
+                                        width: '100%',
+                                        justifyContent: 'flex-start',
+                                        marginTop: '30px'
+                                    }}
+                            >
+                                <MetricLabel >
+                                    Selection Mode
+                                </MetricLabel>
+                                <RadioGroup style={{margin:'0px auto 10px auto'}}
+			                        items={['Card', 'List']}
+			                        defaultSelected={listMode === true ? 1 : 0}
+                                    onChange={this.onListModeChanged}
+                                    style={{
+                                        marginLeft: '-13px'
+                                    }}
+			                    />
+                            </div>
+                            <div
+                                    style={{
+                                        ...horizontalBox,
+                                        width: '90%',
+                                        justifyContent: this.props.skippedStocks.length > 0 
+                                            ? 'space-between'
+                                            : 'center',
+                                        marginTop: '30px'
+                                    }}
+                            >
+                                {
+                                    this.props.skippedStocks.length > 0 &&
                                     <Button 
                                             variant="outlined"
                                             onClick={this.props.undoStockSkips}
+                                            style={{minWidth: '115px'}}
                                     >
                                         Undo Skips
                                     </Button>
-                                </div>
-                            }
+                                }
+                                <Button 
+                                        variant="contained"
+                                        style={applyButtonStyle}
+                                        onClick={this.props.onClose}
+                                        variant="contained"
+                                        color="primary"
+                                >
+                                    Apply
+                                </Button>
+                            </div>
                         </Grid>
                     </Grid>
                 </DialogContent>
@@ -282,6 +322,11 @@ const SectorMenu = ({anchorEl, selectedSector = '', onClick , onClose, onMenuIte
 
 
 export default withStyles(styles)(DefaultSettings);
+
+const applyButtonStyle = {
+    boxShadow: 'none',
+    width: '115px'
+}
 
 const Header = styled.h3`
     color: #0D0D0D;

@@ -15,6 +15,7 @@ import {
     nameEllipsisStyle, 
     metricColor
 } from '../../../../../constants';
+import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
@@ -213,10 +214,17 @@ export default class StockCard extends React.Component {
                 ? metricColor.neutral 
                 : metricColor.negative;
         const editMode = isDesktop || this.props.editMode;
+        const {bottomSheet = false} = this.props;
 
         return (
             <React.Fragment>
-                <Grid item xs={12}>
+                <Grid 
+                        item 
+                        xs={12}
+                        style={{
+                            padding: bottomSheet ? '0 10px' : '0'
+                        }}
+                >
                     <div 
                             style={{
                                 ...horizontalBox, 
@@ -232,7 +240,7 @@ export default class StockCard extends React.Component {
                             >
                                 <MainText>{symbol}</MainText>
                                 {
-                                    editMode &&
+                                    editMode && !bottomSheet &&
                                     <ActionIcon
                                         type="search"
                                         onClick={this.props.toggleSearchStocksDialog}
@@ -256,14 +264,15 @@ export default class StockCard extends React.Component {
                     </div>
                 </Grid>
                 {
-                    !editMode &&
+                    !editMode && !bottomSheet &&
                     <Grid 
                             item 
                             xs={12} 
                             style={{
                                 ...horizontalBox, 
                                 justifyContent: 'flex-start',
-                                margin: '10px 0'
+                                margin: '10px 0',
+                                padding: bottomSheet ? '0 10px' : '0'
                             }}
                     >
                         <Button 
@@ -281,11 +290,12 @@ export default class StockCard extends React.Component {
                         style={{
                             ...horizontalBox, 
                             justifyContent: 'flex-start',
-                            marginTop: '20px'
+                            marginTop: '20px',
+                            padding: bottomSheet ? '0 10px' : '0'
                         }}
                 >
                     {
-                        editMode
+                        (editMode || bottomSheet)
                         ? this.renderEditMode()
                         : this.renderViewMode()
                     }
@@ -326,13 +336,16 @@ export default class StockCard extends React.Component {
                             lastPrice={lastPrice}
                             type="sell"
                         />
-                        <Button 
-                                style={skipButtonStyle} 
-                                variant="outlined"
-                                onClick={this.skipStock}
-                        >
-                            SKIP
-                        </Button>
+                        {
+                            !bottomSheet &&
+                            <Button 
+                                    style={skipButtonStyle} 
+                                    variant="outlined"
+                                    onClick={this.skipStock}
+                            >
+                                SKIP
+                            </Button>
+                        }
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('buy')}
                             target={target}
@@ -340,6 +353,23 @@ export default class StockCard extends React.Component {
                             type="buy"
                         />
                     </div>
+                    {
+                        bottomSheet &&
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'center'
+                                }}
+                        >
+                            <ActionIcon 
+                                type='cancel'
+                                size={50}
+                                style={{marginTop: '30px'}}
+                                color='#767676'
+                                onClick={this.props.onClose}
+                            />
+                        </div>
+                    }
                 </Grid>
             </React.Fragment>
         );
@@ -391,12 +421,16 @@ export default class StockCard extends React.Component {
         );
     }
 
-    render() {
+    renderStockCard = () => {
         const {symbol = null} = this.props.stockData;
         const noData = symbol === null || (symbol.length === 0);
+        const {bottomSheet = false} = this.props;
 
         return (
-            <Container container>
+            <Container 
+                    container 
+                    bottomSheet={bottomSheet}
+            >
                 {this.props.loading && <Loader />}
                 {
                     (this.props.loadingCreate || this.props.showSuccess) && 
@@ -414,6 +448,45 @@ export default class StockCard extends React.Component {
                 </Grid>
             </Container>
         );
+    }
+
+    renderHeader = () => {
+        return (
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        borderBottom: '1px solid #e7e7e7',
+                        width: '100%'
+                    }}
+            >
+                <Header>Add Prediction</Header>
+                <ActionIcon 
+                    onClick={this.props.onClose} 
+                    color='#444'
+                    type="close"
+                />
+            </div>
+        );
+    }
+
+    renderStockCardBottomSheet = () => {
+        return (
+            <BottomSheet 
+                    open={this.props.open}
+                    onClose={this.props.onClose}
+                    header="Predict"
+                    customHeader={this.renderHeader}
+            >
+                {this.renderStockCard()}
+            </BottomSheet>
+        );
+    }
+
+    render() {
+        const {bottomSheet = false} = this.props;
+
+        return bottomSheet ? this.renderStockCardBottomSheet() : this.renderStockCard();
     }
 }
 
@@ -464,7 +537,7 @@ const nameStyle = {
     color: '#525252',
     fontFamily: 'Lato, sans-serif',
     fontWeight: 500,
-    fontSize: isDesktop ? '16px' : '14xp'
+    fontSize: isDesktop ? '16px' : '12xp'
 };
 
 const skipButtonStyle = {
@@ -493,7 +566,7 @@ const editButtonStyle = {
 const Container = styled(Grid)`
     width: ${global.screen.width};
     border-radius: 4px;
-    box-shadow: ${isDesktop ? 'none' : '0 4px 16px #C3C3C3'};
+    box-shadow: ${props => (isDesktop || props.bottomSheet) ? 'none' : '0 4px 16px #C3C3C3'};
     background-color: #fff;
     position: relative;
     transition: all 0.4s ease-in-out;
@@ -558,4 +631,12 @@ const NoDataText = styled.div`
     font-family: 'Lato', sans-serif;
     font-size: 20px;
     color: #3D3D3D;
+`;
+
+const Header = styled.h3`
+    color: #0D0D0D;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    margin-left: 20px;
 `;

@@ -14,6 +14,14 @@ export default class StockListComponent extends React.Component {
         return false;
     }
 
+    isAlreadyAdded = stock => {
+        const symbol = _.get(stock, 'symbol', '');
+        const stockCart = _.get(this.props, 'stockCart', []);
+        const symbolIndex = _.findIndex(stockCart, stock => stock.symbol === symbol);
+
+        return symbolIndex > -1;
+    }
+
     render() {
         const {stocks = []} = this.props;
         return (
@@ -34,6 +42,7 @@ export default class StockListComponent extends React.Component {
                                         onClick={this.props.handleStockListItemClick} 
                                         onAddIconClick={this.props.conditionallyAddToggleStock}
                                         onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
+                                        isAlreadyAdded={this.isAlreadyAdded(stock)}
                                     />
                                 )}
                             />

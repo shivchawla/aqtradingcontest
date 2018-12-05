@@ -16,6 +16,7 @@ import {SearchStocks} from '../../../SearchStocks';
 const styles = theme => ({
     dialogContentRoot: {
         overflow: 'hidden',
+        overflowY: 'scroll',
         padding: 0,
         paddingTop: '56px',
         '&:first-child': {
@@ -48,9 +49,9 @@ class StockSelection extends React.Component {
         let stockData = this.props.stockData;
         const symbol = _.get(selectedPositions, `[${0}].symbol`, '');
         const name = _.get(selectedPositions, `[${0}].name`, '');
-        const lastPrice = _.get(selectedPositions, `[${0}].lastPrice`, '');
-        const change = _.get(selectedPositions, `[${0}].chg`, '');
-        const changePct = _.get(selectedPositions, `[${0}].chgPct`, '');
+        const lastPrice = _.get(selectedPositions, `[${0}].current`, '');
+        const change = _.get(selectedPositions, `[${0}].change`, '');
+        const changePct = _.get(selectedPositions, `[${0}].changePct`, '');
         stockData = {
             ...stockData,
             symbol,
@@ -69,9 +70,6 @@ class StockSelection extends React.Component {
                 toggleBottomSheet={this.props.toggleSearchStocksDialog}
                 addPositions={this.addPositions}
                 portfolioPositions={[this.props.stockData]}
-                filters={{
-                    universe: _.get(this.props, 'stockData.benchmark', 'NIFTY_500')
-                }}
                 ref={el => this.searchStockComponent = el}
                 history={this.props.history}
                 pageUrl={this.props.match.url}
@@ -83,6 +81,8 @@ class StockSelection extends React.Component {
                 toggleStockPerformanceOpen={this.toggleStockPerformance}
                 skippedStocks={this.props.skippedStocks}
                 loadOnMount={true}
+                zIndex={this.props.list ? 1 : 20000}
+                stockCart={this.props.stockCart}
             />
         );
     }
@@ -91,7 +91,7 @@ class StockSelection extends React.Component {
         this.setState({performanceOpen: !this.state.performanceOpen});
     }
 
-    render() {
+    renderDialogMode = () => {
         const {classes} = this.props;
 
         return (
@@ -138,6 +138,16 @@ class StockSelection extends React.Component {
                 </DialogContent>
             </Dialog>
         );
+    }
+
+    renderListMode = () => {
+        return this.renderSearchStocks();
+    }
+
+    render() {
+        const {list = false} = this.props;
+
+        return list ? this.renderListMode() : this.renderDialogMode();
     }
 }
 
