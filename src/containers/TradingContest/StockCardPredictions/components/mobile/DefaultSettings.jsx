@@ -53,9 +53,13 @@ class DefaultSettings extends React.Component {
                 sector: selectedSector
             })
             .then(() => {
+                this.props.fetchStocks();
                 this.props.skipStock();
                 this.props.undoStockSkips(false);
-            });
+            })
+            .catch(err => {
+                console.log('Error', err);
+            })
         });
     }
 

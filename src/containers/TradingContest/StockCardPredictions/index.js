@@ -25,6 +25,8 @@ const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
 
 class StockCardPredictions extends React.Component {
+    fetchStocks = null;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -423,6 +425,7 @@ class StockCardPredictions extends React.Component {
                     updateEditMode={this.updateEditMode}
                     updateListMode={this.updateListMode}
                     skipStock={this.skipStock}
+                    fetchStocks={this.fetchStocks}
                 />
                 <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-between'}}>
                     <Tooltip title="Started Today" placement="bottom">
@@ -460,6 +463,7 @@ class StockCardPredictions extends React.Component {
                         skippedStocks={this.state.skippedStocks}
                         list={this.shouldShowListView()}
                         stockCart={this.state.stockCart}
+                        setFetchStocks={this.setFetchStocks}
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -468,6 +472,10 @@ class StockCardPredictions extends React.Component {
             </Container>
         );
     }
+
+    setFetchStocks = fetchStocks => {
+        this.fetchStocks = fetchStocks;
+    }   
 
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
