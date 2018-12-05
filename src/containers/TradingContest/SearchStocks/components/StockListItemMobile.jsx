@@ -104,7 +104,7 @@ export default class StockListItemMobile extends React.Component {
                                         fontSize: '14px',
                                         color: '#6E6E6E',
                                         fontWeight: 400,
-                                        width: '100px',
+                                        width: '170px',
                                         textAlign: 'start'
                                     }}
                             >
@@ -131,7 +131,7 @@ export default class StockListItemMobile extends React.Component {
                                         marginLeft: '5px'
                                     }}
                             >
-                                {change > 0 && '+'} ₹{Utils.formatMoneyValueMaxTwoDecimals(change)}
+                                ₹{Utils.formatMoneyValueMaxTwoDecimals(change)}
                             </h3>
                             <h3 
                                     style={{
@@ -147,7 +147,7 @@ export default class StockListItemMobile extends React.Component {
                             <h3 
                                     style={{color: changeColor, fontSize: '13px', fontWeight: '400'}}
                             >
-                                ({change > 0 && '+'} {Utils.formatMoneyValueMaxTwoDecimals(nChangePct)} %)
+                                {Utils.formatMoneyValueMaxTwoDecimals(nChangePct)} %
                             </h3>
                         </div>
                     </div>
