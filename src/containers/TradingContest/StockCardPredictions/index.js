@@ -284,6 +284,19 @@ class StockCardPredictions extends React.Component {
         }, 1400);
     }
 
+    updateStockDataToDefaultSettings = () => {
+        const {defaultStockData} = this.state;
+        const horizon = _.get(defaultStockData, 'horizon', 5);
+        const target = _.get(defaultStockData, 'target', 5);
+        this.setState({
+            stockData: {
+                ...this.state.stockData,
+                horizon,
+                target
+            }
+        });
+    }
+
     createDailyContestPrediction = (type = 'buy') => {
         const predictions = constructPrediction(this.state.stockData, type);
         this.setState({loadingCreatePredictions: true});
@@ -301,6 +314,7 @@ class StockCardPredictions extends React.Component {
         })
         .then(() => {
             this.showSuccess();
+            this.updateStockDataToDefaultSettings();
         })
         .catch(error => {
             let errorMessage = _.get(error, 'response.data.msg', '');
