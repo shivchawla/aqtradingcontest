@@ -3,7 +3,7 @@ import {Utils} from '../utils';
 
 export default class DummyLogin extends React.Component {
     componentWillMount() {
-        Utils.localStorageSave('redirectToUrlFromLogin', window.location.href);
+        Utils.localStorageSave('redirectToUrlFromLogin', window.location.pathname);
         window.location.href = '/login'
     }
 
