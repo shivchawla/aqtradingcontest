@@ -63,10 +63,11 @@ export default class WatchlistComponent extends React.Component {
             const targetWatchlist = watchlists.filter(item => item.id === id)[0];
             targetWatchlist.positions = response.data.securities.map(item => {
                 return {
-                    name: item.ticker,
+                    symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
                     change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))*100).toFixed(2)),
-                    price: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
+                    current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
                     changePct: Number((_.get(item, 'realtime.changePct', 0.0) * 100).toFixed(2)),
+                    name: _.get(item, 'detail.Nse_Name', '')
                 }
             });
             this.setState({watchlists});
@@ -133,10 +134,11 @@ export default class WatchlistComponent extends React.Component {
                 positions: item.securities.map(item => {
                     var validCurrentPrice = _.get(item, 'realtime.current', 0.0) != 0.0;
                     return {
-                        name: item.ticker,
-                        change: _.get(item, 'realtime.change', 0.0),
-                        price: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
-                        changePct: Number((_.get(item, 'realtime.changePct', 0.0) * 100).toFixed(2))
+                        symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
+                        change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))*100).toFixed(2)),
+                        current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
+                        changePct: Number((_.get(item, 'realtime.changePct', 0.0) * 100).toFixed(2)),
+                        name: _.get(item, 'detail.Nse_Name', '')
                     }
                 }),
                 id: item._id
