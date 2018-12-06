@@ -148,7 +148,7 @@ export class SearchStocks extends React.Component {
                         xs={12} 
                         style={{
                             ...verticalBox,
-                            padding: '0 15px'
+                            padding: '0 10px'
                         }}
                 >
                     {this.renderStockList()}
@@ -635,7 +635,7 @@ export class SearchStocks extends React.Component {
                         ...horizontalBox, 
                         justifyContent: 'center', 
                         marginTop: '10px',
-                        padding: '0 15px'
+                        padding: '0 10px'
                     }}
             >
                 <Button
@@ -662,7 +662,7 @@ export class SearchStocks extends React.Component {
                         ...horizontalBox, 
                         justifyContent: 'center', 
                         marginTop: '10px',
-                        padding: '0 15px'
+                        padding: '0 10px'
                     }}
             >
                 {
@@ -832,7 +832,7 @@ export class SearchStocks extends React.Component {
     }
 
     componentDidMount() {
-        this.props.setFetchStocks(this.fetchStocks);
+        this.props.setFetchStocks && this.props.setFetchStocks(this.fetchStocks);
         setTimeout(() => {
             this.setState({showFilter: true});
         }, 400)

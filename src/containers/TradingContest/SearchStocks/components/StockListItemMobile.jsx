@@ -111,10 +111,10 @@ export default class StockListItemMobile extends React.Component {
                     >
                         <div style={{...horizontalBox, justifyContent: 'space-between', width: '100%'}}>
                             <div style={horizontalBox}>
-                                <h3 style={{fontSize: '16px', fontWeight: '700', color: "#393939"}}>{symbol}</h3>
+                                <h3 style={{fontSize: '14px', fontWeight: '700', color: "#393939"}}>{symbol}</h3>
                                 <Icon color="error" style={{color: changeColor}}>{changeIcon}</Icon>
                             </div>
-                            <h3 style={{fontSize: '15px', fontWeight: '500', color: '#393939'}}>
+                            <h3 style={{fontSize: '13px', fontWeight: '700', color: '#393939'}}>
                                 ₹{Utils.formatMoneyValueMaxTwoDecimals(current)}
                             </h3>
                         </div>
@@ -124,14 +124,14 @@ export default class StockListItemMobile extends React.Component {
                                     justifyContent: 'space-between', 
                                     alignItems: 'center',
                                     width: '100%',
-                                    marginTop: '5px'
+                                    // marginTop: '5px'
                                 }}
                         >
                             <div style={{...horizontalBox, alignItems: 'flex-end'}}>
                                 <h3
                                         style={{
                                             ...nameEllipsisStyle,
-                                            fontSize: '14px',
+                                            fontSize: '12px',
                                             color: '#6E6E6E',
                                             fontWeight: 400,
                                             width: '130px',
@@ -177,14 +177,14 @@ export default class StockListItemMobile extends React.Component {
                             </div>
                         </div>
                     </div>
-                    {
+                    {/* {
                         !this.props.extraContent &&
                         <ActionIcon 
                             type="info"
                             size={18}
                             color='#919191'
                         />
-                    }
+                    } */}
                     {
                         this.props.extraContent && this.props.extraContent(symbol)
                     }
