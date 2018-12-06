@@ -55,7 +55,8 @@ export default class StockDetail extends React.Component {
             symbol: _.get(this.props, 'symbol', ''),
             latestDetail: this.state.latestDetail,
             series: this.state.series,
-            rollingPerformance: this.state.rollingPerformance
+            rollingPerformance: this.state.rollingPerformance,
+            loading: this.state.loading
         };
 
         return (

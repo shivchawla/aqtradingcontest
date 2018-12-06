@@ -1,16 +1,19 @@
 import * as React from 'react';
+import styled from 'styled-components';
 import HighStock from 'highcharts/highstock';
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
 import {withRouter} from 'react-router';
 import Grid from '@material-ui/core/Grid';
-// import {ChartTickerItem} from '../components';
+import Button from '@material-ui/core/Button';
 import {getStockPerformance, dateFormat, Utils} from '../../utils';
+import {primaryColor, metricColor, horizontalBox, verticalBox} from '../../constants';
 import './stockChart.css';
 
-// const Option = AutoComplete.Option;
 const {requestUrl} = require('../../localConfig');
+
+const readableDataFormat = 'Do MMM YY';
 
 class StockChartImpl extends React.Component {
     constructor(props) {
@@ -132,7 +135,7 @@ class StockChartImpl extends React.Component {
             },
             series: [],
             legendItems: [],
-            selectedDate: moment().format(dateFormat),
+            selectedDate: moment().format(readableDataFormat),
             dataSource: [],
             loading: false
         };
@@ -393,17 +396,6 @@ class StockChartImpl extends React.Component {
         this.updateSeries(legendItems);
     }
 
-    // renderOption = item => {
-    //     return (
-    //         <Option key={item.id} text={item.symbol} value={item.symbol}>
-    //             <div>
-    //                 <span>{item.symbol}</span><br></br>
-    //                 <span style={{fontSize: '10px'}}>{item.name}</span>
-    //             </div>
-    //         </Option>
-    //     );
-    // }
-
     handleSearch = query => {
         this.setState({spinning: true});
         const url = `${requestUrl}/stock?search=${query}`;
@@ -430,27 +422,6 @@ class StockChartImpl extends React.Component {
         });
     }
 
-    // renderVerticalLegendList = () => {
-    //     const {legendItems} = this.state;
-    //     return (
-    //         <Row style={{marginTop: '10px', height: '300px', overflow: 'hidden', overflowY: 'scroll'}}>
-    //             {
-    //                 legendItems.map((legend, index) => {
-    //                     return (
-    //                         <Col span={24} key={index}>
-    //                             <ChartTickerItem 
-    //                                 legend={legend}
-    //                                 onChange={(e) => this.onCheckboxChange(e, legend)}
-    //                                 deleteItem = {this.deleteTicker}
-    //                             />
-    //                         </Col>
-    //                     );
-    //                 })
-    //             }
-    //         </Row>
-    //     );
-    // }
-
     renderHorizontalLegendList = () => {
         const {legendItems} = this.state;
         const fontSize = this.props.mobile ? '14px' : '12px'
@@ -459,22 +430,24 @@ class StockChartImpl extends React.Component {
                 {
                     legendItems.map((legend, index) => {
                         const changeColor = legend.change < 0 ? '#F44336' : '#00C853';
+                        const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
 
                         return (
                                 <Grid container key={index} alignItems="center"> 
-                                    {/* <Grid item span={2}>
-                                        <Checkbox disabled={legend.disabled} checked={legend.checked} onChange={e => this.onCheckboxChange(e, legend)} />
-                                    </Grid> */}
-                                    <Grid item span={12}>
-                                        <h3 style={{fontSize}}>
-                                            <span style={{color: legend.color}}>{legend.name}</span>
-                                            <span 
-                                                    style={{marginLeft: '10px', fontSize, fontWeight: '400'}}
-                                            >
-                                                {Number(legend.y).toFixed(2)}
-                                            </span>
-                                            <span style={{fontSize, color: changeColor, marginLeft: '5px'}}>({legend.change} %)</span>
-                                        </h3>
+                                    <Grid 
+                                            item 
+                                            xs={12}
+                                            style={{
+                                                ...horizontalBox,
+                                                alignItems: 'center',
+                                                justifyContent: 'flex-start',
+                                                marginTop: '5px'
+                                            }}
+                                    >
+                                        {/* <span style={{color: legend.color}}>{legend.name}</span> */}
+                                        <LastPrice>₹{lastPrice}</LastPrice>
+                                        <Divider>|</Divider>
+                                        <Change color={changeColor}>{legend.change}%</Change>
                                     </Grid>
                                 </Grid>
                         );
@@ -483,55 +456,6 @@ class StockChartImpl extends React.Component {
             </Grid>
         );
     }
-
-    // renderVerticalLegend = () => {
-    //     const {dataSource} = this.state;
-    //     const {chartId="highchart-container"} = this.props;
-
-    //     return (
-    //         <Row>
-    //             <Spin spinning={this.state.loading}>
-    //                 <Col 
-    //                         span={14} id={chartId} 
-    //                         style={{borderRight: '1px solid #DCD6D6', paddingRight: '10px'}}>
-    //                 </Col>
-    //                 <Col span={10} style={{marginLeft: '0px', padding:'0px 4px'}}>
-    //                     <Row type="flex" align="middle">
-    //                         <Col span={12}>
-    //                             <h2 style={{fontSize: '12px', margin: '0'}}>
-    //                                 Date 
-    //                                 <span 
-    //                                         style={{
-    //                                             fontWeight: '700', 
-    //                                             color: '#555454', 
-    //                                             fontSize: this.props.mobile ? '14px' : '13px'
-    //                                         }}
-    //                                 >
-    //                                     {this.state.selectedDate}
-    //                                 </span>
-    //                             </h2>
-    //                         </Col>
-    //                         <Col span={12} style={{display: 'flex', justifyContent: 'flex-end'}}>
-    //                             <AutoComplete
-    //                                 // disabled={!this.state.tickers.length}
-    //                                 className="global-search"
-    //                                 dataSource={dataSource.map(this.renderOption)}
-    //                                 onSelect={this.onCompareSelect}
-    //                                 onSearch={this.handleSearch}
-    //                                 placeholder="Search Stocks"
-    //                                 style={{width: '100%'}}
-    //                                 optionLabelProp="value"
-    //                             >
-    //                                 <Input suffix={<Icon style={searchIconStyle} type="search" />} />
-    //                             </AutoComplete>
-    //                         </Col>
-    //                     </Row>
-    //                     {this.renderVerticalLegendList()}
-    //                 </Col>
-    //             </Spin>
-    //         </Row>
-    //     );
-    // }
 
     renderHorizontalLegend = () => {
         const {chartId="highchart-container"} = this.props;
@@ -542,16 +466,7 @@ class StockChartImpl extends React.Component {
                     !this.props.hideLegend &&
                     <Grid container>
                         <h2 style={{fontSize: this.props.mobile ? '14px' : '12px', margin: '0'}}>
-                            Date 
-                            <span 
-                                    style={{
-                                        fontWeight: '700', 
-                                        color: '#555454',
-                                        marginLeft: '5px' 
-                                    }}
-                            >
-                                {this.state.selectedDate}
-                            </span>
+                            <Date>{this.state.selectedDate}</Date>
                         </h2>
                     </Grid>
                 }
@@ -563,7 +478,10 @@ class StockChartImpl extends React.Component {
                         {this.renderHorizontalLegendList()}
                     </Grid>
                 }
-                <Grid container style={{marginTop: !this.props.mobile ? '30px' : '0px'}} id={chartId}></Grid>
+                <div 
+                        style={{marginTop: !this.props.mobile ? '30px' : '0px'}} 
+                        id={chartId}
+                ></div>
             </Grid>
         );
     }
@@ -579,17 +497,43 @@ class StockChartImpl extends React.Component {
     }
 
     render() {
-        // if (this.props.verticalLegend) {
-        //     return this.renderVerticalLegend();
-        // }
-
-        return this.renderHorizontalLegend();
+        return (
+            <Grid container>
+                {this.renderHorizontalLegend()}
+            </Grid>
+        );
     }
 }
 
 export default withRouter(StockChartImpl);
 
-const searchIconStyle = {
-    marginRight: '20px',
-    fontSize: '18px'
-};
+const LastPrice = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-size: ${props => props.fontSize || '16px'};
+    color: #222;
+    font-weight: 500;
+`;
+
+const Date = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    color: #6B6B6B;
+    font-size: 12px;
+`;
+
+const Change = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-size: ${props => props.fontSize || '16px'};
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    color: ${props => props.color || metricColor.neutral}
+`;
+
+const Divider = styled.h3`
+    font-family: 'Lato', sans-serif;
+    color: #797979;
+    font-weight: 400;
+    font-size: 14px;
+    margin: 0 5px;
+    margin-top: -2px;
+`;
