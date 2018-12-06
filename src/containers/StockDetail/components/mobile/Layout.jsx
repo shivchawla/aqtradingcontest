@@ -4,7 +4,6 @@ import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import HighStock from '../../../../components/Charts/StockChart';
-import SegmentedControl from '../../../../components/ui/SegmentedControl';
 import PriceMetrics from './PriceMetrics';
 import LoaderComponent from '../../../TradingContest/Misc/Loader';
 import RollingPerformance from './RollingPerformance';
@@ -35,7 +34,6 @@ export default class LayoutMobile extends React.Component {
     }
 
     handleSegmentControlChange = (event, value) => {
-        console.log(value);
         this.setState({selectedMetricView: value});
     }
 

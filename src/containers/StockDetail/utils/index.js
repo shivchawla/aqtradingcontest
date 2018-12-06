@@ -10,10 +10,10 @@ const color = {
 export const fetchStockData = stock => {
     return Promise.all([
         getStockData(stock, 'latestDetail'),
-        getStockData(stock, 'rollingPerformance'),
-        getStockPerformance(stock.toUpperCase())
+        getStockPerformance(stock.toUpperCase()),
+        // getStockData(stock, 'rollingPerformance')
     ])
-    .then(([latestDetailResponse, rollingPerformanceResponse, stockPerformance]) => {
+    .then(([latestDetailResponse, stockPerformance, rollingPerformanceResponse]) => {
         const latestDetail = latestDetailResponse.data;
         return ({
             latestDetail: getPriceMetrics(latestDetail),

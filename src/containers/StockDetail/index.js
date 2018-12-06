@@ -25,12 +25,21 @@ export default class StockDetail extends React.Component {
             const stockPerformance = _.get(stockData, 'stockPerformance', {});
             const rollingPerformance = _.get(stockData, 'rollingPerformance', {});
             const series = {...this.state.series, data: stockPerformance};
+            const stockDataForParent = {
+                symbol: this.props.symbol,
+                name: _.get(latestDetail, 'name', ''),
+                lastPrice: _.get(latestDetail, 'latestPrice', 0),
+                chg: _.get(latestDetail, 'change', 0),
+                chgPct: _.get(latestDetail, 'changePct', 0)
+            };
             
             this.setState({
                 latestDetail,
                 rollingPerformance,
                 series,
                 noDataFound: false
+            }, () => {
+                this.props.updateStockData(stockDataForParent);
             })
         })
         .catch(error => {
@@ -43,6 +52,13 @@ export default class StockDetail extends React.Component {
             this.setState({loading: false});
         });
 
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!_.isEqual(this.props.symbol, nextProps.symbol)) {
+            const symbol = _.get(nextProps, 'symbol', '');
+            this.getStockData(symbol);
+        }
     }
 
     componentWillMount() {
