@@ -79,7 +79,8 @@ export default class StockListItemMobile extends React.Component {
             onClick, 
             checked=false, 
             sellChecked = false,
-            onAddIconClick = () => {}
+            onAddIconClick = () => {},
+            hideInfo = false
         } = this.props;
         const itemContainerStyle = {
             borderBottom: '1px solid #eaeaea',
@@ -107,7 +108,11 @@ export default class StockListItemMobile extends React.Component {
                                 alignItems: 'flex-start',
                                 width: '100%',
                             }}
-                            onClick={() => onAddIconClick(symbol)}
+                            onClick={() => {
+                                hideInfo ? 
+                                    this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct) 
+                                    : onAddIconClick(symbol)
+                            }}
                     >
                         <div style={{...horizontalBox, justifyContent: 'space-between', width: '100%'}}>
                             <div style={horizontalBox}>
@@ -178,7 +183,7 @@ export default class StockListItemMobile extends React.Component {
                         </div>
                     </div>
                     {
-                        !this.props.extraContent &&
+                        !hideInfo && !this.props.extraContent &&
                         <ActionIcon 
                             type="info"
                             size={18}
