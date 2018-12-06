@@ -19,7 +19,6 @@ export default class TimelineCustomRadio extends React.Component {
         const {checked = false, label='-'} = this.props;
         const borderColor = checked ? activeColor : 'transparent';
         const color = checked ? activeColor : inactiveColor;
-        const backgroundColor = checked ? activeColor : inactiveColor;
 
         return (
             <ButtonBase 
@@ -27,7 +26,6 @@ export default class TimelineCustomRadio extends React.Component {
                         ...buttonStyle, 
                         borderColor, 
                         color,
-                        backgroundColor
                     }}
                     onClick={this.props.onChange}
             >
@@ -49,5 +47,4 @@ const buttonStyle = {
     fontWeight: 700,
     color: inactiveColor,
     minWidth: '52px',
-    bacgroundColor: inactiveColor
 }
