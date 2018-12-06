@@ -148,7 +148,7 @@ export class SearchStocks extends React.Component {
                         xs={12} 
                         style={{
                             ...verticalBox,
-                            padding: '0 10px'
+                            padding: '0 7px'
                         }}
                 >
                     {this.renderStockList()}
@@ -604,7 +604,7 @@ export class SearchStocks extends React.Component {
         this.setState({
             selectedPage
         }, () => {
-            this.fetchStocks(this.state.searchInput, true, false);
+            this.fetchStocks(this.state.searchInput, true);
         })
     }
 

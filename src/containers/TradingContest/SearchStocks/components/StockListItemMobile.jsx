@@ -86,7 +86,7 @@ export default class StockListItemMobile extends React.Component {
             color: textColor,
             cursor: 'pointer',
             backgroundColor: '#fff',
-            padding: '10px 0',
+            padding: '8px 0',
             width: '100%'
         };
 
@@ -114,7 +114,7 @@ export default class StockListItemMobile extends React.Component {
                                 <h3 style={{fontSize: '14px', fontWeight: '700', color: "#393939"}}>{symbol}</h3>
                                 <Icon color="error" style={{color: changeColor}}>{changeIcon}</Icon>
                             </div>
-                            <h3 style={{fontSize: '13px', fontWeight: '700', color: '#393939'}}>
+                            <h3 style={{fontSize: '14px', fontWeight: '400', color: '#393939'}}>
                                 ₹{Utils.formatMoneyValueMaxTwoDecimals(current)}
                             </h3>
                         </div>
@@ -151,7 +151,7 @@ export default class StockListItemMobile extends React.Component {
                                 <h3 
                                         style={{
                                             color: changeColor, 
-                                            fontSize: '13px', 
+                                            fontSize: '14px', 
                                             fontWeight: '400', 
                                             marginLeft: '5px'
                                         }}
@@ -170,7 +170,7 @@ export default class StockListItemMobile extends React.Component {
                                     |
                                 </h3>
                                 <h3 
-                                        style={{color: changeColor, fontSize: '13px', fontWeight: '400'}}
+                                        style={{color: changeColor, fontSize: '14px', fontWeight: '400'}}
                                 >
                                     {Utils.formatMoneyValueMaxTwoDecimals(nChangePct)} %
                                 </h3>
