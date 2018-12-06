@@ -21,13 +21,11 @@ export default class StockDetailBottomSheet extends React.Component {
         const negativeColor = '#FF7B7B';
         const neutralCOlor = '#DFDFDF';
         let {
+            name = '',
+            symbol = '',
             lastPrice=0, 
             chg=0,
             chgPct=0
-        } = this.state.stockData;
-        const {
-            name = '',
-            symbol = ''
         } = this.props;
         chgPct = Number((chgPct * 100).toFixed(2));
         const changeColor = chg > 0 ? positiveColor : chg === 0 ? neutralCOlor : negativeColor;
@@ -61,7 +59,7 @@ export default class StockDetailBottomSheet extends React.Component {
                         <Symbol>{symbol}</Symbol>
                         <h3 style={nameStyle}>{name}</h3>
                     </div>
-                    {/* <div 
+                    <div 
                             style={{
                                 ...verticalBox, 
                                 alignItems: 'flex-end',
@@ -70,7 +68,7 @@ export default class StockDetailBottomSheet extends React.Component {
                     >
                         <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
                         <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(chg)} ({chgPct}%)</Change>
-                    </div> */}
+                    </div>
                 </div>
             </div>
         );
@@ -94,7 +92,6 @@ export default class StockDetailBottomSheet extends React.Component {
                             symbol={this.props.symbol}
                             updateStockData={this.updateStockData}
                         />
-                        <div style={{height: '50px'}}></div>
                     </Grid>
                 </Container>
             </BottomSheet>
@@ -112,7 +109,7 @@ const nameStyle = {
 }
 
 const Container = styled(Grid)`
-    height: calc(100vh - 50px);
+    /* height: calc(100vh - 50px); */
     overflow: hidden;
     overflow-y: scroll;
 `;

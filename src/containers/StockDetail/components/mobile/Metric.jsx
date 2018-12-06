@@ -43,7 +43,7 @@ const Value = styled.h3`
     color: ${props => props.color || valueColor};
     font-weight: 500;
     font-family: 'Lato', sans-serif;
-    font-size: 20px;
+    font-size: 16px;
 `;
 
 const Label = styled.h3`

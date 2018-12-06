@@ -47,16 +47,20 @@ export default class LayoutMobile extends React.Component {
                         xs={12} 
                         style={verticalBox}
                 >
-                    <HighStock series={[series]}/>
+                    <HighStock series={[series]} height={250}/>
                 </Grid>
                 <Grid 
                         item 
                         xs={12}
-                        style={verticalBox}
+                        style={{
+                            ...verticalBox,
+                            marginTop: '-25px'
+                        }}
                 >
                     <Tabs 
                             value={this.state.selectedMetricView} 
                             onChange={this.handleSegmentControlChange}
+                            size='small'
                     >
                         <Tab label="Price" />
                         <Tab label="Rolling" />

@@ -43,6 +43,7 @@ export default class StockListComponent extends React.Component {
                                         onAddIconClick={this.props.conditionallyAddToggleStock}
                                         onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
                                         isAlreadyAdded={this.isAlreadyAdded(stock)}
+                                        onInfoClicked={this.props.onInfoClicked}
                                     />
                                 )}
                             />

@@ -21,7 +21,7 @@ export default class MetricStats extends React.Component {
             <Container container justify="space-between">
                 {
                     metrics.map((metric, index) => (
-                        <MetricContainer key={index} xs={5}>
+                        <MetricContainer key={index} xs={3}>
                             <Metric {...metric} />
                         </MetricContainer>
                     ))
@@ -36,11 +36,11 @@ const Container = styled(Grid)`
 `;
 
 const MetricContainer = styled(Grid)`
-    margin-bottom: 25px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: center;
-    border-radius: 4px;
+    border-radius: 2px;
     background-color: #F9FCFF;
-    padding: 15px 8px;
+    padding: 8px 8px;
     border: 1px solid #ECF0FC;
 `;

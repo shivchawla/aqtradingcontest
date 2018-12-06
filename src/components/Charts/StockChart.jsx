@@ -7,6 +7,8 @@ import moment from 'moment';
 import {withRouter} from 'react-router';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import TimelineCustomRadio from '../../containers/StockDetail/components/mobile/TimelineCustomRadio';
+import RadioGroup from '../selections/RadioGroup';
 import {getStockPerformance, dateFormat, Utils} from '../../utils';
 import {primaryColor, metricColor, horizontalBox, verticalBox} from '../../constants';
 import './stockChart.css';
@@ -14,6 +16,7 @@ import './stockChart.css';
 const {requestUrl} = require('../../localConfig');
 
 const readableDataFormat = 'Do MMM YY';
+const timelines = ['1M', '3M', 'YTD', '1Y', '2Y', 'ALL'];
 
 class StockChartImpl extends React.Component {
     constructor(props) {
@@ -23,6 +26,7 @@ class StockChartImpl extends React.Component {
             config: {
                 colors: ['#0082c8','#e6194b','#3cb44b','#ffe119','#f58231','#911eb4','#46f0f0','#f032e6','#d2f53c','#fabebe','#008080','#e6beff','#aa6e28','#fffac8','#800000','#aaffc3','#808000','#ffd8b1','#000080', '#808080'],
                 rangeSelector: {
+                    enabled: true,
                     selected: 3,
                     labelStyle: {
                         color: '#F86C6C'
@@ -62,14 +66,14 @@ class StockChartImpl extends React.Component {
                         text: 'All'
                     }],
                     buttonTheme: { // styles for the buttons
+                        display: 'none',
                         fill: 'none',
                         stroke: 'none',
                         'stroke-width': 0,
                         r: 8,
                         style: {
                             color: '#039',
-                            fontWeight: 'bold',
-                            zIndex: 20
+                            zIndex: 20,
                         },
                     }
                 },
@@ -440,14 +444,27 @@ class StockChartImpl extends React.Component {
                                             style={{
                                                 ...horizontalBox,
                                                 alignItems: 'center',
-                                                justifyContent: 'flex-start',
+                                                justifyContent: 'space-between',
                                                 marginTop: '5px'
                                             }}
                                     >
-                                        {/* <span style={{color: legend.color}}>{legend.name}</span> */}
-                                        <LastPrice>₹{lastPrice}</LastPrice>
-                                        <Divider>|</Divider>
-                                        <Change color={changeColor}>{legend.change}%</Change>
+                                        <div 
+                                                style={{
+                                                    ...horizontalBox,
+                                                    justifyContent: 'flex-start'
+                                                }}
+                                        >
+                                            <LastPrice>₹{lastPrice}</LastPrice>
+                                            <Divider>|</Divider>
+                                            <Change color={changeColor}>{legend.change}%</Change>                                        
+                                        </div>
+                                        <RadioGroup 
+                                            CustomRadio={TimelineCustomRadio}
+                                            items={timelines}
+                                            defaultSelected={3}
+                                            onChange={this.changeSelection}
+                                            small
+                                        />
                                     </Grid>
                                 </Grid>
                         );
@@ -465,7 +482,13 @@ class StockChartImpl extends React.Component {
                 {
                     !this.props.hideLegend &&
                     <Grid container>
-                        <h2 style={{fontSize: this.props.mobile ? '14px' : '12px', margin: '0'}}>
+                        <h2 
+                                style={{
+                                    fontSize: this.props.mobile ? '14px' : '12px', 
+                                    margin: '0',
+                                    zIndex: 20
+                                }}
+                        >
                             <Date>{this.state.selectedDate}</Date>
                         </h2>
                     </Grid>
@@ -473,15 +496,12 @@ class StockChartImpl extends React.Component {
                 {
                     !this.props.hideLegend &&
                     <Grid container 
-                            style={{position: !this.props.mobile ? 'absolute' : 'relative', width: '300px'}}
+                            style={{position: 'relative'}}
                     >
                         {this.renderHorizontalLegendList()}
                     </Grid>
                 }
-                <div 
-                        style={{marginTop: !this.props.mobile ? '30px' : '0px'}} 
-                        id={chartId}
-                ></div>
+                <div id={chartId}></div>
             </Grid>
         );
     }
@@ -492,6 +512,15 @@ class StockChartImpl extends React.Component {
                 id: index,
                 symbol: _.get(item, 'detail.NSE_ID', null) || _.get(item, 'ticker', ''),
                 name: _.get(item, 'detail.Nse_Name', null) || _.get(item, 'ticker', ''),
+            }
+        })
+    }
+
+    changeSelection = (selected) => {
+        console.log(selected);
+        this.chart.update({
+            rangeSelector: {
+                selected
             }
         })
     }
@@ -509,7 +538,7 @@ export default withRouter(StockChartImpl);
 
 const LastPrice = styled.h3`
     font-family: 'Lato', sans-serif;
-    font-size: ${props => props.fontSize || '16px'};
+    font-size: ${props => props.fontSize || '14px'};
     color: #222;
     font-weight: 500;
 `;
@@ -519,11 +548,12 @@ const Date = styled.h3`
     font-weight: 400;
     color: #6B6B6B;
     font-size: 12px;
+    z-index: 20;
 `;
 
 const Change = styled.h3`
     font-family: 'Lato', sans-serif;
-    font-size: ${props => props.fontSize || '16px'};
+    font-size: ${props => props.fontSize || '14px'};
     font-family: 'Lato', sans-serif;
     font-weight: 400;
     color: ${props => props.color || metricColor.neutral}

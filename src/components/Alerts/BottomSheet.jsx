@@ -12,7 +12,7 @@ import {horizontalBox} from '../../constants';
 const styles = theme => ({
     dialogContentRoot: {
         overflow: 'hidden',
-        // overflowY: 'scroll',
+        overflowY: 'scroll',
         padding: 0,
         '&:first-child': {
             paddingTop: 0

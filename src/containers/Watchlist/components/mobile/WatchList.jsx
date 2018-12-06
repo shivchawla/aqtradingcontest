@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import AutoComplete from '../../../../components/input/AutoComplete';
+import StockDetailBottomSheet from '../../../TradingContest/StockDetailBottomSheet';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
 import {withRouter} from 'react-router';
@@ -24,8 +25,14 @@ class WatchList extends React.Component {
             dataSource: [],
             loading: false,
             searchInputOpen: false,
-            watchlistEditMode: false
+            watchlistEditMode: false,
+            selectedInfoStock: {},
+            stockDetailBottomSheetOpen: false,
         }
+    }
+
+    toggleStockDetailBottomSheetOpen = () => {
+        this.setState({stockDetailBottomSheetOpen: !this.state.stockDetailBottomSheetOpen});
     }
 
     renderDeleteIcon = (symbol) => {
@@ -39,6 +46,14 @@ class WatchList extends React.Component {
         );
     }
 
+    onStockInfoClicked = (symbol, name, lastPrice, change, changePct) => {
+        this.setState({
+            selectedInfoStock: {symbol, name, lastPrice, chg: change, chgPct: changePct}
+        }, () => {
+            this.toggleStockDetailBottomSheetOpen()
+        });
+    }
+
     renderTickers = () => {
         const {tickers = [], preview = true} = this.props;
         return tickers.map((ticker, index) => 
@@ -46,6 +61,7 @@ class WatchList extends React.Component {
                 {...ticker} 
                 key={index} 
                 extraContent={this.state.watchlistEditMode ? this.renderDeleteIcon : null}
+                onInfoClicked={this.onStockInfoClicked}
             />
         );
     }
@@ -176,6 +192,11 @@ class WatchList extends React.Component {
     render() {
         return (
             <Grid container>
+                <StockDetailBottomSheet 
+                    open={this.state.stockDetailBottomSheetOpen}
+                    onClose={this.toggleStockDetailBottomSheetOpen}
+                    {...this.state.selectedInfoStock}
+                />
                 <Grid item xs={12}>
                     <Grid container justify="flex-end">
                     {

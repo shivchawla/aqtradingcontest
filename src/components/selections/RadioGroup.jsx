@@ -26,7 +26,7 @@ export default class RadioGroup extends React.Component {
     }
 
     render() {
-        const {items = ['One', 'Two'], CustomRadio = null, disabled = false} = this.props;
+        const {items = ['One', 'Two'], CustomRadio = null, disabled = false, small = false} = this.props;
         const CustomRadioComponent = CustomRadio !== null ? CustomRadio : RadioComponent;
 
         return (
@@ -48,6 +48,7 @@ export default class RadioGroup extends React.Component {
                                 onChange={() => this.handleChange(index)}
                                 fontSize={this.props.fontSize || '14px'}
                                 disabled={disabled}
+                                small={small}
                             />
                         );
                     })

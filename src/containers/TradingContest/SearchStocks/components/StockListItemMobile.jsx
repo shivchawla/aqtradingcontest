@@ -177,14 +177,15 @@ export default class StockListItemMobile extends React.Component {
                             </div>
                         </div>
                     </div>
-                    {/* {
+                    {
                         !this.props.extraContent &&
                         <ActionIcon 
                             type="info"
                             size={18}
                             color='#919191'
+                            onClick={() => this.props.onInfoClicked(symbol, name, current, change, changePct)}
                         />
-                    } */}
+                    }
                     {
                         this.props.extraContent && this.props.extraContent(symbol)
                     }

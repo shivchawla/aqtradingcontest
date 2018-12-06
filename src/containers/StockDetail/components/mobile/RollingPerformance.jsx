@@ -68,7 +68,7 @@ export default class RollingPerformance extends React.Component {
                         onChange={this.onRadioChange}
                     />
                 </Grid>
-                <Grid item xs={12} style={{marginTop: '30px'}}>
+                <Grid item xs={12} style={{marginTop: '5px'}}>
                     <MetricStats metrics={this.state.metrics} />
                 </Grid>
             </Container>

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Media from 'react-media';
 import styled from 'styled-components';
-import {Motion, spring} from 'react-motion';
 import _  from 'lodash';
 import Chip from '@material-ui/core/Chip';
 import Icon from '@material-ui/core/Icon';
@@ -10,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import StockPerformance from './components/StockPerformance';
+import StockDetailBottomSheet from '../StockDetailBottomSheet';
 import StockFilter from './components/StockFilter';
 import {screenSize} from '../constants';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -50,11 +50,17 @@ export class SearchStocks extends React.Component {
                 message: 'N/A'
             },
             selectedStocksDialogOpen: false,
-            newStocks: []
+            newStocks: [],
+            stockDetailBottomSheetOpen: false,
+            selectedInfoStock: {}
         };
         this.localStocks = []; // Used to get the list of all stocks obtained from N/W calls
         this.stockListComponent = null;
         showFilter: false
+    }
+
+    toggleStockDetailBottomSheetOpen = () => {
+        this.setState({stockDetailBottomSheetOpen: !this.state.stockDetailBottomSheetOpen});
     }
 
     renderSearchStocksList = () => {
@@ -256,8 +262,17 @@ export class SearchStocks extends React.Component {
                     conditionallyAddItemToSellSelectedArray={this.conditionallyAddItemToSellSelectedArray}
                     toggleAdd={true}
                     stockCart={this.props.stockCart}
+                    onInfoClicked={this.onStockInfoClicked}
                 />
         )
+    }
+
+    onStockInfoClicked = (symbol, name, lastPrice, change, changePct) => {
+        this.setState({
+            selectedInfoStock: {symbol, name, lastPrice, chg: change, chgPct: changePct}
+        }, () => {
+            this.toggleStockDetailBottomSheetOpen()
+        });
     }
 
     handleStockListItemClick = stock => {
@@ -865,6 +880,11 @@ export class SearchStocks extends React.Component {
 
         return (
             <React.Fragment>
+                <StockDetailBottomSheet 
+                    open={this.state.stockDetailBottomSheetOpen}
+                    onClose={this.toggleStockDetailBottomSheetOpen}
+                    {...this.state.selectedInfoStock}
+                />
                 <Snackbar
                     anchorOrigin={{
                         vertical: 'top',
