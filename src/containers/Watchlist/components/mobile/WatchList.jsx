@@ -7,9 +7,10 @@ import AutoComplete from '../../../../components/input/AutoComplete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
 import {withRouter} from 'react-router';
-import {ChartTickerItem} from './ChartTickerItem';
+// import {ChartTickerItem} from './ChartTickerItem';
+import StockListItemMobile from '../../../TradingContest/SearchStocks/components/StockListItemMobile';
 import {Utils} from '../../../../utils';
-import { verticalBox, horizontalBox, primaryColor } from '../../../../constants';
+import { verticalBox, horizontalBox, primaryColor, metricColor} from '../../../../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -27,16 +28,24 @@ class WatchList extends React.Component {
         }
     }
 
+    renderDeleteIcon = (symbol) => {
+        return (
+            <ActionIcon 
+                size={18}
+                color={metricColor.negative}
+                type='delete'
+                onClick={() => this.deleteItem(symbol)}
+            />
+        );
+    }
+
     renderTickers = () => {
         const {tickers = [], preview = true} = this.props;
         return tickers.map((ticker, index) => 
-            <ChartTickerItem 
-                watchlist={true}
+            <StockListItemMobile 
+                {...ticker} 
                 key={index} 
-                legend={ticker} 
-                deleteItem={this.deleteItem} 
-                onClick={this.props.onClick}
-                edit={this.state.watchlistEditMode}
+                extraContent={this.state.watchlistEditMode ? this.renderDeleteIcon : null}
             />
         );
     }
@@ -68,11 +77,10 @@ class WatchList extends React.Component {
 
     onSelect = stock => {
         const value = _.get(stock, 'label', null);
-        const presentTickers = this.props.tickers.map(item => item.name); // present ticker list 
+        const presentTickers = this.props.tickers.map(item => item.symbol); // present ticker list 
         const newTickers = _.uniq([...presentTickers, value]); // unique ticker list after adding the selected item  
         // Calculating the difference to check if any item was added in the watchlist, a new request will only be sent
         // with the introduction of a new position
-        this.setState({loading: true});
         const differenceArray = _.without(newTickers, ...presentTickers);
         if (differenceArray.length > 0) {
             const data = {
@@ -80,6 +88,7 @@ class WatchList extends React.Component {
                 securities: this.processPositions(newTickers)
             };
             const url = `${requestUrl}/watchlist/${this.props.id}`;
+            this.setState({loading: true});
             axios({
                 url,
                 headers: Utils.getAuthTokenHeader(),
@@ -106,7 +115,7 @@ class WatchList extends React.Component {
 
     deleteItem = name => {
         // console.log(name);
-        const tickers = this.props.tickers.map(item => item.name);
+        const tickers = this.props.tickers.map(item => item.symbol);
         const newTickers = _.pull(tickers, name);
         const url = `${requestUrl}/watchlist/${this.props.id}`;
         const data = {
@@ -140,6 +149,7 @@ class WatchList extends React.Component {
 
     processPositions = positions => {
         return positions.map(item => {
+            console.log(item);
             return {
                 ticker: item,
                 securityType: "EQ",
@@ -227,7 +237,7 @@ class WatchList extends React.Component {
                                 overflowY: 'scroll', 
                                 marginTop: '10px',
                                 padding: '0 10px',
-                                marginTop: '15px'
+                                marginTop: '-5px'
                             }}
                     >
                         {this.renderTickers()}

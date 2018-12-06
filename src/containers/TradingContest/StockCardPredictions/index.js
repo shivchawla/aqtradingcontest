@@ -25,6 +25,8 @@ const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
 
 class StockCardPredictions extends React.Component {
+    fetchStocks = null;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -284,6 +286,19 @@ class StockCardPredictions extends React.Component {
         }, 1400);
     }
 
+    updateStockDataToDefaultSettings = () => {
+        const {defaultStockData} = this.state;
+        const horizon = _.get(defaultStockData, 'horizon', 5);
+        const target = _.get(defaultStockData, 'target', 5);
+        this.setState({
+            stockData: {
+                ...this.state.stockData,
+                horizon,
+                target
+            }
+        });
+    }
+
     createDailyContestPrediction = (type = 'buy') => {
         const predictions = constructPrediction(this.state.stockData, type);
         this.setState({loadingCreatePredictions: true});
@@ -301,6 +316,7 @@ class StockCardPredictions extends React.Component {
         })
         .then(() => {
             this.showSuccess();
+            this.updateStockDataToDefaultSettings();
         })
         .catch(error => {
             let errorMessage = _.get(error, 'response.data.msg', '');
@@ -409,6 +425,7 @@ class StockCardPredictions extends React.Component {
                     updateEditMode={this.updateEditMode}
                     updateListMode={this.updateListMode}
                     skipStock={this.skipStock}
+                    fetchStocks={this.fetchStocks}
                 />
                 <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-between'}}>
                     <Tooltip title="Started Today" placement="bottom">
@@ -446,6 +463,7 @@ class StockCardPredictions extends React.Component {
                         skippedStocks={this.state.skippedStocks}
                         list={this.shouldShowListView()}
                         stockCart={this.state.stockCart}
+                        setFetchStocks={this.setFetchStocks}
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -454,6 +472,10 @@ class StockCardPredictions extends React.Component {
             </Container>
         );
     }
+
+    setFetchStocks = fetchStocks => {
+        this.fetchStocks = fetchStocks;
+    }   
 
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {

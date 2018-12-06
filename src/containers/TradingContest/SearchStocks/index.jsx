@@ -19,14 +19,16 @@ import StockList from './components/StockList';
 import SearchInput from './components/SearchInput';
 import {maxPredictionLimit} from '../MultiHorizonCreateEntry/constants'
 import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
-import {fetchAjax} from '../../../utils';
+import {fetchAjaxPromise} from '../../../utils';
 import './css/searchStocks.css';
 
 const {requestUrl} = require('../../../localConfig');
+let searchInputTimeout = null;
 
 export class SearchStocks extends React.Component {
     constructor(props) {
         super(props);
+        this.cancelFetchStocks = undefined;
         this.state = {
             stocks: [],
             sellStocks: [],
@@ -106,13 +108,15 @@ export class SearchStocks extends React.Component {
                             alignItems: 'center',
                             padding: '0 5px',
                             marginTop: '10px'
+                            // margin: '0 10px'
                         }}
                 >
                     <SearchInput
                         style={{width: '100%', marginTop: 0}}
-                        placeholder="Search Stocks"
+                        label="Search Stocks"
                         type="search"
                         margin="normal"
+                        variant="outlined"
                         onChange={value => this.handleSearchInputChange(value, 'mobile')}
                     />
                     {
@@ -144,7 +148,7 @@ export class SearchStocks extends React.Component {
                         xs={12} 
                         style={{
                             ...verticalBox,
-                            padding: '0 15px'
+                            padding: '0 7px'
                         }}
                 >
                     {this.renderStockList()}
@@ -158,22 +162,31 @@ export class SearchStocks extends React.Component {
         );
     }
 
-    handleSearchInputChange = (e, type = 'desktop') => {
+    handleSearchInputChange = (e) => {
         const searchQuery = e.target.value;
-        this.setState({searchInput: searchQuery, selectedPage: 0}, () => {
-            this.fetchStocks(this.state.searchInput, false);
-        });
+        clearTimeout(searchInputTimeout);
+        searchInputTimeout = setTimeout(() => {
+            this.setState({searchInput: searchQuery, selectedPage: 0}, () => {
+                this.fetchStocks(this.state.searchInput, false);
+            });
+        }, 300);
     }
 
-    fetchStocks = (searchQuery = this.state.searchInput, shoudlConcatenate = false, shouldSync = true) => new Promise(resolve => {
+    fetchStocks = (searchQuery = this.state.searchInput, shoudlConcatenate = false, requiredSector = null) => new Promise(resolve => {
+        try {
+            this.cancelFetchStocks();
+        } catch(err) {}
         const limit = 10;
         const stocks = [...this.state.stocks];
         const skip = this.state.selectedPage * limit;
         const populate = true;
         const universe = _.get(this.props, 'filters.universe', 'NIFTY_500');
-        const sector = _.get(this.props, 'filters.sector', '').length === 0
+        let sector = _.get(this.props, 'filters.sector', '').length === 0
                 ?   this.state.filter.sector
                 :   _.get(this.props, 'filters.sector', '');
+        if (requiredSector !== null) {
+            sector = requiredSector;
+        }
         const industry = _.get(this.props, 'filters.industry', '').length === 0
                 ?   this.state.filter.industry
                 :   _.get(this.props, 'filters.industry', '');
@@ -181,7 +194,9 @@ export class SearchStocks extends React.Component {
         const url = `${requestUrl}/stock?search=${encodeURIComponent(searchQuery)}&populate=${populate}&universe=${universe}&sector=${sector}&industry=${industry}&skip=${skip}&limit=${limit}&exclude=${stocksToSkip}`;
 
         this.setState({loadingStocks: true});
-        fetchAjax(url, this.props.history, this.props.pageUrl)
+        fetchAjaxPromise(url, this.props.history, this.props.pageUrl, false, c => {
+            this.cancelFetchStocks = c
+        })
         .then(({data: stockResponseData}) => {
             const processedStocks = this.processStockList(stockResponseData);
             let requiredStocks = [];
@@ -589,7 +604,7 @@ export class SearchStocks extends React.Component {
         this.setState({
             selectedPage
         }, () => {
-            this.fetchStocks(this.state.searchInput, true, false);
+            this.fetchStocks(this.state.searchInput, true);
         })
     }
 
@@ -620,7 +635,7 @@ export class SearchStocks extends React.Component {
                         ...horizontalBox, 
                         justifyContent: 'center', 
                         marginTop: '10px',
-                        padding: '0 15px'
+                        padding: '0 10px'
                     }}
             >
                 <Button
@@ -647,7 +662,7 @@ export class SearchStocks extends React.Component {
                         ...horizontalBox, 
                         justifyContent: 'center', 
                         marginTop: '10px',
-                        padding: '0 15px'
+                        padding: '0 10px'
                     }}
             >
                 {
@@ -699,6 +714,10 @@ export class SearchStocks extends React.Component {
 
     componentWillMount() {
         this.props.loadOnMount && this.fetchStocks();
+    }
+
+    componentWillUnmount() {
+        this.cancelFetchStocks && this.cancelFetchStocks();
     }
 
     toggleStockPerformanceOpen = () => {
@@ -813,6 +832,7 @@ export class SearchStocks extends React.Component {
     }
 
     componentDidMount() {
+        this.props.setFetchStocks && this.props.setFetchStocks(this.fetchStocks);
         setTimeout(() => {
             this.setState({showFilter: true});
         }, 400)

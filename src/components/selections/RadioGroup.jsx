@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import Radio from '@material-ui/core/Radio';
 import {horizontalBox, primaryColor} from '../../constants';
 
+const disabledColor = '#bdbdbd';
+
 export default class RadioGroup extends React.Component {
     constructor(props) {
         super(props);
@@ -24,7 +26,7 @@ export default class RadioGroup extends React.Component {
     }
 
     render() {
-        const {items = ['One', 'Two'], CustomRadio = null} = this.props;
+        const {items = ['One', 'Two'], CustomRadio = null, disabled = false} = this.props;
         const CustomRadioComponent = CustomRadio !== null ? CustomRadio : RadioComponent;
 
         return (
@@ -45,6 +47,7 @@ export default class RadioGroup extends React.Component {
                                 checked={this.state.selected === index}
                                 onChange={() => this.handleChange(index)}
                                 fontSize={this.props.fontSize || '14px'}
+                                disabled={disabled}
                             />
                         );
                     })
@@ -54,11 +57,19 @@ export default class RadioGroup extends React.Component {
     }
 }
 
-const RadioComponent = ({label, checked, onChange, fontSize = 14}) => {
+const RadioComponent = ({label, checked, onChange, fontSize = 14, disabled=false}) => {
+    const labelColor = disabled ? disabledColor : primaryColor;
+
     return (
         <div style={radioContainerStyle}>
-            <Radio checked={checked} onChange={onChange}/>
-            <RadioLabel fontSize={fontSize} onClick={onChange}>{label}</RadioLabel>
+            <Radio checked={checked} onChange={onChange} disabled={disabled} />
+            <RadioLabel 
+                    fontSize={fontSize} 
+                    onClick={!disabled ? onChange : null}
+                    color={labelColor}
+            >
+                {label}
+            </RadioLabel>
         </div>
     );
 }
@@ -72,6 +83,6 @@ const radioContainerStyle = {
 const RadioLabel = styled.h3`
     cursor: pointer;
     font-size: ${props => props.fontSize || '14px'};
-    color: ${primaryColor};
-    font-weight: 400
+    color: ${props => props.color || primaryColor};
+    font-weight: 400;
 `;

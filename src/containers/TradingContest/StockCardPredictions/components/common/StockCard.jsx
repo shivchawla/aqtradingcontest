@@ -363,8 +363,8 @@ export default class StockCard extends React.Component {
                         >
                             <ActionIcon 
                                 type='cancel'
-                                size={50}
-                                style={{marginTop: '30px'}}
+                                size={45}
+                                style={{marginTop: '20px'}}
                                 color='#767676'
                                 onClick={this.props.onClose}
                             />
@@ -456,14 +456,15 @@ export default class StockCard extends React.Component {
                     style={{
                         ...horizontalBox, 
                         justifyContent: 'space-between',
-                        borderBottom: '1px solid #e7e7e7',
-                        width: '100%'
+                        background: 'linear-gradient(to right, #5443F0, #335AF0)',
+                        width: '100%',
+                        padding: '5px 0'
                     }}
             >
                 <Header>Add Prediction</Header>
                 <ActionIcon 
                     onClick={this.props.onClose} 
-                    color='#444'
+                    color='#fff'
                     type="close"
                 />
             </div>
@@ -572,6 +573,7 @@ const Container = styled(Grid)`
     transition: all 0.4s ease-in-out;
     padding: 10px 0;
     padding-top: 0;
+    margin-top: ${props => props.bottomSheet ? '10px' : '0px'}
 `;
 
 const MainText = styled.h3`
@@ -634,7 +636,7 @@ const NoDataText = styled.div`
 `;
 
 const Header = styled.h3`
-    color: #0D0D0D;
+    color: #fff;
     font-weight: 500;
     font-family: 'Lato', sans-serif;
     font-size: 18px;

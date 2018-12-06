@@ -83,6 +83,10 @@ class StockSelection extends React.Component {
                 loadOnMount={true}
                 zIndex={this.props.list ? 1 : 20000}
                 stockCart={this.props.stockCart}
+                filters={{
+                    sector: _.get(this.props, 'stockData.sector', '')
+                }}
+                setFetchStocks={this.props.setFetchStocks}
             />
         );
     }
