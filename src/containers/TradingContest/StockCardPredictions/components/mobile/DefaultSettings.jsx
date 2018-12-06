@@ -213,27 +213,6 @@ class DefaultSettings extends React.Component {
                                     View Mode
                                 </MetricLabel>
                                 <RadioGroup style={{margin:'0px auto 10px auto'}}
-			                        items={['Normal', 'Customize']}
-			                        defaultSelected={editMode === true ? 1 : 0}
-                                    onChange={this.onEditModeChanged}
-                                    style={{
-                                        marginLeft: '-13px'
-                                    }}
-                                    disabled={listMode}
-			                    />
-                            </div>
-                            <div
-                                    style={{
-                                        paddingLeft: '40px',
-                                        width: '100%',
-                                        justifyContent: 'flex-start',
-                                        marginTop: '30px'
-                                    }}
-                            >
-                                <MetricLabel >
-                                    Selection Mode
-                                </MetricLabel>
-                                <RadioGroup style={{margin:'0px auto 10px auto'}}
 			                        items={['Card', 'List']}
 			                        defaultSelected={listMode === true ? 1 : 0}
                                     onChange={this.onListModeChanged}
@@ -242,6 +221,30 @@ class DefaultSettings extends React.Component {
                                     }}
 			                    />
                             </div>
+                            {
+                                !listMode &&
+                                <div
+                                        style={{
+                                            paddingLeft: '40px',
+                                            width: '100%',
+                                            justifyContent: 'flex-start',
+                                            marginTop: '30px'
+                                        }}
+                                >
+                                    <MetricLabel >
+                                        Card Mode
+                                    </MetricLabel>
+                                    <RadioGroup style={{margin:'0px auto 10px auto'}}
+                                        items={['Normal', 'Customize']}
+                                        defaultSelected={editMode === true ? 1 : 0}
+                                        onChange={this.onEditModeChanged}
+                                        style={{
+                                            marginLeft: '-13px'
+                                        }}
+                                        disabled={listMode}
+                                    />
+                                </div>
+                            }
                             <div
                                     style={{
                                         ...horizontalBox,
