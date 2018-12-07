@@ -135,7 +135,7 @@ export default class WatchlistComponent extends React.Component {
                     var validCurrentPrice = _.get(item, 'realtime.current', 0.0) != 0.0;
                     return {
                         symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
-                        change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))*100).toFixed(2)),
+                        change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))).toFixed(2)),
                         current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
                         changePct: _.get(item, 'realtime.changePct', 0.0),
                         name: _.get(item, 'detail.Nse_Name', '')

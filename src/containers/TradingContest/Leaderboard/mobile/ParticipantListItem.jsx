@@ -6,6 +6,8 @@ import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../..
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
 
+const neutralColor = '#717171';
+
 export default class ParticipantListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
@@ -28,7 +30,7 @@ export default class ParticipantListItem extends React.Component {
         }  = this.props;
         
         const medal = getRankMedal(rank);
-        const changeColor = pnl[listType] > 0 ? metricColor.positive : pnl[listType] === 0 ? metricColor.neutral : metricColor.negative;
+        const changeColor = pnl[listType] > 0 ? metricColor.positive : pnl[listType] === 0 ? neutralColor : metricColor.negative;
         
         return (
             <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(userName, advisorId)}>
@@ -37,17 +39,12 @@ export default class ParticipantListItem extends React.Component {
                         xs={12}
                         style={{
                             ...horizontalBox,
-                            justifyContent: 'space-between'
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
                         }}
                 >
                     <Name>{userName}</Name>
                     <img src={medal} width={24}/>
-                </Grid>
-                <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>
-                    <p style={labelStyle}>Investment</p>
-                    <Score>
-                        {Utils.formatInvestmentValue(cost[listType])}
-                    </Score>
                 </Grid>
                 <Grid 
                         item xs={12} 
@@ -57,7 +54,7 @@ export default class ParticipantListItem extends React.Component {
                             marginTop: '5px',
                             borderTop: '1px solid #F1F1F1',
                             padding: '10px 0',
-                            marginTop: '5px'
+                            marginTop: '15px'
                         }}
                 >
                     <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
@@ -69,8 +66,8 @@ export default class ParticipantListItem extends React.Component {
                         {(pnlPct[listType] * 100).toFixed(2)}%
                     </SecondaryText>
                     <SecondaryText style={{marginLeft: '5px'}}>
-                        <p style={labelStyle}>Profit Factor</p>
-                        {(profitFactor[listType] || 0).toFixed(2)}
+                        <p style={labelStyle}>Investment</p>
+                        {Utils.formatInvestmentValue(cost[listType])}
                     </SecondaryText>
                 </Grid>
             </SGrid>
@@ -94,9 +91,10 @@ const SGrid = styled(Grid)`
 `;
 
 const Name = styled.h3`
-    font-size: 17px;
-    font-weight: 500;
-    color:'black';
+    font-size: 16px;
+    font-weight: 700;
+    color: #222;
+    font-family: 'Lato', sans-serif;
 `;
 
 const SecondaryText = styled.h3`
@@ -104,6 +102,7 @@ const SecondaryText = styled.h3`
     font-weight: 500;
     color: ${props => props.color || '#717171'};
     text-align: start;
+    font-family: 'Lato', sans-serif;
 `;
 
 const Score = styled.h3`

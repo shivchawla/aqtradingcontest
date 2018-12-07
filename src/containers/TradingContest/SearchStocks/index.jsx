@@ -178,13 +178,15 @@ export class SearchStocks extends React.Component {
         }, 300);
     }
 
-    fetchStocks = (searchQuery = this.state.searchInput, shoudlConcatenate = false, requiredSector = null) => new Promise(resolve => {
+    fetchStocks = (searchQuery = this.state.searchInput, shoudlConcatenate = false, requiredSector = null, selectedPage = null) => new Promise(resolve => {
         try {
             this.cancelFetchStocks();
         } catch(err) {}
         const limit = 10;
         const stocks = [...this.state.stocks];
-        const skip = this.state.selectedPage * limit;
+        let nSelectedPage = selectedPage === null ? this.state.selectedPage : selectedPage;
+        const skip = nSelectedPage * limit;
+        this.setState({selectedPage: nSelectedPage});
         const populate = true;
         const universe = _.get(this.props, 'filters.universe', 'NIFTY_500');
         let sector = _.get(this.props, 'filters.sector', '').length === 0
