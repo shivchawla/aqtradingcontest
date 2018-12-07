@@ -7,13 +7,14 @@ import HighStock from '../../../../components/Charts/StockChart';
 import PriceMetrics from './PriceMetrics';
 import LoaderComponent from '../../../TradingContest/Misc/Loader';
 import RollingPerformance from './RollingPerformance';
+import NoDataFound from '../../../../components/Errors/NoDataFound';
 import {horizontalBox, verticalBox} from '../../../../constants';
 
 export default class LayoutMobile extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedMetricView: 0
+            selectedMetricView: 0,
         }
     }
 
@@ -38,44 +39,43 @@ export default class LayoutMobile extends React.Component {
     }
 
     renderContent = () => {
-        const {series} = this.props;
+        const {series, noDataFound = false} = this.props;
 
         return (
-            <React.Fragment>
-                <Grid 
-                        item 
-                        xs={12} 
-                        style={verticalBox}
-                >
-                    <HighStock series={[series]} height={250}/>
+            noDataFound
+            ?   <Grid item xs={12}>
+                    <NoDataFound />
                 </Grid>
-                <Grid 
-                        item 
-                        xs={12}
-                        style={{
-                            ...verticalBox,
-                            marginTop: '-25px'
-                        }}
-                >
-                    <Tabs 
-                            value={this.state.selectedMetricView} 
-                            onChange={this.handleSegmentControlChange}
-                            size='small'
+            :   <React.Fragment>
+                    <Grid 
+                            item 
+                            xs={12} 
+                            style={verticalBox}
                     >
-                        <Tab label="Price" />
-                        <Tab label="Rolling" />
-                    </Tabs>
-                    {/* <SegmentedControl 
-                        labels={['Price', 'Rolling']}
-                        onChange={this.handleSegmentControlChange}
-                        selected={this.state.selectedMetricView}
-                    /> */}
-                    {
-                        this.state.selectedMetricView == 0
-                            ? this.renderPriceMetrics()
-                            : this.renderRollingPerformance()
-                    }
-                </Grid>
+                        <HighStock series={[series]} height={250}/>
+                    </Grid>
+                    <Grid 
+                            item 
+                            xs={12}
+                            style={{
+                                ...verticalBox,
+                                marginTop: '-25px'
+                            }}
+                    >
+                        <Tabs 
+                                value={this.state.selectedMetricView} 
+                                onChange={this.handleSegmentControlChange}
+                                size='small'
+                        >
+                            <Tab label="Price" />
+                            <Tab label="Rolling" />
+                        </Tabs>
+                        {
+                            this.state.selectedMetricView == 0
+                                ? this.renderPriceMetrics()
+                                : this.renderRollingPerformance()
+                        }
+                    </Grid>
             </React.Fragment>
         );
     }
@@ -105,4 +105,5 @@ export default class LayoutMobile extends React.Component {
 
 const Container = styled(Grid)`
     padding: 10px;
+    padding-top: 4px;
 `;

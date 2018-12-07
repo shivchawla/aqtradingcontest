@@ -433,7 +433,6 @@ class StockChartImpl extends React.Component {
             <Grid item style={{ zIndex:'20'}} xs={12} >
                 {
                     legendItems.map((legend, index) => {
-                        const changeColor = legend.change < 0 ? '#F44336' : '#00C853';
                         const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
 
                         return (
@@ -442,28 +441,31 @@ class StockChartImpl extends React.Component {
                                             item 
                                             xs={12}
                                             style={{
-                                                ...horizontalBox,
+                                                ...verticalBox,
                                                 alignItems: 'center',
-                                                justifyContent: 'space-between',
                                                 marginTop: '5px'
                                             }}
                                     >
                                         <div 
                                                 style={{
                                                     ...horizontalBox,
-                                                    justifyContent: 'flex-start'
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
                                                 }}
                                         >
-                                            <LastPrice>₹{lastPrice}</LastPrice>
-                                            <Divider>|</Divider>
-                                            <Change color={changeColor}>{legend.change}%</Change>                                        
+                                            <Date>{this.state.selectedDate}</Date>
+                                            <PriceComponent lastPrice={lastPrice} change={legend.change}/>    
                                         </div>
                                         <RadioGroup 
                                             CustomRadio={TimelineCustomRadio}
                                             items={timelines}
                                             defaultSelected={3}
                                             onChange={this.changeSelection}
-                                            small
+                                            style={{
+                                                marginTop: '10px',
+                                                width: '100%',
+                                                justifyContent: 'space-between'
+                                            }}
                                         />
                                     </Grid>
                                 </Grid>
@@ -479,20 +481,6 @@ class StockChartImpl extends React.Component {
 
         return (
             <Grid item xs={12}>
-                {
-                    !this.props.hideLegend &&
-                    <Grid container>
-                        <h2 
-                                style={{
-                                    fontSize: this.props.mobile ? '14px' : '12px', 
-                                    margin: '0',
-                                    zIndex: 20
-                                }}
-                        >
-                            <Date>{this.state.selectedDate}</Date>
-                        </h2>
-                    </Grid>
-                }
                 {
                     !this.props.hideLegend &&
                     <Grid container 
@@ -535,6 +523,23 @@ class StockChartImpl extends React.Component {
 }
 
 export default withRouter(StockChartImpl);
+
+const PriceComponent = ({lastPrice, change}) => {
+    const changeColor = change < 0 ? '#F44336' : change === 0 ? '#222' : '#00C853';
+    
+    return (
+        <div 
+                style={{
+                    ...horizontalBox,
+                    justifyContent: 'flex-start'
+                }}
+        >
+            <LastPrice>₹{lastPrice}</LastPrice>
+            <Divider>|</Divider>
+            <Change color={changeColor}>{change}%</Change>                                        
+        </div>
+    );
+}
 
 const LastPrice = styled.h3`
     font-family: 'Lato', sans-serif;

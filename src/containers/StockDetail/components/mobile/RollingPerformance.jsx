@@ -66,6 +66,10 @@ export default class RollingPerformance extends React.Component {
                         items={timelines}
                         defaultSelected={this.state.selectedTimelineIndex}
                         onChange={this.onRadioChange}
+                        style={{
+                            width: '100%',
+                            justifyContent: 'space-between'
+                        }}
                     />
                 </Grid>
                 <Grid item xs={12} style={{marginTop: '5px'}}>

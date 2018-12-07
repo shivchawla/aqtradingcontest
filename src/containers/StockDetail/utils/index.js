@@ -11,7 +11,7 @@ export const fetchStockData = stock => {
     return Promise.all([
         getStockData(stock, 'latestDetail'),
         getStockPerformance(stock.toUpperCase()),
-        // getStockData(stock, 'rollingPerformance')
+        getStockData(stock, 'rollingPerformance')
     ])
     .then(([latestDetailResponse, stockPerformance, rollingPerformanceResponse]) => {
         const latestDetail = latestDetailResponse.data;

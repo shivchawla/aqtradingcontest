@@ -263,6 +263,7 @@ export class SearchStocks extends React.Component {
                     toggleAdd={true}
                     stockCart={this.props.stockCart}
                     onInfoClicked={this.onStockInfoClicked}
+                    loading={this.state.loadingStocks}
                 />
         )
     }

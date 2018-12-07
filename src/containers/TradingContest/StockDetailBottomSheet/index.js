@@ -37,7 +37,6 @@ export default class StockDetailBottomSheet extends React.Component {
                         alignItems: 'flex-start',
                         background: 'linear-gradient(to right, #5443F0, #335AF0)',
                         width: '100%',
-                        marginBottom: '10px'
                     }}
             >
                 <ActionIcon size={24} type='close' onClick={this.props.onClose} color='#fff'/>

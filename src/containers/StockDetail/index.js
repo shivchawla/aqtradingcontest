@@ -72,7 +72,8 @@ export default class StockDetail extends React.Component {
             latestDetail: this.state.latestDetail,
             series: this.state.series,
             rollingPerformance: this.state.rollingPerformance,
-            loading: this.state.loading
+            loading: this.state.loading,
+            noDataFound: this.state.noDataFound
         };
 
         return (
