@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {getStockData, getStockPerformance, Utils} from '../../../utils';
+import {getStockData, getStockPerformance, getIntraDayStockPerformance} from '../../../utils';
 
 const color = {
     positive: '#1ADC99',
@@ -10,17 +10,22 @@ const color = {
 export const fetchStockData = stock => {
     return Promise.all([
         getStockData(stock, 'latestDetail'),
-        getStockPerformance(stock.toUpperCase()),
+        // getStockPerformance(stock.toUpperCase()),
+        getIntraDayStockPerformance(stock.toUpperCase()),
         // getStockData(stock, 'rollingPerformance')
     ])
-    .then(([latestDetailResponse, stockPerformance, rollingPerformanceResponse]) => {
+    .then(([latestDetailResponse, intraDayStockPerformance, stockPerformance, rollingPerformanceResponse]) => {
         const latestDetail = latestDetailResponse.data;
         return ({
             latestDetail: getPriceMetrics(latestDetail),
             stockPerformance,
+            intraDayStockPerformance,
             rollingPerformance: _.get(rollingPerformanceResponse, 'data.rollingPerformance.detail', {}),
         });
-    });
+    })
+    .catch(err => {
+        console.log('Error', err);
+    })
 }
 
 export const getPriceMetrics = data => {

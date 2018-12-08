@@ -4,6 +4,7 @@ import Media from 'react-media';
 import LayoutMobile from './components/mobile/Layout';
 import LayoutDesktop from './components/desktop/Layout';
 import {fetchStockData} from './utils';
+import {getStockPerformance} from '../../utils';
 
 export default class StockDetail extends React.Component {
     constructor(props) {
@@ -13,7 +14,9 @@ export default class StockDetail extends React.Component {
             noDataFound: false,
             latestDetail: {},
             series: {name: 'Stock Performance', data: []},
+            intraDaySeries: {name: 'IntraDay Performance', data: []},
             rollingPerformance: {},
+            loadingPriceHistory: false
         };
     }
 
@@ -24,7 +27,9 @@ export default class StockDetail extends React.Component {
             const latestDetail = _.get(stockData, 'latestDetail', {});
             const stockPerformance = _.get(stockData, 'stockPerformance', {});
             const rollingPerformance = _.get(stockData, 'rollingPerformance', {});
-            const series = {...this.state.series, data: stockPerformance};
+            const intraDayStockPerformance = _.get(stockData, 'intraDayStockPerformance', []);
+            const series = {...this.state.series, data: [...stockPerformance]};
+            const intraDaySeries = {...this.state.intraDaySeries, data: [...intraDayStockPerformance]};
             const stockDataForParent = {
                 symbol: this.props.symbol,
                 name: _.get(latestDetail, 'name', ''),
@@ -35,8 +40,9 @@ export default class StockDetail extends React.Component {
             
             this.setState({
                 latestDetail,
-                rollingPerformance,
-                series,
+                // rollingPerformance,
+                // series,
+                intraDaySeries,
                 noDataFound: false
             }, () => {
                 this.props.updateStockData(stockDataForParent);
@@ -51,8 +57,26 @@ export default class StockDetail extends React.Component {
         .finally(() => {
             this.setState({loading: false});
         });
-
     }
+
+    getStockPriceHistory = (startDate = null, endDate = null) => new Promise((resolve, reject) => {
+        const symbol = _.get(this.props, 'symbol', '');
+        const {series = {}} = this.state;
+        const data = _.get(series, 'data', []);
+        // if (data.length > 0) {
+        //     console.log('Data need not be loaded');
+        //     resolve(series);
+        // } else {
+            console.log('Entered Here, Data to be loaded');
+            getStockPerformance(symbol, 'detail', 'priceHistory', startDate, endDate)
+            .then(stockPerformance => {
+                const series = {...this.state.series, data: [...stockPerformance]};
+                this.setState({series});
+                resolve(series);
+            })
+            .catch(err => reject(err))
+        // }
+    })
 
     componentWillReceiveProps(nextProps) {
         if (!_.isEqual(this.props.symbol, nextProps.symbol)) {
@@ -71,9 +95,12 @@ export default class StockDetail extends React.Component {
             symbol: _.get(this.props, 'symbol', ''),
             latestDetail: this.state.latestDetail,
             series: this.state.series,
+            intraDaySeries: this.state.intraDaySeries,
             rollingPerformance: this.state.rollingPerformance,
             loading: this.state.loading,
-            noDataFound: this.state.noDataFound
+            noDataFound: this.state.noDataFound,
+            getStockPriceHistory: this.getStockPriceHistory,
+            loadingPriceHistory: this.state.loadingPriceHistory
         };
 
         return (

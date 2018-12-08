@@ -33,15 +33,42 @@ export const getUnixStockData = (data) => {
     })
 }
 
-export const getStockPerformance = (tickerName, detailType='detail', field='priceHistory') => {
+export const getStockPerformance = (tickerName, detailType='detail', field='priceHistory', startDate = null, endDate = null) => {
     return new Promise((resolve, reject) => {
-        getStockData(tickerName, field, detailType)
+        getStockData(tickerName, field, detailType, startDate, endDate)
         .then(performance => {
             const data = performance.data.priceHistory;
-            if (data.length > 0) { // Check if ticker is valid
+			if (data.length > 0) { // Check if ticker is valid
                 const performanceArray = data.map((item, index) => {
                     return [moment(item.date).valueOf(), item.price]
                 });
+                resolve(performanceArray);
+            } else {
+                reject('Invalid Ticker');
+            }
+        })
+        .catch(error => {
+            reject(error);
+        });
+    });
+}
+
+export const getIntraDayStockPerformance = (tickerName, detailType='detail') => {
+	return new Promise((resolve, reject) => {
+        getStockData(tickerName, 'intraDay', detailType, '2018-12-07')
+        .then(performance => {
+			const data = performance.data.intradayHistory;
+			if (data.length > 0) { // Check if ticker is valid
+
+				const performanceArray = [];
+				for (let i=data.length - 1; i >= 0; i-=5) {
+					const item = data[i];
+					const stillUtc = moment.utc(item.datetime).toDate();
+					const local = moment(stillUtc).local().add(1, 'minutes').startOf('minute').valueOf();
+					performanceArray.push([local, item.close]);
+				}
+				_.reverse(performanceArray);
+                // resolve(performanceArray.slice(0, performanceArray.length - 100));
                 resolve(performanceArray);
             } else {
                 reject('Invalid Ticker');
@@ -228,6 +255,7 @@ export class Utils{
 	}
 
 	static isLoggedIn() {
+		return true;
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']) {
 			return true;
 		} else{
@@ -237,6 +265,7 @@ export class Utils{
 
 	static getAuthToken(){
 		this.loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
+		return 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YTFjMjQyYWJjNDI3ZTI5YmU3ODY1YmEiLCJlbWFpbCI6InNhcnUuc3JleW9AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiU2F1cmF2IiwibGFzdE5hbWUiOiJCaXN3YXMiLCJwYXNzd29yZCI6IiQyYSQxMCRSbjJlaVlMN05qL01qdUExbHRGd20uQm9TTXhmNzg4U3RyZUY0QU5EWTU0cUlqYlEuUktXNiIsImNvZGUiOiIyZTUwMzFiZC01M2NkLTQ5MDItYWExMS0xZmE2ODcwOGFlZjUiLCJfX3YiOjAsImlzVXNlckZyb21Hb29nbGUiOmZhbHNlLCJlbWFpbHByZWZlcmVuY2UiOnsiZGFpbHlfY29udGVzdCI6eyJzdW1tYXJ5X2RpZ2VzdCI6dHJ1ZSwid2lubmVyc19kaWdlc3QiOnRydWV9LCJtYXJrZXRpbmdfZGlnZXN0Ijp0cnVlLCJ3ZWVrbHlfcGVyZm9ybWFuY2VfZGlnZXN0Ijp0cnVlLCJkYWlseV9wZXJmb3JtYW5jZV9kaWdlc3QiOnRydWV9LCJhY3RpdmUiOnRydWUsImlhdCI6MTU0NDE2ODM0NCwiZXhwIjoxNTQ0MzQxMTQ0LCJpc3MiOiJhaW1zcXVhbnQiLCJqdGkiOiJqd3RpZCJ9.Onv8gPrdmyAba22WYX8sxZi_jXB_RQ7PMi4VyqApKfwWEpfdCiAwVd3vVhXU2_U3aasBEZUyzBIcgLVirC_hHvpQyIaTjPK1BQgu3LPVQDv2PnnD6D1h87gZskXpUapU4OIr43h6J_xdxSYnD7oy6SnIUhPfeA0U8vNzGVj-8-35jr4jqO0Yxp7hMv3gL-xaQF0yLOIbMUellw1daEAP_SjIM5W1bwzkj9WHV2ML83XNzJhkKYydksRUazqfi-eisxJMZHv_SfvRnK51zTxVjijm9RPScQ3txIuFIDuSzEoMcO5mR2ZD1t-hI56dc3rydN6wmPn0b-uHguP-F8xxzA';
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']){
 			return this.loggedInUserinfo['token'];
 		}else{
@@ -252,6 +281,7 @@ export class Utils{
 		if (this.isLoggedIn()){
 			headersLocal['aimsquant-token'] = this.getAuthToken();
 		}
+		headersLocal['aimsquant-token'] = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YTFjMjQyYWJjNDI3ZTI5YmU3ODY1YmEiLCJlbWFpbCI6InNhcnUuc3JleW9AZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiU2F1cmF2IiwibGFzdE5hbWUiOiJCaXN3YXMiLCJwYXNzd29yZCI6IiQyYSQxMCRSbjJlaVlMN05qL01qdUExbHRGd20uQm9TTXhmNzg4U3RyZUY0QU5EWTU0cUlqYlEuUktXNiIsImNvZGUiOiIyZTUwMzFiZC01M2NkLTQ5MDItYWExMS0xZmE2ODcwOGFlZjUiLCJfX3YiOjAsImlzVXNlckZyb21Hb29nbGUiOmZhbHNlLCJlbWFpbHByZWZlcmVuY2UiOnsiZGFpbHlfY29udGVzdCI6eyJzdW1tYXJ5X2RpZ2VzdCI6dHJ1ZSwid2lubmVyc19kaWdlc3QiOnRydWV9LCJtYXJrZXRpbmdfZGlnZXN0Ijp0cnVlLCJ3ZWVrbHlfcGVyZm9ybWFuY2VfZGlnZXN0Ijp0cnVlLCJkYWlseV9wZXJmb3JtYW5jZV9kaWdlc3QiOnRydWV9LCJhY3RpdmUiOnRydWUsImlhdCI6MTU0NDE2ODM0NCwiZXhwIjoxNTQ0MzQxMTQ0LCJpc3MiOiJhaW1zcXVhbnQiLCJqdGkiOiJqd3RpZCJ9.Onv8gPrdmyAba22WYX8sxZi_jXB_RQ7PMi4VyqApKfwWEpfdCiAwVd3vVhXU2_U3aasBEZUyzBIcgLVirC_hHvpQyIaTjPK1BQgu3LPVQDv2PnnD6D1h87gZskXpUapU4OIr43h6J_xdxSYnD7oy6SnIUhPfeA0U8vNzGVj-8-35jr4jqO0Yxp7hMv3gL-xaQF0yLOIbMUellw1daEAP_SjIM5W1bwzkj9WHV2ML83XNzJhkKYydksRUazqfi-eisxJMZHv_SfvRnK51zTxVjijm9RPScQ3txIuFIDuSzEoMcO5mR2ZD1t-hI56dc3rydN6wmPn0b-uHguP-F8xxzA';
 
 		return headersLocal;
 	}

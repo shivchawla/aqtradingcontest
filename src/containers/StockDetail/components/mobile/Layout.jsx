@@ -39,7 +39,7 @@ export default class LayoutMobile extends React.Component {
     }
 
     renderContent = () => {
-        const {series, noDataFound = false} = this.props;
+        const {series, noDataFound = false, intraDaySeries} = this.props;
 
         return (
             noDataFound
@@ -52,7 +52,13 @@ export default class LayoutMobile extends React.Component {
                             xs={12} 
                             style={verticalBox}
                     >
-                        <HighStock series={[series]} height={250}/>
+                        <HighStock 
+                            series={[series]} 
+                            intraDaySeries={intraDaySeries} 
+                            height={250}
+                            getStockPriceHistory={this.props.getStockPriceHistory}
+                            loadingPriceHistory={this.props.loadingPriceHistory}
+                        />
                     </Grid>
                     <Grid 
                             item 

@@ -15,9 +15,41 @@ import './stockChart.css';
 
 const {requestUrl} = require('../../localConfig');
 
-const readableDataFormat = 'Do MMM YY';
-const timelines = ['1M', '3M', 'YTD', '1Y', '2Y', 'ALL'];
-
+const readableDateFormat = 'Do MMM YY';
+const readableTimeFormat = 'hh:mm A';
+const timelines = [
+    {
+        label: '1D',
+        count: 0,
+        timeline: 'd'
+    },
+    {
+        label: '1M',
+        count: 1,
+        timeline: 'M'
+    },
+    {
+        label: '3M',
+        count: 3,
+        timeline: 'M'
+    },
+    {
+        label: 'YTD',
+        count: -1,
+        timeline: 'year'
+    },
+    {
+        label: '1Y',
+        count: 1,
+        timeline: 'y'
+    },
+    {
+        label: '2Y',
+        count: 2,
+        timeline: 'y'
+    }
+];
+const selectedTimeline = 0;
 class StockChartImpl extends React.Component {
     constructor(props) {
         super(props);
@@ -26,8 +58,8 @@ class StockChartImpl extends React.Component {
             config: {
                 colors: ['#0082c8','#e6194b','#3cb44b','#ffe119','#f58231','#911eb4','#46f0f0','#f032e6','#d2f53c','#fabebe','#008080','#e6beff','#aa6e28','#fffac8','#800000','#aaffc3','#808000','#ffd8b1','#000080', '#808080'],
                 rangeSelector: {
-                    enabled: true,
-                    selected: 3,
+                    enabled: false,
+                    selected: 5,
                     labelStyle: {
                         color: '#F86C6C'
                     },
@@ -43,6 +75,10 @@ class StockChartImpl extends React.Component {
                         display: 'none'
                     },
                     buttons: [{
+                        type: 'day',
+                        count: 1,
+                        text: '1d'
+                    }, {
                         type: 'month',
                         count: 1,
                         text: '1m'
@@ -50,6 +86,10 @@ class StockChartImpl extends React.Component {
                         type: 'month',
                         count: 3,
                         text: '3m'
+                    }, {
+                        type: 'month',
+                        count: 6,
+                        text: '6m'
                     }, {
                         type: 'ytd',
                         text: 'YTD'
@@ -66,7 +106,7 @@ class StockChartImpl extends React.Component {
                         text: 'All'
                     }],
                     buttonTheme: { // styles for the buttons
-                        display: 'none',
+                        // display: 'none',
                         fill: 'none',
                         stroke: 'none',
                         'stroke-width': 0,
@@ -88,24 +128,35 @@ class StockChartImpl extends React.Component {
                 },
                 navigator: {
                     outlineColor: '#F86C6C',
+                    enabled: false,
+                    display: 'none'
+                },
+                scrollbar: {
                     enabled: false
                 },
                 series: [],
                 plotOptions: {
                     series: {
-                        compare: 'percent',
-                        dataGrouping: {
-                            groupPixelWidth: 10,
-                        },
-                    },
+                        compare: undefined,
+                        clip: false
+                    }
                 },
                 yAxis: {
                     //gridLineColor: 'transparent',
                     labels: {
                         formatter: function () {
-                            return (this.value > 0 ? ' + ' : '') + this.value + '%';
+                            return Utils.formatMoneyValueMaxTwoDecimals(this.value);
                         }
                     }
+                },
+                xAxis: {
+                    gapGridLineWidth: 0,
+                    labels: {
+                        formatter: function() {
+                            const requiredFormat = self.state.intraDaySelected ? readableTimeFormat: readableDateFormat;
+                            return moment(this.value).format(requiredFormat);
+                        }
+                    },
                 },
                 dataLabels: {
                     enabled: true
@@ -139,23 +190,26 @@ class StockChartImpl extends React.Component {
             },
             series: [],
             legendItems: [],
-            selectedDate: moment().format(readableDataFormat),
+            selectedDate: moment().format(readableDateFormat),
             dataSource: [],
-            loading: false
+            loading: false,
+            intraDaySelected: true,
+            chartData: [],
+            loadingPriceHistory: false
         };
     }
 
     updatePoints = points => {
         const legendItems = [...this.state.legendItems];
+        const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
         points.map(point => {
             try{
                 const item = legendItems.filter(item => item.name.toUpperCase() === point.series.name.toUpperCase())[0];
                 item.y = point.y;
-                item.change = Number(point.point.change.toFixed(2));
-                this.setState({legendItems, selectedDate: moment(points[0].x).format(dateFormat)});
+                
+                this.setState({legendItems, selectedDate: moment(points[0].x).format(requiredMomentFormat)});
             }
-            catch(err) {
-            }
+            catch(err) {}
         });
     }
 
@@ -164,11 +218,11 @@ class StockChartImpl extends React.Component {
     }
 
     componentWillReceiveProps(nextProps, nextState) {
-        if (nextProps.series !== this.props.series) {
-            this.setState({series: nextProps.series}, () => {
-                this.updateSeries(this.state.series);
-            });
-        }
+        // if (nextProps.series !== this.props.series) {
+        //     this.setState({series: nextProps.series}, () => {
+        //         this.updateSeries(this.state.series);
+        //     });
+        // }
     }
 
     addItemToSeries = ({name, data, color = null, destroy = false, disabled = false}) => {
@@ -189,6 +243,9 @@ class StockChartImpl extends React.Component {
             });
         }
         if (legendIndex === -1) {
+            const selectedTime = data[data.length - 1][0];
+            const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
+            const formattedTime = moment(selectedTime).format(requiredMomentFormat);
             this.setState(prevState => {
                 if (destroy) {
                     return {
@@ -202,7 +259,8 @@ class StockChartImpl extends React.Component {
                                 checked: legendItems.length < 5 ,
                                 color: color || this.chart.series[this.chart.series.length - 1].color
                             }
-                        ]
+                        ],
+                        selectedDate: formattedTime
                     }
                 } else {
                     return {
@@ -214,28 +272,53 @@ class StockChartImpl extends React.Component {
                             disabled,
                             checked: legendItems.length < 5 ,
                             color: color || this.chart.series[this.chart.series.length - 1].color
-                        }]
+                        }],
+                        selectedDate: formattedTime
                     }
                 }
             });
         }   
     }
 
+    getDummyDataForSeries = (data) => {
+        const endTime = moment(data[data.length - 1][0]).hours(15).minutes(30).valueOf();
+        const intradayData = _.get(this.props, 'intraDaySeries.data', []);
+        var intervalSize = Math.min(5, Math.floor((data[1][0] - data[0][0])/1000/60));
+        var lastDataPoint = moment(data[data.length - 1][0]); 
+        const lastValue = data[data.length - 1][1];
+        while (lastDataPoint.isBefore(endTime)){
+            lastDataPoint = lastDataPoint.add(intervalSize, 'minutes');
+            intradayData.push([lastDataPoint.valueOf(), lastValue]);
+        }
+        return intradayData;
+    }
+
     updateItemInSeries = (index, {name, data, disabled}) => {
         const legendItems = [...this.state.legendItems];
         const initialYValue = data.length > 0 ? data[data.length - 1][1] : '0';
+        const selectedTime = data[data.length - 1][0];
+        const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
+        const formattedTime = moment(selectedTime).format(requiredMomentFormat);
         try {
             if (this.chart.series[index] !== undefined) {
                 this.chart.series[index].update({name: name, /*.toUpperCase()*/ data}, false);
+                if (this.state.intraDaySelected) {
+                    if (this.chart.series.length < 2) {
+                        this.chart.addSeries({name: 'dummy', data: this.getDummyDataForSeries(data), color: 'transparent'}, false, false);
+                    }
+                } else {
+                    if(this.chart.series.length > 1) {
+                        this.chart.series[1].remove();
+                    }
+                }
                 legendItems[index].name = name; //.toUpperCase();
                 legendItems[index].y = initialYValue; // This line can be removed
-                legendItems[index].change = 0; // This line can be removed
                 legendItems[index].disabled = disabled;
-                this.setState({legendItems});
+                this.setState({legendItems, selectedDate: formattedTime});
                 this.chart.redraw();
             }
         } catch(err) {
-            // console.log(err);
+            console.log(err);
         }
         
     }
@@ -275,7 +358,7 @@ class StockChartImpl extends React.Component {
             }
         } else {
             if (series.length > legendItems.length) { // Item needs to be added
-                // console.log("Items will be added");
+                console.log("Items will be added");
                 series.map(item => {
                     const seriesIndex = _.findIndex(this.chart.series, seriesItem => seriesItem.name.toUpperCase() === item.name.toUpperCase());
                     if (seriesIndex === -1) {
@@ -321,6 +404,7 @@ class StockChartImpl extends React.Component {
                 });
             } else { // Items need to be updated
                 series.map((item, index) => {
+                    console.log('Items will be updated');
                     const seriesIndex = _.findIndex(this.chart.series, 
                                 seriesItem => seriesItem.name.toUpperCase() === item.name.toUpperCase());
                     // if (seriesIndex === -1) {
@@ -363,9 +447,7 @@ class StockChartImpl extends React.Component {
     initializeChart() {
         const {chartId='highchart-container'} = this.props;
         this.chart = new HighStock['StockChart'](chartId, this.state.config);
-        this.setState({series: this.props.series}, () => {
-            this.updateSeries(this.state.series);
-        });
+        this.getSelection(selectedTimeline);
     }
 
     onCheckboxChange = (e, ticker) => {
@@ -428,7 +510,6 @@ class StockChartImpl extends React.Component {
 
     renderHorizontalLegendList = () => {
         const {legendItems} = this.state;
-        const fontSize = this.props.mobile ? '14px' : '12px'
         return (
             <Grid item style={{ zIndex:'20'}} xs={12} >
                 {
@@ -458,9 +539,9 @@ class StockChartImpl extends React.Component {
                                         </div>
                                         <RadioGroup 
                                             CustomRadio={TimelineCustomRadio}
-                                            items={timelines}
-                                            defaultSelected={3}
-                                            onChange={this.changeSelection}
+                                            items={timelines.map(item => item.label)}
+                                            defaultSelected={selectedTimeline}
+                                            onChange={this.getSelection}
                                             style={{
                                                 marginTop: '10px',
                                                 width: '100%',
@@ -504,12 +585,108 @@ class StockChartImpl extends React.Component {
         })
     }
 
-    changeSelection = (selected) => {
-        console.log(selected);
-        this.chart.update({
-            rangeSelector: {
-                selected
+    getChartData = async (selected) => {
+        const clonedChartData = _.map(this.state.chartData, _.cloneDeep);
+        let timeline = timelines[selected].label;
+        const chartDataIndex = _.findIndex(clonedChartData, item => item.timeline === timeline);
+        if (chartDataIndex >= 0) {
+            return _.get(clonedChartData, `[${chartDataIndex}].data`, []);
+        } else {
+            try {
+                const data = await this.getTimelineData(selected);
+                clonedChartData.push({
+                    timeline,
+                    data
+                });
+                this.setState({chartData: clonedChartData});
+                return data;
+            } catch(err) {
+                return(err);
             }
+        }
+    }
+
+    getTimelineData = selected => new Promise((resolve, reject) => {
+        const {intraDaySeries} = this.props;
+        if (selected === 0) {
+            const data = _.get(intraDaySeries, 'data', []);
+
+            resolve(data);
+        } else {
+            const dateFormat = 'YYYY-MM-DD';
+            const selectedTimeline = timelines[selected];
+            const requireTimelineCount = _.get(selectedTimeline, 'count', 0);
+            const timeline = _.get(selectedTimeline, 'timeline', 'M');
+            let startDate = moment();
+            if (requireTimelineCount === -1) {
+                startDate = moment().startOf(timeline);
+            } else {
+                startDate = moment().subtract(requireTimelineCount, timeline);
+            }
+            let startDateUnix = startDate.valueOf();
+            this.props.getStockPriceHistory(startDate.format(dateFormat), moment().format(dateFormat))
+            .then(series => {
+                let {data = []} = series;
+                const throttleData = this.throttleData(data, 5);
+                if (throttleData.length > 25) {
+                    data = throttleData;
+                }
+
+                resolve(data);
+            })
+            .catch(err => reject(err));
+        }
+    })
+
+    throttleData = (data, skip = 5) => {
+        const clonedData = _.map(data, _.cloneDeep);
+        let requiredData = _.remove(clonedData, (item, index) => index % skip === 0);
+        const requiredDataLastItem = requiredData[requiredData.length - 1];
+        const dataLastItem = data[data.length - 1];
+        if (!_.isEqual(requiredDataLastItem, dataLastItem)) {
+            requiredData.push(dataLastItem);
+        }
+
+        return requiredData;
+    }
+
+    getMultiHorizonData = () => {
+        this.setState({loadingPriceHistory: false});
+        this.props.getStockPriceHistory()
+        .finally(() => {
+            this.setState({loadingPriceHistory: false});
+        })
+    }
+
+    getSelection = (selected) => {
+        this.setState({loadingPriceHistory: true});
+        this.getChartData(selected)
+        .then(data => {
+            let intraDaySelected = false;
+            if (this.chart.series.length === 0) {
+                this.addItemToSeries({name: 'Stock Performance', data});
+                // if (this.state.intraDaySelected) {
+                    // this.chart.addSeries({
+                    //     name: 'dummy', 
+                    //     data: this.getDummyDataForSeries(data), color: 'transparent'}, 
+                    //     false, 
+                    //     false
+                    // );
+                // }
+            } else {
+                if (selected === 0) {
+                    intraDaySelected = true;
+                } else {
+                    intraDaySelected = false;
+                }   
+                this.setState({intraDaySelected}, () => {
+                    this.updateItemInSeries(0, {name: 'Stock Performance', data: data, disabled: false});
+                })
+            }
+        })
+        .catch(err => console.log(err))
+        .finally(() => {
+            this.setState({loadingPriceHistory: false});
         })
     }
 
@@ -524,9 +701,7 @@ class StockChartImpl extends React.Component {
 
 export default withRouter(StockChartImpl);
 
-const PriceComponent = ({lastPrice, change}) => {
-    const changeColor = change < 0 ? '#F44336' : change === 0 ? '#222' : '#00C853';
-    
+const PriceComponent = ({lastPrice, change}) => {    
     return (
         <div 
                 style={{
@@ -535,8 +710,6 @@ const PriceComponent = ({lastPrice, change}) => {
                 }}
         >
             <LastPrice>₹{lastPrice}</LastPrice>
-            <Divider>|</Divider>
-            <Change color={changeColor}>{change}%</Change>                                        
         </div>
     );
 }
@@ -554,21 +727,4 @@ const Date = styled.h3`
     color: #6B6B6B;
     font-size: 12px;
     z-index: 20;
-`;
-
-const Change = styled.h3`
-    font-family: 'Lato', sans-serif;
-    font-size: ${props => props.fontSize || '14px'};
-    font-family: 'Lato', sans-serif;
-    font-weight: 400;
-    color: ${props => props.color || metricColor.neutral}
-`;
-
-const Divider = styled.h3`
-    font-family: 'Lato', sans-serif;
-    color: #797979;
-    font-weight: 400;
-    font-size: 14px;
-    margin: 0 5px;
-    margin-top: -2px;
 `;
