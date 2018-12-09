@@ -14,7 +14,7 @@ import TradingContestHomeMobile from './containers/TradingContest/Home';
 import TradingContestHomeDesktop from './containers/TradingContest/CreateEntry/components/desktop/Home';
 import TradingContestLeaderboard from './containers/TradingContestLeaderboard';
 import TradingContestTopPicks from './containers/TradingContestTopPicks';
-import StockDetail from './containers/Samples/StockDetail';
+import StockDetail from './containers/StockDetail';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
