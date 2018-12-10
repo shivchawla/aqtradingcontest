@@ -5,8 +5,8 @@ import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
 import {withRouter} from 'react-router';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import TimelineCustomRadio from '../../containers/StockDetail/components/mobile/TimelineCustomRadio';
 import RadioGroup from '../selections/RadioGroup';
 import {getStockPerformance, dateFormat, Utils} from '../../utils';
@@ -705,7 +705,11 @@ class StockChartImpl extends React.Component {
 
     render() {
         return (
-            <Grid container>
+            <Grid container style={{position: 'relative'}}>
+                {
+                    this.state.loadingPriceHistory &&
+                    <TranslucentLoader />
+                }
                 {this.renderHorizontalLegend()}
             </Grid>
         );
@@ -727,6 +731,15 @@ const PriceComponent = ({lastPrice, change}) => {
     );
 }
 
+
+const TranslucentLoader = () => {
+    return (
+        <LoaderContainer>
+            <CircularProgress />
+        </LoaderContainer>
+    );
+}
+
 const LastPrice = styled.h3`
     font-family: 'Lato', sans-serif;
     font-size: ${props => props.fontSize || '14px'};
@@ -740,4 +753,17 @@ const Date = styled.h3`
     color: #6B6B6B;
     font-size: 12px;
     z-index: 20;
+`;
+
+const LoaderContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 100%;
+    height: 95%;
+    z-index: 1000;
+    border-radius: 4px;
 `;
