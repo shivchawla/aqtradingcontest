@@ -8,6 +8,8 @@ import PriceMetrics from './PriceMetrics';
 import LoaderComponent from '../../../TradingContest/Misc/Loader';
 import RollingPerformance from './RollingPerformance';
 import NoDataFound from '../../../../components/Errors/NoDataFound';
+import NotSelected from './NotSelected';
+import {checkIfSymbolSelected} from '../../utils';
 import {horizontalBox, verticalBox} from '../../../../constants';
 
 export default class LayoutMobile extends React.Component {
@@ -57,7 +59,6 @@ export default class LayoutMobile extends React.Component {
                             intraDaySeries={intraDaySeries} 
                             height={250}
                             getStockPriceHistory={this.props.getStockPriceHistory}
-                            loadingPriceHistory={this.props.loadingPriceHistory}
                         />
                     </Grid>
                     <Grid 

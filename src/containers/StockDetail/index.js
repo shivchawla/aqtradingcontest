@@ -3,7 +3,7 @@ import _ from 'lodash';
 import Media from 'react-media';
 import LayoutMobile from './components/mobile/Layout';
 import LayoutDesktop from './components/desktop/Layout';
-import {fetchStockData} from './utils';
+import {fetchStockData, checkIfSymbolSelected} from './utils';
 import {getStockPerformance} from '../../utils';
 
 export default class StockDetail extends React.Component {
@@ -21,6 +21,9 @@ export default class StockDetail extends React.Component {
     }
 
     getStockData = stock => {
+        if (!checkIfSymbolSelected(stock)) {
+            return;
+        }
         this.setState({loading: true});
         fetchStockData(stock)
         .then(stockData => {
@@ -63,19 +66,13 @@ export default class StockDetail extends React.Component {
         const symbol = _.get(this.props, 'symbol', '');
         const {series = {}} = this.state;
         const data = _.get(series, 'data', []);
-        // if (data.length > 0) {
-        //     console.log('Data need not be loaded');
-        //     resolve(series);
-        // } else {
-            console.log('Entered Here, Data to be loaded');
-            getStockPerformance(symbol, 'detail', 'priceHistory', startDate, endDate)
-            .then(stockPerformance => {
-                const series = {...this.state.series, data: [...stockPerformance]};
-                this.setState({series});
-                resolve(series);
-            })
-            .catch(err => reject(err))
-        // }
+        getStockPerformance(symbol, 'detail', 'priceHistory', startDate, endDate)
+        .then(stockPerformance => {
+            const series = {...this.state.series, data: [...stockPerformance]};
+            this.setState({series});
+            resolve(series);
+        })
+        .catch(err => reject(err))
     })
 
     componentWillReceiveProps(nextProps) {
@@ -92,7 +89,7 @@ export default class StockDetail extends React.Component {
 
     render() {
         const props = {
-            symbol: _.get(this.props, 'symbol', ''),
+            symbol: _.get(this.props, 'symbol', null),
             latestDetail: this.state.latestDetail,
             series: this.state.series,
             intraDaySeries: this.state.intraDaySeries,

@@ -80,3 +80,11 @@ export const getPercentage = value => {
 export const getColor = value => {
     return value > 0 ? color.positive : value === 0 ? color.neutral : color.negative;
 }
+
+export const checkIfSymbolSelected = stock => {
+    if (stock === null || (stock || '').length === 0 || stock === undefined) {
+        return false;
+    }
+
+    return true;
+}

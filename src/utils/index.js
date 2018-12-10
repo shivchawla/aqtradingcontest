@@ -12,6 +12,7 @@ var MobileDetect = require('mobile-detect'),
     md = new MobileDetect(window.navigator.userAgent);
 
 export const dateFormat = 'Do MMMM YYYY';
+const DateHelper = require('../utils/date');
 
 export const getUnixTimeSeries = (data) => {
     return new Promise((resolve, reject) => {
@@ -54,8 +55,10 @@ export const getStockPerformance = (tickerName, detailType='detail', field='pric
 }
 
 export const getIntraDayStockPerformance = (tickerName, detailType='detail') => {
+	const requiredDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days'))).format('YYYY-MM-DD');
+
 	return new Promise((resolve, reject) => {
-        getStockData(tickerName, 'intraDay', detailType, '2018-12-07')
+        getStockData(tickerName, 'intraDay', detailType, requiredDate)
         .then(performance => {
 			const data = performance.data.intradayHistory;
 			if (data.length > 0) { // Check if ticker is valid

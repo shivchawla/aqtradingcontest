@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import StockPerformance from './components/StockPerformance';
+import StockDetail from '../../StockDetail';
 import StockDetailBottomSheet from '../StockDetailBottomSheet';
 import StockFilter from './components/StockFilter';
 import {screenSize} from '../constants';
@@ -230,6 +231,10 @@ export class SearchStocks extends React.Component {
         this.setState({selectedPage: 0}, () => this.fetchStocks('', false).then(() => resolve(true)));
     })
 
+    updateStockData = (stockData) => {
+        console.log('Hello');
+    }
+
     resetFilterFromParent = (sector, industry) => {
         this.setState({filter: {
             sector,
@@ -279,7 +284,8 @@ export class SearchStocks extends React.Component {
     }
 
     handleStockListItemClick = stock => {
-        this.props.toggleStockPerformanceOpen && this.props.toggleStockPerformanceOpen();
+        // this.props.toggleStockPerformanceOpen && this.props.toggleStockPerformanceOpen();
+        console.log('called this');
         this.setState({selectedStock: stock});
     }
 
@@ -836,7 +842,10 @@ export class SearchStocks extends React.Component {
                                         borderRight: '1px solid #eaeaea'
                                     }}
                             >
-                                <StockPerformance stock={this.state.selectedStock}/>
+                                <StockDetail 
+                                    symbol={_.get(this.state, 'selectedStock.symbol', null)}
+                                    updateStockData={this.updateStockData}
+                                />
                             </Grid>
                         </React.Fragment>
                     )}

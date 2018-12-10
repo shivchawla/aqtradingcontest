@@ -206,6 +206,7 @@ class StockChartImpl extends React.Component {
             try{
                 const item = legendItems.filter(item => item.name.toUpperCase() === point.series.name.toUpperCase())[0];
                 item.y = point.y;
+                console.log(point);
                 
                 this.setState({legendItems, selectedDate: moment(points[0].x).format(requiredMomentFormat)});
             }
@@ -318,7 +319,7 @@ class StockChartImpl extends React.Component {
                     }
                 } else {
                     if(this.chart.series.length > 1) {
-                        const dummySeriesIndex = _.findIndex(this.chart.series, item => item.name = 'dummy');
+                        const dummySeriesIndex = _.findIndex(this.chart.series, item => item.name === 'dummy');
                         if (dummySeriesIndex > -1) {
                             this.chart.series[1].remove();
                         }
@@ -327,8 +328,8 @@ class StockChartImpl extends React.Component {
                 legendItems[index].name = name; //.toUpperCase();
                 legendItems[index].y = initialYValue; // This line can be removed
                 legendItems[index].disabled = disabled;
-                this.setState({legendItems, selectedDate: formattedTime});
                 this.chart.redraw();
+                this.setState({legendItems, selectedDate: formattedTime});
             }
         } catch(err) {
             console.log(err);
@@ -689,8 +690,10 @@ class StockChartImpl extends React.Component {
                 } else {
                     intraDaySelected = false;
                 }   
+                console.log(this.chart.series);
                 this.setState({intraDaySelected}, () => {
-                    this.updateItemInSeries(0, {name: 'Stock Performance', data: data, disabled: false});
+                    const stockPerformanceSeriesIndex = _.findIndex(this.chart.series, item => item.name === 'Stock Performance');
+                    this.updateItemInSeries(stockPerformanceSeriesIndex, {name: 'Stock Performance', data: data, disabled: false});
                 })
             }
         })
