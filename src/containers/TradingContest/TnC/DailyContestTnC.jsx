@@ -35,8 +35,8 @@ export default class DailyContestTnC extends React.Component {
                 <p style={bulletStyle}>5. Participant's intellectual property will remain Participant's property; However, we may look at Participant's Investment Portfolio for additional checks. We WILL NOT use/distribute participant&rsquo;s stock predictions without explicit consent.</p>
                 <p>&nbsp;</p>
                 <h3 style={h3Style}>Scoring </h3>
-                <p><strong>As the contest is designed to award stock pickers that generate profits, our scoring function will depend mainly on Profit generated over the prediction horizon</strong></p>
-                <p>At the end of each trading day, all prediction maturing on that date are considered and participant's&nbsp; profit/loss is calculated. The top 5 participants will be displayed on the <a href="https://www.adviceqube.com/contest/leaderboard">leaderboard</a> every day.</p>
+                <p><strong>As the contest is designed to award stock pickers that generate profits, our scoring function will depend mainly on active profits generated during the prediction timeline</strong></p>
+                <p>At the end of each trading day, all prediction active on that date are considered and participant's&nbsp; profit/loss is calculated. The top 5 participants will be displayed on the <a href="https://www.adviceqube.com/contest/leaderboard">leaderboard</a> every day.</p>
                 <p>&nbsp;</p>
                 <h3 style={h3Style}>Other Rules</h3>
                 <p style={bulletStyle}>1. Each Participant may have only one AdviceQube account. If the Participant submits entries from more than one account, all entries may be disqualified.</p>
