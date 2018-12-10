@@ -54,7 +54,7 @@ class DefaultSettings extends React.Component {
                 sector: selectedSector
             })
             .then(() => {
-                listMode ? this.props.fetchStocks('', false, selectedSector) : this.props.skipStock();
+                listMode ? this.props.fetchStocks('', false, selectedSector, 0) : this.props.skipStock();
                 this.props.undoStockSkips(false);
             })
             .catch(err => {

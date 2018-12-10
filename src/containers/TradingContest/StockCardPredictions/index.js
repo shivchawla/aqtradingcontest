@@ -48,7 +48,7 @@ class StockCardPredictions extends React.Component {
             defaultSettingsOpen: false,
             showSuccess: false,
             stockCardBottomSheetOpen: false,
-            listMode: false
+            listMode: false,
         };
     }
     

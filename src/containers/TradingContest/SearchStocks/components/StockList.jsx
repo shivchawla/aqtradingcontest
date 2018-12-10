@@ -27,7 +27,7 @@ export default class StockListComponent extends React.Component {
         return (
             <React.Fragment>
                 {
-                    stocks.length === 0 &&
+                    stocks.length === 0 && !this.props.loading &&
                     <h3 style={{fontSize: '16px', textAlign: 'center', marginTop: '100px', fontWeight: '300'}}>No Stocks Found</h3>
                 }
                 {
@@ -43,6 +43,7 @@ export default class StockListComponent extends React.Component {
                                         onAddIconClick={this.props.conditionallyAddToggleStock}
                                         onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
                                         isAlreadyAdded={this.isAlreadyAdded(stock)}
+                                        onInfoClicked={this.props.onInfoClicked}
                                     />
                                 )}
                             />

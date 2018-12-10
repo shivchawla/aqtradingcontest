@@ -33,15 +33,42 @@ export const getUnixStockData = (data) => {
     })
 }
 
-export const getStockPerformance = (tickerName, detailType='detail', field='priceHistory') => {
+export const getStockPerformance = (tickerName, detailType='detail', field='priceHistory', startDate = null, endDate = null) => {
     return new Promise((resolve, reject) => {
-        getStockData(tickerName, field, detailType)
+        getStockData(tickerName, field, detailType, startDate, endDate)
         .then(performance => {
             const data = performance.data.priceHistory;
-            if (data.length > 0) { // Check if ticker is valid
+			if (data.length > 0) { // Check if ticker is valid
                 const performanceArray = data.map((item, index) => {
                     return [moment(item.date).valueOf(), item.price]
                 });
+                resolve(performanceArray);
+            } else {
+                reject('Invalid Ticker');
+            }
+        })
+        .catch(error => {
+            reject(error);
+        });
+    });
+}
+
+export const getIntraDayStockPerformance = (tickerName, detailType='detail') => {
+	return new Promise((resolve, reject) => {
+        getStockData(tickerName, 'intraDay', detailType, '2018-12-07')
+        .then(performance => {
+			const data = performance.data.intradayHistory;
+			if (data.length > 0) { // Check if ticker is valid
+
+				const performanceArray = [];
+				for (let i=data.length - 1; i >= 0; i-=5) {
+					const item = data[i];
+					const stillUtc = moment.utc(item.datetime).toDate();
+					const local = moment(stillUtc).local().add(1, 'minutes').startOf('minute').valueOf();
+					performanceArray.push([local, item.close]);
+				}
+				_.reverse(performanceArray);
+                // resolve(performanceArray.slice(0, performanceArray.length - 100));
                 resolve(performanceArray);
             } else {
                 reject('Invalid Ticker');
