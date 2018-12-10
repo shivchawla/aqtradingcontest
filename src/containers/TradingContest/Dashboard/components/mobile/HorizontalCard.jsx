@@ -11,7 +11,7 @@ import {verticalBox, horizontalBox, primaryColor} from '../../../../../constants
 
 export default class HorizontalCard extends React.Component {
     render() {
-        const {header='Header', total=0, long=0, short=0, percentage = false, ratio = false, defaultValue = null, defaultValueToShow = '-', baseValue = 0} = this.props;
+        const {header='Header', total=0, long=0, short=0, percentage = false, ratio = false, defaultValue = null, defaultValueToShow = '-', baseValue = 0, noColor = false} = this.props;
         return (
             <Container style={this.props.style}>
                 <Grid 
@@ -38,6 +38,7 @@ export default class HorizontalCard extends React.Component {
                             defaultValue={defaultValue}
                             defaultValueToShow={defaultValueToShow}
                             baseValue={baseValue}
+                            noColor={noColor}
                         />
                         <Metric 
                             label="Long" 
@@ -49,6 +50,7 @@ export default class HorizontalCard extends React.Component {
                             defaultValue={defaultValue}
                             defaultValueToShow={defaultValueToShow}
                             baseValue={baseValue}
+                            noColor={noColor}
                         />
                         <Metric 
                             label="Short" 
@@ -59,6 +61,7 @@ export default class HorizontalCard extends React.Component {
                             defaultValue={defaultValue}
                             defaultValueToShow={defaultValueToShow}
                             baseValue={baseValue}
+                            noColor={noColor}
                         />
                     </Grid>
                 </Grid>
@@ -75,7 +78,8 @@ const Metric = ({
             ratio = false, 
             defaultValue = 0, 
             defaultValueToShow = '-', 
-            baseValue = 0
+            baseValue = 0,
+            noColor = false
         }
 ) => {
     let valueColor = value === defaultValue ? valueColor : getValueColor(Number(value), false, metricColor, ratio, baseValue);
@@ -97,7 +101,7 @@ const Metric = ({
                         width: '33%'
                     }}
             >
-                <MetricValue style={{color: valueColor, fontWeight: 700}}>{value}</MetricValue>
+                <MetricValue style={{color: noColor ? '#3d3d3d' : valueColor, fontWeight: 700}}>{value}</MetricValue>
                 <MetricLabel>{label}</MetricLabel>
             </div>
         </Grid>

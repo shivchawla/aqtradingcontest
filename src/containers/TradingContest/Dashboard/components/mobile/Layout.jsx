@@ -111,22 +111,24 @@ export default class Layout extends React.Component {
                                 baseValue={50}
                             />
                             <HorizontalCard 
-                                header='Avg. Max Loss' 
+                                header='Avg. Maximum Loss' 
                                 {...avgMaxLossPct}
                                 style={{
                                     marginTop: '10px'
                                 }}
                                 percentage
                                 baseValue={0}
+                                noColor
                             />
                             <HorizontalCard 
-                                header='Avg. Max Gain' 
+                                header='Avg. Maximum Gain' 
                                 {...avgMaxGainPct}
                                 style={{
                                     marginTop: '10px'
                                 }}
                                 percentage
                                 baseValue={0}
+                                noColor
                             />
                             <HorizontalCard 
                                 header='Avg. Holding Period (in days)' 
@@ -134,6 +136,7 @@ export default class Layout extends React.Component {
                                 style={{
                                     marginTop: '10px'
                                 }}
+                                noColor
                                 baseValue={0}
                             />
                         </div>

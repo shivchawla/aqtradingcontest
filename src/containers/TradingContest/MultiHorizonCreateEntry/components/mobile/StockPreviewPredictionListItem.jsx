@@ -96,7 +96,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             date={moment(startDate, dateFormat).format(readableDateFormat)}
                         />
                         <div style={verticalBox}>
-                            <ArrowHeaderText style={{marginBottom: '-4px'}}>{duration} Days</ArrowHeaderText>
+                            <ArrowHeaderText>{duration} Days</ArrowHeaderText>
                             <Icon style={{color: typeColor}}>{iconType}</Icon>
                             <ArrowHeaderText style={{color: typeColor}}>{typeText}</ArrowHeaderText>
                         </div>
@@ -127,9 +127,15 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
                             <MetricLabel>Price Interval</MetricLabel>
                             <div style={{...horizontalBox}}>
-                                <MetricText color='#222'>₹{lowPrice}</MetricText>
+                                {
+                                    lowPrice !== null &&
+                                    <MetricText color='#222'>₹{lowPrice}</MetricText>
+                                }
                                 <Divider>-</Divider>
-                                <MetricText color='#222'>₹{highPrice}</MetricText>
+                                {
+                                    highPrice !== null &&
+                                    <MetricText color='#222'>₹{highPrice}</MetricText>
+                                }
                             </div>
                         </div>
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
