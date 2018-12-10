@@ -12,9 +12,9 @@ export const fetchStockData = stock => {
         getStockData(stock, 'latestDetail'),
         // getStockPerformance(stock.toUpperCase()),
         getIntraDayStockPerformance(stock.toUpperCase()),
-        // getStockData(stock, 'rollingPerformance')
+        getStockData(stock, 'rollingPerformance')
     ])
-    .then(([latestDetailResponse, intraDayStockPerformance, stockPerformance, rollingPerformanceResponse]) => {
+    .then(([latestDetailResponse, intraDayStockPerformance, rollingPerformanceResponse, stockPerformance]) => {
         const latestDetail = latestDetailResponse.data;
         return ({
             latestDetail: getPriceMetrics(latestDetail),
@@ -32,7 +32,7 @@ export const getPriceMetrics = data => {
     const latestDetail = {};
     latestDetail.ticker = _.get(data, 'ticker', '');
     latestDetail.exchange = _.get(data, 'exchange', '');
-    latestDetail.close = _.get(data, 'latestDetail.Close', 0);
+    latestDetail.close = _.get(data, 'latestDetailRT.close', 0) || _.get(data, 'latestDetail.Close', 0);
     latestDetail.latestPrice = _.get(data, 'latestDetailRT.current', 0) || data.latestDetail.Close
     latestDetail.open = _.get(data, 'latestDetailRT.open', 0) || data.latestDetail.Open;
     latestDetail.low = _.get(data, 'latestDetailRT.low', 0) || data.latestDetail.Low;
@@ -79,4 +79,12 @@ export const getPercentage = value => {
 
 export const getColor = value => {
     return value > 0 ? color.positive : value === 0 ? color.neutral : color.negative;
+}
+
+export const checkIfSymbolSelected = stock => {
+    if (stock === null || (stock || '').length === 0 || stock === undefined) {
+        return false;
+    }
+
+    return true;
 }

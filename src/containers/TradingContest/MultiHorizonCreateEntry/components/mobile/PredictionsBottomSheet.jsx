@@ -34,24 +34,25 @@ export default class PredictionsBottomSheet extends React.Component {
                         marginBottom: '10px'
                     }}
             >
-                <ActionIcon size={24} type='close' onClick={this.props.onClose} color='#fff'/>
                 <div 
                         style={{
                             ...horizontalBox, 
                             justifyContent: 'space-between',
-                            paddingBottom: '10px',
+                            padding: '10px 0',
                             width: '100%'
                         }}
                 >
-                    <div 
-                            style={{
-                                ...verticalBox, 
-                                alignItems: 'flex-start',
-                                marginLeft: '20px'
-                            }}
-                    >
-                        <Symbol>{symbol}({predictions.length})</Symbol>
-                        <h3 style={nameStyle}>{name}</h3>
+                    <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                        <ActionIcon size={24} type='close' onClick={this.props.onClose} color='#fff'/>
+                        <div 
+                                style={{
+                                    ...verticalBox, 
+                                    alignItems: 'flex-start',
+                                }}
+                        >
+                            <Symbol>{symbol}({predictions.length})</Symbol>
+                            <h3 style={nameStyle}>{name}</h3>
+                        </div>
                     </div>
                     <div 
                             style={{
@@ -78,7 +79,7 @@ export default class PredictionsBottomSheet extends React.Component {
                     customHeader={this.renderHeader}
             >
                 <Container>
-                    <Grid item xs={12} style={{padding: '0 20px'}}>
+                    <Grid item xs={12} style={{padding: '0 10px'}}>
                         <StockPreviewPredictionList 
                             predictions={predictions} 
                         />

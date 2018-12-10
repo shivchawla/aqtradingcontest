@@ -2,6 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
 import {targetKvp, horizonKvp} from '../constants';
+import {getStockTicker} from '../../utils';
 import {sectors} from '../../../../constants';
 const dateFormat = 'YYYY-MM-DD';
 
@@ -11,7 +12,8 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultBenchmark = _.get(defaultStockData, 'benchmark', 'NIFTY_50');
     const defaultSector = _.get(defaultStockData, 'sector', '')
     const name = _.get(stockData, 'detail.Nse_Name', '');
-    const symbol = _.get(stockData, 'ticker', '');
+    const symbol = getStockTicker(stockData);
+    // const symbol = _.get(stockData, 'ticker', '');
     const lastPrice = _.get(stockData, 'latestDetailRT.current', null) || _.get(stockData, 'latestDetail.Close', 0);
     const change = _.get(stockData, 'latestDetailRT.change', null) || _.get(stockData, 'latestDetail.Change', 0);
     let changePct = _.get(stockData, 'latestDetailRT.changePct', null) || _.get(stockData, 'latestDetail.ChangePct', 0);

@@ -7,6 +7,7 @@ import MetricLabel from './MetricLabel';
 import MetricValue from './MetricValue';
 import {labelColor, metricColor, valueColor} from '../styles';
 import {getFormattedValue, getValueColor} from '../../utils';
+import {getStockTicker} from '../../../utils';
 import {Utils} from '../../../../../utils';
 import {verticalBox, horizontalBox, primaryColor, nameEllipsisStyle} from '../../../../../constants';
 
@@ -14,17 +15,20 @@ export default class VerticalCard extends React.Component {
     render() {
         const {header='Header', trade={}} = this.props;
         const long = {
-            symbol: _.get(trade, 'long.security.ticker', 'N/A'),
+            symbol: getStockTicker(_.get(trade, 'long.security', 'N/A')),
+            // symbol: _.get(trade, 'long.security.ticker', 'N/A'),
             name: _.get(trade, 'long.security.detail.Nse_Name', '-'),
             pnl: {value: _.get(trade, 'long.pnl', 0), pct: _.get(trade, 'long.pnlPct', null)}
         };
         const total = {
-            symbol: _.get(trade, 'total.security.ticker', 'N/A'),
+            symbol: getStockTicker(_.get(trade, 'total.security', 'N/A')),
+            // symbol: _.get(trade, 'total.security.ticker', 'N/A'),
             name: _.get(trade, 'total.security.detail.Nse_Name', '-'),
             pnl: {value: _.get(trade, 'total.pnl', 0), pct: _.get(trade, 'total.pnlPct', null)}
         };
         const short = {
-            symbol: _.get(trade, 'short.security.ticker', 'N/A'),
+            symbol: getStockTicker(_.get(trade, 'short.security', 'N/A')),
+            // symbol: _.get(trade, 'short.security.ticker', 'N/A'),
             name: _.get(trade, 'short.security.detail.Nse_Name', '-'),
             pnl: {value: _.get(trade, 'short.pnl', 0), pct: _.get(trade, 'short.pnlPct', null)}
         };

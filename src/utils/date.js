@@ -30,7 +30,7 @@ function _isAfterMarketOpen() {
 
 module.exports.getMarketOpen = function() {
 	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
-	return moment.tz(`${cd} 09:30:00`, indiaTimeZone).tz(localTimeZone);
+	return moment.tz(`${cd} 09:15:00`, indiaTimeZone).tz(localTimeZone);
 }
 
 module.exports.getMarketClose = function() {
@@ -41,6 +41,17 @@ module.exports.getMarketClose = function() {
 module.exports.getMarketOpenHour = function() {
 	return exports.getMarketOpen().get('hour');
 }
+
+module.exports.getTradingDays = function(startDate, endDate) {
+	var count = 0;
+	
+	while(exports.compareDates(startDate, endDate) < 0) {
+		count++;
+		startDate = exports.getNextNonHolidayWeekday(startDate);	
+	}
+
+	return count;
+};
 
 module.exports.getMarketOpenMinute = function(){
 	return exports.getMarketOpen().get('minute');

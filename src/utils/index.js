@@ -12,6 +12,7 @@ var MobileDetect = require('mobile-detect'),
     md = new MobileDetect(window.navigator.userAgent);
 
 export const dateFormat = 'Do MMMM YYYY';
+const DateHelper = require('../utils/date');
 
 export const getUnixTimeSeries = (data) => {
     return new Promise((resolve, reject) => {
@@ -54,30 +55,43 @@ export const getStockPerformance = (tickerName, detailType='detail', field='pric
 }
 
 export const getIntraDayStockPerformance = (tickerName, detailType='detail') => {
+	const requiredDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days'))).format('YYYY-MM-DD');
+
 	return new Promise((resolve, reject) => {
-        getStockData(tickerName, 'intraDay', detailType, '2018-12-07')
+        getStockData(tickerName, 'intraDay', detailType, requiredDate)
         .then(performance => {
 			const data = performance.data.intradayHistory;
 			if (data.length > 0) { // Check if ticker is valid
-
-				const performanceArray = [];
-				for (let i=data.length - 1; i >= 0; i-=5) {
-					const item = data[i];
+				const formattedData = data.map(item => {
 					const stillUtc = moment.utc(item.datetime).toDate();
 					const local = moment(stillUtc).local().add(1, 'minutes').startOf('minute').valueOf();
-					performanceArray.push([local, item.close]);
+					return [local, item.close];
+				})
+				const throttledData = getIntraDayThrottledPerformance(formattedData);
+				if (formattedData.length <=20) {
+					resolve(formattedData);
+				} else {
+					resolve(throttledData);
 				}
-				_.reverse(performanceArray);
-                // resolve(performanceArray.slice(0, performanceArray.length - 100));
-                resolve(performanceArray);
             } else {
-                reject('Invalid Ticker');
+                resolve([]);
             }
         })
         .catch(error => {
+			console.log(error);
             reject(error);
         });
     });
+}
+
+export const getIntraDayThrottledPerformance = (data) => {
+	const clonedData = _.map(data, _.cloneDeep);
+	const performanceArray = [];
+	for (let i=clonedData.length - 1; i >= 0; i-=5) {
+		const item = clonedData[i];
+		performanceArray.push(item);
+	}
+	return (_.reverse(performanceArray));
 }
 
 export const getStockStaticPerformance = (tickerName, detailType='detail', field='staticPerformance') => {
