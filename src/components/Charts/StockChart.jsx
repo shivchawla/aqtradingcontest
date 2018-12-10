@@ -206,7 +206,6 @@ class StockChartImpl extends React.Component {
             try{
                 const item = legendItems.filter(item => item.name.toUpperCase() === point.series.name.toUpperCase())[0];
                 item.y = point.y;
-                console.log(point);
                 
                 this.setState({legendItems, selectedDate: moment(points[0].x).format(requiredMomentFormat)});
             }
@@ -226,12 +225,50 @@ class StockChartImpl extends React.Component {
         // }
     }
 
+    updateLegend = (name, data, destroy = false, color = null, disabled = false) => {
+        const legendItems = [...this.state.legendItems];
+        const selectedTime = data[data.length - 1][0];
+        const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
+        const formattedTime = moment(selectedTime).format(requiredMomentFormat);
+        const initialYValue = data.length > 0 ? data[data.length - 1][1] : 0;
+        this.setState(prevState => {
+            if (destroy) {
+                return {
+                    legendItems: [
+                        {
+                            name: name, //.toUpperCase(),
+                            x: '1994-16-02',
+                            y: initialYValue,
+                            change: 0,
+                            disabled,
+                            checked: legendItems.length < 5 ,
+                            color: color || this.chart.series[this.chart.series.length - 1].color
+                        }
+                    ],
+                    selectedDate: formattedTime
+                }
+            } else {
+                return {
+                    legendItems: [...prevState.legendItems, {
+                        name: name , //toUpperCase(),
+                        x: '1994-16-02',
+                        y: initialYValue,
+                        change: 0,
+                        disabled,
+                        checked: legendItems.length < 5 ,
+                        color: color || this.chart.series[this.chart.series.length - 1].color
+                    }],
+                    selectedDate: formattedTime
+                }
+            }
+        });
+    }
+
     addItemToSeries = ({name, data, color = null, destroy = false, disabled = false}) => new Promise((resolve, reject) => {
         try {
             if (destroy) {
                 this.clearSeries();
             }
-            const initialYValue = data.length > 0 ? data[data.length - 1][1] : 0;
             const legendItems = [...this.state.legendItems];
             const seriesIndex = _.findIndex(this.chart.series, seriesItem => seriesItem.name.toUpperCase() === name.toUpperCase());
             const legendIndex = _.findIndex(legendItems, legendItem => legendItem.name.toUpperCase() === name.toUpperCase());
@@ -245,42 +282,9 @@ class StockChartImpl extends React.Component {
                 });
             }
             if (legendIndex === -1) {
-                const selectedTime = data[data.length - 1][0];
-                const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
-                const formattedTime = moment(selectedTime).format(requiredMomentFormat);
-                this.setState(prevState => {
-                    if (destroy) {
-                        return {
-                            legendItems: [
-                                {
-                                    name: name, //.toUpperCase(),
-                                    x: '1994-16-02',
-                                    y: initialYValue,
-                                    change: 0,
-                                    disabled,
-                                    checked: legendItems.length < 5 ,
-                                    color: color || this.chart.series[this.chart.series.length - 1].color
-                                }
-                            ],
-                            selectedDate: formattedTime
-                        }
-                    } else {
-                        return {
-                            legendItems: [...prevState.legendItems, {
-                                name: name , //toUpperCase(),
-                                x: '1994-16-02',
-                                y: initialYValue,
-                                change: 0,
-                                disabled,
-                                checked: legendItems.length < 5 ,
-                                color: color || this.chart.series[this.chart.series.length - 1].color
-                            }],
-                            selectedDate: formattedTime
-                        }
-                    }
-                });
-                resolve(true);
+                this.updateLegend(name, data, destroy, color, disabled);
             }
+            resolve(true);
         } catch (err) {
             reject(err);
         }
@@ -301,12 +305,12 @@ class StockChartImpl extends React.Component {
     }
 
     updateItemInSeries = (index, {name, data, disabled}) => {
-        const legendItems = [...this.state.legendItems];
-        const initialYValue = data.length > 0 ? data[data.length - 1][1] : '0';
-        const selectedTime = data[data.length - 1][0];
-        const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
-        const formattedTime = moment(selectedTime).format(requiredMomentFormat);
         try {
+            const legendItems = [...this.state.legendItems];
+            const legendIndex = _.findIndex(legendItems, legendItem => legendItem.name.toUpperCase() === name.toUpperCase());
+            const selectedTime = data[data.length - 1][0];
+            const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
+            const formattedTime = moment(selectedTime).format(requiredMomentFormat);
             if (this.chart.series[index] !== undefined) {
                 this.chart.series[index].update({name: name, /*.toUpperCase()*/ data}, false);
                 if (this.state.intraDaySelected) {
@@ -325,13 +329,20 @@ class StockChartImpl extends React.Component {
                         }
                     }
                 }
-                legendItems[index].name = name; //.toUpperCase();
-                legendItems[index].y = initialYValue; // This line can be removed
-                legendItems[index].disabled = disabled;
+                if (legendIndex === -1) {
+                    console.log('Entered Here');
+                    this.updateLegend(name, data);
+                }                
                 this.chart.redraw();
-                this.setState({legendItems, selectedDate: formattedTime});
+                this.setState({selectedDate: formattedTime});
             }
         } catch(err) {
+            if (data.length === 0) {
+                if (this.chart.series[index] !== undefined) {
+                    this.chart.series[index].update({name: name, /*.toUpperCase()*/ data}, false);
+                    this.setState({legendItems: []});
+                }
+            }
             console.log(err);
         }
         
@@ -551,22 +562,26 @@ class StockChartImpl extends React.Component {
                                             <Date>{this.state.selectedDate}</Date>
                                             <PriceComponent lastPrice={lastPrice} change={legend.change}/>    
                                         </div>
-                                        <RadioGroup 
-                                            CustomRadio={TimelineCustomRadio}
-                                            items={timelines.map(item => item.label)}
-                                            defaultSelected={selectedTimeline}
-                                            onChange={this.getSelection}
-                                            style={{
-                                                marginTop: '10px',
-                                                width: '100%',
-                                                justifyContent: 'space-between'
-                                            }}
-                                        />
                                     </Grid>
                                 </Grid>
                         );
                     })
                 }
+                <Grid container>
+                    <Grid item xs={12}>
+                        <RadioGroup 
+                            CustomRadio={TimelineCustomRadio}
+                            items={timelines.map(item => item.label)}
+                            defaultSelected={selectedTimeline}
+                            onChange={this.getSelection}
+                            style={{
+                                marginTop: '10px',
+                                width: '100%',
+                                justifyContent: 'space-between'
+                            }}
+                        />
+                    </Grid>
+                </Grid>
             </Grid>
         );
     }
@@ -577,7 +592,7 @@ class StockChartImpl extends React.Component {
         return (
             <Grid item xs={12}>
                 {
-                    !this.props.hideLegend &&
+                    // !this.props.hideLegend &&
                     <Grid container 
                             style={{position: 'relative'}}
                     >
@@ -690,7 +705,6 @@ class StockChartImpl extends React.Component {
                 } else {
                     intraDaySelected = false;
                 }   
-                console.log(this.chart.series);
                 this.setState({intraDaySelected}, () => {
                     const stockPerformanceSeriesIndex = _.findIndex(this.chart.series, item => item.name === 'Stock Performance');
                     this.updateItemInSeries(stockPerformanceSeriesIndex, {name: 'Stock Performance', data: data, disabled: false});

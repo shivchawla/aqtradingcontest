@@ -74,10 +74,11 @@ export const getIntraDayStockPerformance = (tickerName, detailType='detail') => 
 					resolve(throttledData);
 				}
             } else {
-                reject('Invalid Ticker');
+                resolve([]);
             }
         })
         .catch(error => {
+			console.log(error);
             reject(error);
         });
     });
