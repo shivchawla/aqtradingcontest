@@ -29,7 +29,7 @@ export default class StockDetail extends React.Component {
             const rollingPerformance = _.get(stockData, 'rollingPerformance', {});
             const intraDayStockPerformance = _.get(stockData, 'intraDayStockPerformance', []);
             const series = {...this.state.series, data: [...stockPerformance]};
-            const intraDaySeries = {...this.state.intraDaySeries, data: [...intraDayStockPerformance]};
+            const intraDaySeries = {...this.state.intraDaySeries, data: intraDayStockPerformance};
             const stockDataForParent = {
                 symbol: this.props.symbol,
                 name: _.get(latestDetail, 'name', ''),

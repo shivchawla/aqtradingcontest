@@ -225,72 +225,78 @@ class StockChartImpl extends React.Component {
         // }
     }
 
-    addItemToSeries = ({name, data, color = null, destroy = false, disabled = false}) => {
-        if (destroy) {
-            this.clearSeries();
-        }
-        const initialYValue = data.length > 0 ? data[data.length - 1][1] : 0;
-        const legendItems = [...this.state.legendItems];
-        const seriesIndex = _.findIndex(this.chart.series, seriesItem => seriesItem.name.toUpperCase() === name.toUpperCase());
-        const legendIndex = _.findIndex(legendItems, legendItem => legendItem.name.toUpperCase() === name.toUpperCase());
-        if (seriesIndex === -1) {
-            this.chart.addSeries({
-                name: name, 
-                data,
-                visible: this.chart.series.length < 5,
-                selected: true,
-                color
-            });
-        }
-        if (legendIndex === -1) {
-            const selectedTime = data[data.length - 1][0];
-            const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
-            const formattedTime = moment(selectedTime).format(requiredMomentFormat);
-            this.setState(prevState => {
-                if (destroy) {
-                    return {
-                        legendItems: [
-                            {
-                                name: name, //.toUpperCase(),
+    addItemToSeries = ({name, data, color = null, destroy = false, disabled = false}) => new Promise((resolve, reject) => {
+        try {
+            if (destroy) {
+                this.clearSeries();
+            }
+            const initialYValue = data.length > 0 ? data[data.length - 1][1] : 0;
+            const legendItems = [...this.state.legendItems];
+            const seriesIndex = _.findIndex(this.chart.series, seriesItem => seriesItem.name.toUpperCase() === name.toUpperCase());
+            const legendIndex = _.findIndex(legendItems, legendItem => legendItem.name.toUpperCase() === name.toUpperCase());
+            if (seriesIndex === -1) {
+                this.chart.addSeries({
+                    name: name, 
+                    data,
+                    visible: this.chart.series.length < 5,
+                    selected: true,
+                    color
+                });
+            }
+            if (legendIndex === -1) {
+                const selectedTime = data[data.length - 1][0];
+                const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
+                const formattedTime = moment(selectedTime).format(requiredMomentFormat);
+                this.setState(prevState => {
+                    if (destroy) {
+                        return {
+                            legendItems: [
+                                {
+                                    name: name, //.toUpperCase(),
+                                    x: '1994-16-02',
+                                    y: initialYValue,
+                                    change: 0,
+                                    disabled,
+                                    checked: legendItems.length < 5 ,
+                                    color: color || this.chart.series[this.chart.series.length - 1].color
+                                }
+                            ],
+                            selectedDate: formattedTime
+                        }
+                    } else {
+                        return {
+                            legendItems: [...prevState.legendItems, {
+                                name: name , //toUpperCase(),
                                 x: '1994-16-02',
                                 y: initialYValue,
                                 change: 0,
                                 disabled,
                                 checked: legendItems.length < 5 ,
                                 color: color || this.chart.series[this.chart.series.length - 1].color
-                            }
-                        ],
-                        selectedDate: formattedTime
+                            }],
+                            selectedDate: formattedTime
+                        }
                     }
-                } else {
-                    return {
-                        legendItems: [...prevState.legendItems, {
-                            name: name , //toUpperCase(),
-                            x: '1994-16-02',
-                            y: initialYValue,
-                            change: 0,
-                            disabled,
-                            checked: legendItems.length < 5 ,
-                            color: color || this.chart.series[this.chart.series.length - 1].color
-                        }],
-                        selectedDate: formattedTime
-                    }
-                }
-            });
-        }   
-    }
+                });
+                resolve(true);
+            }
+        } catch (err) {
+            reject(err);
+        }
+    })
 
     getDummyDataForSeries = (data) => {
         const endTime = moment(data[data.length - 1][0]).hours(15).minutes(30).valueOf();
         const intradayData = _.get(this.props, 'intraDaySeries.data', []);
+        const clonedIntradayData = _.map(intradayData, _.cloneDeep);
         var intervalSize = Math.min(5, Math.floor((data[1][0] - data[0][0])/1000/60));
         var lastDataPoint = moment(data[data.length - 1][0]); 
         const lastValue = data[data.length - 1][1];
         while (lastDataPoint.isBefore(endTime)){
             lastDataPoint = lastDataPoint.add(intervalSize, 'minutes');
-            intradayData.push([lastDataPoint.valueOf(), lastValue]);
+            clonedIntradayData.push([lastDataPoint.valueOf(), lastValue]);
         }
-        return intradayData;
+        return clonedIntradayData;
     }
 
     updateItemInSeries = (index, {name, data, disabled}) => {
@@ -304,11 +310,18 @@ class StockChartImpl extends React.Component {
                 this.chart.series[index].update({name: name, /*.toUpperCase()*/ data}, false);
                 if (this.state.intraDaySelected) {
                     if (this.chart.series.length < 2) {
-                        this.chart.addSeries({name: 'dummy', data: this.getDummyDataForSeries(data), color: 'transparent'}, false, false);
+                        this.chart.addSeries({
+                            name: 'dummy', 
+                            data: this.getDummyDataForSeries(data),
+                            color: 'transparent'
+                        }, false, false);
                     }
                 } else {
                     if(this.chart.series.length > 1) {
-                        this.chart.series[1].remove();
+                        const dummySeriesIndex = _.findIndex(this.chart.series, item => item.name = 'dummy');
+                        if (dummySeriesIndex > -1) {
+                            this.chart.series[1].remove();
+                        }
                     }
                 }
                 legendItems[index].name = name; //.toUpperCase();
@@ -623,7 +636,6 @@ class StockChartImpl extends React.Component {
             } else {
                 startDate = moment().subtract(requireTimelineCount, timeline);
             }
-            let startDateUnix = startDate.valueOf();
             this.props.getStockPriceHistory(startDate.format(dateFormat), moment().format(dateFormat))
             .then(series => {
                 let {data = []} = series;
@@ -664,15 +676,13 @@ class StockChartImpl extends React.Component {
         .then(data => {
             let intraDaySelected = false;
             if (this.chart.series.length === 0) {
-                this.addItemToSeries({name: 'Stock Performance', data});
-                // if (this.state.intraDaySelected) {
-                    // this.chart.addSeries({
-                    //     name: 'dummy', 
-                    //     data: this.getDummyDataForSeries(data), color: 'transparent'}, 
-                    //     false, 
-                    //     false
-                    // );
-                // }
+                this.addItemToSeries({name: 'Stock Performance', data})
+                .then(() => {
+                    if (this.state.intraDaySelected) {
+                        this.chart.addSeries({name: 'dummy', data: this.getDummyDataForSeries(data), color: 'transparent'}, false, false);
+                        this.chart.redraw();
+                    }
+                })
             } else {
                 if (selected === 0) {
                     intraDaySelected = true;

@@ -1,13 +1,21 @@
 import axios from 'axios';
 import _ from 'lodash';
+import moment from 'moment';
 import {Utils} from './index';
 
 const localConfig = require('../localConfig.js');
+const dateFormat = 'YYYY-MM-DD';
 
-export const getStockData = (ticker, field='priceHistory', detailType='detail') => {
+export const getStockData = (ticker, field='priceHistory', detailType='detail', startDate = null, endDate = null) => {
     const {requestUrl} = localConfig;
     const symbol = encodeURIComponent(ticker.toUpperCase());
-    const url = `${requestUrl}/stock/${detailType}?ticker=${symbol}&exchange=NSE&country=IN&securityType=EQ&field=${field}`;
+    let url = `${requestUrl}/stock/${detailType}?ticker=${symbol}&exchange=NSE&country=IN&securityType=EQ&field=${field}`;
+    if (startDate !== null) {
+        url = `${url}&startDate=${startDate}`
+    }
+    if (endDate !== null) {
+        url = `${url}&endDate=${endDate}`
+    }
     return axios.get(url, {
         headers: Utils.getAuthTokenHeader()
     });
