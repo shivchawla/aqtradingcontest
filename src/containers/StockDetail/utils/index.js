@@ -12,9 +12,9 @@ export const fetchStockData = stock => {
         getStockData(stock, 'latestDetail'),
         // getStockPerformance(stock.toUpperCase()),
         getIntraDayStockPerformance(stock.toUpperCase()),
-        // getStockData(stock, 'rollingPerformance')
+        getStockData(stock, 'rollingPerformance')
     ])
-    .then(([latestDetailResponse, intraDayStockPerformance, stockPerformance, rollingPerformanceResponse]) => {
+    .then(([latestDetailResponse, intraDayStockPerformance, rollingPerformanceResponse, stockPerformance]) => {
         const latestDetail = latestDetailResponse.data;
         return ({
             latestDetail: getPriceMetrics(latestDetail),

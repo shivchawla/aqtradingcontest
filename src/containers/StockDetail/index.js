@@ -40,7 +40,7 @@ export default class StockDetail extends React.Component {
             
             this.setState({
                 latestDetail,
-                // rollingPerformance,
+                rollingPerformance,
                 // series,
                 intraDaySeries,
                 noDataFound: false
