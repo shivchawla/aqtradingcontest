@@ -306,6 +306,7 @@ class StockChartImpl extends React.Component {
 
     updateItemInSeries = (index, {name, data, disabled}) => {
         try {
+            const initialYValue = data.length > 0 ? data[data.length - 1][1] : '0';
             const legendItems = [...this.state.legendItems];
             const legendIndex = _.findIndex(legendItems, legendItem => legendItem.name.toUpperCase() === name.toUpperCase());
             const selectedTime = data[data.length - 1][0];
@@ -330,9 +331,10 @@ class StockChartImpl extends React.Component {
                     }
                 }
                 if (legendIndex === -1) {
-                    console.log('Entered Here');
                     this.updateLegend(name, data);
-                }                
+                } else {
+                    legendItems[index].y = initialYValue;
+                }          
                 this.chart.redraw();
                 this.setState({selectedDate: formattedTime});
             }

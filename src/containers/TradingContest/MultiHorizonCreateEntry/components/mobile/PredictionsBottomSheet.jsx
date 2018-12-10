@@ -78,7 +78,7 @@ export default class PredictionsBottomSheet extends React.Component {
                     customHeader={this.renderHeader}
             >
                 <Container>
-                    <Grid item xs={12} style={{padding: '0 20px'}}>
+                    <Grid item xs={12} style={{padding: '0 10px'}}>
                         <StockPreviewPredictionList 
                             predictions={predictions} 
                         />

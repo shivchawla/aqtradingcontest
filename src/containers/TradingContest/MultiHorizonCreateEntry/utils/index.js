@@ -90,7 +90,7 @@ export const getPnlStats = (date = moment(), type = 'started', history, currentU
 export const convertPredictionsToPositions = (predictions = [], lockPredictions = false, newPrediction = true, active = false) => {
     let positions = [];
     predictions.map((prediction, index) => {
-        const symbol = _.get(prediction, 'position.security.ticker', null);
+        const symbol = getStockTicker(_.get(prediction, 'position.security', null));
         const startDate = _.get(prediction, 'startDate', null);
         const endDate = _.get(prediction, 'endDate', null);
         const investment = _.get(prediction, 'position.investment', 0);
@@ -105,6 +105,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
             type: investment > 0 ? 'buy' : 'sell',
             locked: lockPredictions,
             new: newPrediction,
+            priceInterval: _.get(prediction, 'priceInterval', {}),
             lastPrice: _.get(prediction, 'position.security.latestDetailRT.current', 0) || _.get(prediction, 'position.security.latestDetail.Close', 0),
             pnlLastPrice: _.get(prediction, 'position.lastPrice', 0),
             avgPrice: _.get(prediction, 'position.avgPrice', null),
@@ -125,6 +126,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
                 pnlLastPrice: _.get(prediction, 'position.lastPrice', 0),
                 name: _.get(prediction, 'position.security.detail.Nse_Name', null),
                 points: 10,
+                priceInterval: _.get(prediction, 'priceInterval', {}),
                 sector: _.get(prediction, 'position.security.detail.Sector', null),
                 shares: 0,
                 symbol,
@@ -147,6 +149,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
 export const processPredictions = (predictions = [], locked = false, type = 'startedToday') => {
     return Promise.map(predictions, prediction => ({
         symbol: getStockTicker(_.get(prediction, 'position', null)),
+        priceInterval: _.get(prediction, 'priceInterval', {}),
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),
         lastPrice: _.get(prediction, 'position.lastPrice', 0),
         avgPrice: _.get(prediction, 'position.avgPrice', 0),
