@@ -62,17 +62,17 @@ export const getIntraDayStockPerformance = (tickerName, detailType='detail') => 
         .then(performance => {
 			const data = performance.data.intradayHistory;
 			if (data.length > 0) { // Check if ticker is valid
-
-				const performanceArray = [];
-				for (let i=data.length - 1; i >= 0; i-=5) {
-					const item = data[i];
+				const formattedData = data.map(item => {
 					const stillUtc = moment.utc(item.datetime).toDate();
 					const local = moment(stillUtc).local().add(1, 'minutes').startOf('minute').valueOf();
-					performanceArray.push([local, item.close]);
+					return [local, item.close];
+				})
+				const throttledData = getIntraDayThrottledPerformance(formattedData);
+				if (formattedData.length <=20) {
+					resolve(formattedData);
+				} else {
+					resolve(throttledData);
 				}
-				_.reverse(performanceArray);
-                // resolve(performanceArray.slice(0, performanceArray.length - 100));
-                resolve(performanceArray);
             } else {
                 reject('Invalid Ticker');
             }
@@ -81,6 +81,16 @@ export const getIntraDayStockPerformance = (tickerName, detailType='detail') => 
             reject(error);
         });
     });
+}
+
+export const getIntraDayThrottledPerformance = (data) => {
+	const clonedData = _.map(data, _.cloneDeep);
+	const performanceArray = [];
+	for (let i=clonedData.length - 1; i >= 0; i-=5) {
+		const item = clonedData[i];
+		performanceArray.push(item);
+	}
+	return (_.reverse(performanceArray));
 }
 
 export const getStockStaticPerformance = (tickerName, detailType='detail', field='staticPerformance') => {
