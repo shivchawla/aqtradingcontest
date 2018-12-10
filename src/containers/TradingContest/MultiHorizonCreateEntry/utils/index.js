@@ -2,6 +2,7 @@ import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
 import {Utils, fetchAjaxPromise} from '../../../../utils';
+import {getStockTicker} from '../../utils';
 import {maxPredictionLimit} from '../constants';
 
 const {requestUrl} = require('../../../../localConfig');
@@ -145,7 +146,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
 // formats predictions obtained from the backend
 export const processPredictions = (predictions = [], locked = false, type = 'startedToday') => {
     return Promise.map(predictions, prediction => ({
-        symbol: _.get(prediction, 'position.security.ticker', null),
+        symbol: getStockTicker(_.get(prediction, 'position', null)),
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),
         lastPrice: _.get(prediction, 'position.lastPrice', 0),
         avgPrice: _.get(prediction, 'position.avgPrice', 0),

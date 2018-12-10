@@ -238,3 +238,8 @@ export const isSelectedDateSameAsCurrentDate = (selectedDate = moment()) => {
 
     return _.isEqual(currentDate, nSelectedDate);
 }
+
+export const getStockTicker = (stock, defaultValue = '') => {
+    // security.detail.NSE_Id || security.ticker
+    return _.get(stock, 'detail.NSE_ID', null) || _.get(stock, 'ticker', defaultValue);
+}

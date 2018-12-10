@@ -3,7 +3,7 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {horizontalBox, verticalBox, nameEllipsisStyle2, metricColor} from '../../../../constants';
-import {getRankMedal} from '../../utils';
+import {getRankMedal, getStockTicker} from '../../utils';
 import {Utils} from '../../../../utils';
 
 export default class WinnerListItem extends React.Component {
@@ -17,7 +17,7 @@ export default class WinnerListItem extends React.Component {
     
     render() {
         const {security = {}, numUsers = 1, rank = 5, lastDetail = {}, investment} = this.props;
-        const symbol = _.get(security, 'detail.NSE_ID', null) || security.ticker;
+        const symbol = getStockTicker(security);
         const name = _.get(security, 'detail.Nse_Name', null) || '';
         const lastPrice = _.get(security, 'latestDetailRT.current', null) || _.get(security, 'latestDetail.Close', 0);
         const change = Utils.formatMoneyValueMaxTwoDecimals(_.get(security, 'latestDetail.Change', 0));
