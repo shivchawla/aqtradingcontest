@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
@@ -41,7 +42,8 @@ export default class LayoutMobile extends React.Component {
     }
 
     renderContent = () => {
-        const {series, noDataFound = false, intraDaySeries} = this.props;
+        const {series, noDataFound = false, intraDaySeries, latestDetail = {}} = this.props;
+        const prevClose = _.get(latestDetail, 'close', 0);
 
         return (
             noDataFound
@@ -58,6 +60,7 @@ export default class LayoutMobile extends React.Component {
                             series={[series]} 
                             intraDaySeries={intraDaySeries} 
                             height={250}
+                            prevClose={prevClose}
                             getStockPriceHistory={this.props.getStockPriceHistory}
                         />
                     </Grid>

@@ -217,14 +217,6 @@ class StockChartImpl extends React.Component {
         this.initializeChart();
     }
 
-    componentWillReceiveProps(nextProps, nextState) {
-        // if (nextProps.series !== this.props.series) {
-        //     this.setState({series: nextProps.series}, () => {
-        //         this.updateSeries(this.state.series);
-        //     });
-        // }
-    }
-
     updateLegend = (name, data, destroy = false, color = null, disabled = false) => {
         const legendItems = [...this.state.legendItems];
         const selectedTime = data[data.length - 1][0];
@@ -278,7 +270,9 @@ class StockChartImpl extends React.Component {
                     data,
                     visible: this.chart.series.length < 5,
                     selected: true,
-                    color
+                    color,
+                    disabled: false,
+                    destroy: false
                 });
             }
             if (legendIndex === -1) {
@@ -304,7 +298,7 @@ class StockChartImpl extends React.Component {
         return clonedIntradayData;
     }
 
-    updateItemInSeries = (index, {name, data, disabled}) => {
+    updateItemInSeries = (index, {name, data, color = null}) => {
         try {
             const initialYValue = data.length > 0 ? data[data.length - 1][1] : '0';
             const legendItems = [...this.state.legendItems];
@@ -313,7 +307,7 @@ class StockChartImpl extends React.Component {
             const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
             const formattedTime = moment(selectedTime).format(requiredMomentFormat);
             if (this.chart.series[index] !== undefined) {
-                this.chart.series[index].update({name: name, /*.toUpperCase()*/ data}, false);
+                this.chart.series[index].update({name, data, color}, false);
                 if (this.state.intraDaySelected) {
                     if (this.chart.series.length < 2) {
                         this.chart.addSeries({
@@ -341,7 +335,7 @@ class StockChartImpl extends React.Component {
         } catch(err) {
             if (data.length === 0) {
                 if (this.chart.series[index] !== undefined) {
-                    this.chart.series[index].update({name: name, /*.toUpperCase()*/ data}, false);
+                    this.chart.series[index].update({name, data}, false);
                     this.setState({legendItems: []});
                 }
             }
@@ -688,16 +682,40 @@ class StockChartImpl extends React.Component {
         })
     }
 
+    getSeriesColor = (data = [], intraDaySelected = this.state.intraDaySelected) => {
+        const lastDataPointPrice = _.get(data, `[${data.length - 1}][1]`, 0);
+        const firstDataPointPrice = _.get(data, `[0][1]`, 0);
+        const prevClose = _.get(this.props, 'prevClose', 0);
+        let seriesColor = '#0082c8';
+
+        if (intraDaySelected) {
+            seriesColor = lastDataPointPrice > prevClose ? metricColor.positive : metricColor.negative;
+        } else {
+            seriesColor = lastDataPointPrice > firstDataPointPrice ? metricColor.positive : metricColor.negative;
+        }
+
+        return seriesColor;
+    }
+
     getSelection = (selected) => {
         this.setState({loadingPriceHistory: true});
         this.getChartData(selected)
         .then(data => {
             let intraDaySelected = false;
             if (this.chart.series.length === 0) {
-                this.addItemToSeries({name: 'Stock Performance', data})
+                const seriesColor = this.getSeriesColor(data);
+                this.addItemToSeries({
+                    name: 'Stock Performance', 
+                    data, 
+                    color: seriesColor,
+                })
                 .then(() => {
                     if (this.state.intraDaySelected) {
-                        this.chart.addSeries({name: 'dummy', data: this.getDummyDataForSeries(data), color: 'transparent'}, false, false);
+                        this.chart.addSeries({
+                            name: 'dummy', 
+                            data: this.getDummyDataForSeries(data), 
+                            color: 'transparent'
+                        }, false, false);
                         this.chart.redraw();
                     }
                 })
@@ -707,9 +725,15 @@ class StockChartImpl extends React.Component {
                 } else {
                     intraDaySelected = false;
                 }   
+                const seriesColor = this.getSeriesColor(data, intraDaySelected);
                 this.setState({intraDaySelected}, () => {
                     const stockPerformanceSeriesIndex = _.findIndex(this.chart.series, item => item.name === 'Stock Performance');
-                    this.updateItemInSeries(stockPerformanceSeriesIndex, {name: 'Stock Performance', data: data, disabled: false});
+                    this.updateItemInSeries(stockPerformanceSeriesIndex, 
+                        {
+                            name: 'Stock Performance', 
+                            data: data, 
+                            color: seriesColor
+                        });
                 })
             }
         })
