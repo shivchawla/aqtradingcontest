@@ -438,7 +438,7 @@ class StockCardPredictions extends React.Component {
                                     badgeContent={this.state.stockCartCount} 
                                     style={{color: primaryColor, fontSize: '14px'}}
                             >
-                                <Icon style={{color: primaryColor}}>shopping_cart</Icon>
+                                <Icon style={{color: '#707070'}}>shopping_cart</Icon>
                             </Badge>
                         </IconButton>
                     </Tooltip>
@@ -446,7 +446,8 @@ class StockCardPredictions extends React.Component {
                         <IconButton 
                                 onClick={this.toggleDefaultSettingsBottomSheet}
                         >
-                            <Icon style={{color: primaryColor}}>settings_input_composite</Icon>
+                            <Icon style={{color: '#707070'}}>settings</Icon>
+                            {/* <Icon style={{color: primaryColor}}>settings_input_composite</Icon> */}
                         </IconButton>
                     </Tooltip>
                 </Grid>
