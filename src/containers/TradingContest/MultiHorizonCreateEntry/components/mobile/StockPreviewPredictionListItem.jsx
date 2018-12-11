@@ -118,7 +118,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     >
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
                             <MetricLabel>Chg. Investment</MetricLabel>
-                            <div style={{...horizontalBox}}>
+                            <div style={{...horizontalBox, minHeight: '22px'}}>
                                 <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
                                 <Icon>arrow_right_alt</Icon>
                                 <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
@@ -126,7 +126,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         </div>
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
                             <MetricLabel>Price Interval</MetricLabel>
-                            <div style={{...horizontalBox}}>
+                            <div style={{...horizontalBox, minHeight: '22px'}}>
                                 {
                                     lowPrice !== null &&
                                     <MetricText color='#222'>₹{lowPrice}</MetricText>
@@ -140,7 +140,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         </div>
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
                             <MetricLabel>Status</MetricLabel>
-                            <MetricText color={iconConfig.color}>{iconConfig.type}</MetricText>
+                            <div style={{...horizontalBox, minHeight: '22px'}}>
+                                <MetricText color={iconConfig.color}>{iconConfig.type}</MetricText>
+                            </div>
                         </div>
                     </div>
                 </Grid>
