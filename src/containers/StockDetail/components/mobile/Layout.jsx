@@ -69,7 +69,7 @@ export default class LayoutMobile extends React.Component {
                             xs={12}
                             style={{
                                 ...verticalBox,
-                                marginTop: '-25px'
+                                marginTop: '-15px'
                             }}
                     >
                         <Tabs 
