@@ -1,22 +1,26 @@
 import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
+import {withRouter} from 'react-router-dom';
 import CreateWatchlist from './components/mobile/CreateWatchList';
 import WatchList from './components/mobile/WatchList';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
 import AqLayout from '../../components/ui/AqLayout';
+import StockSelection from '../TradingContest/StockCardPredictions/components/mobile/StockSelection';
+import RadioGroup from '../../components/selections/RadioGroup';
+import WatchlistCustomRadio from './components/mobile/WatchlistCustomRadio';
+import RoundedButton from '../../components/Buttons/RoundedButton';
 import LoaderComponent from '../TradingContest/Misc/Loader';
 import ActionIcon from '../TradingContest/Misc/ActionIcons';
 import {fetchAjaxPromise, Utils} from '../../utils';
-import {primaryColor} from '../../constants';
+import {primaryColor, horizontalBox, verticalBox} from '../../constants';
 
 const {requestUrl} = require('../../localConfig');
 
-export default class WatchlistComponent extends React.Component {
+class WatchlistComponent extends React.Component {
     constructor(props) {
         super(props);
         this.mounted = false;
@@ -26,7 +30,9 @@ export default class WatchlistComponent extends React.Component {
             watchlists: [],
             selectedWatchlistTab: '',
             selectedWatchlistTabIndex: 0,
-            searchInputOpen: false
+            searchInputOpen: false,
+            stockSelectionOpen: false,
+            watchlistEditMode: false
         };
     }
 
@@ -150,28 +156,26 @@ export default class WatchlistComponent extends React.Component {
         this.setState({selectedWatchlistTabIndex: tabIndex});
     }
 
-    renderTabs = () => {
+    handleFavouritesChange = selectedIndex => {
+        this.setState({selectedWatchlistTabIndex: selectedIndex});
+    }
+
+    renderFavourites = () => {
         const {watchlists = []} = this.state;
+        const watchlistNames = watchlists.map(watchlist => watchlist.name);
 
         return (
-            <Paper square>
-                <STabs
-                    value={this.state.selectedWatchlistTabIndex}
-                    indicatorColor="secondary"
-                    onChange={this.handleWatchListTabChange}
-                    scrollable
-                    fullWidth
-                >
-                    {
-                        watchlists.map((watchlist, index) => {
-                            return (
-                                <STab key={index} label={watchlist.name} />
-                            );
-                        })
-                    }
-                </STabs>
-            </Paper>
-        );  
+            <RadioGroup 
+                CustomRadio={WatchlistCustomRadio}
+                items={watchlistNames}
+                defaultSelected={0}
+                onChange={this.handleFavouritesChange}
+                style={{
+                    justifyContent: 'space-between',
+                    padding: '10px',
+                }}
+            />
+        );
     }
 
     renderWatchList = () => {
@@ -186,6 +190,7 @@ export default class WatchlistComponent extends React.Component {
                 name={_.get(selectedWatchlist, 'name', '')} 
                 getWatchlist={this.getWatchlist}
                 searchInputOpen={this.state.searchInputOpen}
+                watchlistEditMode={this.state.watchlistEditMode}
             />
         );
     }
@@ -207,13 +212,20 @@ export default class WatchlistComponent extends React.Component {
         this.setState({searchInputOpen: !this.state.searchInputOpen});
     }
 
+    toggleStockSelection = () => {
+        this.setState({stockSelectionOpen: !this.state.stockSelectionOpen});
+    }
+
+    toggleWatchlistMode = () => {
+        this.setState({watchlistEditMode: !this.state.watchlistEditMode});
+    }
+
     renderSearchButton = () => {
         return (
             <ActionIcon 
                 type='search' 
-                onClick={this.toggleSearchMode} 
-                color='#fff'
-                style={{position: 'absolute', right: 0}}
+                onClick={this.toggleStockSelection} 
+                color='#707070'
             />
         );
     }
@@ -226,26 +238,34 @@ export default class WatchlistComponent extends React.Component {
                     toggleModal={this.toggleCreateWatchlistDialog}
                     getWatchlists={this.getWatchlists}
                 />
-                <Grid item xs={12}>
-                    {this.renderTabs()}
+                {/* <Grid item xs={12}>
+                    {this.renderSearchButton()}
+                </Grid> */}
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'space-between',
+                            paddingRight: '10px'
+                        }}
+                >
+                    <FavouritesContainer>
+                        {this.renderFavourites()}
+                    </FavouritesContainer>
+                    <RoundedButton 
+                        type='add' 
+                        style={{backgroundColor: '#4F70BE'}}
+                        onClick={this.toggleCreateWatchlistDialog}
+                    />
+                    <RoundedButton 
+                        type='edit' 
+                        iconStyle={{fontSize: '14px', backgroundColor: '#2162FF'}}
+                        onClick={this.toggleWatchlistMode}
+                    />
                 </Grid>
                 <Grid item xs={12}>
                     {this.renderWatchList()}
-                    <div 
-                            style={{
-                                ...fabContainerStyle,
-                                justifyContent: 'center'
-                            }}
-                    >
-                        <Button 
-                                onClick={this.toggleCreateWatchlistDialog}
-                                variant='extendedFab'
-                                color="primary"
-                                style={fabButton}
-                        >
-                            Create Watchlist
-                        </Button>
-                    </div>
                 </Grid>
             </Grid>
         );
@@ -253,14 +273,20 @@ export default class WatchlistComponent extends React.Component {
 
     render() {
         return (
-            <AqLayout 
-                    pageTitle='Watchlist'
-            >
+            <React.Fragment>
+                <StockSelection 
+                    open={this.props.stockSelectionOpen}
+                    list={false}
+                    toggleSearchStocksDialog={this.props.toggleStockSelection}
+                    stockData={{}}
+                />
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
-            </AqLayout>
+            </React.Fragment>
         );
     }
 }
+
+export default withRouter(WatchlistComponent);
 
 const fabContainerStyle = {
     display: 'flex', 
@@ -285,4 +311,12 @@ const STabs = styled(Tabs)`
 
 const STab = styled(Tab)`
     font-weight: 400;
+`;
+
+const FavouritesContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    width: 75vw;
+    overflow: hidden;
+    overflow-x: scroll;
 `;

@@ -11,6 +11,7 @@ import Icon from '@material-ui/core/Icon';
 import {withRouter} from 'react-router-dom';
 import StockCard from './components/common/StockCard';
 import StockSelection from './components/mobile/StockSelection';
+import WatchlistComponent from '../../Watchlist';
 import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
 import Snackbar from '../../../components/Alerts/SnackbarComponent';
@@ -442,17 +443,34 @@ class StockCardPredictions extends React.Component {
                             </Badge>
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Default Settings" placement="bottom">
-                        <IconButton 
-                                onClick={this.toggleDefaultSettingsBottomSheet}
-                        >
-                            <Icon style={{color: '#707070'}}>settings</Icon>
-                            {/* <Icon style={{color: primaryColor}}>settings_input_composite</Icon> */}
-                        </IconButton>
-                    </Tooltip>
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'flex-end'
+                            }}
+                    >
+                        {
+                            this.shouldShowListView() &&
+                            <Tooltip title="Search Stocks" placement="bottom">
+                                <IconButton 
+                                        onClick={this.toggleSearchStocksBottomSheet}
+                                >
+                                    <Icon style={{color: '#707070'}}>search</Icon>
+                                </IconButton>
+                            </Tooltip>
+                        }
+                        <Tooltip title="Default Settings" placement="bottom">
+                            <IconButton 
+                                    onClick={this.toggleDefaultSettingsBottomSheet}
+                            >
+                                <Icon style={{color: '#707070'}}>settings</Icon>
+                                {/* <Icon style={{color: primaryColor}}>settings_input_composite</Icon> */}
+                            </IconButton>
+                        </Tooltip>
+                    </div>
                 </Grid>
                 <Grid item xs={12}>
-                    <StockSelection 
+                    {/* <StockSelection 
                         open={this.state.searchStockOpen}
                         toggleSearchStocksDialog={
                             !this.shouldShowListView() 
@@ -465,7 +483,14 @@ class StockCardPredictions extends React.Component {
                         list={this.shouldShowListView()}
                         stockCart={this.state.stockCart}
                         setFetchStocks={this.setFetchStocks}
-                    />
+                    /> */}
+                    {
+                        this.shouldShowListView() &&
+                        <WatchlistComponent 
+                            stockSelectionOpen={this.state.searchStockOpen}
+                            toggleStockSelection={this.toggleSearchStocksBottomSheet}
+                        />
+                    }
                 </Grid>
                 <Grid item xs={12}>
                     {this.renderStockCard(this.shouldShowListView())}

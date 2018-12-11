@@ -8,7 +8,6 @@ import StockDetailBottomSheet from '../../../TradingContest/StockDetailBottomShe
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
 import {withRouter} from 'react-router';
-// import {ChartTickerItem} from './ChartTickerItem';
 import StockListItemMobile from '../../../TradingContest/SearchStocks/components/StockListItemMobile';
 import {Utils} from '../../../../utils';
 import { verticalBox, horizontalBox, primaryColor, metricColor} from '../../../../constants';
@@ -39,7 +38,7 @@ class WatchList extends React.Component {
         return (
             <ActionIcon 
                 size={18}
-                color={metricColor.negative}
+                color='#fe626a'
                 type='delete'
                 onClick={() => this.deleteItem(symbol)}
             />
@@ -60,9 +59,9 @@ class WatchList extends React.Component {
             <StockListItemMobile 
                 {...ticker} 
                 key={index} 
-                extraContent={this.state.watchlistEditMode ? this.renderDeleteIcon : null}
+                extraContent={this.props.watchlistEditMode ? this.renderDeleteIcon : null}
                 onInfoClicked={this.onStockInfoClicked}
-                hideInfo
+                // hideInfo
             />
         );
     }
@@ -114,11 +113,9 @@ class WatchList extends React.Component {
             })
             .then(response => {
                 console.log('Successfully Updated Wishlist');
-                // message.success('Successfully Updated Wishlist');
                 this.props.getWatchlist(this.props.id);
             })
             .catch(error => {
-                // console.log(error);
                 if (error.response) {
                     Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
                 }
@@ -131,7 +128,6 @@ class WatchList extends React.Component {
     }
 
     deleteItem = name => {
-        // console.log(name);
         const tickers = this.props.tickers.map(item => item.symbol);
         const newTickers = _.pull(tickers, name);
         const url = `${requestUrl}/watchlist/${this.props.id}`;
@@ -147,14 +143,9 @@ class WatchList extends React.Component {
             method: 'PUT'
         })
         .then(response => {
-            // console.log(`Successfully Deleted ${name} from Wishlist`);
-            // message.success(`Successfully Deleted ${name} from Wishlist`);
             this.props.getWatchlist(this.props.id);
         })
         .catch(error => {
-            // console.log(error);
-            // console.log(`Error occured while deleting ${name} from wishlist`);
-            // message.error(`Error occured while deleting ${name} from wishlist`);
             if (error.response) {
                 Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
             }
@@ -166,7 +157,6 @@ class WatchList extends React.Component {
 
     processPositions = positions => {
         return positions.map(item => {
-            console.log(item);
             return {
                 ticker: item,
                 securityType: "EQ",
@@ -187,7 +177,7 @@ class WatchList extends React.Component {
     }
     
     toggleEditWatclistMode = () => {
-        this.setState({watchlistEditMode: !this.state.watchlistEditMode});
+        this.setState({watchlistEditMode: !this.props.watchlistEditMode});
     }   
 
     render() {
@@ -200,7 +190,7 @@ class WatchList extends React.Component {
                 />
                 <Grid item xs={12}>
                     <Grid container justify="flex-end">
-                    {
+                        {
                             this.state.searchInputOpen &&
                             <Grid 
                                     item 
@@ -218,23 +208,6 @@ class WatchList extends React.Component {
                                 />
                             </Grid>
                         }
-                        <Grid item xs={3} style={{...horizontalBox, marginTop: '10px', justifyContent: 'flex-end'}}>
-                            <ActionIcon 
-                                type='search' 
-                                color={primaryColor}
-                                style={{fontSize: '24px'}}
-                                onClick={this.toggleSearchMode}
-                            />
-                            {
-                                this.props.tickers.length > 0 &&
-                                <ActionIcon 
-                                    type={this.state.watchlistEditMode ? 'lock' : 'edit'} 
-                                    color={primaryColor}
-                                    style={{fontSize: '24px'}}
-                                    onClick={this.toggleEditWatclistMode}
-                                />
-                            }
-                        </Grid>
                     </Grid>
                 </Grid>
                 {
