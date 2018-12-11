@@ -69,9 +69,9 @@ export const getIntraDayStockPerformance = (tickerName, detailType='detail') => 
 				})
 				const throttledData = getIntraDayThrottledPerformance(formattedData);
 				if (formattedData.length <=20) {
-					resolve(formattedData);
+					resolve(sortPerformanceData(formattedData));
 				} else {
-					resolve(throttledData);
+					resolve(sortPerformanceData(throttledData));
 				}
             } else {
                 resolve([]);
@@ -82,6 +82,10 @@ export const getIntraDayStockPerformance = (tickerName, detailType='detail') => 
             reject(error);
         });
     });
+}
+
+export const sortPerformanceData = data => {
+	return _.sortBy(data, item => item[0]);
 }
 
 export const getIntraDayThrottledPerformance = (data) => {
