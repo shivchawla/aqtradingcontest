@@ -6,17 +6,16 @@ import {withRouter} from 'react-router-dom';
 import CreateWatchlist from './components/mobile/CreateWatchList';
 import WatchList from './components/mobile/WatchList';
 import Grid from '@material-ui/core/Grid';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import StockSelection from '../TradingContest/StockCardPredictions/components/mobile/StockSelection';
 import RadioGroup from '../../components/selections/RadioGroup';
 import WatchlistCustomRadio from './components/mobile/WatchlistCustomRadio';
 import RoundedButton from '../../components/Buttons/RoundedButton';
 import LoaderComponent from '../TradingContest/Misc/Loader';
 import ActionIcon from '../TradingContest/Misc/ActionIcons';
+import DialogComponent from '../../components/Alerts/DialogComponent';
 import {fetchAjaxPromise, Utils} from '../../utils';
 import {processPositions} from './utils';
-import {primaryColor, horizontalBox, verticalBox} from '../../constants';
+import {primaryColor, horizontalBox, metricColor} from '../../constants';
 
 const {requestUrl} = require('../../localConfig');
 
@@ -33,7 +32,8 @@ class WatchlistComponent extends React.Component {
             searchInputOpen: false,
             stockSelectionOpen: false,
             watchlistEditMode: false,
-            updateWatchlistLoading: false
+            updateWatchlistLoading: false,
+            deleteWatchlistDialogVisible: false
         };
     }
 
@@ -47,7 +47,11 @@ class WatchlistComponent extends React.Component {
         return fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
             const watchlists = this.processWatchlistData(response.data);
-            this.setState({watchlists, selectedWatchlistTab: watchlists[0].id});
+            this.setState({
+                watchlists, 
+                selectedWatchlistTab: watchlists[0].id,
+                selectedWatchlistTabIndex: 0
+            });
 
             //Launch WS request to subscrie watchlist
             this.subscribeToWatchList(this.state.selectedWatchlistTab);
@@ -248,10 +252,13 @@ class WatchlistComponent extends React.Component {
                         style={{
                             ...horizontalBox, 
                             justifyContent: 'space-between',
-                            paddingRight: '10px'
+                            paddingRight: '10px',
+                            backgroundColor: '#f7f7f7',
+                            boxShadow: '0 2px 4px #00000033',
+                            borderTop: '1px solid #efefef'
                         }}
                 >
-                    <FavouritesContainer>
+                    <FavouritesContainer width={this.state.watchlistEditMode ? '65vw' : '75vw'}>
                         {this.renderFavourites()}
                     </FavouritesContainer>
                     <RoundedButton 
@@ -259,9 +266,19 @@ class WatchlistComponent extends React.Component {
                         style={{backgroundColor: '#4F70BE'}}
                         onClick={this.toggleCreateWatchlistDialog}
                     />
+                    {
+                        this.state.watchlistEditMode &&
+                        <RoundedButton 
+                            type='delete' 
+                            backgroundColor='#f65864'
+                            iconStyle={{fontSize: '14px'}}
+                            onClick={this.toggleWatchlistDeleteDialog}
+                        />
+                    }
                     <RoundedButton 
                         type='edit' 
-                        iconStyle={{fontSize: '14px', backgroundColor: '#2162FF'}}
+                        backgroundColor='#7b72d1'
+                        iconStyle={{fontSize: '14px'}}
                         onClick={this.toggleWatchlistMode}
                     />
                 </Grid>
@@ -320,7 +337,7 @@ class WatchlistComponent extends React.Component {
         const selectedWatchlist = this.getSelectedWatchlist();
         const positions = _.get(selectedWatchlist, 'positions', []);
         const tickers = positions.map(item => item.symbol);
-        const watchlistId=_.get(selectedWatchlist, 'id', null);
+        const watchlistId = _.get(selectedWatchlist, 'id', null);
         const watchlistName = _.get(selectedWatchlist, 'name', '');
         const newTickers = _.pull(tickers, name);
         const url = `${requestUrl}/watchlist/${watchlistId}`;
@@ -348,14 +365,65 @@ class WatchlistComponent extends React.Component {
         })
     }
 
+    toggleWatchlistDeleteDialog = () => {
+        console.log('toggleWatchlistDeleteDialog called');
+        this.setState({deleteWatchlistDialogVisible: !this.state.deleteWatchlistDialogVisible});
+    }
+
+    deleteWatchlist = () => {
+        console.log('Delete Watchlist Called');
+        const selectedWatchlist = this.getSelectedWatchlist();
+        const watchlistId = _.get(selectedWatchlist, 'id', null);
+        const url = `${requestUrl}/watchlist/${watchlistId}`;
+        this.setState({updateWatchlistLoading: true});
+        axios({
+            url,
+            headers: Utils.getAuthTokenHeader(),
+            method: 'DELETE'
+        })
+        .then(response => {
+            this.getWatchlists();
+            if (this.state.watchlists.length > 0) {
+                this.subscribeToWatchList(this.state.watchlists[0].id);
+            }
+            this.toggleWatchlistDeleteDialog();
+        })
+        .catch(error => {
+            console.log(error);
+            Utils.checkForInternet(error, this.props.history);
+            if (error.response) {
+                Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
+            }
+        })
+        .finally(() => {
+            this.setState({updateWatchlistLoading: false});
+        })
+    }
+
     render() {
+        const selectedWatchlist = this.getSelectedWatchlist();
+        const selectedWatchlistName = _.get(selectedWatchlist, 'name', '');
+        const nStockData = _.pick(this.props.stockData, 'sector');
+
         return (
             <React.Fragment>
+                <DialogComponent 
+                        open={this.state.deleteWatchlistDialogVisible}
+                        onOk={this.deleteWatchlist}
+                        onCancel={this.toggleWatchlistDeleteDialog}
+                        action
+                        title='Delete Watchlist'
+                >
+                    <DialogText>Are you sure you want to delete 
+                        <span style={{color: primaryColor}}>&nbsp;{selectedWatchlistName}&nbsp;</span> 
+                        watchlist ?
+                    </DialogText>
+                </DialogComponent>
                 <StockSelection 
                     open={this.props.stockSelectionOpen}
                     list={false}
                     toggleSearchStocksDialog={this.props.toggleStockSelection}
-                    stockData={{}}
+                    stockData={nStockData}
                     addStock={this.addStockToWatchlist}
                 />
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
@@ -366,35 +434,18 @@ class WatchlistComponent extends React.Component {
 
 export default withRouter(WatchlistComponent);
 
-const fabContainerStyle = {
-    display: 'flex', 
-    width: '95%', 
-    padding:'0 10px', 
-    position: 'fixed', 
-    zIndex:2, 
-    bottom: '20px', 
-};
-const fabButton = {
-    borderRadius:'5px', 
-    padding: '0 10px',
-    minHeight: '36px',
-    height: '36px',
-    boxShadow: '0 11px 21px #c3c0c0'
-}
-
-const STabs = styled(Tabs)`
-    background-color: ${primaryColor};
-    color: #fff;
-`;
-
-const STab = styled(Tab)`
-    font-weight: 400;
-`;
-
 const FavouritesContainer = styled.div`
     display: flex;
     flex-direction: row;
-    width: 75vw;
+    width: ${props => props.width || '75vw'};
     overflow: hidden;
     overflow-x: scroll;
+    transition: all 0.3s ease-in-out;
+`;
+
+const DialogText = styled.h3`
+    font-weight: 400;
+    color: #575757;
+    font-size: 16px;
+    font-family: 'Lato', sans-serif;
 `;

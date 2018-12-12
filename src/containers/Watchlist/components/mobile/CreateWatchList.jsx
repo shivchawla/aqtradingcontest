@@ -3,19 +3,15 @@ import axios from 'axios';
 import _ from 'lodash';
 import styled from 'styled-components';
 import {withRouter} from 'react-router';
-import Dialog from '@material-ui/core/Dialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import CloseIcon from '@material-ui/icons/Close';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
 import Slide from '@material-ui/core/Slide';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
+import BottomSheet from '../../../../components/Alerts/BottomSheet';
 import {Utils} from '../../../../utils';
-import { verticalBox } from '../../../../constants';
+import { verticalBox, horizontalBox } from '../../../../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -27,7 +23,8 @@ class CreateWatchListImpl extends React.Component {
             dataSource: [],
             watchlists: [],
             name: '',
-            loading: false
+            loading: false,
+            error: null
         };
     }
 
@@ -47,13 +44,14 @@ class CreateWatchListImpl extends React.Component {
                 headers: Utils.getAuthTokenHeader()
             })
             .then(response => {
+                this.setState({error: null});
                 return this.props.getWatchlists();
             })
             .then(() => {
                 this.props.toggleModal();
             })
             .catch(error => {
-                console.log(error);
+                this.setState({error: 'Error Occured while creating watchlist'});
                 if (error.response) {
                     Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
                 }
@@ -62,8 +60,7 @@ class CreateWatchListImpl extends React.Component {
                 this.setState({loading: false});
             })
         } else {
-            // message.error('Please provide a name for your watchlist');
-            // console.log('Please provide a name for your watchlist');
+            this.setState({error: 'Please provide a name for your watchlist'});
         }
     }
 
@@ -93,24 +90,35 @@ class CreateWatchListImpl extends React.Component {
         }
     }
 
+    renderHeader = () => {
+        return (
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        background: 'linear-gradient(to right, #5443F0, #335AF0)',
+                        width: '100%',
+                        padding: '5px 0'
+                    }}
+            >
+                <Header>Create Watchlist</Header>
+                <ActionIcon 
+                    onClick={this.props.toggleModal} 
+                    color='#fff'
+                    type="close"
+                />
+            </div>
+        );
+    }
+
     render() {
         return (
-            <Dialog
-                    fullScreen
+            <BottomSheet
                     open={this.props.visible}
                     onClose={this.props.toggleModal}
-                    TransitionComponent={Transition}
+                    header="Create Watchlist"
+                    customHeader={this.renderHeader}
             >
-                <AppBar>
-                    <Toolbar>
-                        <IconButton color="inherit" onClick={this.props.toggleModal} aria-label="Close">
-                            <CloseIcon />
-                        </IconButton>
-                        <Typography variant="h6" color="inherit">
-                            CREATE WATCHLIST
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
                 <Container container>
                     <Grid item xs={12} style={verticalBox}>
                         <TextField
@@ -134,18 +142,18 @@ class CreateWatchListImpl extends React.Component {
                                 <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />
                             }
                         </Button>
+                        {
+                            this.state.error !== null &&
+                            <ErrorText>{this.state.error}!</ErrorText>
+                        }
                     </Grid>
                 </Container>
-            </Dialog>
+            </BottomSheet>
         );
     }
 }
 
 export default withRouter(CreateWatchListImpl);
-
-function Transition(props) {
-    return <Slide direction="up" {...props} />;
-}
 
 const Container = styled(Grid)`
     width: 100%;
@@ -153,4 +161,20 @@ const Container = styled(Grid)`
     display: flex;
     justify-content: center;
     align-items: center;
+`;
+
+const Header = styled.h3`
+    color: #fff;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    margin-left: 20px;
+`;
+
+const ErrorText = styled.h3`
+    color: #f65864;
+    font-weight: 500;
+    font-size: 12px;
+    font-family: 'Lato', sans-serif;
+    margin-top: 10px;
 `;

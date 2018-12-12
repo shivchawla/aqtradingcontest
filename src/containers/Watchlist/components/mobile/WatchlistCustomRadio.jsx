@@ -16,9 +16,10 @@ export default class TimelineCustomRadio extends React.Component {
         const {checked = false, label='-', small = false} = this.props;
         const background = checked ? 'linear-gradient(to bottom, #2987F9, #386FFF)' : '#CCDBEB';
         const color = checked ? '#fff' : '#7C7C7C';
-        const fontSize = small ?  '11px' : '12px';
+        const fontSize = small ?  '12px' : '14px';
         const padding = small ? '4px 8px' : '6px 12px';
-        const boxShadow = checked ? '0 3px 7px #a3a3a3' : 'none';
+        const boxShadow = 'none';
+        // const boxShadow = checked ? '0 3px 7px #a3a3a3' : 'none';
 
         return (
             <ButtonBase 

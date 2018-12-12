@@ -429,7 +429,7 @@ class StockCardPredictions extends React.Component {
                     fetchStocks={this.fetchStocks}
                 />
                 <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-between'}}>
-                    <Tooltip title="Started Today" placement="bottom">
+                    {/* <Tooltip title="Started Today" placement="bottom"> */}
                         <IconButton 
                                 onClick={() => {
                                     this.props.history.push(`/dailycontest/mypicks?&date=${this.getCurrentTradingDay().format(dateFormat)}&type=started`)
@@ -442,7 +442,7 @@ class StockCardPredictions extends React.Component {
                                 <Icon style={{color: '#707070'}}>shopping_cart</Icon>
                             </Badge>
                         </IconButton>
-                    </Tooltip>
+                    {/* </Tooltip> */}
                     <div 
                             style={{
                                 ...horizontalBox, 
@@ -451,22 +451,21 @@ class StockCardPredictions extends React.Component {
                     >
                         {
                             this.shouldShowListView() &&
-                            <Tooltip title="Search Stocks" placement="bottom">
+                            // <Tooltip title="Search Stocks" placement="bottom">
                                 <IconButton 
                                         onClick={this.toggleSearchStocksBottomSheet}
                                 >
                                     <Icon style={{color: '#707070'}}>search</Icon>
                                 </IconButton>
-                            </Tooltip>
+                            // </Tooltip>
                         }
-                        <Tooltip title="Default Settings" placement="bottom">
+                        {/* <Tooltip title="Default Settings" placement="bottom"> */}
                             <IconButton 
                                     onClick={this.toggleDefaultSettingsBottomSheet}
                             >
                                 <Icon style={{color: '#707070'}}>settings</Icon>
-                                {/* <Icon style={{color: primaryColor}}>settings_input_composite</Icon> */}
                             </IconButton>
-                        </Tooltip>
+                        {/* </Tooltip> */}
                     </div>
                 </Grid>
                 <Grid item xs={12}>
@@ -524,7 +523,6 @@ class StockCardPredictions extends React.Component {
 export default withRouter(windowSize(StockCardPredictions));
 
 const Container = styled(Grid)`
-    padding: 10px;
     padding-top: 0px;
     background-color: #fff;
     width: 100%;

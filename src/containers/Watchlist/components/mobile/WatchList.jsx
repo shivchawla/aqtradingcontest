@@ -162,7 +162,7 @@ class WatchList extends React.Component {
                                 overflowY: 'scroll', 
                                 marginTop: '10px',
                                 padding: '0 10px',
-                                marginTop: '-5px',
+                                marginTop: '5px',
                                 position: 'relative'
                             }}
                     >

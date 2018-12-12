@@ -38,7 +38,8 @@ export default class RoundedButton extends React.Component {
 const buttonStyle = {
     borderRadius: '50%',
     width: '25px',
-    height: '25px'
+    height: '25px',
+    margin: '0 3px'
 };
 
 const iconStyle = {
