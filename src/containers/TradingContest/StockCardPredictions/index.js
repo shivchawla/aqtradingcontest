@@ -449,16 +449,7 @@ class StockCardPredictions extends React.Component {
                                 justifyContent: 'flex-end'
                             }}
                     >
-                        {
-                            this.shouldShowListView() &&
-                            // <Tooltip title="Search Stocks" placement="bottom">
-                                <IconButton 
-                                        onClick={this.toggleSearchStocksBottomSheet}
-                                >
-                                    <Icon style={{color: '#707070'}}>search</Icon>
-                                </IconButton>
-                            // </Tooltip>
-                        }
+                        
                         {/* <Tooltip title="Default Settings" placement="bottom"> */}
                             <IconButton 
                                     onClick={this.toggleDefaultSettingsBottomSheet}

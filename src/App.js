@@ -55,7 +55,7 @@ class App extends Component {
                                 <Switch>
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
-                                    <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
+                                    {/* <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} />  */}
                                     <Route exact={true} path='/dailycontest/stockdetail' component={StockDetail} /> 
                                     <Route
                                         path='/dailycontest/leaderboard'

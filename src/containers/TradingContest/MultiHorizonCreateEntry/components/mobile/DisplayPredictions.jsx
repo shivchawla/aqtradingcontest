@@ -153,6 +153,7 @@ class DisplayPredictions extends React.Component {
                                     <StockPreviewList  
                                         positions={positions} 
                                         selectPosition={this.props.selectPosition}
+                                        toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
                                         togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
                                     />
 	                        	</React.Fragment>

@@ -6,6 +6,8 @@ import {withRouter} from 'react-router-dom';
 import CreateWatchlist from './components/mobile/CreateWatchList';
 import WatchList from './components/mobile/WatchList';
 import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
+import Button from '@material-ui/core/Button';
 import StockSelection from '../TradingContest/StockCardPredictions/components/mobile/StockSelection';
 import RadioGroup from '../../components/selections/RadioGroup';
 import WatchlistCustomRadio from './components/mobile/WatchlistCustomRadio';
@@ -14,7 +16,7 @@ import LoaderComponent from '../TradingContest/Misc/Loader';
 import ActionIcon from '../TradingContest/Misc/ActionIcons';
 import DialogComponent from '../../components/Alerts/DialogComponent';
 import {fetchAjaxPromise, Utils} from '../../utils';
-import {processPositions} from './utils';
+import {processPositions, createUserWatchlist} from './utils';
 import {primaryColor, horizontalBox, metricColor} from '../../constants';
 
 const {requestUrl} = require('../../localConfig');
@@ -33,7 +35,9 @@ class WatchlistComponent extends React.Component {
             stockSelectionOpen: false,
             watchlistEditMode: false,
             updateWatchlistLoading: false,
-            deleteWatchlistDialogVisible: false
+            deleteWatchlistDialogVisible: false,
+            noWatchlistPresent: false,
+            watchlistMode: false,
         };
     }
 
@@ -46,23 +50,61 @@ class WatchlistComponent extends React.Component {
         this.setState({loading: true});
         return fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
-            const watchlists = this.processWatchlistData(response.data);
-            this.setState({
-                watchlists, 
-                selectedWatchlistTab: watchlists[0].id,
-                selectedWatchlistTabIndex: 0
-            });
+            const unformattedWatchlist = response.data;
+            if (unformattedWatchlist.length > 0) {
+                const watchlists = this.processWatchlistData(response.data);
+                this.setState({
+                    watchlists, 
+                    selectedWatchlistTab: watchlists[0].id,
+                    selectedWatchlistTabIndex: 0
+                });
 
-            //Launch WS request to subscrie watchlist
-            this.subscribeToWatchList(this.state.selectedWatchlistTab);
+                //Launch WS request to subscrie watchlist
+                this.subscribeToWatchList(this.state.selectedWatchlistTab);
+                this.setState({noWatchlistPresent: false});
+
+                return null;
+            } else {
+                this.setState({noWatchlistPresent: true});
+                return this.getDefaultWatchlist();
+            }
+        })
+        .then(defaultStocks => {
+            if (defaultStocks !== null) {
+                const defaultStockData = this.processDefaultStockData(defaultStocks);
+                const watchlists = [{
+                    name: 'Default',
+                    positions: defaultStockData
+                }];
+                this.setState({watchlists});
+            }
         })
         .catch(error => {
+            this.setState({noWatchlistPresent: true});
             console.log(error);
         })
         .finally(() => {
             this.setState({loading: false});
         })
     }
+
+    getDefaultWatchlist = () => new Promise((resolve, reject) => {
+        const {stockData = {}} = this.props;
+        const sector = _.get(stockData, 'sector', '');
+        const benchmark = _.get(stockData, 'benchmark', '');
+        const url = `${requestUrl}/stock?universe=${benchmark}&sector=${sector}&skip=0&limit=5&populate=true`;
+
+        fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
+        .then(response => {
+            resolve(response.data);
+        })
+        .catch(err => {
+            reject(err);
+        })
+        .finally(() => {
+            console.log('Request Ended');
+        })
+    })
 
     getWatchlist = id => {
         const url = `${requestUrl}/watchlist/${id}`;
@@ -143,7 +185,6 @@ class WatchlistComponent extends React.Component {
             return {
                 name: item.name,
                 positions: item.securities.map(item => {
-                    var validCurrentPrice = _.get(item, 'realtime.current', 0.0) != 0.0;
                     return {
                         symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
                         change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))).toFixed(2)),
@@ -154,6 +195,18 @@ class WatchlistComponent extends React.Component {
                 }),
                 id: item._id
             };
+        });
+    }
+
+    processDefaultStockData = defaultStockData => {
+        return defaultStockData.map(item => {
+            return {
+                symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
+                change: Number(((_.get(item, 'latestDetailRT.change', 0.0) || _.get(item, 'latestDetailRT.Change', 0.0))).toFixed(2)),
+                current: _.get(item, 'latestDetailRT.current', 0.0) || _.get(item, 'latestDetail.Close', 0.0),
+                changePct: Number(((_.get(item, 'latestDetailRT.changePct', 0.0) || _.get(item, 'latestDetailRT.ChangePct', 0.0)))),
+                name: _.get(item, 'detail.Nse_Name', '')
+            }
         });
     }
 
@@ -199,6 +252,7 @@ class WatchlistComponent extends React.Component {
                 toggleStockCardBottomSheet={this.props.toggleStockCardBottomSheet}
                 updateWatchlistLoading={this.state.updateWatchlistLoading}
                 deleteItem={this.deleteItem}
+                watchlistEditMode={this.state.watchlistEditMode}
             />
         );
     }
@@ -220,22 +274,8 @@ class WatchlistComponent extends React.Component {
         this.setState({searchInputOpen: !this.state.searchInputOpen});
     }
 
-    toggleStockSelection = () => {
-        this.setState({stockSelectionOpen: !this.state.stockSelectionOpen});
-    }
-
-    toggleWatchlistMode = () => {
+    toggleWatchListMode = () => {
         this.setState({watchlistEditMode: !this.state.watchlistEditMode});
-    }
-
-    renderSearchButton = () => {
-        return (
-            <ActionIcon 
-                type='search' 
-                onClick={this.toggleStockSelection} 
-                color='#707070'
-            />
-        );
     }
 
     renderContent() {
@@ -255,36 +295,75 @@ class WatchlistComponent extends React.Component {
                             paddingRight: '10px',
                             backgroundColor: '#f7f7f7',
                             boxShadow: '0 2px 4px #00000033',
-                            borderTop: '1px solid #efefef'
+                            borderTop: '1px solid #efefef',
+                            minHeight: '49px'
                         }}
                 >
-                    <FavouritesContainer width={this.state.watchlistEditMode ? '65vw' : '75vw'}>
+                    <FavouritesContainer 
+                            width='100vw'
+                    >
                         {this.renderFavourites()}
-                    </FavouritesContainer>
-                    <RoundedButton 
-                        type='add' 
-                        style={{backgroundColor: '#4F70BE'}}
-                        onClick={this.toggleCreateWatchlistDialog}
-                    />
-                    {
-                        this.state.watchlistEditMode &&
                         <RoundedButton 
-                            type='delete' 
-                            backgroundColor='#f65864'
-                            iconStyle={{fontSize: '14px'}}
-                            onClick={this.toggleWatchlistDeleteDialog}
+                            type='add' 
+                            style={{
+                                backgroundColor: '#4F70BE', 
+                                margin: 0,
+                                minWidth: '25px'
+                            }}
+                            onClick={this.toggleCreateWatchlistDialog}
                         />
-                    }
-                    <RoundedButton 
-                        type='edit' 
-                        backgroundColor='#7b72d1'
-                        iconStyle={{fontSize: '14px'}}
-                        onClick={this.toggleWatchlistMode}
-                    />
+                    </FavouritesContainer>
                 </Grid>
                 <Grid item xs={12}>
                     {this.renderWatchList()}
                 </Grid>
+                <div 
+                        style={{
+                            ...fabContainerStyle,
+                            justifyContent: 'flex-end'
+                        }}
+                >
+                    {
+                        this.state.watchlistEditMode && !this.state.noWatchlistPresent &&
+                        <Button 
+                                variant="fab" 
+                                size="medium"
+                                style={{
+                                    ...fabStyle,
+                                    marginRight: '30px',
+                                    backgroundColor: '#f65864'
+                                }}
+                                onClick={this.toggleWatchlistDeleteDialog}
+                        >
+                            <Icon style={{color: '#fff'}}>delete</Icon>
+                        </Button>
+                    }
+                    <Button 
+                            variant="fab" 
+                            size="medium"
+                            style={{
+                                ...fabStyle,
+                                marginRight: '30px',
+                                backgroundColor: '#7b72d1'
+                            }}
+                            onClick={this.toggleWatchListMode}
+                    >
+                        <Icon style={{color: '#fff'}}>
+                            {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
+                        </Icon>
+                    </Button>
+                    <Button 
+                            variant="fab" 
+                            size="medium"
+                            style={{
+                                ...fabStyle,
+                                backgroundColor: '#316dff'
+                            }}
+                            onClick={this.toggleStockSelectionDialog}
+                    >
+                        <Icon style={{color: '#fff'}}>search</Icon>
+                    </Button>
+                </div>
             </Grid>
         );
     }
@@ -304,9 +383,71 @@ class WatchlistComponent extends React.Component {
                 name: watchlistName,
                 securities: processPositions(newTickers)
             };
-            const url = `${requestUrl}/watchlist/${watchlistId}`;
             this.setState({updateWatchlistLoading: true});
-            axios({
+            if (this.state.noWatchlistPresent) {
+                this.createWatchlistForDefault(data);
+            } else {
+                const url = `${requestUrl}/watchlist/${watchlistId}`;
+                axios({
+                    url,
+                    headers: Utils.getAuthTokenHeader(),
+                    data,
+                    method: 'PUT'
+                })
+                .then(response => {
+                    this.getWatchlist(watchlistId);
+                })
+                .catch(error => {
+                    if (error.response) {
+                        Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
+                    }
+                })
+                .finally(() => {
+                    this.setState({updateWatchlistLoading: false});
+                })
+            }
+        }
+    }
+
+    getSelectedWatchlist = () => {
+        const {watchlists = []} = this.state;
+        const selectedWatchlist = watchlists[this.state.selectedWatchlistTabIndex];
+
+        return selectedWatchlist;
+    }
+
+    createWatchlistForDefault = (data) => {
+        createUserWatchlist(data.name, data.securities)
+        .then(() => {
+            this.getWatchlists()
+        })
+        .catch(error => {
+            if (error.response) {
+                Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
+            }
+        })
+        .finally(() => {
+            this.setState({updateWatchlistLoading: false});
+        })
+    }
+
+    deleteItem = name => {
+        const selectedWatchlist = this.getSelectedWatchlist();
+        const positions = _.get(selectedWatchlist, 'positions', []);
+        const tickers = positions.map(item => item.symbol);
+        const watchlistId = _.get(selectedWatchlist, 'id', null);
+        const watchlistName = _.get(selectedWatchlist, 'name', '');
+        const newTickers = _.pull(tickers, name);
+        const url = `${requestUrl}/watchlist/${watchlistId}`;
+        const data = {
+            name: watchlistName,
+            securities: processPositions(newTickers)
+        };
+        this.setState({updateWatchlistLoading: true});
+        if (this.state.noWatchlistPresent) {
+            this.createWatchlistForDefault(data);
+        } else {
+            return axios({
                 url,
                 headers: Utils.getAuthTokenHeader(),
                 data,
@@ -326,52 +467,11 @@ class WatchlistComponent extends React.Component {
         }
     }
 
-    getSelectedWatchlist = () => {
-        const {watchlists = []} = this.state;
-        const selectedWatchlist = watchlists[this.state.selectedWatchlistTabIndex];
-
-        return selectedWatchlist;
-    }
-
-    deleteItem = name => {
-        const selectedWatchlist = this.getSelectedWatchlist();
-        const positions = _.get(selectedWatchlist, 'positions', []);
-        const tickers = positions.map(item => item.symbol);
-        const watchlistId = _.get(selectedWatchlist, 'id', null);
-        const watchlistName = _.get(selectedWatchlist, 'name', '');
-        const newTickers = _.pull(tickers, name);
-        const url = `${requestUrl}/watchlist/${watchlistId}`;
-        const data = {
-            name: watchlistName,
-            securities: processPositions(newTickers)
-        };
-        this.setState({updateWatchlistLoading: true});
-        return axios({
-            url,
-            headers: Utils.getAuthTokenHeader(),
-            data,
-            method: 'PUT'
-        })
-        .then(response => {
-            this.getWatchlist(watchlistId);
-        })
-        .catch(error => {
-            if (error.response) {
-                Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
-            }
-        })
-        .finally(() => {
-            this.setState({updateWatchlistLoading: false});
-        })
-    }
-
     toggleWatchlistDeleteDialog = () => {
-        console.log('toggleWatchlistDeleteDialog called');
         this.setState({deleteWatchlistDialogVisible: !this.state.deleteWatchlistDialogVisible});
     }
 
     deleteWatchlist = () => {
-        console.log('Delete Watchlist Called');
         const selectedWatchlist = this.getSelectedWatchlist();
         const watchlistId = _.get(selectedWatchlist, 'id', null);
         const url = `${requestUrl}/watchlist/${watchlistId}`;
@@ -386,6 +486,7 @@ class WatchlistComponent extends React.Component {
             if (this.state.watchlists.length > 0) {
                 this.subscribeToWatchList(this.state.watchlists[0].id);
             }
+            this.setState({watchlistEditMode: false});
             this.toggleWatchlistDeleteDialog();
         })
         .catch(error => {
@@ -398,6 +499,10 @@ class WatchlistComponent extends React.Component {
         .finally(() => {
             this.setState({updateWatchlistLoading: false});
         })
+    }
+
+    toggleStockSelectionDialog = () => {
+        this.setState({stockSelectionOpen: !this.state.stockSelectionOpen});
     }
 
     render() {
@@ -420,9 +525,9 @@ class WatchlistComponent extends React.Component {
                     </DialogText>
                 </DialogComponent>
                 <StockSelection 
-                    open={this.props.stockSelectionOpen}
+                    open={this.state.stockSelectionOpen}
                     list={false}
-                    toggleSearchStocksDialog={this.props.toggleStockSelection}
+                    toggleSearchStocksDialog={this.toggleStockSelectionDialog}
                     stockData={nStockData}
                     addStock={this.addStockToWatchlist}
                 />
@@ -434,6 +539,11 @@ class WatchlistComponent extends React.Component {
 
 export default withRouter(WatchlistComponent);
 
+const fabStyle = {
+    width: '45px',
+    height: '45px'
+}
+
 const FavouritesContainer = styled.div`
     display: flex;
     flex-direction: row;
@@ -441,6 +551,7 @@ const FavouritesContainer = styled.div`
     overflow: hidden;
     overflow-x: scroll;
     transition: all 0.3s ease-in-out;
+    align-items: center;
 `;
 
 const DialogText = styled.h3`
@@ -449,3 +560,12 @@ const DialogText = styled.h3`
     font-size: 16px;
     font-family: 'Lato', sans-serif;
 `;
+
+const fabContainerStyle = {
+    display: 'flex', 
+    width: '95%', 
+    padding:'0 10px', 
+    position: 'fixed', 
+    zIndex:2, 
+    bottom: '20px', 
+};

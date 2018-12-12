@@ -4,16 +4,14 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import {withRouter} from 'react-router';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Slide from '@material-ui/core/Slide';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
 import BottomSheet from '../../../../components/Alerts/BottomSheet';
+import {createUserWatchlist} from '../../utils';
 import {Utils} from '../../../../utils';
 import { verticalBox, horizontalBox } from '../../../../constants';
-
-const {requestUrl} = require('../../../../localConfig');
 
 class CreateWatchListImpl extends React.Component {
     mounted = false;
@@ -31,18 +29,7 @@ class CreateWatchListImpl extends React.Component {
     createWatchList = () => {
         const {name} = this.state;
         if (name.length > 0) {
-            const data = {
-                name,
-                securities: this.processWatchListItem(this.state.watchlists)
-            };
-            const url = `${requestUrl}/watchlist`;
-            this.setState({loading: true});
-            axios({
-                url,
-                data,
-                method: 'POST',
-                headers: Utils.getAuthTokenHeader()
-            })
+            createUserWatchlist(name, this.processWatchListItem(this.state.watchlists))
             .then(response => {
                 this.setState({error: null});
                 return this.props.getWatchlists();

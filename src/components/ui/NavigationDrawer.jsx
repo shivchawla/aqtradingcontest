@@ -261,7 +261,7 @@ const menuCategories = [
     {
         name: "Leaderboard", url:'/dailycontest/leaderboard', icon:'multiline_chart'
     },
-    {
-        name: "Watchlist", url:'/dailycontest/watchlist', icon:'visibility'
-    }
+    // {
+    //     name: "Watchlist", url:'/dailycontest/watchlist', icon:'visibility'
+    // }
 ];

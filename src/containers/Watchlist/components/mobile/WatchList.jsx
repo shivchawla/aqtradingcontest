@@ -171,6 +171,7 @@ class WatchList extends React.Component {
                             <TranslucentLoader />
                         }
                         {this.renderTickers()}
+                        <div style={{height: '80px'}}></div>
                     </Grid>
                 }
             </Grid>
