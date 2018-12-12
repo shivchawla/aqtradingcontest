@@ -6,6 +6,8 @@ import {getStockTicker} from '../../utils';
 import {sectors} from '../../../../constants';
 const dateFormat = 'YYYY-MM-DD';
 
+const DateHelper = require('../../../../utils/date');
+
 export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultTarget = _.get(defaultStockData, 'target', 2);
     const defaultHorizon = _.get(defaultStockData, 'horizon', 1);
@@ -51,7 +53,7 @@ export const constructPrediction = (stockData, type = 'buy') => {
     let {target = 0, lastPrice = 0, symbol = '', horizon = 1} = stockData;
     const targetValue = getTargetFromLastPrice(lastPrice, target, type);
     const startDate = moment().format(dateFormat);
-    const endDate = moment().add(horizon, 'days').format(dateFormat);
+    const endDate = moment(DateHelper.getNextNonHolidayWeekday(startDate, horizon)).format(dateFormat);
     
     return [
         {
