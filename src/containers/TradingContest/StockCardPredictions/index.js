@@ -489,6 +489,9 @@ class StockCardPredictions extends React.Component {
                         <WatchlistComponent 
                             stockSelectionOpen={this.state.searchStockOpen}
                             toggleStockSelection={this.toggleSearchStocksBottomSheet}
+                            selectStock={this.modifyStockData}
+                            stockData={this.state.stockData}
+                            toggleStockCardBottomSheet={this.toggleStockCardBottomSheet}
                         />
                     }
                 </Grid>

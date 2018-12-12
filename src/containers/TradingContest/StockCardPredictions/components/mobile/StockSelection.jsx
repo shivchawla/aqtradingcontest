@@ -45,7 +45,7 @@ class StockSelection extends React.Component {
         return false;
     }
 
-    addPositions = (selectedPositions = []) => {
+    addPositions = (selectedPositions = []) => { // Used when StockSelection is used independently
         let stockData = this.props.stockData;
         const symbol = _.get(selectedPositions, `[${0}].symbol`, '');
         const name = _.get(selectedPositions, `[${0}].name`, '');
@@ -64,11 +64,16 @@ class StockSelection extends React.Component {
         this.props.modifyStockData(stockData);
     }
 
+    addStock = (selectedPositions = []) => {
+        const symbol = _.get(selectedPositions, `[${0}].symbol`, '');
+        this.props.addStock(symbol);
+    }
+
     renderSearchStocks = () => {
         return (
             <SearchStocks 
                 toggleBottomSheet={this.props.toggleSearchStocksDialog}
-                addPositions={this.addPositions}
+                addPositions={this.addStock}
                 portfolioPositions={[this.props.stockData]}
                 ref={el => this.searchStockComponent = el}
                 history={this.props.history}

@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import axios from 'axios';
 import styled from 'styled-components';
 import {withRouter} from 'react-router-dom';
 import CreateWatchlist from './components/mobile/CreateWatchList';
@@ -7,8 +8,6 @@ import WatchList from './components/mobile/WatchList';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Paper from '@material-ui/core/Paper';
-import AqLayout from '../../components/ui/AqLayout';
 import StockSelection from '../TradingContest/StockCardPredictions/components/mobile/StockSelection';
 import RadioGroup from '../../components/selections/RadioGroup';
 import WatchlistCustomRadio from './components/mobile/WatchlistCustomRadio';
@@ -16,6 +15,7 @@ import RoundedButton from '../../components/Buttons/RoundedButton';
 import LoaderComponent from '../TradingContest/Misc/Loader';
 import ActionIcon from '../TradingContest/Misc/ActionIcons';
 import {fetchAjaxPromise, Utils} from '../../utils';
+import {processPositions} from './utils';
 import {primaryColor, horizontalBox, verticalBox} from '../../constants';
 
 const {requestUrl} = require('../../localConfig');
@@ -32,7 +32,8 @@ class WatchlistComponent extends React.Component {
             selectedWatchlistTabIndex: 0,
             searchInputOpen: false,
             stockSelectionOpen: false,
-            watchlistEditMode: false
+            watchlistEditMode: false,
+            updateWatchlistLoading: false
         };
     }
 
@@ -186,11 +187,14 @@ class WatchlistComponent extends React.Component {
         return (
             <WatchList 
                 tickers={positions} 
-                id={_.get(selectedWatchlist, 'id', null)} 
-                name={_.get(selectedWatchlist, 'name', '')} 
                 getWatchlist={this.getWatchlist}
                 searchInputOpen={this.state.searchInputOpen}
                 watchlistEditMode={this.state.watchlistEditMode}
+                selectStock={this.props.selectStock}
+                stockData={this.props.stockData}
+                toggleStockCardBottomSheet={this.props.toggleStockCardBottomSheet}
+                updateWatchlistLoading={this.state.updateWatchlistLoading}
+                deleteItem={this.deleteItem}
             />
         );
     }
@@ -238,9 +242,6 @@ class WatchlistComponent extends React.Component {
                     toggleModal={this.toggleCreateWatchlistDialog}
                     getWatchlists={this.getWatchlists}
                 />
-                {/* <Grid item xs={12}>
-                    {this.renderSearchButton()}
-                </Grid> */}
                 <Grid 
                         item 
                         xs={12} 
@@ -271,6 +272,82 @@ class WatchlistComponent extends React.Component {
         );
     }
 
+    addStockToWatchlist = symbol => {
+        const selectedWatchlist = this.getSelectedWatchlist();
+        const positions = _.get(selectedWatchlist, 'positions', []);
+        const watchlistId=_.get(selectedWatchlist, 'id', null);
+        const watchlistName = _.get(selectedWatchlist, 'name', '');
+        const presentTickers = positions.map(item => item.symbol); // present ticker list 
+        const newTickers = _.uniq([...presentTickers, symbol]); // unique ticker list after adding the selected item  
+        // Calculating the difference to check if any item was added in the watchlist, a new request will only be sent
+        // with the introduction of a new position
+        const differenceArray = _.without(newTickers, ...presentTickers);
+        if (differenceArray.length > 0) {
+            const data = {
+                name: watchlistName,
+                securities: processPositions(newTickers)
+            };
+            const url = `${requestUrl}/watchlist/${watchlistId}`;
+            this.setState({updateWatchlistLoading: true});
+            axios({
+                url,
+                headers: Utils.getAuthTokenHeader(),
+                data,
+                method: 'PUT'
+            })
+            .then(response => {
+                this.getWatchlist(watchlistId);
+            })
+            .catch(error => {
+                if (error.response) {
+                    Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
+                }
+            })
+            .finally(() => {
+                this.setState({updateWatchlistLoading: false});
+            })
+        }
+    }
+
+    getSelectedWatchlist = () => {
+        const {watchlists = []} = this.state;
+        const selectedWatchlist = watchlists[this.state.selectedWatchlistTabIndex];
+
+        return selectedWatchlist;
+    }
+
+    deleteItem = name => {
+        const selectedWatchlist = this.getSelectedWatchlist();
+        const positions = _.get(selectedWatchlist, 'positions', []);
+        const tickers = positions.map(item => item.symbol);
+        const watchlistId=_.get(selectedWatchlist, 'id', null);
+        const watchlistName = _.get(selectedWatchlist, 'name', '');
+        const newTickers = _.pull(tickers, name);
+        const url = `${requestUrl}/watchlist/${watchlistId}`;
+        const data = {
+            name: watchlistName,
+            securities: processPositions(newTickers)
+        };
+        this.setState({updateWatchlistLoading: true});
+        return axios({
+            url,
+            headers: Utils.getAuthTokenHeader(),
+            data,
+            method: 'PUT'
+        })
+        .then(response => {
+            this.getWatchlist(watchlistId);
+        })
+        .catch(error => {
+            if (error.response) {
+                Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
+            }
+        })
+        .finally(() => {
+            this.setState({updateWatchlistLoading: false});
+        })
+    }
+
     render() {
         return (
             <React.Fragment>
@@ -279,6 +356,7 @@ class WatchlistComponent extends React.Component {
                     list={false}
                     toggleSearchStocksDialog={this.props.toggleStockSelection}
                     stockData={{}}
+                    addStock={this.addStockToWatchlist}
                 />
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
             </React.Fragment>
