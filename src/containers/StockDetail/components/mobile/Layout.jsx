@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Button from '@material-ui/core/Button';
 import HighStock from '../../../../components/Charts/StockChart';
 import PriceMetrics from './PriceMetrics';
 import LoaderComponent from '../../../TradingContest/Misc/Loader';
@@ -39,6 +40,27 @@ export default class LayoutMobile extends React.Component {
 
     handleSegmentControlChange = (event, value) => {
         this.setState({selectedMetricView: value});
+    }
+
+    predictStock = () => {
+        let {latestDetail = {}, stockData = {}} = this.props;
+        const symbol = _.get(this.props, 'symbol', '');
+        const name = _.get(latestDetail, 'name', '');
+        const changePct = _.get(latestDetail, 'changePct', 0);
+        const change = _.get(latestDetail, 'change', 0);
+        const lastPrice = _.get(latestDetail, 'latestPrice', 0);
+
+        stockData = {
+            ...stockData,
+            symbol,
+            name,
+            lastPrice,
+            change,
+            changePct: Number((changePct * 100).toFixed(2))
+        };
+        this.props.selectStock(stockData);
+        // this.props.toggleStockDetailBottomSheetOpen();
+        this.props.toggleStockCardBottomSheet();
     }
 
     renderContent = () => {
@@ -86,6 +108,17 @@ export default class LayoutMobile extends React.Component {
                                 : this.renderRollingPerformance()
                         }
                     </Grid>
+                    {
+                        this.props.selectStock &&
+                        <Grid item xs={12} style={verticalBox}>
+                            <Button 
+                                    style={predictButtonStyle}
+                                    onClick={this.predictStock}
+                            >
+                                Predict
+                            </Button>
+                        </Grid>
+                    }
             </React.Fragment>
         );
     }
@@ -117,3 +150,11 @@ const Container = styled(Grid)`
     padding: 10px;
     padding-top: 4px;
 `;
+
+const predictButtonStyle = {
+    backgroundColor: '#6483F3',
+    color: '#fff',
+    fontWeight: 500,
+    fontFamily: 'Lato, sans-serif',
+    fontSize: '12px'
+}

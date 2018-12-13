@@ -244,3 +244,13 @@ export const checkForUntouchedPredictionsInPositions = (positions = []) => {
 
     return invalidPositions.length > 0 ? true : false;
 }
+
+export const searchPositions = (searchInput = '', positions = []) => {
+    const regExp = new RegExp(`${searchInput}`, 'i');
+    const filteredArray = positions.filter(item => {
+        const symbol = _.get(item, 'symbol', '');
+        return symbol.search(regExp) > -1;
+    });
+
+    return filteredArray;
+}

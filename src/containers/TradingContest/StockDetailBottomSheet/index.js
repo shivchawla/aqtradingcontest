@@ -91,6 +91,10 @@ export default class StockDetailBottomSheet extends React.Component {
                         <StockDetail 
                             symbol={this.props.symbol}
                             updateStockData={this.updateStockData}
+                            selectStock={this.props.selectStock}
+                            toggleStockCardBottomSheet={this.props.toggleStockCardBottomSheet}
+                            toggleStockDetailBottomSheetOpen={this.props.toggleStockDetailBottomSheetOpen}
+                            stockData={this.props.stockData}
                         />
                     </Grid>
                 </Container>

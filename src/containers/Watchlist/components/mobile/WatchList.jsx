@@ -137,6 +137,10 @@ class WatchList extends React.Component {
                 <StockDetailBottomSheet 
                     open={this.state.stockDetailBottomSheetOpen}
                     onClose={this.toggleStockDetailBottomSheetOpen}
+                    selectStock={this.props.selectStock}
+                    toggleStockCardBottomSheet={this.props.toggleStockCardBottomSheet}
+                    toggleStockDetailBottomSheetOpen={this.toggleStockDetailBottomSheetOpen}
+                    stockData={this.props.stockData}
                     {...this.state.selectedInfoStock}
                 />
                 {

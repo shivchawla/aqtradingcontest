@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 import {withRouter} from 'react-router-dom';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import StockPreviewList from '../common/StockPreviewList';
@@ -11,6 +12,7 @@ import LoaderComponent from '../../../Misc/Loader';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
+import {searchPositions} from '../../utils';
 
 const predictionTypes = ['Active', 'Ended', 'Started'];
 
@@ -20,6 +22,7 @@ class DisplayPredictions extends React.Component {
         this.state = {
             listView: this.getListViewFromUrl(props.listViewType),
             anchorEl: null,
+            searchInputValue: ''
         };
     }
 
@@ -50,12 +53,6 @@ class DisplayPredictions extends React.Component {
 
         return false;
     }
-
-    // componentWillReceiveProps(nextProps) {
-    //     if (!_.isEqual(this.props, nextProps)) {
-    //         this.setState({listView: this.getListViewFromUrl(nextProps.listViewType)})
-    //     }
-    // }
 
     onPredictionTypeMenuClicked = event => {
         this.setState({ anchorEl: event.currentTarget });
@@ -104,8 +101,13 @@ class DisplayPredictions extends React.Component {
         );
     }
 
+    handleSearchInputChange = e => {
+        const searchInput = e.target.value;
+        this.setState({searchInputValue: searchInput});
+    }
+
     renderPredictionList = () => {
-        let positions = this.props.previewPositions;
+        let positions = searchPositions(this.state.searchInputValue, this.props.previewPositions);
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
@@ -133,9 +135,8 @@ class DisplayPredictions extends React.Component {
 			                        onChange={this.onPredictionTypeRadioClicked}
 			                    />
 		                    </div>
-
                     		{
-                                (positions.length === 0 || this.props.noEntryFound)
+                                (this.props.previewPositions.length === 0 || this.props.noEntryFound)
                                 ?   <EmptyPositionsText>
                                         No Predictions Found!!
                                     </EmptyPositionsText>
@@ -149,7 +150,20 @@ class DisplayPredictions extends React.Component {
     		                                    onClick={toggleEntryDetailBottomSheet}
     		                                />
                                         </div>
-		                            }
+                                    }
+                                    <div style={{width: '100%'}}>
+                                        <TextField
+                                            label="Search Predictions"
+                                            value={this.state.searchInputValue}
+                                            onChange={this.handleSearchInputChange}
+                                            style={{
+                                                margin: 0,
+                                                marginTop: '5px',
+                                                width: '90%'
+                                            }}
+                                            margin="normal"
+                                        />
+                                    </div>
                                     <StockPreviewList  
                                         positions={positions} 
                                         selectPosition={this.props.selectPosition}
@@ -160,7 +174,6 @@ class DisplayPredictions extends React.Component {
                             }
                             {
                                 isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
-                                // && marketOpen.status &&
                                 <div 
                                         style={{
                                             ...fabContainerStyle,
@@ -175,7 +188,6 @@ class DisplayPredictions extends React.Component {
                                             size='small' 
                                             variant="extendedFab" 
                                             aria-label="Edit" 
-                                            // onClick={this.props.toggleSearchStockBottomSheet}
                                             onClick={() => this.props.history.push('/dailycontest/stockpredictions')}
                                     >
                                         <Icon style={{marginRight: '5px'}}>add_circle</Icon>
