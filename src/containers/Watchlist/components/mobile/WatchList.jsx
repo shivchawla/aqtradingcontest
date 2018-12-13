@@ -145,7 +145,7 @@ class WatchList extends React.Component {
                 />
                 {
                     this.props.tickers.length === 0 && 
-                    (!this.state.loading || this.props.updateWatchlistLoading) &&
+                    !(this.state.loading || this.props.updateWatchlistLoading) &&
                     <Grid item xs={12} style={noStocksFoundContainer}>
                         <ErrorText>No Stocks Found</ErrorText>
                     </Grid>
@@ -156,28 +156,28 @@ class WatchList extends React.Component {
                         <CircularProgress />
                     </Grid>
                 }
-                {
-                    this.props.tickers.length > 0 &&
-                    <Grid 
-                            item 
-                            xs={12} 
-                            style={{
-                                overflow: 'hidden', 
-                                overflowY: 'scroll', 
-                                marginTop: '10px',
-                                padding: '0 10px',
-                                marginTop: '5px',
-                                position: 'relative'
-                            }}
-                    >
-                        {
-                            this.props.updateWatchlistLoading &&
-                            <TranslucentLoader />
-                        }
-                        {this.renderTickers()}
-                        <div style={{height: '80px'}}></div>
-                    </Grid>
-                }
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            overflow: 'hidden', 
+                            overflowY: 'scroll', 
+                            marginTop: '10px',
+                            padding: '0 10px',
+                            marginTop: '5px',
+                            position: 'relative'
+                        }}
+                >
+                    {
+                        this.props.updateWatchlistLoading &&
+                        <TranslucentLoader />
+                    }
+                    {
+                        this.props.tickers.length > 0 &&
+                        this.renderTickers()
+                    }
+                    <div style={{height: '80px'}}></div>
+                </Grid>
             </Grid>
         );
     }

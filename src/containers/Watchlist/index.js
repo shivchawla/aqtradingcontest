@@ -127,7 +127,10 @@ class WatchlistComponent extends React.Component {
         })
         .catch(error => {
             console.log(error);
-        });
+        })
+        .finally(() => {
+            this.setState({updateWatchlistLoading: false});
+        })
     }
 
     setUpSocketConnection = () => {
@@ -317,53 +320,55 @@ class WatchlistComponent extends React.Component {
                 <Grid item xs={12}>
                     {this.renderWatchList()}
                 </Grid>
-                <div 
-                        style={{
-                            ...fabContainerStyle,
-                            justifyContent: 'flex-end'
-                        }}
-                >
-                    {
-                        this.state.watchlistEditMode && !this.state.noWatchlistPresent &&
+                <Grid item xs={12}>
+                    <div 
+                            style={{
+                                ...fabContainerStyle,
+                                justifyContent: 'flex-end'
+                            }}
+                    >
+                        {
+                            this.state.watchlistEditMode && !this.state.noWatchlistPresent &&
+                            <Button 
+                                    variant="fab" 
+                                    size="medium"
+                                    style={{
+                                        ...fabStyle,
+                                        marginRight: '30px',
+                                        backgroundColor: '#f65864'
+                                    }}
+                                    onClick={this.toggleWatchlistDeleteDialog}
+                            >
+                                <Icon style={{color: '#fff'}}>delete</Icon>
+                            </Button>
+                        }
                         <Button 
                                 variant="fab" 
                                 size="medium"
                                 style={{
                                     ...fabStyle,
                                     marginRight: '30px',
-                                    backgroundColor: '#f65864'
+                                    backgroundColor: '#7b72d1'
                                 }}
-                                onClick={this.toggleWatchlistDeleteDialog}
+                                onClick={this.toggleWatchListMode}
                         >
-                            <Icon style={{color: '#fff'}}>delete</Icon>
+                            <Icon style={{color: '#fff'}}>
+                                {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
+                            </Icon>
                         </Button>
-                    }
-                    <Button 
-                            variant="fab" 
-                            size="medium"
-                            style={{
-                                ...fabStyle,
-                                marginRight: '30px',
-                                backgroundColor: '#7b72d1'
-                            }}
-                            onClick={this.toggleWatchListMode}
-                    >
-                        <Icon style={{color: '#fff'}}>
-                            {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
-                        </Icon>
-                    </Button>
-                    <Button 
-                            variant="fab" 
-                            size="medium"
-                            style={{
-                                ...fabStyle,
-                                backgroundColor: '#316dff'
-                            }}
-                            onClick={this.toggleStockSelectionDialog}
-                    >
-                        <Icon style={{color: '#fff'}}>search</Icon>
-                    </Button>
-                </div>
+                        <Button 
+                                variant="fab" 
+                                size="medium"
+                                style={{
+                                    ...fabStyle,
+                                    backgroundColor: '#316dff'
+                                }}
+                                onClick={this.toggleStockSelectionDialog}
+                        >
+                            <Icon style={{color: '#fff'}}>zoom_in</Icon>
+                        </Button>
+                    </div>
+                </Grid>
             </Grid>
         );
     }
@@ -395,15 +400,16 @@ class WatchlistComponent extends React.Component {
                     method: 'PUT'
                 })
                 .then(response => {
-                    this.getWatchlist(watchlistId);
+                    console.log('Adding Stocks completed');
+                    return this.getWatchlist(watchlistId);
+                })
+                .then(() => {
+                    console.log('Getting current watchlist completed');
                 })
                 .catch(error => {
                     if (error.response) {
                         Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
                     }
-                })
-                .finally(() => {
-                    this.setState({updateWatchlistLoading: false});
                 })
             }
         }
@@ -460,9 +466,6 @@ class WatchlistComponent extends React.Component {
                 if (error.response) {
                     Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
                 }
-            })
-            .finally(() => {
-                this.setState({updateWatchlistLoading: false});
             })
         }
     }

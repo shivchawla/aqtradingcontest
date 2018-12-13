@@ -246,15 +246,7 @@ class TradingContest extends React.Component {
                             <STab label="Metrics"/>
                         </STabs>
                     </Grid>
-                    <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
-                        {/* {
-                            selectedTab === 1 &&
-                            <DateComponent 
-                                selectedDate={this.state.selectedDate}
-                                color='grey'
-                                onDateChange={this.updateDate}
-                            />
-                        } */}
+                    {/* <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
                         {
                             !marketOpen &&
                             this.state.selectedTab === 1 &&
@@ -263,6 +255,7 @@ class TradingContest extends React.Component {
                                         ? metricColor.positive 
                                         : '#fc4c55'
                                     }
+                                    style={{marginTop: '10px'}}
                             >   
                                 {
                                     marketOpen
@@ -271,7 +264,7 @@ class TradingContest extends React.Component {
                                 }
                             </MartketOpenTag>
                         }
-                    </Grid>
+                    </Grid> */}
                     <Switch>
                         <Route 
                             exact

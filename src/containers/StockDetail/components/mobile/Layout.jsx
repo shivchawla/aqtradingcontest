@@ -63,6 +63,19 @@ export default class LayoutMobile extends React.Component {
         this.props.toggleStockCardBottomSheet();
     }
 
+    renderPredictButton = () => {
+        return (
+            this.props.selectStock 
+            ?   <Button 
+                        style={predictButtonStyle}
+                        onClick={this.predictStock}
+                >
+                    Predict
+                </Button>
+            :   null
+        )
+    }
+
     renderContent = () => {
         const {series, noDataFound = false, intraDaySeries, latestDetail = {}} = this.props;
         const prevClose = _.get(latestDetail, 'close', 0);
@@ -84,6 +97,7 @@ export default class LayoutMobile extends React.Component {
                             height={250}
                             prevClose={prevClose}
                             getStockPriceHistory={this.props.getStockPriceHistory}
+                            renderPredictButton={this.renderPredictButton}
                         />
                     </Grid>
                     <Grid 
@@ -111,12 +125,7 @@ export default class LayoutMobile extends React.Component {
                     {
                         this.props.selectStock &&
                         <Grid item xs={12} style={verticalBox}>
-                            <Button 
-                                    style={predictButtonStyle}
-                                    onClick={this.predictStock}
-                            >
-                                Predict
-                            </Button>
+                            
                         </Grid>
                     }
             </React.Fragment>
@@ -152,9 +161,9 @@ const Container = styled(Grid)`
 `;
 
 const predictButtonStyle = {
-    backgroundColor: '#6483F3',
     color: '#fff',
     fontWeight: 500,
     fontFamily: 'Lato, sans-serif',
-    fontSize: '12px'
+    fontSize: '12px',
+    background: 'linear-gradient(rgb(41, 135, 249), rgb(56, 111, 255))'
 }
