@@ -422,15 +422,9 @@ class CreateEntry extends React.Component {
     }
 
     handlePreviewListMenuItemChange = (type = 'started') => {
-        this.setState({loadingPreview: true, selectedView: type}, () => {
+        this.setState({selectedView: type}, () => {
+            this.fetchPredictionsAndPnl(this.state.selectedDate);
             this.takeSubscriptionAction(type);
-        });
-        Promise.all([
-            this.getDailyPredictionsOnDateChange(this.state.selectedDate, type),
-            this.getDailyPnlStats(this.state.selectedDate, type)
-        ])
-        .finally(() => {
-            this.setState({loadingPreview: false});
         })
     }
 
@@ -685,7 +679,8 @@ class CreateEntry extends React.Component {
             selectPosition: this.selectPosition,
             togglePredictionsBottomSheet: this.togglePredictionsBottomSheet,
             listViewType: this.props.listViewType,
-            toggleStockDetailBottomSheet: this.toggleStockDetailBottomSheet
+            toggleStockDetailBottomSheet: this.toggleStockDetailBottomSheet,
+            updateDate: this.props.updateDate
         };
 
         return (

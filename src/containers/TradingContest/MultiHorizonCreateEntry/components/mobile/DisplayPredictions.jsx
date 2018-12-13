@@ -4,11 +4,17 @@ import styled from 'styled-components';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import ActionIcon from '../../../Misc/ActionIcons';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import {withRouter} from 'react-router-dom';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
+import WatchlistCustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
+import DateComponent from '../../../Misc/DateComponent';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
@@ -120,21 +126,7 @@ class DisplayPredictions extends React.Component {
                 {
                     this.props.loadingPreview 
                     ?   <LoaderComponent />
-                    :   
-                		<React.Fragment>
-	                    	<div
-		                        style={{
-		                            ...horizontalBox, 
-		                            justifyContent: 'space-between',
-		                            width: '100%'
-		                        }}
-	                        >
-			                    <RadioGroup style={{margin:'0px auto 10px auto'}}
-			                        items={predictionTypes}
-			                        defaultSelected={this.state.listView}
-			                        onChange={this.onPredictionTypeRadioClicked}
-			                    />
-		                    </div>
+                    :   <React.Fragment>
                     		{
                                 (this.props.previewPositions.length === 0 || this.props.noEntryFound)
                                 ?   <EmptyPositionsText>
@@ -152,16 +144,10 @@ class DisplayPredictions extends React.Component {
                                         </div>
                                     }
                                     <div style={{width: '100%'}}>
-                                        <TextField
-                                            label="Search Predictions"
-                                            value={this.state.searchInputValue}
+                                        <SearchInputComponent 
+                                            searchInputValue={this.state.searchInputValue}
                                             onChange={this.handleSearchInputChange}
-                                            style={{
-                                                margin: 0,
-                                                marginTop: '5px',
-                                                width: '90%'
-                                            }}
-                                            margin="normal"
+                                            clearInput={() => this.setState({searchInputValue: ''})}
                                         />
                                     </div>
                                     <StockPreviewList  
@@ -214,11 +200,81 @@ class DisplayPredictions extends React.Component {
     }
 
     render() {
-        return this.props.loading ? <LoaderComponent /> : this.renderContent();
+        return (
+            <Grid container>
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '0 2%',
+                            marginBottom: '10px'
+                        }}
+                >
+                    <RadioGroup
+                        items={predictionTypes}
+                        defaultSelected={this.state.listView}
+                        onChange={this.onPredictionTypeRadioClicked}
+                        CustomRadio={WatchlistCustomRadio}
+                    />
+                    <DateComponent 
+                        selectedDate={this.props.selectedDate}
+                        color={primaryColor}
+                        onDateChange={this.props.updateDate}
+                        compact
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    {
+                        this.props.loading ? <LoaderComponent /> : this.renderContent()
+                    }
+                </Grid>
+            </Grid>
+        );
     }
 }
 
 export default withRouter(DisplayPredictions);
+
+const SearchInputComponent = ({searchInputValue, onChange, clearInput}) => {
+    return (
+        <FormControl
+                style={{
+                    margin: 0,
+                    marginTop: '5px',
+                    width: '90%'
+                }}
+        >
+            <InputLabel>Search Stocks</InputLabel>
+            <Input
+                label="Search Predictions"
+                value={searchInputValue}
+                onChange={onChange}
+                margin="normal"
+                endAdornment={
+                    searchInputValue.length > 0 
+                    ?   <InputAdornment position="end">
+                            <ActionIcon 
+                                type='highlight_off'
+                                size={18}
+                                onClick={clearInput}
+                                color='#717171'
+                            />
+                        </InputAdornment>
+                    :   <InputAdornment position="end">
+                            <ActionIcon 
+                                type='search'
+                                size={18}
+                                color='#717171'
+                            />
+                        </InputAdornment>
+                }
+            />
+        </FormControl>
+    );
+}
 
 const fabContainerStyle = {
     display: 'flex', 
