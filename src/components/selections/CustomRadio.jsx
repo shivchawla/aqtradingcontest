@@ -42,8 +42,8 @@ class CustomRadio extends React.Component {
         return (
             <div 
                     style={{
-                        width: '55px',
-                        marginRight: '13px'
+                        width: '45px',
+                        marginRight: '10px'
                     }}
             >
                 <Button
