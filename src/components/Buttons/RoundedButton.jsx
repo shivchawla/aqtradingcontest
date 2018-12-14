@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import Icon from '@material-ui/core/Icon';
 import ButtonBase from '@material-ui/core/ButtonBase';
-import {primaryColor} from '../../constants';
+import {primaryColor, verticalBox, horizontalBox} from '../../constants';
 
 export default class RoundedButton extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -36,6 +36,10 @@ export default class RoundedButton extends React.Component {
 }
 
 const buttonStyle = {
+    // ...verticalBox,
+    ...horizontalBox,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: '50%',
     width: '25px',
     height: '25px',
@@ -44,5 +48,6 @@ const buttonStyle = {
 
 const iconStyle = {
     fontSize: '16px',
-    color: '#fff'
+    color: '#fff',
+    margin: '0 auto'
 }

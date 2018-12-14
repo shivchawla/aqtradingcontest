@@ -8,6 +8,7 @@ import WatchList from './components/mobile/WatchList';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
+import Snackbar from '@material-ui/core/Snackbar';
 import StockSelection from '../TradingContest/StockCardPredictions/components/mobile/StockSelection';
 import RadioGroup from '../../components/selections/RadioGroup';
 import WatchlistCustomRadio from './components/mobile/WatchlistCustomRadio';
@@ -38,7 +39,22 @@ class WatchlistComponent extends React.Component {
             deleteWatchlistDialogVisible: false,
             noWatchlistPresent: false,
             watchlistMode: false,
+            snackbar: {
+                open: false,
+                message: ''
+            }
         };
+    }
+
+    openSnackbar = (message = '') => {
+        this.setState({snackbar: {
+            open: true,
+            message
+        }});
+    }
+
+    closeSnackbar = () => {
+        this.setState({snackbar: {...this.state.snackbar, open: false}});
     }
 
     toggleCreateWatchlistDialog = () => {
@@ -81,7 +97,7 @@ class WatchlistComponent extends React.Component {
         })
         .catch(error => {
             this.setState({noWatchlistPresent: true});
-            console.log(error);
+            this.openSnackbar('Error Occurred while fetching Watchlist');
         })
         .finally(() => {
             this.setState({loading: false});
@@ -126,8 +142,11 @@ class WatchlistComponent extends React.Component {
             this.setState({watchlists});
         })
         .catch(error => {
-            console.log(error);
-        });
+            this.openSnackbar('Error Occurred while fetching Watchlist');
+        })
+        .finally(() => {
+            this.setState({updateWatchlistLoading: false});
+        })
     }
 
     setUpSocketConnection = () => {
@@ -317,53 +336,55 @@ class WatchlistComponent extends React.Component {
                 <Grid item xs={12}>
                     {this.renderWatchList()}
                 </Grid>
-                <div 
-                        style={{
-                            ...fabContainerStyle,
-                            justifyContent: 'flex-end'
-                        }}
-                >
-                    {
-                        this.state.watchlistEditMode && !this.state.noWatchlistPresent &&
+                <Grid item xs={12}>
+                    <div 
+                            style={{
+                                ...fabContainerStyle,
+                                justifyContent: 'flex-end'
+                            }}
+                    >
+                        {
+                            this.state.watchlistEditMode && !this.state.noWatchlistPresent &&
+                            <Button 
+                                    variant="fab" 
+                                    size="medium"
+                                    style={{
+                                        ...fabStyle,
+                                        marginRight: '30px',
+                                        backgroundColor: '#f65864'
+                                    }}
+                                    onClick={this.toggleWatchlistDeleteDialog}
+                            >
+                                <Icon style={{color: '#fff'}}>delete</Icon>
+                            </Button>
+                        }
                         <Button 
                                 variant="fab" 
                                 size="medium"
                                 style={{
                                     ...fabStyle,
                                     marginRight: '30px',
-                                    backgroundColor: '#f65864'
+                                    backgroundColor: '#7b72d1'
                                 }}
-                                onClick={this.toggleWatchlistDeleteDialog}
+                                onClick={this.toggleWatchListMode}
                         >
-                            <Icon style={{color: '#fff'}}>delete</Icon>
+                            <Icon style={{color: '#fff'}}>
+                                {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
+                            </Icon>
                         </Button>
-                    }
-                    <Button 
-                            variant="fab" 
-                            size="medium"
-                            style={{
-                                ...fabStyle,
-                                marginRight: '30px',
-                                backgroundColor: '#7b72d1'
-                            }}
-                            onClick={this.toggleWatchListMode}
-                    >
-                        <Icon style={{color: '#fff'}}>
-                            {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
-                        </Icon>
-                    </Button>
-                    <Button 
-                            variant="fab" 
-                            size="medium"
-                            style={{
-                                ...fabStyle,
-                                backgroundColor: '#316dff'
-                            }}
-                            onClick={this.toggleStockSelectionDialog}
-                    >
-                        <Icon style={{color: '#fff'}}>search</Icon>
-                    </Button>
-                </div>
+                        <Button 
+                                variant="fab" 
+                                size="medium"
+                                style={{
+                                    ...fabStyle,
+                                    backgroundColor: '#316dff'
+                                }}
+                                onClick={this.toggleStockSelectionDialog}
+                        >
+                            <Icon style={{color: '#fff'}}>zoom_in</Icon>
+                        </Button>
+                    </div>
+                </Grid>
             </Grid>
         );
     }
@@ -395,15 +416,14 @@ class WatchlistComponent extends React.Component {
                     method: 'PUT'
                 })
                 .then(response => {
-                    this.getWatchlist(watchlistId);
+                    return this.getWatchlist(watchlistId);
                 })
                 .catch(error => {
+                    this.openSnackbar('Error Occurred while adding stock to Watchlist');
+                    this.setState({updateWatchlistLoading: false});
                     if (error.response) {
                         Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
                     }
-                })
-                .finally(() => {
-                    this.setState({updateWatchlistLoading: false});
                 })
             }
         }
@@ -422,6 +442,7 @@ class WatchlistComponent extends React.Component {
             this.getWatchlists()
         })
         .catch(error => {
+            this.setState({updateWatchlistLoading: false});
             if (error.response) {
                 Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
             }
@@ -457,12 +478,11 @@ class WatchlistComponent extends React.Component {
                 this.getWatchlist(watchlistId);
             })
             .catch(error => {
+                this.setState({updateWatchlistLoading: false});
+                this.openSnackbar('Error Occurred while deleting stock from Watchlist');
                 if (error.response) {
                     Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
                 }
-            })
-            .finally(() => {
-                this.setState({updateWatchlistLoading: false});
             })
         }
     }
@@ -490,7 +510,8 @@ class WatchlistComponent extends React.Component {
             this.toggleWatchlistDeleteDialog();
         })
         .catch(error => {
-            console.log(error);
+            this.setState({updateWatchlistLoading: false});
+            this.openSnackbar('Error Occurred while deleting Watchlist');
             Utils.checkForInternet(error, this.props.history);
             if (error.response) {
                 Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
@@ -512,6 +533,17 @@ class WatchlistComponent extends React.Component {
 
         return (
             <React.Fragment>
+                <Snackbar 
+                    variant='error'
+                    open={this.state.snackbar.open} 
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    autoHideDuration={3000}
+                    onClose={this.closeSnackbar}
+                    message={this.state.snackbar.message}
+                />
                 <DialogComponent 
                         open={this.state.deleteWatchlistDialogVisible}
                         onOk={this.deleteWatchlist}

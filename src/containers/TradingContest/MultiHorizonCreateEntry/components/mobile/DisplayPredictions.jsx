@@ -20,6 +20,7 @@ import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../..
 import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
 import {searchPositions} from '../../utils';
 
+const DateHelper = require('../../../../../utils/date');
 const predictionTypes = ['Active', 'Ended', 'Started'];
 
 class DisplayPredictions extends React.Component {
@@ -28,7 +29,8 @@ class DisplayPredictions extends React.Component {
         this.state = {
             listView: this.getListViewFromUrl(props.listViewType),
             anchorEl: null,
-            searchInputValue: ''
+            searchInputValue: '',
+            searchInputOpen: false
         };
     }
 
@@ -112,6 +114,14 @@ class DisplayPredictions extends React.Component {
         this.setState({searchInputValue: searchInput});
     }
 
+    toggleSearchInput = () => {
+        this.setState({searchInputOpen: !this.state.searchInputOpen}, () => {
+            if (!this.state.searchInputOpen) {
+                this.setState({searchInputValue: ''});
+            }
+        });
+    }
+
     renderPredictionList = () => {
         let positions = searchPositions(this.state.searchInputValue, this.props.previewPositions);
         const {
@@ -143,13 +153,16 @@ class DisplayPredictions extends React.Component {
     		                                />
                                         </div>
                                     }
-                                    <div style={{width: '100%'}}>
-                                        <SearchInputComponent 
-                                            searchInputValue={this.state.searchInputValue}
-                                            onChange={this.handleSearchInputChange}
-                                            clearInput={() => this.setState({searchInputValue: ''})}
-                                        />
-                                    </div>
+                                    {
+                                        this.state.searchInputOpen &&
+                                        <div style={{width: '100%'}}>
+                                            <SearchInputComponent 
+                                                searchInputValue={this.state.searchInputValue}
+                                                onChange={this.handleSearchInputChange}
+                                                clearInput={() => this.setState({searchInputValue: ''})}
+                                            />
+                                        </div>
+                                    }
                                     <StockPreviewList  
                                         positions={positions} 
                                         selectPosition={this.props.selectPosition}
@@ -158,14 +171,16 @@ class DisplayPredictions extends React.Component {
                                     />
 	                        	</React.Fragment>
                             }
-                            {
-                                isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
-                                <div 
-                                        style={{
-                                            ...fabContainerStyle,
-                                            justifyContent: 'center'
-                                        }}
-                                >
+                            <div 
+                                    style={{
+                                        ...fabContainerStyle,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        minHeight: '36px'
+                                    }}
+                            >
+                                {
+                                    isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
                                     <Button 
                                             style={{
                                                 ...fabButtonStyle, 
@@ -179,8 +194,22 @@ class DisplayPredictions extends React.Component {
                                         <Icon style={{marginRight: '5px'}}>add_circle</Icon>
                                         ADD PREDICTIONS
                                     </Button>
-                                </div>
-                            }
+                                }
+                                <Button 
+                                        variant="fab" 
+                                        size="medium"
+                                        style={{
+                                            ...fabStyle,
+                                            marginRight: '30px',
+                                            backgroundColor: '#7b72d1'
+                                        }}
+                                        onClick={this.toggleSearchInput}
+                                >
+                                    <Icon style={{color: '#fff'}}>
+                                        search
+                                    </Icon>
+                                </Button>
+                            </div>
                     	</React.Fragment>
         		}
             </Grid>
@@ -200,6 +229,9 @@ class DisplayPredictions extends React.Component {
     }
 
     render() {
+        const isMarketTrading = !DateHelper.isHoliday();
+        const marketOpen = isMarketTrading && isMarketOpen().status;
+
         return (
             <Grid container>
                 <Grid 
@@ -219,12 +251,18 @@ class DisplayPredictions extends React.Component {
                         onChange={this.onPredictionTypeRadioClicked}
                         CustomRadio={WatchlistCustomRadio}
                     />
-                    <DateComponent 
-                        selectedDate={this.props.selectedDate}
-                        color={primaryColor}
-                        onDateChange={this.props.updateDate}
-                        compact
-                    />
+                    <div style={{...verticalBox, justifyContent: 'center'}}>
+                        <DateComponent 
+                            selectedDate={this.props.selectedDate}
+                            color={primaryColor}
+                            onDateChange={this.props.updateDate}
+                            compact
+                        />
+                        {
+                            !marketOpen &&
+                            <Closed>Market Closed</Closed>
+                        }
+                    </div>
                 </Grid>
                 <Grid item xs={12}>
                     {
@@ -253,6 +291,7 @@ const SearchInputComponent = ({searchInputValue, onChange, clearInput}) => {
                 value={searchInputValue}
                 onChange={onChange}
                 margin="normal"
+                autoFocus={true}
                 endAdornment={
                     searchInputValue.length > 0 
                     ?   <InputAdornment position="end">
@@ -321,3 +360,19 @@ const EmptyPredictionsText = styled.h3`
     color: #535353;
     font-weight: 400;
 `;
+
+const Closed = styled.h3`
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Lato', sans-serif;
+    color: #444;
+    margin-top: -10px;
+    color: #f34545;
+`;
+
+const fabStyle = {
+    width: '45px',
+    height: '45px',
+    position: 'absolute',
+    right: '0px'
+}

@@ -88,7 +88,7 @@ class CreateWatchListImpl extends React.Component {
                         padding: '5px 0'
                     }}
             >
-                <Header>Create Watchlist</Header>
+                <Header>Create Favourite List</Header>
                 <ActionIcon 
                     onClick={this.props.toggleModal} 
                     color='#fff'
@@ -110,7 +110,7 @@ class CreateWatchListImpl extends React.Component {
                     <Grid item xs={12} style={verticalBox}>
                         <TextField
                             id="outlined-name"
-                            label="Watchlist Name"
+                            label="List Name"
                             value={this.state.name}
                             onChange={this.handleInputChange}
                             margin="normal"
@@ -123,7 +123,7 @@ class CreateWatchListImpl extends React.Component {
                                 variant="contained"
                                 style={{marginTop: '10px', boxShadow: 'none'}}
                         >
-                            CREATE WATCHLIST
+                            CREATE
                             {
                                 this.state.loading && 
                                 <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />
