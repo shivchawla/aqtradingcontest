@@ -42,7 +42,7 @@ class CustomRadio extends React.Component {
         return (
             <div 
                     style={{
-                        width: '45px',
+                        width: '50px',
                         marginRight: '10px'
                     }}
             >

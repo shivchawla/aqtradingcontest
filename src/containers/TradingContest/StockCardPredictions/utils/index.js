@@ -88,7 +88,14 @@ export const getTarget = (targetValue = 0) => {
         return targetKvp[targetValueIndex].index;
     }
 
-    return 0;
+    return targetValue;
+}
+
+// Checks if custom horizon
+export const checkIfCustomTarget = (targetValue = 0) => {
+    const targetValueIndex = _.findIndex(targetKvp, target => target.value === targetValue);
+
+    return targetValueIndex === -1;
 }
 
 // Gives the horizon index from the horizon value
@@ -98,7 +105,14 @@ export const getHorizon = (horizonValue = 0) => {
         return horizonKvp[horizonValueIndex].index;
     }
 
-    return 0;
+    return horizonValue;
+}
+
+// Checks if custom horizon
+export const checkIfCustomHorizon = (horizonValue = 0) => {
+    const horizonValueIndex = _.findIndex(horizonKvp, target => target.value === horizonValue);
+
+    return horizonValueIndex === -1;
 }
 
 // Gives the target value from the target index
@@ -108,7 +122,7 @@ export const getTargetValue = (value = 0) => {
         return targetKvp[targetValueIndex].value;
     }
 
-    return 0;
+    return value;
 }
 
 // Gives the horizon value from the horizon index
@@ -118,5 +132,5 @@ export const getHorizonValue = (value = 0) => {
         return horizonKvp[horizonValueIndex].value;
     }
 
-    return 0;
+    return value;
 }

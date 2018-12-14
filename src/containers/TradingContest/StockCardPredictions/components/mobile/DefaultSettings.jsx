@@ -15,7 +15,7 @@ import {withStyles} from '@material-ui/core/styles';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
 
 const styles = theme => ({
@@ -63,17 +63,19 @@ class DefaultSettings extends React.Component {
         });
     }
 
-    handleHorizonChange = value => {
+    handleHorizonChange = (value, format = true) => {
+        const requiredHorizon = format ? getHorizonValue(value) : value;
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
-            horizon: getHorizonValue(value)
+            horizon: requiredHorizon
         });
     }
 
-    handleTargetChange = value => {
+    handleTargetChange = (value, format = true) => {
+        const requiredTarget = format ? getTargetValue(value) : value;
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
-            target: getTargetValue(value)
+            target: requiredTarget
         });
     }
 
@@ -96,8 +98,6 @@ class DefaultSettings extends React.Component {
     render() {
         const {classes} = this.props;
         let {horizon = 2, target = 0, sector = '', editMode = false, listMode = false} = this.props.defaultStockData;
-        target = getTarget(target);
-        horizon = getHorizon(horizon);
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
@@ -184,6 +184,10 @@ class DefaultSettings extends React.Component {
                                     items={horizonItems}
                                     onChange={this.handleHorizonChange}
                                     defaultSelected={horizon}
+                                    getIndex={getHorizon}
+                                    checkIfCustom={checkIfCustomHorizon}
+                                    showSlider
+                                    label='Days'
                                 />
 
                                 <MetricLabel 
@@ -199,6 +203,10 @@ class DefaultSettings extends React.Component {
                                     onChange={this.handleTargetChange}
                                     defaultSelected={target}
                                     hideLabel={true}
+                                    getIndex={getTarget}
+                                    checkIfCustom={checkIfCustomTarget}
+                                    showSlider
+                                    label='%'
                                 />
                             </div>
                             <div

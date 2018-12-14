@@ -2,26 +2,40 @@ import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Slider from '@material-ui/lab/Slider';
-import Icon from '@material-ui/core/Icon';
+import {withStyles} from '@material-ui/core/styles';
 import ActionIcon from '../../../Misc/ActionIcons';
-import LensIcon from '@material-ui/icons/LensOutlined';
 import CustomRadio from '../../../../../components/selections/CustomRadio';
-import {horizontalBox, verticalBox} from '../../../../../constants';
+import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
 
-export default class StockCardRadioGroup extends React.Component {
+let sliderInputTimeout = null;
+const yellowColor = '#dda91a';
+
+const styles = theme => ({
+    trackBefore: {
+        backgroundColor: yellowColor
+    }
+})
+
+class StockCardRadioGroup extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             selected: props.defaultSelected || 0,
-            sliderValue: props.defaultSelected || 0
+            sliderValue: props.defaultSelected || 0,
+            showSlider: false
         };
     }
 
+    toggleSlider = () => {
+        this.setState({showSlider: !this.state.showSlider});
+    }
+
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps.defaultSelected);
         if (!_.isEqual(nextProps.defaultSelected, this.props.defaultSelected)) {
             this.setState({
                 selected: nextProps.defaultSelected || 0,
-                sliderValue: nextProps.defaultSelected
+                sliderValue: nextProps.defaultSelected || 0
             })
         }
     }
@@ -33,20 +47,23 @@ export default class StockCardRadioGroup extends React.Component {
 
     handleSliderChange = (e, value) => {
         this.setState({sliderValue: value});
-        console.log(value);
-        this.props.onChange && this.props.onChange(value);
+        clearTimeout(sliderInputTimeout);
+        sliderInputTimeout = setTimeout(() => {
+            this.props.onChange && this.props.onChange(value, false);
+        }, 300);
     }
 
     render() {
-        const {items = ['One', 'Two']} = this.props;
+        const {items = ['One', 'Two'], showSlider = false, classes} = this.props;
 
         return (
-            <div style={{...verticalBox, alignItems: 'flex-end'}}>
+            <div style={{...verticalBox, alignItems: 'flex-start'}}>
                 <div 
                         style={{
                             ...horizontalBox, 
                             display: 'inline-flex',
                             justifyContent: 'flex-end',
+                            alignItems: 'flex-start',
                             ...this.props.style
                         }}
                 >
@@ -57,42 +74,58 @@ export default class StockCardRadioGroup extends React.Component {
                                     key={index}
                                     label={item.key}
                                     secondaryLabel={item.label}
-                                    checked={this.state.selected === index}
+                                    checked={this.state.selected === item.key}
                                     onChange={() => this.handleChange(index)}
                                     hideLabel={this.props.hideLabel}
                                 />
                             );
                         })
                     }
+                    <ActionIcon type="edit" color='#444' onClick={this.toggleSlider} />
                 </div>
-                <div style={{...verticalBox, width: '100%', marginTop: '10px'}}>
+                {
+                    showSlider && this.state.showSlider &&
                     <div 
                             style={{
-                                ...horizontalBox, 
-                                justifyContent: 'space-between',
-                                width: '100%'
+                                ...verticalBox, 
+                                width: '90%', 
+                                marginTop: '10px',
+                                alignItems: 'flex-start',
+                                marginBottom: '10px'
                             }}
                     >
-                        <CustomText>Customize</CustomText>
-                        <CustomText>{this.state.sliderValue}</CustomText>
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                        >
+                            <CustomText>Customize</CustomText>
+                            <CustomText style={{color: yellowColor, fontWeight: 700}}>
+                                {this.state.sliderValue} {this.props.label}
+                            </CustomText>
+                        </div>
+                        <Slider
+                            style={{marginTop: '12px'}}
+                            max={30}
+                            value={this.state.sliderValue}
+                            min={1}
+                            onChange={this.handleSliderChange}
+                            step={1}
+                            thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color='#dda91a'/>}
+                            classes={{
+                                trackBefore: classes.trackBefore
+                            }}
+                        />
                     </div>
-                    <Slider
-                        style={{marginTop: '12px'}}
-                        max={30}
-                        value={this.state.sliderValue}
-                        min={0}
-                        // classes={{ container: classes.slider }}
-                        // value={value}
-                        // aria-labelledby="label"
-                        onChange={this.handleSliderChange}
-                        step={1}
-                        thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}}/>}
-                    />
-                </div>
+                }
             </div>
         );
     }
 }
+
+export default withStyles(styles)(StockCardRadioGroup);
 
 const CustomText = styled.h3`
     font-family: 'Lato', sans-serif;

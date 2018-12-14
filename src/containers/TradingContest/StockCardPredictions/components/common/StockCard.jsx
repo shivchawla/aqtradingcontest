@@ -18,7 +18,7 @@ import {
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
@@ -103,7 +103,11 @@ export default class StockCard extends React.Component {
                     <StockCardRadioGroup 
                         items={horizonItems}
                         onChange={this.handleHorizonChange}
-                        defaultSelected={getHorizon(horizon)}
+                        defaultSelected={horizon}
+                        getIndex={getHorizon}
+                        showSlider
+                        checkIfCustom={checkIfCustomHorizon}
+                        label='Days'
                     />
 
                     <MetricLabel 
@@ -117,8 +121,12 @@ export default class StockCard extends React.Component {
                     <StockCardRadioGroup 
                         items={targetItems}
                         onChange={this.handleTargetChange}
-                        defaultSelected={getTarget(target)}
+                        defaultSelected={target}
+                        getIndex={getTarget}
+                        checkIfCustom={checkIfCustomTarget}
+                        showSlider
                         hideLabel={true}
+                        label='%'
                     />
                 </div>
             </React.Fragment>
@@ -305,7 +313,7 @@ export default class StockCard extends React.Component {
                         xs={12} 
                         style={{
                             ...verticalBox,
-                            borderTop: '1px solid #E2E2E2',
+                            // borderTop: '1px solid #E2E2E2',
                             marginTop: isDesktop ? '20px' : '20px',
                             paddingTop: isDesktop ? '15px' : '20px'
                         }}
@@ -593,8 +601,8 @@ const Change = styled.h3`
 `;
 
 const MetricLabel = styled.h3`
-    font-size: 16px;
-    color: #5D5D5D;
+    font-size: 12px;
+    color: #222;
     font-weight: 600;
     text-align: start;
     font-weight: 400;
