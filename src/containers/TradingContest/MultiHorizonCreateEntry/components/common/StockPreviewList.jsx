@@ -41,6 +41,7 @@ export default class StockPreviewList extends React.Component {
                                 key={index} 
                                 edit 
                                 selectPosition={this.props.selectPosition}
+                                toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
                                 togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
                             />
                         );

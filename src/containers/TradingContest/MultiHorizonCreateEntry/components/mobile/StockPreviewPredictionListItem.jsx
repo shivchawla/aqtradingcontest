@@ -76,7 +76,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
         endDate = moment(endDate).format(dateFormat);
 
         const directionUnit = type === 'buy' ? 1 : -1;
-        const changeInvestment = directionUnit * ((lastPrice - avgPrice) / avgPrice) * investment;
+        const changeInvestment = ((lastPrice - avgPrice) / avgPrice) * investment;
         const changedInvestment = investment + changeInvestment;
 
         // const duration = moment(endDate, dateFormat).diff(moment(startDate, dateFormat), 'days');

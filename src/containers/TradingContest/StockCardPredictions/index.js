@@ -11,6 +11,7 @@ import Icon from '@material-ui/core/Icon';
 import {withRouter} from 'react-router-dom';
 import StockCard from './components/common/StockCard';
 import StockSelection from './components/mobile/StockSelection';
+import WatchlistComponent from '../../Watchlist';
 import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
 import Snackbar from '../../../components/Alerts/SnackbarComponent';
@@ -428,7 +429,7 @@ class StockCardPredictions extends React.Component {
                     fetchStocks={this.fetchStocks}
                 />
                 <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-between'}}>
-                    <Tooltip title="Started Today" placement="bottom">
+                    {/* <Tooltip title="Started Today" placement="bottom"> */}
                         <IconButton 
                                 onClick={() => {
                                     this.props.history.push(`/dailycontest/mypicks?&date=${this.getCurrentTradingDay().format(dateFormat)}&type=started`)
@@ -438,20 +439,28 @@ class StockCardPredictions extends React.Component {
                                     badgeContent={this.state.stockCartCount} 
                                     style={{color: primaryColor, fontSize: '14px'}}
                             >
-                                <Icon style={{color: primaryColor}}>shopping_cart</Icon>
+                                <Icon style={{color: '#707070'}}>shopping_cart</Icon>
                             </Badge>
                         </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Default Settings" placement="bottom">
-                        <IconButton 
-                                onClick={this.toggleDefaultSettingsBottomSheet}
-                        >
-                            <Icon style={{color: primaryColor}}>settings_input_composite</Icon>
-                        </IconButton>
-                    </Tooltip>
+                    {/* </Tooltip> */}
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'flex-end'
+                            }}
+                    >
+                        
+                        {/* <Tooltip title="Default Settings" placement="bottom"> */}
+                            <IconButton 
+                                    onClick={this.toggleDefaultSettingsBottomSheet}
+                            >
+                                <Icon style={{color: '#707070'}}>settings</Icon>
+                            </IconButton>
+                        {/* </Tooltip> */}
+                    </div>
                 </Grid>
                 <Grid item xs={12}>
-                    <StockSelection 
+                    {/* <StockSelection 
                         open={this.state.searchStockOpen}
                         toggleSearchStocksDialog={
                             !this.shouldShowListView() 
@@ -464,7 +473,17 @@ class StockCardPredictions extends React.Component {
                         list={this.shouldShowListView()}
                         stockCart={this.state.stockCart}
                         setFetchStocks={this.setFetchStocks}
-                    />
+                    /> */}
+                    {
+                        this.shouldShowListView() &&
+                        <WatchlistComponent 
+                            stockSelectionOpen={this.state.searchStockOpen}
+                            toggleStockSelection={this.toggleSearchStocksBottomSheet}
+                            selectStock={this.modifyStockData}
+                            stockData={this.state.stockData}
+                            toggleStockCardBottomSheet={this.toggleStockCardBottomSheet}
+                        />
+                    }
                 </Grid>
                 <Grid item xs={12}>
                     {this.renderStockCard(this.shouldShowListView())}
@@ -495,7 +514,6 @@ class StockCardPredictions extends React.Component {
 export default withRouter(windowSize(StockCardPredictions));
 
 const Container = styled(Grid)`
-    padding: 10px;
     padding-top: 0px;
     background-color: #fff;
     width: 100%;

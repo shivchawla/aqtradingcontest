@@ -97,7 +97,11 @@ export default class StockDetail extends React.Component {
             loading: this.state.loading,
             noDataFound: this.state.noDataFound,
             getStockPriceHistory: this.getStockPriceHistory,
-            loadingPriceHistory: this.state.loadingPriceHistory
+            loadingPriceHistory: this.state.loadingPriceHistory,
+            selectStock: this.props.selectStock,
+            toggleStockCardBottomSheet: this.props.toggleStockCardBottomSheet,
+            toggleStockDetailBottomSheetOpen: this.props.toggleStockDetailBottomSheetOpen,
+            stockData: this.props.stockData
         };
 
         return (

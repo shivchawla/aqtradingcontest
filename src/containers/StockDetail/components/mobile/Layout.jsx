@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Button from '@material-ui/core/Button';
 import HighStock from '../../../../components/Charts/StockChart';
 import PriceMetrics from './PriceMetrics';
 import LoaderComponent from '../../../TradingContest/Misc/Loader';
@@ -41,6 +42,40 @@ export default class LayoutMobile extends React.Component {
         this.setState({selectedMetricView: value});
     }
 
+    predictStock = () => {
+        let {latestDetail = {}, stockData = {}} = this.props;
+        const symbol = _.get(this.props, 'symbol', '');
+        const name = _.get(latestDetail, 'name', '');
+        const changePct = _.get(latestDetail, 'changePct', 0);
+        const change = _.get(latestDetail, 'change', 0);
+        const lastPrice = _.get(latestDetail, 'latestPrice', 0);
+
+        stockData = {
+            ...stockData,
+            symbol,
+            name,
+            lastPrice,
+            change,
+            changePct: Number((changePct * 100).toFixed(2))
+        };
+        this.props.selectStock(stockData);
+        // this.props.toggleStockDetailBottomSheetOpen();
+        this.props.toggleStockCardBottomSheet();
+    }
+
+    renderPredictButton = () => {
+        return (
+            this.props.selectStock 
+            ?   <Button 
+                        style={predictButtonStyle}
+                        onClick={this.predictStock}
+                >
+                    Predict
+                </Button>
+            :   null
+        )
+    }
+
     renderContent = () => {
         const {series, noDataFound = false, intraDaySeries, latestDetail = {}} = this.props;
         const prevClose = _.get(latestDetail, 'close', 0);
@@ -62,6 +97,7 @@ export default class LayoutMobile extends React.Component {
                             height={250}
                             prevClose={prevClose}
                             getStockPriceHistory={this.props.getStockPriceHistory}
+                            renderPredictButton={this.renderPredictButton}
                         />
                     </Grid>
                     <Grid 
@@ -69,7 +105,7 @@ export default class LayoutMobile extends React.Component {
                             xs={12}
                             style={{
                                 ...verticalBox,
-                                marginTop: '-25px'
+                                marginTop: '-15px'
                             }}
                     >
                         <Tabs 
@@ -86,6 +122,12 @@ export default class LayoutMobile extends React.Component {
                                 : this.renderRollingPerformance()
                         }
                     </Grid>
+                    {
+                        this.props.selectStock &&
+                        <Grid item xs={12} style={verticalBox}>
+                            
+                        </Grid>
+                    }
             </React.Fragment>
         );
     }
@@ -117,3 +159,11 @@ const Container = styled(Grid)`
     padding: 10px;
     padding-top: 4px;
 `;
+
+const predictButtonStyle = {
+    color: '#fff',
+    fontWeight: 500,
+    fontFamily: 'Lato, sans-serif',
+    fontSize: '12px',
+    background: 'linear-gradient(rgb(41, 135, 249), rgb(56, 111, 255))'
+}

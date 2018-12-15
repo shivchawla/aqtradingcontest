@@ -246,15 +246,7 @@ class TradingContest extends React.Component {
                             <STab label="Metrics"/>
                         </STabs>
                     </Grid>
-                    <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
-                        {
-                            selectedTab === 1 &&
-                            <DateComponent 
-                                selectedDate={this.state.selectedDate}
-                                color='grey'
-                                onDateChange={this.updateDate}
-                            />
-                        }
+                    {/* <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
                         {
                             !marketOpen &&
                             this.state.selectedTab === 1 &&
@@ -263,6 +255,7 @@ class TradingContest extends React.Component {
                                         ? metricColor.positive 
                                         : '#fc4c55'
                                     }
+                                    style={{marginTop: '10px'}}
                             >   
                                 {
                                     marketOpen
@@ -271,7 +264,7 @@ class TradingContest extends React.Component {
                                 }
                             </MartketOpenTag>
                         }
-                    </Grid>
+                    </Grid> */}
                     <Switch>
                         <Route 
                             exact
@@ -282,6 +275,7 @@ class TradingContest extends React.Component {
                                         selectedDate={this.state.selectedDate}
                                         componentType='preview'
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
+                                        updateDate={this.updateDate}
                                     />
                                 :   <DummyLogin />
                             }
@@ -292,6 +286,7 @@ class TradingContest extends React.Component {
                             render={() => Utils.isLoggedIn()
                                 ?   <StockPredictions 
                                         selectedDate={this.state.selectedDate}
+                                        updateDate={this.updateDate}
                                     />
                                 :   <DummyLogin />
                             }
@@ -311,6 +306,7 @@ class TradingContest extends React.Component {
                                 ?   <CreateEntry 
                                         selectedDate={this.state.selectedDate}
                                         componentType='preview'
+                                        updateDate={this.updateDate}
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
                                     />
                                 :   <DummyLogin />

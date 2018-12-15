@@ -1,17 +1,13 @@
 import React from 'react';
+import styled from 'styled-components';
 import _ from 'lodash';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
 import Slide from '@material-ui/core/Slide';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
 import {withRouter} from 'react-router';
 import ActionIcon from '../../../Misc/ActionIcons';
+import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {SearchStocks} from '../../../SearchStocks';
+import {horizontalBox} from '../../../../../constants';
 
 const styles = theme => ({
     dialogContentRoot: {
@@ -24,8 +20,6 @@ const styles = theme => ({
         }
     },
 });
-
-const isDesktop = global.screen.width > 600;
 
 class StockSelection extends React.Component {
     searchStockComponent = null;
@@ -45,7 +39,7 @@ class StockSelection extends React.Component {
         return false;
     }
 
-    addPositions = (selectedPositions = []) => {
+    addPositions = (selectedPositions = []) => { // Used when StockSelection is used independently
         let stockData = this.props.stockData;
         const symbol = _.get(selectedPositions, `[${0}].symbol`, '');
         const name = _.get(selectedPositions, `[${0}].name`, '');
@@ -64,11 +58,16 @@ class StockSelection extends React.Component {
         this.props.modifyStockData(stockData);
     }
 
+    addStock = (selectedPositions = []) => {
+        const symbol = _.get(selectedPositions, `[${0}].symbol`, '');
+        this.props.addStock(symbol);
+    }
+
     renderSearchStocks = () => {
         return (
             <SearchStocks 
                 toggleBottomSheet={this.props.toggleSearchStocksDialog}
-                addPositions={this.addPositions}
+                addPositions={this.addStock}
                 portfolioPositions={[this.props.stockData]}
                 ref={el => this.searchStockComponent = el}
                 history={this.props.history}
@@ -95,52 +94,37 @@ class StockSelection extends React.Component {
         this.setState({performanceOpen: !this.state.performanceOpen});
     }
 
-    renderDialogMode = () => {
-        const {classes} = this.props;
-
+    renderHeader = () => {
         return (
-            <Dialog
-                fullScreen
-                open={this.props.open}
-                onClose={this.props.toggleSearchStocksDialog}
-                TransitionComponent={Transition}
-                style={{overflow: 'hidden'}}
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        background: 'linear-gradient(to right, #5443F0, #335AF0)',
+                        width: '100%',
+                        padding: '5px 0'
+                    }}
             >
-                {
-                    !isDesktop &&
-                    <AppBar>
-                        <Toolbar>
-                            {
-                                this.state.performanceOpen &&
-                                <ActionIcon 
-                                    color='#fff' 
-                                    type='chevron_left' 
-                                    onClick={this.toggleStockPerformance} 
-                                    size={26}
-                                />
-                            }
-                            <Typography variant="h6" color="inherit">
-                                SELECT STOCK
-                            </Typography>
-                            <IconButton 
-                                    color="inherit" 
-                                    onClick={this.props.toggleSearchStocksDialog} 
-                                    aria-label="Close"
-                                    style={{position: 'absolute', right: '10px'}}
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        </Toolbar>
-                    </AppBar>
-                }
-                <DialogContent
-                        classes={{
-                            root: classes.dialogContentRoot
-                        }}
-                >
-                    {this.renderSearchStocks()}
-                </DialogContent>
-            </Dialog>
+                <Header>Select Stock</Header>
+                <ActionIcon 
+                    onClick={this.props.toggleSearchStocksDialog} 
+                    color='#fff'
+                    type="close"
+                />
+            </div>
+        );
+    }
+
+    renderDialogMode = () => {
+        return (
+            <BottomSheet
+                    open={this.props.open}
+                    onClose={this.props.toggleSearchStocksDialog}
+                    header="Select Stock"
+                    customHeader={this.renderHeader}
+            >
+                {this.renderSearchStocks()}
+            </BottomSheet>
         );
     }
 
@@ -157,7 +141,10 @@ class StockSelection extends React.Component {
 
 export default withStyles(styles)(withRouter(StockSelection));
 
-
-const Transition = (props) => {
-    return <Slide direction="up" {...props} />;
-}
+const Header = styled.h3`
+    color: #fff;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    margin-left: 20px;
+`;

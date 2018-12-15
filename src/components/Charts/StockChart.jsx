@@ -543,21 +543,26 @@ class StockChartImpl extends React.Component {
                                             item 
                                             xs={12}
                                             style={{
-                                                ...verticalBox,
+                                                ...horizontalBox,
                                                 alignItems: 'center',
-                                                marginTop: '5px'
+                                                marginTop: '5px',
+                                                justifyContent: 'space-between'
                                             }}
                                     >
                                         <div 
                                                 style={{
                                                     ...horizontalBox,
-                                                    justifyContent: 'space-between',
+                                                    justifyContent: 'flex-start',
                                                     width: '100%'
                                                 }}
                                         >
                                             <Date>{this.state.selectedDate}</Date>
                                             <PriceComponent lastPrice={lastPrice} change={legend.change}/>    
                                         </div>
+                                        {
+                                            this.props.renderPredictButton &&
+                                            this.props.renderPredictButton()
+                                        }
                                     </Grid>
                                 </Grid>
                         );
@@ -763,7 +768,10 @@ const PriceComponent = ({lastPrice, change}) => {
         <div 
                 style={{
                     ...horizontalBox,
-                    justifyContent: 'flex-start'
+                    justifyContent: 'flex-start',
+                    marginLeft: '4px',
+                    paddingLeft: '4px',
+                    borderLeft: '1px solid #afafaf'
                 }}
         >
             <LastPrice>₹{lastPrice}</LastPrice>
@@ -782,7 +790,7 @@ const TranslucentLoader = () => {
 
 const LastPrice = styled.h3`
     font-family: 'Lato', sans-serif;
-    font-size: ${props => props.fontSize || '14px'};
+    font-size: ${props => props.fontSize || '12px'};
     color: #222;
     font-weight: 500;
 `;

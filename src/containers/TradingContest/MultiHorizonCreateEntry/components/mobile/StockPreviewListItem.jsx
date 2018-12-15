@@ -8,10 +8,10 @@ import {Utils} from '../../../../../utils';
 
 const styles = theme => ({
     expansionPanelRoot: {
-        marginBottom: '20px',
-        backgroundColor: '#FBFCFF',
-        border: '1px solid #EAEAEA',
-        borderRadius: '4px',
+        marginBottom: '5px',
+        backgroundColor: '#fff',
+        borderBottom: '1px solid #EAEAEA',
+        borderRadius: '0px',
         boxShadow: 'none',
         padding: '14px 10px',
         '&::before': {
@@ -34,8 +34,16 @@ class StockPreviewListItem extends React.Component {
     }
 
     handlePositionClick = (symbol) => {
+        console.log('handlePositionClick');
         this.props.selectPosition(symbol);
         this.props.togglePredictionsBottomSheet();
+    }
+
+    onSymbolClick = (e) => {
+        e.stopPropagation();
+        const {symbol = null} = this.props.position;
+        this.props.selectPosition(symbol);
+        this.props.toggleStockDetailBottomSheet();
     }
     
     render() {
@@ -86,7 +94,11 @@ class StockPreviewListItem extends React.Component {
                             alignItems: 'flex-start',
                         }}
                 >
-                    <SymbolComponent symbol={`${symbol} (${nPredictions})`} name={name} />
+                    <SymbolComponent 
+                        symbol={`${symbol} (${nPredictions})`} 
+                        name={name} 
+                        onClick={this.onSymbolClick}
+                    />
                 </Grid>
                 <Grid item xs={4}>
                     <ChangeComponent 
@@ -108,9 +120,12 @@ class StockPreviewListItem extends React.Component {
 
 export default withStyles(styles)(StockPreviewListItem);
 
-const SymbolComponent = ({symbol, name}) => {
+const SymbolComponent = ({symbol, name, onClick}) => {
     return (
-        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+        <div 
+                style={{...verticalBox, alignItems: 'flex-start'}}
+                onClick={onClick}
+        >
             <Symbol>{symbol}</Symbol>
             <span style={nameStyle}>{name}</span>
         </div>
@@ -164,7 +179,7 @@ const Symbol = styled.div`
     text-align: start;
     font-weight: 600;
     font-size: 16px;
-    color: #535353;
+    color: #6175e4;
 `;
 
 const LastPrice = styled.h3`

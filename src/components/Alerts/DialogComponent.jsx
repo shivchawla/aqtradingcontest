@@ -41,10 +41,10 @@ export default class DialogComponent extends React.Component {
                 {
                     action &&
                     <DialogActions>
-                        <Button onClick={this.onOk} color="secondary">
+                        <Button onClick={this.onCancel} color="secondary">
                             CANCEL
                         </Button>
-                        <Button onClick={this.onCancel} color="primary">
+                        <Button onClick={this.onOk} color="primary">
                             OK
                         </Button>
                     </DialogActions>

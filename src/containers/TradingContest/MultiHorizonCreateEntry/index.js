@@ -15,6 +15,7 @@ import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import PredictionsBottomSheet from './components/mobile/PredictionsBottomSheet';
+import StockDetailBottomSheet from '../../TradingContest/StockDetailBottomSheet';
 import {DailyContestmyPicksMeta} from '../metas';
 import {processSelectedPosition} from '../utils';
 import {Utils, handleCreateAjaxError} from '../../../utils';
@@ -81,7 +82,8 @@ class CreateEntry extends React.Component {
             loadingPreview: false,
             selectedView: this.getListViewType(props.listViewType) || 'active',
             predictionBottomSheetOpen: false,
-            selectedPositionIndex: 0
+            selectedPositionIndex: 0,
+            stockDetailBottomSheetOpen: false
         };
         this.mounted = false;
     }
@@ -420,15 +422,9 @@ class CreateEntry extends React.Component {
     }
 
     handlePreviewListMenuItemChange = (type = 'started') => {
-        this.setState({loadingPreview: true, selectedView: type}, () => {
+        this.setState({selectedView: type}, () => {
+            this.fetchPredictionsAndPnl(this.state.selectedDate);
             this.takeSubscriptionAction(type);
-        });
-        Promise.all([
-            this.getDailyPredictionsOnDateChange(this.state.selectedDate, type),
-            this.getDailyPnlStats(this.state.selectedDate, type)
-        ])
-        .finally(() => {
-            this.setState({loadingPreview: false});
         })
     }
 
@@ -682,7 +678,9 @@ class CreateEntry extends React.Component {
             selectedView: this.state.selectedView,
             selectPosition: this.selectPosition,
             togglePredictionsBottomSheet: this.togglePredictionsBottomSheet,
-            listViewType: this.props.listViewType
+            listViewType: this.props.listViewType,
+            toggleStockDetailBottomSheet: this.toggleStockDetailBottomSheet,
+            updateDate: this.props.updateDate
         };
 
         return (
@@ -704,7 +702,13 @@ class CreateEntry extends React.Component {
         this.setState({duplicateHorizonDialogOpenStaus: !this.state.duplicateHorizonDialogOpenStaus});
     }
 
+    toggleStockDetailBottomSheet = () => {
+        this.setState({stockDetailBottomSheetOpen: !this.state.stockDetailBottomSheetOpen});
+    }
+
     render() {
+        const selectedStock = _.get(this.state, `previewPositions[${this.state.selectedPositionIndex}]`, {});
+
         return (
             <React.Fragment>
                 <DailyContestmyPicksMeta />
@@ -723,6 +727,11 @@ class CreateEntry extends React.Component {
                         open={this.state.predictionBottomSheetOpen}
                         onClose={this.togglePredictionsBottomSheet}
                         position={this.state.previewPositions[this.state.selectedPositionIndex]}
+                    />
+                    <StockDetailBottomSheet 
+                        open={this.state.stockDetailBottomSheetOpen}
+                        onClose={this.toggleStockDetailBottomSheet}
+                        {...selectedStock}
                     />
                     <SnackbarComponent 
                         openStatus={this.state.snackbarOpenStatus} 

@@ -80,7 +80,35 @@ class DateComponent extends React.Component {
         return DateHelper.isHoliday(date.toDate());
     }
 
-    render() {
+    renderCompactView = () => {
+        const {color = '#fff'} = this.props;
+        const { selectedDate } = this.state;
+
+        return (
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'center', 
+                        alignItems: 'center'
+                    }}
+            >
+                <ActionIcon size={22} color={color} type='chevron_left' onClick={this.navigateToPreviousDate} />
+                <DatePicker
+                    format='DD MMM'
+                    value={selectedDate}
+                    onChange={this.handleDateChange}
+                    shouldDisableDate={this.disabledDate}
+                    style={{textAlign: 'center'}}
+                    TextFieldComponent={DateFields}
+                    color={color}
+                    disableFuture={true}
+                />
+                <ActionIcon size={22} color={color} type='chevron_right' onClick={this.navigateToNextDate} />
+            </div>
+        );
+    }
+
+    renderNormalView = () => {
         const {color = '#fff'} = this.props;
         const { selectedDate } = this.state;
 
@@ -118,6 +146,12 @@ class DateComponent extends React.Component {
                 }
             </Grid>
         );
+    }
+
+    render() {
+        const {compact = false} = this.props;
+
+        return compact ? this.renderCompactView() : this.renderNormalView();
     }
 }
 

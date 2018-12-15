@@ -187,7 +187,7 @@ export default class StockListItemMobile extends React.Component {
                         <ActionIcon 
                             type="info"
                             size={18}
-                            color='#919191'
+                            color='#7e91f7'
                             onClick={() => this.props.onInfoClicked(symbol, name, current, change, changePct)}
                         />
                     }
