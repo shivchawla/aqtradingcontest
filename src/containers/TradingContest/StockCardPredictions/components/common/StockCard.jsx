@@ -216,19 +216,25 @@ export default class StockCard extends React.Component {
                 : metricColor.negative;
         const editMode = isDesktop || this.props.editMode;
         const {bottomSheet = false} = this.props;
-        const actionButtonContainerStyle = shortable 
-            ?   {
-                    ...horizontalBox, 
-                    justifyContent: 'space-around',
-                    width: isDesktop ? '70%' : '100%',
-                    marginTop: editMode ? '10px' : '15px'
-                }
-            :   {
-                ...verticalBox,
-                justifyContent: 'center',
-                width: isDesktop ? '70%' : '100%',
-                marginTop: editMode ? '10px' : '15px'
-            }
+        // const actionButtonContainerStyle = shortable 
+        //     ?   {
+        //             ...horizontalBox, 
+        //             justifyContent: 'space-around',
+        //             width: isDesktop ? '70%' : '100%',
+        //             marginTop: editMode ? '10px' : '15px'
+        //         }
+        //     :   {
+        //         ...verticalBox,
+        //         justifyContent: 'center',
+        //         width: isDesktop ? '70%' : '100%',
+        //         marginTop: editMode ? '10px' : '15px'
+        //     };
+        const actionButtonContainerStyle = {
+            ...horizontalBox, 
+            justifyContent: 'space-around',
+            width: isDesktop ? '70%' : '100%',
+            marginTop: editMode ? '10px' : '15px'
+        };
 
         return (
             <React.Fragment>
@@ -325,11 +331,12 @@ export default class StockCard extends React.Component {
                         }}
                 >
                     <QuestionText>
-                        {
+                        Will the price be higher or lower in
+                        {/* {
                             shortable
                             ?   "Will the price be higher or lower in"
                             :   "How high will the price go in"
-                        }
+                        } */}
                         <span 
                                 style={{
                                     color: primaryColor, 
@@ -344,7 +351,7 @@ export default class StockCard extends React.Component {
                             style={actionButtonContainerStyle}
                     >
                         {
-                            shortable && 
+                            // shortable && 
                             <SubmitButton 
                                 onClick={() => this.props.createPrediction('sell')}
                                 target={target}
@@ -353,7 +360,8 @@ export default class StockCard extends React.Component {
                             />
                         }
                         {
-                            !bottomSheet && shortable &&
+                            // !bottomSheet && shortable &&
+                            !bottomSheet &&
                             <Button 
                                     style={skipButtonStyle} 
                                     variant="outlined"
@@ -368,7 +376,7 @@ export default class StockCard extends React.Component {
                             lastPrice={lastPrice}
                             type="buy"
                         />
-                        {
+                        {/* {
                             !bottomSheet && !shortable &&
                             <Button 
                                     style={{...skipButtonStyle, marginTop: '10px'}} 
@@ -377,7 +385,7 @@ export default class StockCard extends React.Component {
                             >
                                 SKIP
                             </Button>
-                        }
+                        } */}
                     </div>
                     {
                         bottomSheet &&
