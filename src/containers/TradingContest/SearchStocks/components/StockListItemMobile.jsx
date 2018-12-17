@@ -156,7 +156,7 @@ export default class StockListItemMobile extends React.Component {
                                 <h3 
                                         style={{color: changeColor, fontSize: '12px', fontWeight: '400'}}
                                 >
-                                    {Utils.formatMoneyValueMaxTwoDecimals(nChangePct)} %
+                                    {nChangePct} %
                                 </h3>
                             </div>
                         </div>

@@ -170,7 +170,7 @@ export default class StockCard extends React.Component {
                 <MainText style={{marginRight: '5px', fontSize: '26px'}}>
                     ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                 </MainText>
-                <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)} ({changePct}%)</Change>
+                <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)} ({changePct.toFixed(2)}%)</Change>
             </div>
         );
     }
@@ -192,7 +192,7 @@ export default class StockCard extends React.Component {
                 <MainText style={{marginRight: '5px'}}>
                     ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                 </MainText>
-                <Change color={changeColor}>{changePct}%</Change>
+                <Change color={changeColor}>{changePct.toFixed(2)}%</Change>
             </div>
         );
     }
