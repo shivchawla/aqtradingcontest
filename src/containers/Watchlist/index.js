@@ -161,25 +161,23 @@ class WatchlistComponent extends React.Component {
                 const watchlists = [...this.state.watchlists];
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
-                // console.log('Target Watchlist', targetWatchlist);
                 if (targetWatchlist) {
-                    // Getiing the required security to update
+                    // Getting the required security to update
                     const targetSecurity = targetWatchlist.positions.filter(item => item.symbol === realtimeResponse.ticker)[0];
                     if (targetSecurity) {
-                        var validCurrentPrice = _.get(realtimeResponse, 'output.current', 0) != 0.0;
-                        if(validCurrentPrice) {
-                            targetSecurity.change = validCurrentPrice ? (_.get(realtimeResponse, 'output.changePct', 0) * 100).toFixed(2) : "-";
-                            targetSecurity.price = _.get(realtimeResponse, 'output.current', 0);
-                        }
+                        const validCurrentPrice = _.get(realtimeResponse, 'output.current', 0);
+                        const change = _.get(realtimeResponse, 'output.change', 0);
+                        const changePct = _.get(realtimeResponse, 'output.changePct', 0);
+                        targetSecurity.change = change;
+                        targetSecurity.price = validCurrentPrice;
+                        targetSecurity.changePct = changePct;
                         // console.log('Target Security', targetSecurity);
                         this.setState({watchlists});
                     }
                 }
             } catch(error) {
-
+                console.log(error);
             }
-        } else {
-            this.unSubscribeToStock(this.state.latestDetail.ticker);
         }
     }
 
