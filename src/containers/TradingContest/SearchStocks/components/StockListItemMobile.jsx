@@ -3,11 +3,13 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
+import ButtonBase from '@material-ui/core/ButtonBase';
 import ActionIcon from '../../Misc/ActionIcons';
 import {Utils} from '../../../../utils';
 import {metricColor, horizontalBox, verticalBox, nameEllipsisStyle} from '../../../../constants';
 
 const textColor = '#757575';
+const inactiveColor = '#9C9C9C';
 
 const styles = {
     buyButton: {
@@ -43,32 +45,6 @@ export default class StockListItemMobile extends React.Component {
         return false;
     }
 
-    renderBuyActionButton = () => {
-        const {symbol, checked = false, onAddIconClick, hideActions = false} = this.props;
-        let iconType = 'remove_circle';
-        let iconColor = metricColor.negative;
-
-        if (checked) {
-            iconType = 'remove_circle';
-            iconColor = metricColor.negative;
-        } else {
-            iconType = 'add_circle';
-            iconColor = metricColor.neutral;
-        }
-
-        if (hideActions) {
-            return null;
-        }
-        
-        return (
-            <ActionIcon 
-                color='#8A8A8A' 
-                size={20} 
-                type='info' 
-            />
-        );
-    }
-
     render() {
         const {
             symbol, 
@@ -80,7 +56,8 @@ export default class StockListItemMobile extends React.Component {
             checked=false, 
             sellChecked = false,
             onAddIconClick = () => {},
-            hideInfo = false
+            hideInfo = false,
+            showPredict = false
         } = this.props;
         const itemContainerStyle = {
             borderBottom: '1px solid #eaeaea',
@@ -109,9 +86,11 @@ export default class StockListItemMobile extends React.Component {
                                 width: '100%',
                             }}
                             onClick={() => {
-                                hideInfo ? 
-                                    this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct) 
-                                    : onAddIconClick(symbol)
+                                showPredict 
+                                ?   this.props.onInfoClicked(symbol, name, current, change, changePct)
+                                    :hideInfo ? 
+                                        this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct) 
+                                        : onAddIconClick(symbol)
                             }}
                     >
                         <div style={{...horizontalBox, justifyContent: 'space-between', width: '100%'}}>
@@ -119,7 +98,7 @@ export default class StockListItemMobile extends React.Component {
                                 <h3 style={{fontSize: '14px', fontWeight: '700', color: "#393939"}}>{symbol}</h3>
                                 <Icon color="error" style={{color: changeColor}}>{changeIcon}</Icon>
                             </div>
-                            <h3 style={{fontSize: '14px', fontWeight: '400', color: '#393939'}}>
+                            <h3 style={{fontSize: '14px', fontWeight: '500', color: '#222'}}>
                                 ₹{Utils.formatMoneyValueMaxTwoDecimals(current)}
                             </h3>
                         </div>
@@ -156,7 +135,7 @@ export default class StockListItemMobile extends React.Component {
                                 <h3 
                                         style={{
                                             color: changeColor, 
-                                            fontSize: '14px', 
+                                            fontSize: '12px', 
                                             fontWeight: '400', 
                                             marginLeft: '5px'
                                         }}
@@ -175,15 +154,19 @@ export default class StockListItemMobile extends React.Component {
                                     |
                                 </h3>
                                 <h3 
-                                        style={{color: changeColor, fontSize: '14px', fontWeight: '400'}}
+                                        style={{color: changeColor, fontSize: '12px', fontWeight: '400'}}
                                 >
-                                    {Utils.formatMoneyValueMaxTwoDecimals(nChangePct)} %
+                                    {nChangePct} %
                                 </h3>
                             </div>
                         </div>
                     </div>
                     {
-                        !hideInfo && !this.props.extraContent &&
+                        showPredict &&
+                        <PredictButton onClick={() => onAddIconClick(symbol)}/>
+                    }
+                    {
+                        !hideInfo && !this.props.extraContent && !showPredict &&
                         <ActionIcon 
                             type="info"
                             size={18}
@@ -200,10 +183,47 @@ export default class StockListItemMobile extends React.Component {
     }
 }
 
+const PredictButton = ({onClick}) => {
+    const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
+    const color = '#fff';
+    const fontSize = '12px';
+    const padding = '4px 8px';
+    // const boxShadow = '0 3px 7px #a3a3a3';
+
+    return (
+        <ButtonBase 
+                style={{
+                    ...predictButtonStyle, 
+                    color,
+                    fontSize,
+                    padding,
+                    background,
+                    // boxShadow,
+                    marginLeft: '10px'
+                }}
+                onClick={onClick}
+        >
+            <span style={{whiteSpace: 'nowrap'}}>Predict</span>
+        </ButtonBase>
+    );
+} 
+
 const containerStyle = {
     ...horizontalBox,
     justifyContent: 'space-between'
 };
+
+const predictButtonStyle = {
+    padding: '6px 12px',
+    fontSize: '15px',
+    transition: 'all 0.4s ease-in-out',
+    margin: '0 3px',
+    borderRadius: '2px',
+    cursor: 'pointer',
+    color: inactiveColor,
+    fontFamily: 'Lato, sans-serif',
+    fontWeight: 500
+}
 
 const SGrid = styled(Grid)`
     background-color: #fff;

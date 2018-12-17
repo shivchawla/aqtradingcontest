@@ -21,6 +21,8 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     let changePct = _.get(stockData, 'latestDetailRT.changePct', null) || _.get(stockData, 'latestDetail.ChangePct', 0);
     const sector = _.get(stockData, 'detail.Sector', '');
     const industry = _.get(stockData, 'Industry', '');
+    const shortable = _.get(stockData, 'shortable', false)
+
     const target = defaultTarget;
     const horizon = defaultHorizon;
     const buyTarget = getPercentageModifiedValue(2, lastPrice);
@@ -39,6 +41,7 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
         horizon,
         buyTarget, 
         sellTarget,
+        shortable,
         predictions: [
             {new: true, locked: false}, 
             {new: true, locked: false}, 
