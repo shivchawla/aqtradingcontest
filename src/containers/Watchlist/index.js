@@ -118,7 +118,7 @@ class WatchlistComponent extends React.Component {
             reject(err);
         })
         .finally(() => {
-            console.log('Request Ended');
+            // console.log('Request Ended');
         })
     })
 
@@ -173,7 +173,7 @@ class WatchlistComponent extends React.Component {
         if (this.mounted) {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
-                console.log(realtimeResponse);
+                // console.log(realtimeResponse);
                 const watchlists = [...this.state.watchlists];
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
@@ -188,12 +188,12 @@ class WatchlistComponent extends React.Component {
                         targetSecurity.price = validCurrentPrice;
                         targetSecurity.current = validCurrentPrice;
                         targetSecurity.changePct = changePct;
-                        console.log('Target Security', targetSecurity);
+                        // console.log('Target Security', targetSecurity);
                         this.setState({watchlists});
                     }
                 }
             } catch(error) {
-                console.log(error);
+                // console.log(error);
             }
         }
     }
@@ -450,6 +450,9 @@ class WatchlistComponent extends React.Component {
                 .then(response => {
                     return this.getWatchlist(watchlistId);
                 })
+                .then(() => {
+                    // console.log('Getting current watchlist completed');
+                })
                 .catch(error => {
                     this.openSnackbar('Error Occurred while adding stock to Watchlist');
                     this.setState({updateWatchlistLoading: false});
@@ -544,6 +547,7 @@ class WatchlistComponent extends React.Component {
         .catch(error => {
             this.setState({updateWatchlistLoading: false});
             this.openSnackbar('Error Occurred while deleting Watchlist');
+            // console.log(error);
             Utils.checkForInternet(error, this.props.history);
             if (error.response) {
                 Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
