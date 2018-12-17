@@ -193,7 +193,8 @@ class WatchlistComponent extends React.Component {
                         change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))).toFixed(2)),
                         current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
                         changePct: _.get(item, 'realtime.changePct', 0.0),
-                        name: _.get(item, 'detail.Nse_Name', '')
+                        name: _.get(item, 'detail.Nse_Name', ''),
+                        shortable: _.get(item, 'shortable', false)
                     }
                 }),
                 id: item._id
@@ -208,7 +209,8 @@ class WatchlistComponent extends React.Component {
                 change: Number(((_.get(item, 'latestDetailRT.change', 0.0) || _.get(item, 'latestDetailRT.Change', 0.0))).toFixed(2)),
                 current: _.get(item, 'latestDetailRT.current', 0.0) || _.get(item, 'latestDetail.Close', 0.0),
                 changePct: Number(((_.get(item, 'latestDetailRT.changePct', 0.0) || _.get(item, 'latestDetailRT.ChangePct', 0.0)))),
-                name: _.get(item, 'detail.Nse_Name', '')
+                name: _.get(item, 'detail.Nse_Name', ''),
+                shortable: _.get(item, 'shortable', false)
             }
         });
     }
@@ -400,7 +402,6 @@ class WatchlistComponent extends React.Component {
                     method: 'PUT'
                 })
                 .then(response => {
-                    console.log('Adding Stocks completed');
                     return this.getWatchlist(watchlistId);
                 })
                 .then(() => {
