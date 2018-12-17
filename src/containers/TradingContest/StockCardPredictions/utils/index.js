@@ -50,10 +50,11 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
 }
 
 export const constructPrediction = (stockData, type = 'buy') => {
-    let {target = 0, lastPrice = 0, symbol = '', horizon = 1} = stockData;
+    let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0} = stockData;
     const targetValue = getTargetFromLastPrice(lastPrice, target, type);
     const startDate = moment().format(dateFormat);
     const endDate = moment(DateHelper.getNextNonHolidayWeekday(startDate, horizon)).format(dateFormat);
+    stopLoss = -1 * (stopLoss / 100);
     
     return [
         {
@@ -70,7 +71,8 @@ export const constructPrediction = (stockData, type = 'buy') => {
                 },
             startDate,
             endDate,
-            target: targetValue
+            target: targetValue,
+            stopLoss
         }
     ];
 }
