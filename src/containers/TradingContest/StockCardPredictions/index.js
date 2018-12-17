@@ -46,7 +46,7 @@ class StockCardPredictions extends React.Component {
             stockCart: [],
             stockCartCount: 0,
             editMode: false,
-            defaultSettingsOpen: true, // this should always be false
+            defaultSettingsOpen: false,
             showSuccess: false,
             stockCardBottomSheetOpen: false,
             listMode: false,

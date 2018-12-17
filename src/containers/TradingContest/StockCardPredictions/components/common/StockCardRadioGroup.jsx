@@ -31,7 +31,6 @@ class StockCardRadioGroup extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps.defaultSelected);
         if (!_.isEqual(nextProps.defaultSelected, this.props.defaultSelected)) {
             this.setState({
                 selected: nextProps.defaultSelected || 0,
@@ -81,7 +80,22 @@ class StockCardRadioGroup extends React.Component {
                             );
                         })
                     }
-                    <ActionIcon type="edit" color='#444' onClick={this.toggleSlider} />
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'center',
+                                marginLeft: '-12px',
+                                marginTop: '-3px'
+                            }}
+                    >
+                        {
+                            this.props.checkIfCustom(this.props.defaultSelected) && 
+                            <ValueContainer>
+                                <CustomValue>{this.props.defaultSelected}</CustomValue>
+                            </ValueContainer>
+                        }
+                        <ActionIcon type="edit" color='#444' onClick={this.toggleSlider} />
+                    </div>
                 </div>
                 {
                     showSlider && this.state.showSlider &&
@@ -127,10 +141,30 @@ class StockCardRadioGroup extends React.Component {
 
 export default withStyles(styles)(StockCardRadioGroup);
 
+const ValueContainer = styled.div`
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+    min-height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #dda91a;
+`;
+
 const CustomText = styled.h3`
     font-family: 'Lato', sans-serif;
     font-weight: 400;
     color: #737373;
     font-size: 12px;
     text-align: start;
+`;
+
+const CustomValue = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    text-align: start;
+    color: #fff;
 `;
