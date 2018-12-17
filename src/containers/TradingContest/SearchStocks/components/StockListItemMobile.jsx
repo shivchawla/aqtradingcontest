@@ -87,7 +87,7 @@ export default class StockListItemMobile extends React.Component {
                             }}
                             onClick={() => {
                                 showPredict 
-                                ?   () => {}
+                                ?   this.props.onInfoClicked(symbol, name, current, change, changePct)
                                     :hideInfo ? 
                                         this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct) 
                                         : onAddIconClick(symbol)
@@ -118,7 +118,7 @@ export default class StockListItemMobile extends React.Component {
                                             fontSize: '12px',
                                             color: '#6E6E6E',
                                             fontWeight: 400,
-                                            width: '100px',
+                                            width: '130px',
                                             textAlign: 'start'
                                         }}
                                 >
@@ -166,7 +166,7 @@ export default class StockListItemMobile extends React.Component {
                         <PredictButton onClick={() => onAddIconClick(symbol)}/>
                     }
                     {
-                        !hideInfo && !this.props.extraContent &&
+                        !hideInfo && !this.props.extraContent && !showPredict &&
                         <ActionIcon 
                             type="info"
                             size={18}
