@@ -131,7 +131,7 @@ export default class StockDetail extends React.Component {
                 })
             }
         } catch(error) {
-            console.log('Realtime Error', error);
+            // console.log('Realtime Error', error);
         }
     }
 
@@ -144,7 +144,7 @@ export default class StockDetail extends React.Component {
     }
 
     subscribeToStock = ticker => {
-        console.log('Subscribed to ' + ticker);
+        // console.log('Subscribed to ' + ticker);
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
@@ -155,7 +155,7 @@ export default class StockDetail extends React.Component {
     }
 
     unSubscribeToStock = ticker => {
-        console.log('Un Subscribed to ' + ticker);
+        // console.log('Un Subscribed to ' + ticker);
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
