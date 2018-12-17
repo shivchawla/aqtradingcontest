@@ -88,6 +88,7 @@ class WatchList extends React.Component {
                 extraContent={this.props.watchlistEditMode ? this.renderDeleteIcon : null}
                 onInfoClicked={this.onStockInfoClicked}
                 onAddIconClick={this.onStockAdded}
+                showPredict={true}
             />
         );
     }

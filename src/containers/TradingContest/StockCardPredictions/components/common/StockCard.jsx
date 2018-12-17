@@ -239,7 +239,7 @@ export default class StockCard extends React.Component {
                                     }}
                             >
                                 <MainText>{symbol}</MainText>
-                                {
+                                {/* {
                                     editMode && !bottomSheet &&
                                     <ActionIcon
                                         type="search"
@@ -249,7 +249,7 @@ export default class StockCard extends React.Component {
                                             marginLeft: '5px'
                                         }}
                                     />
-                                }
+                                } */}
                             </div>
                             <h3 style={nameStyle}>{name}</h3>
                         </div>

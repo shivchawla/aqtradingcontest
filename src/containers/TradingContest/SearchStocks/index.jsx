@@ -257,6 +257,7 @@ export class SearchStocks extends React.Component {
 
     renderStockList = () => {
         const {stocks = []} = this.state;
+        const {showPredict} = this.props;
         const selectedStock = _.get(this.state, 'selectedStock.symbol', '');
 
         return (
@@ -271,6 +272,7 @@ export class SearchStocks extends React.Component {
                     stockCart={this.props.stockCart}
                     onInfoClicked={this.onStockInfoClicked}
                     loading={this.state.loadingStocks}
+                    showPredict={showPredict}
                 />
         )
     }
