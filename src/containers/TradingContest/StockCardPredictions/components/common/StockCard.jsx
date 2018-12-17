@@ -55,7 +55,7 @@ export default class StockCard extends React.Component {
     }
 
     renderViewMode = () => {
-        const {horizon = 1, target = 2} = this.props.stockData;
+        const {horizon = 1, target = 2, stopLoss = 2} = this.props.stockData;
 
         return (
             <React.Fragment>
@@ -78,7 +78,7 @@ export default class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
-        const {horizon = 2, target = 2} = this.props.stockData;
+        const {horizon = 2, target = 2, stopLoss = 2} = this.props.stockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
@@ -94,8 +94,21 @@ export default class StockCard extends React.Component {
                 >
                     <MetricLabel 
                             style={{
+                                marginBottom: '2px',
+                                marginTop: '0',
+                                fontSize: '12px',
+                                color: '#222'
+                            }}
+                    >
+                        Stop Loss
+                    </MetricLabel>
+                    <MetricValue style={{marginBottom: '10px', color: primaryColor}}>{stopLoss} %</MetricValue>
+                    <MetricLabel 
+                            style={{
                                 marginBottom: '10px',
-                                marginTop: '0'
+                                marginTop: '0',
+                                fontSize: '12px',
+                                color: '#222'
                             }}
                     >
                         Horizon in Days
@@ -113,7 +126,9 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '30px' : '10px'
+                                marginTop: isDesktop ? '30px' : '10px',
+                                fontSize: '12px',
+                                color: '#222'
                             }}
                     >
                         Target in %
@@ -601,8 +616,8 @@ const Change = styled.h3`
 `;
 
 const MetricLabel = styled.h3`
-    font-size: 12px;
-    color: #222;
+    font-size: 16px;
+    color: #5d5d5d;
     font-weight: 600;
     text-align: start;
     font-weight: 400;

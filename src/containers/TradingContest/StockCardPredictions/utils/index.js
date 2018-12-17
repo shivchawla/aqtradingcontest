@@ -91,7 +91,7 @@ export const getTarget = (targetValue = 0) => {
     return targetValue;
 }
 
-// Checks if custom horizon
+// Checks if custom target
 export const checkIfCustomTarget = (targetValue = 0) => {
     const targetValueIndex = _.findIndex(targetKvp, target => target.value === targetValue);
 

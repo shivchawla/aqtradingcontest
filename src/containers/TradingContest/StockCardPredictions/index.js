@@ -76,7 +76,8 @@ class StockCardPredictions extends React.Component {
                 target: _.get(defaultStockData, 'target', 5),
                 editMode: _.get(defaultStockData, 'editMode', false),
                 sector: _.get(defaultStockData, 'sector', ''),
-                listMode: _.get(defaultStockData, 'listMode', true)
+                listMode: _.get(defaultStockData, 'listMode', true),
+                stopLoss: _.get(defaultStockData, 'stopLoss', 5)
             });
         } catch (err) {
             reject(err);

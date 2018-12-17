@@ -149,6 +149,7 @@ const ValueContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     border-radius: 50%;
     background-color: #dda91a;
 `;
@@ -167,4 +168,11 @@ const CustomValue = styled.h3`
     font-size: 12px;
     text-align: start;
     color: #fff;
+`;
+
+const HelperText = styled.h3`
+    font-size: 10px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    color: #444;
 `;
