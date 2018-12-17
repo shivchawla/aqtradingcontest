@@ -170,6 +170,7 @@ class WatchlistComponent extends React.Component {
                         const changePct = _.get(realtimeResponse, 'output.changePct', 0);
                         targetSecurity.change = change;
                         targetSecurity.price = validCurrentPrice;
+                        targetSecurity.current = validCurrentPrice;
                         targetSecurity.changePct = changePct;
                         // console.log('Target Security', targetSecurity);
                         this.setState({watchlists});
