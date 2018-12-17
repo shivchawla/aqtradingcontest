@@ -169,6 +169,35 @@ class WatchlistComponent extends React.Component {
         }
     }
 
+    processRealtimeMessage = msg => {
+        if (this.mounted) {
+            try {
+                const realtimeResponse = JSON.parse(msg.data);
+                // console.log(realtimeResponse);
+                const watchlists = [...this.state.watchlists];
+                // Getting the required wathclist
+                const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
+                if (targetWatchlist) {
+                    // Getting the required security to update
+                    const targetSecurity = targetWatchlist.positions.filter(item => item.symbol === realtimeResponse.ticker)[0];
+                    if (targetSecurity) {
+                        const validCurrentPrice = _.get(realtimeResponse, 'output.current', 0);
+                        const change = _.get(realtimeResponse, 'output.change', 0);
+                        const changePct = _.get(realtimeResponse, 'output.changePct', 0);
+                        targetSecurity.change = change;
+                        targetSecurity.price = validCurrentPrice;
+                        targetSecurity.current = validCurrentPrice;
+                        targetSecurity.changePct = changePct;
+                        // console.log('Target Security', targetSecurity);
+                        this.setState({watchlists});
+                    }
+                }
+            } catch(error) {
+                console.log(error);
+            }
+        }
+    }
+
     subscribeToWatchList = watchListId => {
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
@@ -209,7 +238,8 @@ class WatchlistComponent extends React.Component {
                         change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))).toFixed(2)),
                         current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
                         changePct: _.get(item, 'realtime.changePct', 0.0),
-                        name: _.get(item, 'detail.Nse_Name', '')
+                        name: _.get(item, 'detail.Nse_Name', ''),
+                        shortable: _.get(item, 'shortable', false)
                     }
                 }),
                 id: item._id
@@ -224,7 +254,8 @@ class WatchlistComponent extends React.Component {
                 change: Number(((_.get(item, 'latestDetailRT.change', 0.0) || _.get(item, 'latestDetailRT.Change', 0.0))).toFixed(2)),
                 current: _.get(item, 'latestDetailRT.current', 0.0) || _.get(item, 'latestDetail.Close', 0.0),
                 changePct: Number(((_.get(item, 'latestDetailRT.changePct', 0.0) || _.get(item, 'latestDetailRT.ChangePct', 0.0)))),
-                name: _.get(item, 'detail.Nse_Name', '')
+                name: _.get(item, 'detail.Nse_Name', ''),
+                shortable: _.get(item, 'shortable', false)
             }
         });
     }
@@ -277,16 +308,17 @@ class WatchlistComponent extends React.Component {
     }
 
     componentWillMount() {
-        this.setUpSocketConnection();
         this.getWatchlists();
     }
 
     componentDidMount() {
         this.mounted = true;
+        this.setUpSocketConnection();
     }
 
     componentWillUnmount() {
         this.mounted = false;
+        this.unsubscribeToWatchlist(this.state.selectedWatchlistTab);
     }
 
     toggleSearchMode = () => {

@@ -10,7 +10,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import {withRouter} from 'react-router-dom';
 import StockCard from './components/common/StockCard';
-import StockSelection from './components/mobile/StockSelection';
 import WatchlistComponent from '../../Watchlist';
 import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
@@ -460,20 +459,6 @@ class StockCardPredictions extends React.Component {
                     </div>
                 </Grid>
                 <Grid item xs={12}>
-                    {/* <StockSelection 
-                        open={this.state.searchStockOpen}
-                        toggleSearchStocksDialog={
-                            !this.shouldShowListView() 
-                            ? this.toggleSearchStocksBottomSheet 
-                            :  this.toggleStockCardBottomSheet
-                        }
-                        stockData={this.state.stockData}
-                        modifyStockData={this.modifyStockData}
-                        skippedStocks={this.state.skippedStocks}
-                        list={this.shouldShowListView()}
-                        stockCart={this.state.stockCart}
-                        setFetchStocks={this.setFetchStocks}
-                    /> */}
                     {
                         this.shouldShowListView() &&
                         <WatchlistComponent 
