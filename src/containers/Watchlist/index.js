@@ -153,6 +153,36 @@ class WatchlistComponent extends React.Component {
         }
     }
 
+    processRealtimeMessage = msg => {
+        if (this.mounted) {
+            try {
+                const realtimeResponse = JSON.parse(msg.data);
+                // console.log(realtimeResponse);
+                const watchlists = [...this.state.watchlists];
+                // Getting the required wathclist
+                const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
+                // console.log('Target Watchlist', targetWatchlist);
+                if (targetWatchlist) {
+                    // Getiing the required security to update
+                    const targetSecurity = targetWatchlist.positions.filter(item => item.symbol === realtimeResponse.ticker)[0];
+                    if (targetSecurity) {
+                        var validCurrentPrice = _.get(realtimeResponse, 'output.current', 0) != 0.0;
+                        if(validCurrentPrice) {
+                            targetSecurity.change = validCurrentPrice ? (_.get(realtimeResponse, 'output.changePct', 0) * 100).toFixed(2) : "-";
+                            targetSecurity.price = _.get(realtimeResponse, 'output.current', 0);
+                        }
+                        // console.log('Target Security', targetSecurity);
+                        this.setState({watchlists});
+                    }
+                }
+            } catch(error) {
+
+            }
+        } else {
+            this.unSubscribeToStock(this.state.latestDetail.ticker);
+        }
+    }
+
     subscribeToWatchList = watchListId => {
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
@@ -263,16 +293,17 @@ class WatchlistComponent extends React.Component {
     }
 
     componentWillMount() {
-        this.setUpSocketConnection();
         this.getWatchlists();
     }
 
     componentDidMount() {
         this.mounted = true;
+        this.setUpSocketConnection();
     }
 
     componentWillUnmount() {
         this.mounted = false;
+        this.unsubscribeToWatchlist(this.state.selectedWatchlistTab);
     }
 
     toggleSearchMode = () => {
