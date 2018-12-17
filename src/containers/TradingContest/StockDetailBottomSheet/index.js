@@ -16,6 +16,34 @@ export default class StockDetailBottomSheet extends React.Component {
         }
     }
 
+    componentWillMount() {
+        let {
+            name = '',
+            symbol = '',
+            lastPrice=0, 
+            chg=0,
+            chgPct=0
+        } = this.props;
+        this.setState({stockData: {
+            name, symbol, lastPrice, chg, chgPct
+        }})
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!_.isEqual(this.props, nextProps)) {
+            let {
+                name = '',
+                symbol = '',
+                lastPrice=0, 
+                chg=0,
+                chgPct=0
+            } = nextProps;
+            this.setState({stockData: {
+                name, symbol, lastPrice, chg, chgPct
+            }})
+        }
+    }
+
     renderHeader = () => {
         const positiveColor = '#32FFD8';
         const negativeColor = '#FF7B7B';
@@ -26,7 +54,7 @@ export default class StockDetailBottomSheet extends React.Component {
             lastPrice=0, 
             chg=0,
             chgPct=0
-        } = this.props;
+        } = this.state.stockData;
         chgPct = Number((chgPct * 100).toFixed(2));
         const changeColor = chg > 0 ? positiveColor : chg === 0 ? neutralCOlor : negativeColor;
 
@@ -75,7 +103,10 @@ export default class StockDetailBottomSheet extends React.Component {
     }
 
     updateStockData = (stockData) => {
-        this.setState({stockData});
+        this.setState({stockData: {
+            ...this.state.stockData,
+            ...stockData
+        }});
     }
 
     render() {

@@ -64,8 +64,10 @@ class StockSelection extends React.Component {
     }
 
     renderSearchStocks = () => {
+        const {showPredict = false} = this.props;
         return (
             <SearchStocks 
+                showPredict={showPredict}
                 toggleBottomSheet={this.props.toggleSearchStocksDialog}
                 addPositions={this.addStock}
                 portfolioPositions={[this.props.stockData]}

@@ -23,7 +23,7 @@ export default class StockListComponent extends React.Component {
     }
 
     render() {
-        const {stocks = []} = this.props;
+        const {stocks = [], showPredict = false} = this.props;
         return (
             <React.Fragment>
                 {
@@ -39,6 +39,7 @@ export default class StockListComponent extends React.Component {
                                     <StockListItemMobile 
                                         key={index} 
                                         {...stock} 
+                                        showPredict={showPredict}
                                         onClick={this.props.handleStockListItemClick} 
                                         onAddIconClick={this.props.conditionallyAddToggleStock}
                                         onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}

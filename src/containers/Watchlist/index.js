@@ -118,7 +118,7 @@ class WatchlistComponent extends React.Component {
             reject(err);
         })
         .finally(() => {
-            console.log('Request Ended');
+            // console.log('Request Ended');
         })
     })
 
@@ -133,9 +133,9 @@ class WatchlistComponent extends React.Component {
             targetWatchlist.positions = response.data.securities.map(item => {
                 return {
                     symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
-                    change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))*100).toFixed(2)),
+                    change: _.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0),
                     current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
-                    changePct: Number((_.get(item, 'realtime.changePct', 0.0) * 100).toFixed(2)),
+                    changePct: _.get(item, 'realtime.changePct', 0.0),
                     name: _.get(item, 'detail.Nse_Name', '')
                 }
             });
@@ -166,6 +166,35 @@ class WatchlistComponent extends React.Component {
             setTimeout(function() {
                 this.setUpSocketConnection()
             }.bind(this), 5000);
+        }
+    }
+
+    processRealtimeMessage = msg => {
+        if (this.mounted) {
+            try {
+                const realtimeResponse = JSON.parse(msg.data);
+                // console.log(realtimeResponse);
+                const watchlists = [...this.state.watchlists];
+                // Getting the required wathclist
+                const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
+                if (targetWatchlist) {
+                    // Getting the required security to update
+                    const targetSecurity = targetWatchlist.positions.filter(item => item.symbol === realtimeResponse.ticker)[0];
+                    if (targetSecurity) {
+                        const validCurrentPrice = _.get(realtimeResponse, 'output.current', 0);
+                        const change = _.get(realtimeResponse, 'output.change', 0);
+                        const changePct = _.get(realtimeResponse, 'output.changePct', 0);
+                        targetSecurity.change = change;
+                        targetSecurity.price = validCurrentPrice;
+                        targetSecurity.current = validCurrentPrice;
+                        targetSecurity.changePct = changePct;
+                        // console.log('Target Security', targetSecurity);
+                        this.setState({watchlists});
+                    }
+                }
+            } catch(error) {
+                // console.log(error);
+            }
         }
     }
 
@@ -209,7 +238,8 @@ class WatchlistComponent extends React.Component {
                         change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))).toFixed(2)),
                         current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
                         changePct: _.get(item, 'realtime.changePct', 0.0),
-                        name: _.get(item, 'detail.Nse_Name', '')
+                        name: _.get(item, 'detail.Nse_Name', ''),
+                        shortable: _.get(item, 'shortable', false)
                     }
                 }),
                 id: item._id
@@ -224,7 +254,8 @@ class WatchlistComponent extends React.Component {
                 change: Number(((_.get(item, 'latestDetailRT.change', 0.0) || _.get(item, 'latestDetailRT.Change', 0.0))).toFixed(2)),
                 current: _.get(item, 'latestDetailRT.current', 0.0) || _.get(item, 'latestDetail.Close', 0.0),
                 changePct: Number(((_.get(item, 'latestDetailRT.changePct', 0.0) || _.get(item, 'latestDetailRT.ChangePct', 0.0)))),
-                name: _.get(item, 'detail.Nse_Name', '')
+                name: _.get(item, 'detail.Nse_Name', ''),
+                shortable: _.get(item, 'shortable', false)
             }
         });
     }
@@ -277,16 +308,17 @@ class WatchlistComponent extends React.Component {
     }
 
     componentWillMount() {
-        this.setUpSocketConnection();
         this.getWatchlists();
     }
 
     componentDidMount() {
         this.mounted = true;
+        this.setUpSocketConnection();
     }
 
     componentWillUnmount() {
         this.mounted = false;
+        this.unsubscribeToWatchlist(this.state.selectedWatchlistTab);
     }
 
     toggleSearchMode = () => {
@@ -418,6 +450,9 @@ class WatchlistComponent extends React.Component {
                 .then(response => {
                     return this.getWatchlist(watchlistId);
                 })
+                .then(() => {
+                    // console.log('Getting current watchlist completed');
+                })
                 .catch(error => {
                     this.openSnackbar('Error Occurred while adding stock to Watchlist');
                     this.setState({updateWatchlistLoading: false});
@@ -512,6 +547,7 @@ class WatchlistComponent extends React.Component {
         .catch(error => {
             this.setState({updateWatchlistLoading: false});
             this.openSnackbar('Error Occurred while deleting Watchlist');
+            // console.log(error);
             Utils.checkForInternet(error, this.props.history);
             if (error.response) {
                 Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);

@@ -178,8 +178,9 @@ const nameStyle = {
 const Symbol = styled.div`
     text-align: start;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 14px;
     color: #6175e4;
+    font-family: 'Lato', sans-serif;
 `;
 
 const LastPrice = styled.h3`
