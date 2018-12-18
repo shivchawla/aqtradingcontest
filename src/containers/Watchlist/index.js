@@ -437,13 +437,13 @@ class WatchlistComponent extends React.Component {
         );
     }
 
-    addStockToWatchlist = symbol => {
+    addStockToWatchlist = (tickers = []) => {
         const selectedWatchlist = this.getSelectedWatchlist();
         const positions = _.get(selectedWatchlist, 'positions', []);
         const watchlistId=_.get(selectedWatchlist, 'id', null);
         const watchlistName = _.get(selectedWatchlist, 'name', '');
         const presentTickers = positions.map(item => item.symbol); // present ticker list 
-        const newTickers = _.uniq([...presentTickers, symbol]); // unique ticker list after adding the selected item  
+        const newTickers = _.uniq([...presentTickers, ...tickers]); // unique ticker list after adding the selected item  
         // Calculating the difference to check if any item was added in the watchlist, a new request will only be sent
         // with the introduction of a new position
         const differenceArray = _.without(newTickers, ...presentTickers);

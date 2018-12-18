@@ -571,6 +571,7 @@ export class SearchStocks extends React.Component {
                 //     stock.hideActions = lockedPredictions.length >= 3;
                 // }
                 stock.checked = true;
+                stock.hideActions = true;
             } else {
                 if (_.findIndex(this.state.newStocks, newStock => newStock.symbol === stock.symbol) > -1) {
                     stock.checked = true;
@@ -932,7 +933,7 @@ export class SearchStocks extends React.Component {
                         }}
                 >
                     <Media 
-                        query='(min-width: 601px)'
+                        query='(min-width: 801px)'
                         render={() => 
                             <SearchStockHeaderDesktop
                                 filters={this.props.filters}
@@ -945,8 +946,46 @@ export class SearchStocks extends React.Component {
                             />
                         }
                     />
-                    <Button onClick={this.addSelectedStocksToPortfolio}>Done</Button>
                     {this.renderStockListDetails()}
+                    {
+                        this.state.newStocks.length > 0 &&
+                        <Media 
+                            query='(max-width: 800px)'
+                            render={() => (
+                                <div 
+                                        style={{
+                                            ...verticalBox,
+                                            position: 'fixed',
+                                            height: '50px',
+                                            width: '100%',
+                                            bottom: 0
+                                        }}
+                                >
+                                    <Button 
+                                            variant='contained'
+                                            onClick={this.addSelectedStocksToPortfolio}
+                                            style={{
+                                                background: 'linear-gradient(rgb(41, 135, 249), rgb(56, 111, 255))',
+                                                fontFamily: 'Lato, sans-serif',
+                                                fontSize: '14px',
+                                                color: '#fff'
+                                            }}
+                                    >
+                                        Done
+                                        <Icon 
+                                                style={{
+                                                    color: '#fff', 
+                                                    fontSize: '22px',
+                                                    marginLeft: '5px'
+                                                }}
+                                        >
+                                            check_circle
+                                        </Icon>
+                                    </Button>
+                                </div>
+                            )}
+                        />
+                    }
                 </SGrid>
             </React.Fragment>
         );

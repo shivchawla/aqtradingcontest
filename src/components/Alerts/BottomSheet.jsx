@@ -16,7 +16,8 @@ const styles = theme => ({
         padding: 0,
         '&:first-child': {
             paddingTop: 0
-        }        
+        },
+        position: 'relative'        
     }
 });
 

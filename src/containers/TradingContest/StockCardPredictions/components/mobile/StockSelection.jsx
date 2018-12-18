@@ -2,12 +2,13 @@ import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Slide from '@material-ui/core/Slide';
+import Button from '@material-ui/core/Button';
 import {withStyles} from '@material-ui/core/styles';
 import {withRouter} from 'react-router';
 import ActionIcon from '../../../Misc/ActionIcons';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {SearchStocks} from '../../../SearchStocks';
-import {horizontalBox} from '../../../../../constants';
+import {horizontalBox, verticalBox} from '../../../../../constants';
 
 const styles = theme => ({
     dialogContentRoot: {
@@ -59,9 +60,8 @@ class StockSelection extends React.Component {
     }
 
     addStock = (selectedPositions = []) => {
-        console.log('Selected Positions', selectedPositions);
-        const symbol = _.get(selectedPositions, `[${0}].symbol`, '');
-        // this.props.addStock(symbol);
+        const tickers = selectedPositions.map(position => position.symbol);
+        this.props.addStock(tickers);
     }
 
     renderSearchStocks = () => {
