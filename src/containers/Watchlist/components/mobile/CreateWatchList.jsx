@@ -9,6 +9,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
 import BottomSheet from '../../../../components/Alerts/BottomSheet';
+import DialogComponent from '../../../../components/Alerts/DialogComponent';
 import {createUserWatchlist} from '../../utils';
 import {Utils} from '../../../../utils';
 import { verticalBox, horizontalBox } from '../../../../constants';
@@ -100,42 +101,36 @@ class CreateWatchListImpl extends React.Component {
 
     render() {
         return (
-            <BottomSheet
+            <DialogComponent
                     open={this.props.visible}
                     onClose={this.props.toggleModal}
-                    header="Create Watchlist"
-                    customHeader={this.renderHeader}
+                    onCancel={this.props.toggleModal}
+                    title='Create Watchlist'
+                    onOk={this.createWatchList}
+                    action
             >
                 <Container container>
-                    <Grid item xs={12} style={verticalBox}>
+                    <Grid item xs={12} style={{...verticalBox, width: '300px'}}>
                         <TextField
                             id="outlined-name"
                             label="List Name"
                             value={this.state.name}
                             onChange={this.handleInputChange}
                             margin="normal"
-                            variant="filled"
-                            style={{width: '80%'}}
+                            variant="outlined"
+                            style={{width: '100%'}}
                         />
-                        <Button 
-                                onClick={this.createWatchList}
-                                color="primary"
-                                variant="contained"
-                                style={{marginTop: '10px', boxShadow: 'none'}}
-                        >
-                            CREATE
-                            {
-                                this.state.loading && 
-                                <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />
-                            }
-                        </Button>
+                        {
+                            this.state.loading && 
+                            <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />
+                        }
                         {
                             this.state.error !== null &&
                             <ErrorText>{this.state.error}!</ErrorText>
                         }
                     </Grid>
                 </Container>
-            </BottomSheet>
+            </DialogComponent>
         );
     }
 }
@@ -143,8 +138,8 @@ class CreateWatchListImpl extends React.Component {
 export default withRouter(CreateWatchListImpl);
 
 const Container = styled(Grid)`
-    width: 100%;
-    height: calc(100vh - 56px);
+    width: 90vh;
+    /* height: calc(100vh - 56px); */
     display: flex;
     justify-content: center;
     align-items: center;

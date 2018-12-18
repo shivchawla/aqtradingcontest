@@ -35,7 +35,7 @@ export default class DialogComponent extends React.Component {
                     onEscapeKeyDown={this.props.onClose}
             >
                 <DialogTitle>{title}</DialogTitle>
-                <DialogContent>
+                <DialogContent style={this.props.style}>
                     {this.props.children}
                 </DialogContent>
                 {
