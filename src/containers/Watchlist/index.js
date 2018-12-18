@@ -85,13 +85,22 @@ class WatchlistComponent extends React.Component {
                 return this.getDefaultWatchlist();
             }
         })
-        .then(defaultStocks => {
-            if (defaultStocks !== null) {
-                const defaultStockData = this.processDefaultStockData(defaultStocks);
-                const watchlists = [{
-                    name: 'Default',
-                    positions: defaultStockData
-                }];
+        .then(defaultWatchlistData => { // defaultWatchlistData: array (defaultStocks, defaultIndices)
+            if (defaultWatchlistData !== null) {
+                let defaultStockData = _.get(defaultWatchlistData, '[0].data', []);
+                let defaultIndicesData = _.get(defaultWatchlistData, '[1].data', []);
+                defaultStockData = this.processDefaultStockData(defaultStockData);
+                defaultIndicesData = this.processDefaultStockData(defaultIndicesData);
+                const watchlists = [
+                    {
+                        name: 'Default',
+                        positions: defaultStockData
+                    },
+                    {
+                        name: 'Index',
+                        positions: defaultIndicesData
+                    }
+                ];
                 this.setState({watchlists});
             }
         })
@@ -110,10 +119,14 @@ class WatchlistComponent extends React.Component {
         const sector = _.get(stockData, 'sector', '');
         const benchmark = _.get(stockData, 'benchmark', '');
         const url = `${requestUrl}/stock?universe=${benchmark}&sector=${sector}&skip=0&limit=5&populate=true`;
+        const indicesUrl = `${requestUrl}/stock?search=nifty&populate=true&skip=0&limit=5`;
 
-        fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
-        .then(response => {
-            resolve(response.data);
+        Promise.all([
+            fetchAjaxPromise(url, this.props.history, this.props.match.url, false),
+            fetchAjaxPromise(indicesUrl, this.props.history, this.props.match.url, false),
+        ])
+        .then(defaultData => {
+            resolve(defaultData);
         })
         .catch(err => {
             reject(err);
@@ -338,6 +351,7 @@ class WatchlistComponent extends React.Component {
                     visible={this.state.createWatchlistDialogOpen}
                     toggleModal={this.toggleCreateWatchlistDialog}
                     getWatchlists={this.getWatchlists}
+                    createWatchlist={this.createWatchlist}
                 />
                 <Grid 
                         item 
@@ -473,8 +487,44 @@ class WatchlistComponent extends React.Component {
         return selectedWatchlist;
     }
 
+    // Used to get the default watchlist that is not currently selected by the user
+    getOtherDefaultWatchlist = data => {
+        const watchlistName = _.get(data, 'name', '').toLowerCase();
+        const selectedWatchlistIndex = _.findIndex(this.state.watchlists, watchlist => watchlist.name.toLowerCase() === watchlistName);
+        if (selectedWatchlistIndex > -1) {
+            const selectedWatchlistName = this.state.watchlists[selectedWatchlistIndex].name.toLowerCase();
+            let requiredDefaultWatchlistIndex = -1;
+            if (selectedWatchlistName === 'default') {
+                requiredDefaultWatchlistIndex = _.findIndex(this.state.watchlists, watchlist => watchlist.name.toLowerCase() === 'index');
+            } else {
+                requiredDefaultWatchlistIndex = _.findIndex(this.state.watchlists, watchlist => watchlist.name.toLowerCase() === 'default');
+            }
+            if (requiredDefaultWatchlistIndex > -1) {
+                const watchlistName = this.state.watchlists[requiredDefaultWatchlistIndex].name;
+                const positions = this.state.watchlists[requiredDefaultWatchlistIndex].positions;
+                const data = {
+                    name: watchlistName,
+                    securities: processPositions(positions.map(position => position.symbol))
+                }
+
+                return data;
+            }
+
+            return null;
+        }
+
+        return null;
+    }
+
     createWatchlistForDefault = (data) => {
-        createUserWatchlist(data.name, data.securities)
+        const otherWatchlist = this.getOtherDefaultWatchlist(data);
+        // We have to add 2 watchlist one for default and one for indices
+        // If data for one watchlist is modified we create a watchlist with the modified data and the other
+        // with the default data present
+        Promise.all([
+            createUserWatchlist(data.name, data.securities),
+            createUserWatchlist(otherWatchlist.name, otherWatchlist.securities)
+        ])
         .then(() => {
             this.getWatchlists()
         })
@@ -522,6 +572,21 @@ class WatchlistComponent extends React.Component {
                 }
             })
         }
+    }
+
+    createWatchlist = (name, securities = []) => {
+        if (this.state.noWatchlistPresent) {
+            const defaultStockWatchlist = this.getOtherDefaultWatchlist({name: 'index'});
+            const defaultIndexWatchlist = this.getOtherDefaultWatchlist({name: 'default'});
+
+            return Promise.all([
+                createUserWatchlist(name, securities),
+                createUserWatchlist(defaultStockWatchlist.name, defaultStockWatchlist.securities),
+                createUserWatchlist(defaultIndexWatchlist.name, defaultIndexWatchlist.securities)
+            ])
+        };
+        
+        return createUserWatchlist(name, securities);
     }
 
     toggleWatchlistDeleteDialog = () => {

@@ -29,7 +29,7 @@ class CreateWatchListImpl extends React.Component {
     createWatchList = () => {
         const {name} = this.state;
         if (name.length > 0) {
-            createUserWatchlist(name, this.processWatchListItem(this.state.watchlists))
+            this.props.createWatchlist(name, this.processWatchListItem(this.state.watchlists))
             .then(response => {
                 this.setState({error: null});
                 return this.props.getWatchlists();
