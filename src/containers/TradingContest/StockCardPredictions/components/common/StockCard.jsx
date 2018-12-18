@@ -36,22 +36,30 @@ export default class StockCard extends React.Component {
         return false;
     }
 
-    handleHorizonChange = value => {
-        let horizon = getHorizonValue(value);
+    handleHorizonChange = (value, format = true) => {
+        let horizon = format ? getHorizonValue(value) : value;
         this.props.modifyStockData({
             ...this.props.stockData,
             horizon
         });
     }
 
-    handleTargetChange = targetIndex => {
+    handleTargetChange = (targetIndex, format = true) => {
         let stockData = this.props.stockData;
-        let target = getTargetValue(targetIndex);
+        let target = format ? getTargetValue(targetIndex) : targetIndex;
         stockData = {
             ...stockData,
             target,
         };
         this.props.modifyStockData(stockData);
+    }
+
+    handleStopLossChange = (value, format = true) => {
+        const requiredStopLoss = format ? getTargetValue(value) : value;
+        this.props.modifyStockData({
+            ...this.props.stockData,
+            stopLoss: requiredStopLoss
+        });
     }
 
     renderViewMode = () => {
@@ -92,7 +100,7 @@ export default class StockCard extends React.Component {
                             alignItems: 'flex-start'
                         }}
                 >
-                    <MetricLabel 
+                    {/* <MetricLabel 
                             style={{
                                 marginBottom: '2px',
                                 marginTop: '0',
@@ -102,7 +110,7 @@ export default class StockCard extends React.Component {
                     >
                         Stop Loss
                     </MetricLabel>
-                    <MetricValue style={{marginBottom: '10px', color: primaryColor}}>{stopLoss} %</MetricValue>
+                    <MetricValue style={{marginBottom: '10px', color: primaryColor}}>{stopLoss} %</MetricValue> */}
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
@@ -121,6 +129,7 @@ export default class StockCard extends React.Component {
                         showSlider
                         checkIfCustom={checkIfCustomHorizon}
                         label='Days'
+                        date={true}
                     />
 
                     <MetricLabel 
@@ -137,6 +146,27 @@ export default class StockCard extends React.Component {
                         items={targetItems}
                         onChange={this.handleTargetChange}
                         defaultSelected={target}
+                        getIndex={getTarget}
+                        checkIfCustom={checkIfCustomTarget}
+                        showSlider
+                        hideLabel={true}
+                        label='%'
+                    />
+
+                    <MetricLabel 
+                            style={{
+                                marginBottom: '10px',
+                                marginTop: isDesktop ? '30px' : '10px',
+                                fontSize: '12px',
+                                color: '#222'
+                            }}
+                    >
+                        Stop/Loss in %
+                    </MetricLabel>
+                    <StockCardRadioGroup 
+                        items={targetItems}
+                        onChange={this.handleStopLossChange}
+                        defaultSelected={stopLoss}
                         getIndex={getTarget}
                         checkIfCustom={checkIfCustomTarget}
                         showSlider

@@ -164,7 +164,7 @@ export class SearchStocks extends React.Component {
                     this.state.stocks.length >= 8 
                     && this.renderPaginationMobile(true)
                 }
-                <div style={{height: '75px'}}></div>
+                <div style={{height: '100px'}}></div>
             </SGrid>
         );
     }
@@ -663,6 +663,7 @@ export class SearchStocks extends React.Component {
                     style={{
                         ...horizontalBox, 
                         justifyContent: 'center', 
+                        alignItems: 'flex-start',
                         marginTop: '10px',
                         padding: '0 10px'
                     }}

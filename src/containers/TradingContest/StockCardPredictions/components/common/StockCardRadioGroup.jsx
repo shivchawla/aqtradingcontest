@@ -1,14 +1,18 @@
 import React from 'react';
+import moment from 'moment';
 import styled from 'styled-components';
 import _ from 'lodash';
+import Grid from '@material-ui/core/Grid';
 import Slider from '@material-ui/lab/Slider';
 import {withStyles} from '@material-ui/core/styles';
 import ActionIcon from '../../../Misc/ActionIcons';
 import CustomRadio from '../../../../../components/selections/CustomRadio';
 import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
+import {getNextNonHolidayWeekday} from '../../../../../utils/date';
 
 let sliderInputTimeout = null;
 const yellowColor = '#dda91a';
+const readableDateFormat = 'Do MMM';
 
 const styles = theme => ({
     trackBefore: {
@@ -52,89 +56,119 @@ class StockCardRadioGroup extends React.Component {
         }, 300);
     }
 
+    getReadableDateForHorizon = horizon => {
+        const currentDate = moment().format('YYYY-MM-DD');
+        return moment(getNextNonHolidayWeekday(currentDate, horizon)).format(readableDateFormat)
+    }
+
     render() {
         const {items = ['One', 'Two'], showSlider = false, classes} = this.props;
 
         return (
-            <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                <div 
-                        style={{
-                            ...horizontalBox, 
-                            display: 'inline-flex',
-                            justifyContent: 'flex-end',
-                            alignItems: 'flex-start',
-                            ...this.props.style
-                        }}
-                >
-                    {
-                        items.map((item, index) => {
-                            return (
-                                <CustomRadio 
-                                    key={index}
-                                    label={item.key}
-                                    secondaryLabel={item.label}
-                                    checked={this.state.selected === item.key}
-                                    onChange={() => this.handleChange(index)}
-                                    hideLabel={this.props.hideLabel}
-                                />
-                            );
-                        })
-                    }
-                    <div 
+            <Grid container style={{...verticalBox, alignItems: 'flex-start'}}>
+                {
+                    !this.state.showSlider && 
+                    <Grid item xs={12} 
                             style={{
                                 ...horizontalBox, 
-                                justifyContent: 'center',
-                                marginLeft: '-12px',
-                                marginTop: '-3px'
+                                display: 'inline-flex',
+                                justifyContent: 'flex-end',
+                                alignItems: 'flex-start',
+                                ...this.props.style
                             }}
                     >
                         {
-                            this.props.checkIfCustom(this.props.defaultSelected) && 
-                            <ValueContainer>
-                                <CustomValue>{this.props.defaultSelected}</CustomValue>
-                            </ValueContainer>
+                            items.map((item, index) => {
+                                return (
+                                    <CustomRadio 
+                                        key={index}
+                                        label={item.key}
+                                        secondaryLabel={item.label}
+                                        checked={this.state.selected === item.key}
+                                        onChange={() => this.handleChange(index)}
+                                        hideLabel={this.props.hideLabel}
+                                    />
+                                );
+                            })
                         }
-                        <ActionIcon type="edit" color='#444' onClick={this.toggleSlider} />
-                    </div>
-                </div>
-                {
-                    showSlider && this.state.showSlider &&
-                    <div 
-                            style={{
-                                ...verticalBox, 
-                                width: '90%', 
-                                marginTop: '10px',
-                                alignItems: 'flex-start',
-                                marginBottom: '10px'
-                            }}
-                    >
                         <div 
                                 style={{
                                     ...horizontalBox, 
-                                    justifyContent: 'space-between',
-                                    width: '100%'
+                                    justifyContent: 'center',
+                                    alignItems: 'flex-start'
                                 }}
                         >
-                            <CustomText>Customize</CustomText>
-                            <CustomText style={{color: yellowColor, fontWeight: 700}}>
-                                {this.state.sliderValue} {this.props.label}
-                            </CustomText>
+                            {
+                                this.props.checkIfCustom(this.props.defaultSelected) && 
+                                <div 
+                                        style={{
+                                            ...verticalBox,
+                                            alignItems: 'flex-start',
+                                            width: '48px'
+                                        }}
+                                >
+                                    <ValueContainer>
+                                        <CustomValue>{this.props.defaultSelected}</CustomValue>
+                                    </ValueContainer>
+                                    {
+                                        this.props.date && !this.props.hideLabel &&
+                                        <Label>{this.getReadableDateForHorizon(this.state.sliderValue)}</Label>
+                                    }
+                                </div>
+                            }
+                            <ActionIcon 
+                                type="edit" 
+                                color='#444' 
+                                onClick={this.toggleSlider} 
+                                style={{marginLeft: '-10px'}}
+                            />
                         </div>
-                        <Slider
-                            style={{marginTop: '12px'}}
-                            max={30}
-                            value={this.state.sliderValue}
-                            min={1}
-                            onChange={this.handleSliderChange}
-                            step={1}
-                            thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color='#dda91a'/>}
-                            classes={{
-                                trackBefore: classes.trackBefore
-                            }}
-                        />
-                    </div>
+                    </Grid>
                 }
-            </div>
+                {
+                    showSlider && this.state.showSlider &&
+                    <React.Fragment>
+                        <Grid item xs={11} 
+                                style={{
+                                    ...horizontalBox, 
+                                    width: '100%', 
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                        >
+                            <div 
+                                    style={{
+                                        ...verticalBox, 
+                                        alignItems: 'flex-start',
+                                        width: '100%'
+                                    }}
+                            >
+                                <CustomText style={{color: yellowColor, fontWeight: 700}}>
+                                    {this.state.sliderValue} {this.props.label}
+                                </CustomText>
+                                <Slider
+                                    style={{marginTop: '12px'}}
+                                    max={30}
+                                    value={this.state.sliderValue}
+                                    min={1}
+                                    onChange={this.handleSliderChange}
+                                    step={1}
+                                    thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color='#dda91a'/>}
+                                    classes={{
+                                        trackBefore: classes.trackBefore
+                                    }}
+                                />
+                            </div>
+                            <ActionIcon 
+                                type="check_circle" 
+                                color='#dda91a' 
+                                onClick={this.toggleSlider} 
+                                size={24}
+                            />
+                        </Grid>
+                    </React.Fragment>
+                }
+            </Grid>
         );
     }
 }
@@ -142,16 +176,16 @@ class StockCardRadioGroup extends React.Component {
 export default withStyles(styles)(StockCardRadioGroup);
 
 const ValueContainer = styled.div`
-    width: 25px;
-    height: 25px;
-    min-width: 25px;
-    min-height: 25px;
+    width: 35px;
+    height: 36px;
+    min-width: 35px;
+    min-height: 36px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    border-radius: 50%;
-    background-color: #dda91a;
+    border-radius: 2px;
+    background-color: #3e4db8;
 `;
 
 const CustomText = styled.h3`
@@ -175,4 +209,12 @@ const HelperText = styled.h3`
     font-family: 'Lato', sans-serif;
     font-weight: 400;
     color: #444;
+`;
+
+const Label = styled.h3`
+    font-size: 10px;
+    margin-top: 5px;
+    color: #8B8B8B;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
 `;
