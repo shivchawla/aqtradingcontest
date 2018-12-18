@@ -45,6 +45,33 @@ export default class StockListItemMobile extends React.Component {
         return false;
     }
 
+    renderBuyActionButton = () => {
+        const {symbol, checked = false, onAddIconClick, hideActions = false} = this.props;
+        let iconType = 'remove_circle';
+        let iconColor = metricColor.negative;
+
+        if (checked) {
+            iconType = 'remove_circle';
+            iconColor = metricColor.negative;
+        } else {
+            iconType = 'add_circle';
+            iconColor = metricColor.neutral;
+        }
+
+        if (hideActions) {
+            return null;
+        }
+        
+        return (
+            <ActionIcon 
+                color={iconColor} 
+                size={30} 
+                type={iconType} 
+                onClick={() => onAddIconClick(symbol)}
+            />
+        );
+    }
+
     render() {
         const {
             symbol, 
@@ -161,6 +188,10 @@ export default class StockListItemMobile extends React.Component {
                             </div>
                         </div>
                     </div>
+                    {
+                        !showPredict &&
+                        this.renderBuyActionButton()
+                    }
                     {
                         showPredict &&
                         <PredictButton onClick={() => onAddIconClick(symbol)}/>

@@ -528,9 +528,10 @@ export class SearchStocks extends React.Component {
     }
 
     processPositionsPositionsForPortolioNew = () => {
-        // const stocks = this.state.stocks.filter(stock => stock.checked === true);
+        const stocks = this.state.stocks.filter(stock => stock.checked === true);
 
-        return Promise.map(this.state.newStocks, stock => {
+        // return Promise.map(this.state.newStocks, stock => {
+        return Promise.map(stocks, stock => {
             return {
                 key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
                 name: _.get(stock, 'name', ''),
@@ -558,17 +559,18 @@ export class SearchStocks extends React.Component {
             // getting the stock from the position if present
             const stockPosition = selectedPositions.filter(position => position.symbol === stock.symbol)[0];
             if (stockPosition !== undefined) { // if stock found
-                const foundInNewStocks = _.findIndex(this.state.newStocks, newStock => newStock.symbol === stock.symbol) > -1;
-                if (_.get(stockPosition, 'predictions', []).length < 3 && foundInNewStocks === false) {
-                    stock.checked = false;
-                } else if (_.get(stockPosition, 'predictions', []).length < 3 && foundInNewStocks === true) {
-                    stock.checked = true;
-                } else {
-                    const lockedPredictions = stockPosition.predictions.filter(prediction => prediction.locked === true);
-                    const newPredictions = stockPosition.predictions.filter(prediction => prediction.new === true);
-                    stock.checked = newPredictions.length > 0;
-                    stock.hideActions = lockedPredictions.length >= 3;
-                }
+                // const foundInNewStocks = _.findIndex(this.state.newStocks, newStock => newStock.symbol === stock.symbol) > -1;
+                // if (_.get(stockPosition, 'predictions', []).length < 3 && foundInNewStocks === false) {
+                //     stock.checked = false;
+                // } else if (_.get(stockPosition, 'predictions', []).length < 3 && foundInNewStocks === true) {
+                //     stock.checked = true;
+                // } else {
+                //     const lockedPredictions = stockPosition.predictions.filter(prediction => prediction.locked === true);
+                //     const newPredictions = stockPosition.predictions.filter(prediction => prediction.new === true);
+                //     stock.checked = newPredictions.length > 0;
+                //     stock.hideActions = lockedPredictions.length >= 3;
+                // }
+                stock.checked = true;
             } else {
                 if (_.findIndex(this.state.newStocks, newStock => newStock.symbol === stock.symbol) > -1) {
                     stock.checked = true;
@@ -943,6 +945,7 @@ export class SearchStocks extends React.Component {
                             />
                         }
                     />
+                    <Button onClick={this.addSelectedStocksToPortfolio}>Done</Button>
                     {this.renderStockListDetails()}
                 </SGrid>
             </React.Fragment>

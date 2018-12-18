@@ -585,7 +585,7 @@ class WatchlistComponent extends React.Component {
                 createUserWatchlist(defaultIndexWatchlist.name, defaultIndexWatchlist.securities)
             ])
         };
-        
+
         return createUserWatchlist(name, securities);
     }
 
@@ -631,6 +631,7 @@ class WatchlistComponent extends React.Component {
     render() {
         const selectedWatchlist = this.getSelectedWatchlist();
         const selectedWatchlistName = _.get(selectedWatchlist, 'name', '');
+        const selectedWatchlistPositions = _.get(selectedWatchlist, 'positions', []);
         const nStockData = _.pick(this.props.stockData, 'sector');
 
         return (
@@ -664,6 +665,7 @@ class WatchlistComponent extends React.Component {
                     toggleSearchStocksDialog={this.toggleStockSelectionDialog}
                     stockData={nStockData}
                     addStock={this.addStockToWatchlist}
+                    selectedPositions={selectedWatchlistPositions}
                 />
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
             </React.Fragment>

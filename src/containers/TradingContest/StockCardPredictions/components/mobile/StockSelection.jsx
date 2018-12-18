@@ -59,8 +59,9 @@ class StockSelection extends React.Component {
     }
 
     addStock = (selectedPositions = []) => {
+        console.log('Selected Positions', selectedPositions);
         const symbol = _.get(selectedPositions, `[${0}].symbol`, '');
-        this.props.addStock(symbol);
+        // this.props.addStock(symbol);
     }
 
     renderSearchStocks = () => {
@@ -70,7 +71,7 @@ class StockSelection extends React.Component {
                 showPredict={showPredict}
                 toggleBottomSheet={this.props.toggleSearchStocksDialog}
                 addPositions={this.addStock}
-                portfolioPositions={[this.props.stockData]}
+                portfolioPositions={this.props.selectedPositions || []}
                 ref={el => this.searchStockComponent = el}
                 history={this.props.history}
                 pageUrl={this.props.match.url}
@@ -107,7 +108,7 @@ class StockSelection extends React.Component {
                         padding: '5px 0'
                     }}
             >
-                <Header>Select Stock</Header>
+                <Header>Add Stock</Header>
                 <ActionIcon 
                     onClick={this.props.toggleSearchStocksDialog} 
                     color='#fff'
