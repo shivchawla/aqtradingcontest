@@ -91,88 +91,83 @@ export default class StockCard extends React.Component {
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
+        const radioGroupStyle = {...verticalBox, alignItems: 'flex-start', minHeight: '80px', width: '100%'};
 
         return (
             <React.Fragment>
                 <div 
                         style={{
                             ...verticalBox, 
-                            alignItems: 'flex-start'
+                            alignItems: 'flex-start',
+                            width: '100%'
                         }}
                 >
-                    {/* <MetricLabel 
-                            style={{
-                                marginBottom: '2px',
-                                marginTop: '0',
-                                fontSize: '12px',
-                                color: '#222'
-                            }}
-                    >
-                        Stop Loss
-                    </MetricLabel>
-                    <MetricValue style={{marginBottom: '10px', color: primaryColor}}>{stopLoss} %</MetricValue> */}
-                    <MetricLabel 
-                            style={{
-                                marginBottom: '10px',
-                                marginTop: '0',
-                                fontSize: '12px',
-                                color: '#222'
-                            }}
-                    >
-                        Horizon in Days
-                    </MetricLabel>
-                    <StockCardRadioGroup 
-                        items={horizonItems}
-                        onChange={this.handleHorizonChange}
-                        defaultSelected={horizon}
-                        getIndex={getHorizon}
-                        showSlider
-                        checkIfCustom={checkIfCustomHorizon}
-                        label='Days'
-                        date={true}
-                    />
-
-                    <MetricLabel 
-                            style={{
-                                marginBottom: '10px',
-                                marginTop: isDesktop ? '30px' : '10px',
-                                fontSize: '12px',
-                                color: '#222'
-                            }}
-                    >
-                        Target in %
-                    </MetricLabel>
-                    <StockCardRadioGroup 
-                        items={targetItems}
-                        onChange={this.handleTargetChange}
-                        defaultSelected={target}
-                        getIndex={getTarget}
-                        checkIfCustom={checkIfCustomTarget}
-                        showSlider
-                        hideLabel={true}
-                        label='%'
-                    />
-
-                    <MetricLabel 
-                            style={{
-                                marginBottom: '10px',
-                                marginTop: isDesktop ? '30px' : '10px',
-                                fontSize: '12px',
-                                color: '#222'
-                            }}
-                    >
-                        Stop/Loss in %
-                    </MetricLabel>
-                    <StockCardRadioGroup 
-                        items={targetItems}
-                        onChange={this.handleStopLossChange}
-                        defaultSelected={stopLoss}
-                        getIndex={getTarget}
-                        checkIfCustom={checkIfCustomTarget}
-                        showSlider
-                        hideLabel={true}
-                        label='%'
-                    />
+                    <div style={radioGroupStyle}>
+                        <MetricLabel 
+                                style={{
+                                    marginBottom: '10px',
+                                    marginTop: '0',
+                                    fontSize: '12px',
+                                    color: '#222'
+                                }}
+                        >
+                            Horizon in Days
+                        </MetricLabel>
+                        <StockCardRadioGroup 
+                            items={horizonItems}
+                            onChange={this.handleHorizonChange}
+                            defaultSelected={horizon}
+                            getIndex={getHorizon}
+                            showSlider
+                            checkIfCustom={checkIfCustomHorizon}
+                            label='Days'
+                            date={true}
+                        />
+                    </div>
+                    <div style={radioGroupStyle}>
+                        <MetricLabel 
+                                style={{
+                                    marginBottom: '10px',
+                                    marginTop: isDesktop ? '30px' : '10px',
+                                    fontSize: '12px',
+                                    color: '#222'
+                                }}
+                        >
+                            Target in %
+                        </MetricLabel>
+                        <StockCardRadioGroup 
+                            items={targetItems}
+                            onChange={this.handleTargetChange}
+                            defaultSelected={target}
+                            getIndex={getTarget}
+                            checkIfCustom={checkIfCustomTarget}
+                            showSlider
+                            hideLabel={true}
+                            label='%'
+                        />
+                    </div>
+                    <div style={radioGroupStyle}>
+                        <MetricLabel 
+                                style={{
+                                    marginBottom: '10px',
+                                    marginTop: isDesktop ? '30px' : '10px',
+                                    fontSize: '12px',
+                                    color: '#222'
+                                }}
+                        >
+                            Stop/Loss in %
+                        </MetricLabel>
+                        <StockCardRadioGroup 
+                            items={targetItems}
+                            onChange={this.handleStopLossChange}
+                            defaultSelected={stopLoss}
+                            getIndex={getTarget}
+                            checkIfCustom={checkIfCustomTarget}
+                            showSlider
+                            hideLabel={true}
+                            label='%'
+                        />
+                    </div>
                 </div>
             </React.Fragment>
         );

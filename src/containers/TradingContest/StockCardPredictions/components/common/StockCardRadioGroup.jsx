@@ -16,7 +16,7 @@ const readableDateFormat = 'Do MMM';
 
 const styles = theme => ({
     trackBefore: {
-        backgroundColor: yellowColor
+        backgroundColor: primaryColor
     }
 })
 
@@ -143,8 +143,15 @@ class StockCardRadioGroup extends React.Component {
                                         width: '100%'
                                     }}
                             >
-                                <CustomText style={{color: yellowColor, fontWeight: 700}}>
-                                    {this.state.sliderValue} {this.props.label}
+                                <CustomText style={{color: primaryColor, fontWeight: 700}}>
+                                    {this.state.sliderValue} 
+                                    {this.props.label}
+                                    {
+                                        this.props.date &&
+                                        <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
+                                            - {this.getReadableDateForHorizon(this.state.sliderValue)}
+                                        </span> 
+                                    }
                                 </CustomText>
                                 <Slider
                                     style={{marginTop: '12px'}}
@@ -153,7 +160,7 @@ class StockCardRadioGroup extends React.Component {
                                     min={1}
                                     onChange={this.handleSliderChange}
                                     step={1}
-                                    thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color='#dda91a'/>}
+                                    thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color={primaryColor}/>}
                                     classes={{
                                         trackBefore: classes.trackBefore
                                     }}
@@ -161,7 +168,7 @@ class StockCardRadioGroup extends React.Component {
                             </div>
                             <ActionIcon 
                                 type="check_circle" 
-                                color='#dda91a' 
+                                color={primaryColor} 
                                 onClick={this.toggleSlider} 
                                 size={24}
                             />

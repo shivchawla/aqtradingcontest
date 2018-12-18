@@ -133,6 +133,7 @@ class DefaultSettings extends React.Component {
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
         ));
+        const radioGroupStyle = {...verticalBox, alignItems: 'flex-start', minHeight: '80px', width: '100%'};
 
         return (
             <BottomSheet
@@ -178,60 +179,65 @@ class DefaultSettings extends React.Component {
                                     paddingLeft: '40px',
                                 }}
                         >
-                            <MetricLabel 
-                                    style={{
-                                        marginBottom: '10px',
-                                        marginTop: '20px'
-                                    }}
-                            >
-                                Horizon in Days
-                            </MetricLabel>
-                            <StockCardRadioGroup 
-                                items={horizonItems}
-                                onChange={this.handleHorizonChange}
-                                defaultSelected={horizon}
-                                getIndex={getHorizon}
-                                checkIfCustom={checkIfCustomHorizon}
-                                showSlider
-                                label='Days'
-                            />
-
-                            <MetricLabel 
-                                    style={{
-                                        marginBottom: '10px',
-                                        marginTop: '20px'
-                                    }}
-                            >
-                                Target in %
-                            </MetricLabel>
-                            <StockCardRadioGroup 
-                                items={targetItems}
-                                onChange={this.handleTargetChange}
-                                defaultSelected={target}
-                                hideLabel={true}
-                                getIndex={getTarget}
-                                checkIfCustom={checkIfCustomTarget}
-                                showSlider
-                                label='%'
-                            />
-                            <MetricLabel 
-                                    style={{
-                                        marginBottom: '10px',
-                                        marginTop: '20px'
-                                    }}
-                            >
-                                Stop Loss %
-                            </MetricLabel>
-                            <StockCardRadioGroup 
-                                items={targetItems}
-                                onChange={this.handleStopLossChange}
-                                defaultSelected={stopLoss}
-                                hideLabel={true}
-                                getIndex={getTarget}
-                                checkIfCustom={checkIfCustomTarget}
-                                showSlider
-                                label='%'
-                            />
+                            <div style={radioGroupStyle}>
+                                <MetricLabel 
+                                        style={{
+                                            marginBottom: '10px',
+                                            marginTop: '20px'
+                                        }}
+                                >
+                                    Horizon in Days
+                                </MetricLabel>
+                                <StockCardRadioGroup 
+                                    items={horizonItems}
+                                    onChange={this.handleHorizonChange}
+                                    defaultSelected={horizon}
+                                    getIndex={getHorizon}
+                                    checkIfCustom={checkIfCustomHorizon}
+                                    showSlider
+                                    label='Days'
+                                />
+                            </div>
+                            <div style={radioGroupStyle}>
+                                <MetricLabel 
+                                        style={{
+                                            marginBottom: '10px',
+                                            marginTop: '20px'
+                                        }}
+                                >
+                                    Target in %
+                                </MetricLabel>
+                                <StockCardRadioGroup 
+                                    items={targetItems}
+                                    onChange={this.handleTargetChange}
+                                    defaultSelected={target}
+                                    hideLabel={true}
+                                    getIndex={getTarget}
+                                    checkIfCustom={checkIfCustomTarget}
+                                    showSlider
+                                    label='%'
+                                />
+                            </div>
+                            <div style={radioGroupStyle}>
+                                <MetricLabel 
+                                        style={{
+                                            marginBottom: '10px',
+                                            marginTop: '20px'
+                                        }}
+                                >
+                                    Stop Loss %
+                                </MetricLabel>
+                                <StockCardRadioGroup 
+                                    items={targetItems}
+                                    onChange={this.handleStopLossChange}
+                                    defaultSelected={stopLoss}
+                                    hideLabel={true}
+                                    getIndex={getTarget}
+                                    checkIfCustom={checkIfCustomTarget}
+                                    showSlider
+                                    label='%'
+                                />
+                            </div>
                         </div>
                         <div
                                 style={{
