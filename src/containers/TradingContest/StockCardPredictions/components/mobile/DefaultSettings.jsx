@@ -225,7 +225,7 @@ class DefaultSettings extends React.Component {
                                             marginTop: '20px'
                                         }}
                                 >
-                                    Stop Loss %
+                                    Stop-Loss %
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}

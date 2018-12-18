@@ -155,7 +155,7 @@ export default class StockCard extends React.Component {
                                     color: '#222'
                                 }}
                         >
-                            Stop/Loss in %
+                            Stop-Loss in %
                         </MetricLabel>
                         <StockCardRadioGroup 
                             items={targetItems}
@@ -358,7 +358,7 @@ export default class StockCard extends React.Component {
                         style={{
                             ...horizontalBox, 
                             justifyContent: 'flex-start',
-                            marginTop: '20px',
+                            marginTop: '10px',
                             padding: bottomSheet ? '0 10px' : '0'
                         }}
                 >
@@ -374,7 +374,7 @@ export default class StockCard extends React.Component {
                         style={{
                             ...verticalBox,
                             // borderTop: '1px solid #E2E2E2',
-                            marginTop: isDesktop ? '20px' : '20px',
+                            marginTop: isDesktop ? '20px' : '0px',
                             paddingTop: isDesktop ? '15px' : '20px'
                         }}
                 >
@@ -446,7 +446,7 @@ export default class StockCard extends React.Component {
                             <ActionIcon 
                                 type='cancel'
                                 size={45}
-                                style={{marginTop: '20px'}}
+                                style={{marginTop: '10px'}}
                                 color='#767676'
                                 onClick={this.props.onClose}
                             />
