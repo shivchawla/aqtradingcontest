@@ -127,53 +127,51 @@ class StockCardRadioGroup extends React.Component {
                 }
                 {
                     showSlider && this.state.showSlider &&
-                    <React.Fragment>
-                        <Grid item xs={11} 
+                    <Grid item xs={11} 
+                            style={{
+                                ...horizontalBox, 
+                                width: '100%', 
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                            }}
+                    >
+                        <div 
                                 style={{
-                                    ...horizontalBox, 
-                                    width: '100%', 
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
+                                    ...verticalBox, 
+                                    alignItems: 'flex-start',
+                                    width: '100%'
                                 }}
                         >
-                            <div 
-                                    style={{
-                                        ...verticalBox, 
-                                        alignItems: 'flex-start',
-                                        width: '100%'
-                                    }}
-                            >
-                                <CustomText style={{color: primaryColor, fontWeight: 700}}>
-                                    {this.state.sliderValue} 
-                                    {this.props.label}
-                                    {
-                                        this.props.date &&
-                                        <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
-                                            - {this.getReadableDateForHorizon(this.state.sliderValue)}
-                                        </span> 
-                                    }
-                                </CustomText>
-                                <Slider
-                                    style={{marginTop: '12px'}}
-                                    max={30}
-                                    value={this.state.sliderValue}
-                                    min={1}
-                                    onChange={this.handleSliderChange}
-                                    step={1}
-                                    thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color={primaryColor}/>}
-                                    classes={{
-                                        trackBefore: classes.trackBefore
-                                    }}
-                                />
-                            </div>
-                            <ActionIcon 
-                                type="check_circle" 
-                                color={primaryColor} 
-                                onClick={this.toggleSlider} 
-                                size={24}
+                            <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
+                                {this.state.sliderValue} 
+                                {this.props.label}
+                                {
+                                    this.props.date &&
+                                    <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
+                                        ({this.getReadableDateForHorizon(this.state.sliderValue)})
+                                    </span> 
+                                }
+                            </CustomText>
+                            <Slider
+                                style={{marginTop: '12px'}}
+                                max={30}
+                                value={this.state.sliderValue}
+                                min={1}
+                                onChange={this.handleSliderChange}
+                                step={1}
+                                thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color={primaryColor}/>}
+                                classes={{
+                                    trackBefore: classes.trackBefore
+                                }}
                             />
-                        </Grid>
-                    </React.Fragment>
+                        </div>
+                        <ActionIcon 
+                            type="check_circle" 
+                            color={primaryColor} 
+                            onClick={this.toggleSlider} 
+                            size={24}
+                        />
+                    </Grid>
                 }
             </Grid>
         );

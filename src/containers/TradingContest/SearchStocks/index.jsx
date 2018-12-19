@@ -954,46 +954,49 @@ export class SearchStocks extends React.Component {
                             />
                         }
                     />
-                    {this.renderStockListDetails()}
-                    {
-                        this.state.newStocks.length > 0 &&
-                        <Media 
-                            query='(max-width: 800px)'
-                            render={() => (
-                                <div 
-                                        style={{
-                                            ...verticalBox,
-                                            position: 'fixed',
-                                            height: '50px',
-                                            width: '100%',
-                                            bottom: 0
-                                        }}
-                                >
-                                    <Button 
-                                            variant='contained'
-                                            onClick={this.addSelectedStocksToPortfolio}
+                    <Grid item xs={12}>
+                        {this.renderStockListDetails()}
+                        {
+                            this.state.newStocks.length > 0 &&
+                            <Media 
+                                query='(max-width: 800px)'
+                                render={() => (
+                                    <div 
                                             style={{
-                                                background: 'linear-gradient(rgb(41, 135, 249), rgb(56, 111, 255))',
-                                                fontFamily: 'Lato, sans-serif',
-                                                fontSize: '14px',
-                                                color: '#fff'
+                                                ...verticalBox,
+                                                position: 'fixed',
+                                                height: '50px',
+                                                width: '100%',
+                                                bottom: '10px',
+                                                zIndex:2,
                                             }}
                                     >
-                                        Done
-                                        <Icon 
+                                        <Button 
+                                                variant='contained'
+                                                onClick={this.addSelectedStocksToPortfolio}
                                                 style={{
-                                                    color: '#fff', 
-                                                    fontSize: '22px',
-                                                    marginLeft: '5px'
+                                                    background: 'linear-gradient(rgb(41, 135, 249), rgb(56, 111, 255))',
+                                                    fontFamily: 'Lato, sans-serif',
+                                                    fontSize: '14px',
+                                                    color: '#fff'
                                                 }}
                                         >
-                                            check_circle
-                                        </Icon>
-                                    </Button>
-                                </div>
-                            )}
-                        />
-                    }
+                                            Done
+                                            <Icon 
+                                                    style={{
+                                                        color: '#fff', 
+                                                        fontSize: '22px',
+                                                        marginLeft: '5px'
+                                                    }}
+                                            >
+                                                check_circle
+                                            </Icon>
+                                        </Button>
+                                    </div>
+                                )}
+                            />
+                        }
+                    </Grid>
                 </SGrid>
             </React.Fragment>
         );
