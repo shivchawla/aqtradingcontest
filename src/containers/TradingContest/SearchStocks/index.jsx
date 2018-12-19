@@ -199,7 +199,13 @@ export class SearchStocks extends React.Component {
         const industry = _.get(this.props, 'filters.industry', '').length === 0
                 ?   this.state.filter.industry
                 :   _.get(this.props, 'filters.industry', '');
-        const stocksToSkip = _.get(this.props, 'skippedStocks', []).join(',');
+        const selectedTickers = _.get(this.props, 'portfolioPositions', []).map(position => position.symbol);
+        const skippedStocks = _.get(this.props, 'skippedStocks', []);
+        let stocksToSkip = [...skippedStocks];
+        if (this.props.hideSelectedItems) {
+            stocksToSkip = [...stocksToSkip, ...selectedTickers];
+        }
+        stocksToSkip = stocksToSkip.join(',');
         const url = `${requestUrl}/stock?search=${encodeURIComponent(searchQuery)}&populate=${populate}&universe=${universe}&sector=${sector}&industry=${industry}&skip=${skip}&limit=${limit}&exclude=${stocksToSkip}`;
 
         this.setState({loadingStocks: true});
@@ -342,6 +348,7 @@ export class SearchStocks extends React.Component {
                 industry: _.get(stock, 'detail.Industry', null),
                 shortable,
                 hideActions: false,
+                hide: false
             };
         }).filter(stock => stock.name !== null);;
     }

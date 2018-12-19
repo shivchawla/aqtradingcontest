@@ -92,7 +92,8 @@ export default class StockListItemMobile extends React.Component {
             sellChecked = false,
             onAddIconClick = () => {},
             hideInfo = false,
-            showPredict = false
+            showPredict = false,
+            hide = false
         } = this.props;
         const itemContainerStyle = {
             borderBottom: '1px solid #eaeaea',
@@ -107,119 +108,123 @@ export default class StockListItemMobile extends React.Component {
         const changeIcon = change < 0 ? 'arrow_drop_down' : 'arrow_drop_up';
         const nChangePct = (changePct * 100).toFixed(2);
 
-        return (
-            <SGrid container className='stock-row' style={itemContainerStyle}>
-                <Grid 
-                        item 
-                        xs={12} 
-                        style={containerStyle} 
-                >
-                    <div 
-                            style={{
-                                ...verticalBox,
-                                alignItems: 'flex-start',
-                                width: '100%',
-                            }}
-                            // onClick={() => {
-                            //     showPredict 
-                            //     ?   this.props.onInfoClicked(symbol, name, current, change, changePct)
-                            //         :hideInfo ? 
-                            //             this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct) 
-                            //             : onAddIconClick(symbol)
-                            // }}
-                            onClick={() => this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct)}
+        if (hide) {
+            return null;
+        } else {
+            return (
+                <SGrid container className='stock-row' style={itemContainerStyle}>
+                    <Grid 
+                            item 
+                            xs={12} 
+                            style={containerStyle} 
                     >
-                        <div style={{...horizontalBox, justifyContent: 'space-between', width: '100%'}}>
-                            <div style={horizontalBox}>
-                                <h3 style={{fontSize: '14px', fontWeight: '700', color: "#393939"}}>{symbol}</h3>
-                                <Icon color="error" style={{color: changeColor}}>{changeIcon}</Icon>
-                            </div>
-                            <h3 style={{fontSize: '14px', fontWeight: '500', color: '#222'}}>
-                                ₹{Utils.formatMoneyValueMaxTwoDecimals(current)}
-                            </h3>
-                        </div>
                         <div 
                                 style={{
-                                    ...horizontalBox, 
-                                    justifyContent: 'space-between', 
-                                    alignItems: 'center',
+                                    ...verticalBox,
+                                    alignItems: 'flex-start',
                                     width: '100%',
-                                    // marginTop: '5px'
                                 }}
+                                // onClick={() => {
+                                //     showPredict 
+                                //     ?   this.props.onInfoClicked(symbol, name, current, change, changePct)
+                                //         :hideInfo ? 
+                                //             this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct) 
+                                //             : onAddIconClick(symbol)
+                                // }}
+                                onClick={() => this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct)}
                         >
-                            <div style={{...horizontalBox, alignItems: 'flex-end'}}>
-                                <h3
-                                        style={{
-                                            ...nameEllipsisStyle,
-                                            fontSize: '12px',
-                                            color: '#6E6E6E',
-                                            fontWeight: 400,
-                                            width: '130px',
-                                            textAlign: 'start'
-                                        }}
-                                >
-                                    {name}
+                            <div style={{...horizontalBox, justifyContent: 'space-between', width: '100%'}}>
+                                <div style={horizontalBox}>
+                                    <h3 style={{fontSize: '14px', fontWeight: '700', color: "#393939"}}>{symbol}</h3>
+                                    <Icon color="error" style={{color: changeColor}}>{changeIcon}</Icon>
+                                </div>
+                                <h3 style={{fontSize: '14px', fontWeight: '500', color: '#222'}}>
+                                    ₹{Utils.formatMoneyValueMaxTwoDecimals(current)}
                                 </h3>
                             </div>
                             <div 
                                     style={{
                                         ...horizontalBox, 
-                                        justifyContent: 'flex-end', 
-                                        alignItems: 'center'
+                                        justifyContent: 'space-between', 
+                                        alignItems: 'center',
+                                        width: '100%',
+                                        // marginTop: '5px'
                                     }}
                             >
-                                <h3 
+                                <div style={{...horizontalBox, alignItems: 'flex-end'}}>
+                                    <h3
+                                            style={{
+                                                ...nameEllipsisStyle,
+                                                fontSize: '12px',
+                                                color: '#6E6E6E',
+                                                fontWeight: 400,
+                                                width: '130px',
+                                                textAlign: 'start'
+                                            }}
+                                    >
+                                        {name}
+                                    </h3>
+                                </div>
+                                <div 
                                         style={{
-                                            color: changeColor, 
-                                            fontSize: '12px', 
-                                            fontWeight: '400', 
-                                            marginLeft: '5px'
+                                            ...horizontalBox, 
+                                            justifyContent: 'flex-end', 
+                                            alignItems: 'center'
                                         }}
                                 >
-                                    ₹{Utils.formatMoneyValueMaxTwoDecimals(change)}
-                                </h3>
-                                <h3 
-                                        style={{
-                                            color: "#BCBCBC",
-                                            fontWeight: 400,
-                                            fontSize: '16px',
-                                            margin: '0 5px',
-                                            marginTop: '-1px'
-                                        }}
-                                >
-                                    |
-                                </h3>
-                                <h3 
-                                        style={{color: changeColor, fontSize: '12px', fontWeight: '400'}}
-                                >
-                                    {nChangePct} %
-                                </h3>
+                                    <h3 
+                                            style={{
+                                                color: changeColor, 
+                                                fontSize: '12px', 
+                                                fontWeight: '400', 
+                                                marginLeft: '5px'
+                                            }}
+                                    >
+                                        ₹{Utils.formatMoneyValueMaxTwoDecimals(change)}
+                                    </h3>
+                                    <h3 
+                                            style={{
+                                                color: "#BCBCBC",
+                                                fontWeight: 400,
+                                                fontSize: '16px',
+                                                margin: '0 5px',
+                                                marginTop: '-1px'
+                                            }}
+                                    >
+                                        |
+                                    </h3>
+                                    <h3 
+                                            style={{color: changeColor, fontSize: '12px', fontWeight: '400'}}
+                                    >
+                                        {nChangePct} %
+                                    </h3>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    {
-                        !showPredict &&
-                        this.renderBuyActionButton()
-                    }
-                    {
-                        showPredict &&
-                        <PredictButton onClick={() => onAddIconClick(symbol)}/>
-                    }
-                    {/* {
-                        !hideInfo && !this.props.extraContent && !showPredict &&
-                        <ActionIcon 
-                            type="info"
-                            size={18}
-                            color='#7e91f7'
-                            onClick={() => this.props.onInfoClicked(symbol, name, current, change, changePct)}
-                        />
-                    } */}
-                    {
-                        this.props.extraContent && this.props.extraContent(symbol)
-                    }
-                </Grid>
-            </SGrid>
-        );
+                        {
+                            !showPredict &&
+                            this.renderBuyActionButton()
+                        }
+                        {
+                            showPredict &&
+                            <PredictButton onClick={() => onAddIconClick(symbol)}/>
+                        }
+                        {/* {
+                            !hideInfo && !this.props.extraContent && !showPredict &&
+                            <ActionIcon 
+                                type="info"
+                                size={18}
+                                color='#7e91f7'
+                                onClick={() => this.props.onInfoClicked(symbol, name, current, change, changePct)}
+                            />
+                        } */}
+                        {
+                            this.props.extraContent && this.props.extraContent(symbol)
+                        }
+                    </Grid>
+                </SGrid>
+            );
+        }
     }
 }
 

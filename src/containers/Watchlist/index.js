@@ -666,6 +666,7 @@ class WatchlistComponent extends React.Component {
                     stockData={nStockData}
                     addStock={this.addStockToWatchlist}
                     selectedPositions={selectedWatchlistPositions}
+                    hideSelectedItems={true}
                 />
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
             </React.Fragment>

@@ -89,6 +89,7 @@ class StockSelection extends React.Component {
                     sector: _.get(this.props, 'stockData.sector', '')
                 }}
                 setFetchStocks={this.props.setFetchStocks}
+                hideSelectedItems={this.props.hideSelectedItems}
             />
         );
     }
