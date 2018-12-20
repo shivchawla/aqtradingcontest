@@ -24,11 +24,12 @@ const styles = theme => ({
 
 class StockSelection extends React.Component {
     searchStockComponent = null;
-
     constructor(props) {
         super(props);
+        this.addStocksToWatchlist = null;
         this.state = {
-            performanceOpen: false // boolean flag to toggle between stock list and performance view
+            performanceOpen: false, // boolean flag to toggle between stock list and performance view,
+            stockCount: 0
         }
     }
 
@@ -59,9 +60,17 @@ class StockSelection extends React.Component {
         this.props.modifyStockData(stockData);
     }
 
+    updateCount = count => {
+        this.setState({stockCount: count});
+    }
+
     addStock = (selectedPositions = []) => {
         const tickers = selectedPositions.map(position => position.symbol);
         this.props.addStock(tickers);
+    }
+
+    setAddStockMethodCb = method => {
+        this.addStocksToWatchlist = method;
     }
 
     renderSearchStocks = () => {
@@ -90,6 +99,8 @@ class StockSelection extends React.Component {
                 }}
                 setFetchStocks={this.props.setFetchStocks}
                 hideSelectedItems={this.props.hideSelectedItems}
+                updateCount={this.updateCount}
+                setAddStockMethodCb={this.setAddStockMethodCb}
             />
         );
     }
@@ -106,15 +117,26 @@ class StockSelection extends React.Component {
                         justifyContent: 'space-between',
                         background: 'linear-gradient(to right, #5443F0, #335AF0)',
                         width: '100%',
-                        padding: '5px 0'
+                        minHeight: '50px'
                     }}
             >
                 <Header>Add Stock</Header>
-                <ActionIcon 
-                    onClick={this.props.toggleSearchStocksDialog} 
-                    color='#fff'
-                    type="close"
-                />
+                <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                    {
+                        this.state.stockCount > 0 &&
+                        <ActionIcon 
+                            onClick={() => {this.addStocksToWatchlist && this.addStocksToWatchlist()}} 
+                            color='#fff'
+                            type="check_circle"
+                            size={24}
+                        />
+                    }
+                    <ActionIcon 
+                        onClick={this.props.toggleSearchStocksDialog} 
+                        color='#fff'
+                        type="close"
+                    />
+                </div>
             </div>
         );
     }
