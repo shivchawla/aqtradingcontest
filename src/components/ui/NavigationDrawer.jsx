@@ -33,6 +33,9 @@ class NavigationDrawerImpl extends React.Component {
 
     render() {
         const {open = false, onToggle = null} = this.props;
+        const navigationLinks = Utils.isAdmin()
+            ? [...menuCategories, advisorLink]
+            : menuCategories;
 
         return (
             <Drawer 
@@ -55,7 +58,7 @@ class NavigationDrawerImpl extends React.Component {
                 <div tabIndex={0} role="button">
                     <List component='nav' style={{width: '300px'}}>
                         {
-                            menuCategories.map((item, index) => (
+                            navigationLinks.map((item, index) => (
                                 <ListItemComponent 
                                     item={item} 
                                     key={index} 
@@ -260,8 +263,9 @@ const menuCategories = [
     },
     {
         name: "Leaderboard", url:'/dailycontest/leaderboard', icon:'multiline_chart'
-    },
-    // {
-    //     name: "Watchlist", url:'/dailycontest/watchlist', icon:'visibility'
-    // }
+    }
 ];
+
+const advisorLink = {
+    name: "Advisors", url:'/advisors', icon:'security'
+};

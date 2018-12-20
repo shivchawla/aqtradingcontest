@@ -18,6 +18,7 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget} from '../../utils';
+import {Utils} from '../../../../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
 
 const styles = theme => ({
@@ -103,6 +104,11 @@ class DefaultSettings extends React.Component {
             listMode: value === 1
         });
         this.props.updateListMode(value === 1);
+    }
+
+    resetAdvisor = () => {
+        Utils.localStorageSave('selectedAdvisorId', null);
+        Utils.localStorageSave('selectedUserId', null);
     }
 
     renderHeader = () => {
@@ -281,6 +287,27 @@ class DefaultSettings extends React.Component {
                                     }}
                                     disabled={listMode}
                                 />
+                            </div>
+                        }
+                        {
+                            Utils.isAdmin() &&
+                            <div 
+                                    style={{
+                                        ...horizontalBox, 
+                                        justifyContent: 'flex-start',
+                                        width: '100%'
+                                    }}
+                            >
+                                <Button 
+                                        variant="outlined"
+                                        onClick={this.resetAdvisor}
+                                        style={{
+                                            marginLeft: '20px'
+                                        }}
+                                        size='small'
+                                >
+                                    Reset Advisor
+                                </Button>
                             </div>
                         }
                         <div

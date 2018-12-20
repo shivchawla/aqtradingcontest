@@ -16,9 +16,11 @@ import TradingContestLeaderboard from './containers/TradingContestLeaderboard';
 import TradingContestTopPicks from './containers/TradingContestTopPicks';
 import StockDetail from './containers/StockDetail';
 import DummyLogin from './containers/DummyLogin';
+import NotAuthorized from './containers/ErrorPages/NotAuthorized';
+import AdvisorSelector from './containers/AdvisorSelector';
 import {Utils} from './utils';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
-import Watchlist from './containers/Watchlist';
+
 import './App.css';
 
 const {develop = false, gaTrackingId = null} = require('./localConfig');
@@ -55,7 +57,17 @@ class App extends Component {
                                 <Switch>
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
-                                    {/* <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} />  */}
+                                    <Route 
+                                        exact={true} 
+                                        path='/advisors'
+                                        render={() => 
+                                            Utils.isLoggedIn()
+                                                ? Utils.isAdmin()
+                                                    ? <AdvisorSelector />
+                                                    : <NotAuthorized />
+                                                : <DummyLogin />
+                                        }
+                                    />
                                     <Route exact={true} path='/dailycontest/stockdetail' component={StockDetail} /> 
                                     <Route
                                         path='/dailycontest/leaderboard'

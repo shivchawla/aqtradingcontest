@@ -40,8 +40,13 @@ export const getPredictionsFromPositions = (positions = []) => {
 
 export const createPredictions = (predictions = [], create = true) => {
     // const operation = create ? 'insert' : 'update';
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
     const operation = 'insert';
-    const url = `${requestUrl}/dailycontest/prediction?operation=${operation}`;
+    let url = `${requestUrl}/dailycontest/prediction?operation=${operation}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}&advisorId=${selectedAdvisorId}`;
+    }
+
     return axios({
         method: 'POST',
         url,
@@ -73,15 +78,23 @@ export const checkHorizonDuplicationStatus = (predictions) => {
 }
 
 export const getDailyContestPredictions = (date = null, category='started', populatePnl=false, history, currentUrl, handleError = true, cancelCb = null) => {
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
     const requiredDate = date === null ? moment().format(dateFormat) : date.format(dateFormat);
-    const url = `${requestUrl}/dailycontest/prediction?date=${requiredDate}&category=${category}&populatePnl=${populatePnl}`;
+    let url = `${requestUrl}/dailycontest/prediction?date=${requiredDate}&category=${category}&populatePnl=${populatePnl}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}&advisorId=${selectedAdvisorId}`;
+    }
 
     return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb)
 }
 
 export const getPnlStats = (date = moment(), type = 'started', history, currentUrl, handleError = true, cancelCb = null) => {
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
     const requiredDate = date.format(dateFormat);
-    const url =`${requestUrl}/dailycontest/pnl?date=${requiredDate}&category=${type}`;
+    let url =`${requestUrl}/dailycontest/pnl?date=${requiredDate}&category=${type}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}&advisorId=${selectedAdvisorId}`;
+    }
 
     return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
 }

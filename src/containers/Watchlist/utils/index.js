@@ -16,7 +16,11 @@ export const processPositions = positions => {
 }
 
 export const createUserWatchlist = (name, securities = []) => new Promise((resolve, reject) => {
-    const url = `${requestUrl}/watchlist`;
+    let url = `${requestUrl}/watchlist`;
+    const selectedUserId = Utils.getFromLocalStorage('selectedUserId');
+    if (Utils.isAdmin() && Utils.isLocalStorageItemPresent(selectedUserId)) {
+        url = `${url}?userId=${selectedUserId}`;
+    }
     const data = {
         name,
         securities
