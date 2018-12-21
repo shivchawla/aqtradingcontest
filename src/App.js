@@ -50,7 +50,7 @@ class App extends Component {
     }
 
     redirectToLogin = (redirectUrl) => {
-        Utils.localStorageSave('redirectToUrlFromLogin', redirectUrl);
+        Utils.localStorageSave('redirectToUrlFromLogin', window.location.pathname);
 
         return <Redirect push to='/login' />;
     }

@@ -12,7 +12,7 @@ import NavLink from '../components/NavLinkButton';
 import AqLayoutMobile from '../../../components/ui/AqLayout';
 import CustomForm from '../../../components/input/Form';
 import InputComponent from '../../../components/input/Form/components/InputComponent';
-import {horizontalBox, verticalBox} from '../../../constants';
+import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
 import {getFormProps} from '../../../utils/form';
 import {Utils} from '../../../utils';
 import {sendForgetPasswordRequest, forgotPasswordValidationSchema} from './utils';
@@ -231,7 +231,7 @@ const companyNameStyle = {
 const submitButtonStyle = {
     width: '100%',
     boxShadow: 'none',
-    background: '#03A7AD',
+    background: primaryColor,
     marginTop: '0px'
 };
 
