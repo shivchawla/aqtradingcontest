@@ -72,7 +72,7 @@ export class TradingContestLeaderboardMobile extends React.Component {
             this.setState({selectedDate: moment(date, dateFormat)});
         }
         if (!Utils.isLoggedIn()) {
-            window.location.assign('/login');
+            this.props.history.push('/login');
         }
     }
 

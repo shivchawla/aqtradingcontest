@@ -19,6 +19,7 @@ import Signup from './containers/AuthPages/SignUp';
 import ForgotPassword from './containers/AuthPages/ForgotPassword';
 import ResetPassword from './containers/AuthPages/ResetPassword';
 import AuthFeedback from './containers/AuthPages/AuthFeedback';
+import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import StockDetail from './containers/StockDetail';
 import PageNotFound from './containers/ErrorPages/PageNotFound';
 import {Utils} from './utils';
@@ -65,6 +66,7 @@ class App extends Component {
                                 <Switch>
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
+                                    <Route path='/tokenUpdate' component={TokenUpdate}/>
                                     <Route exact={true} path='/login' component={Login} />
                                     <Route exact={true} path='/signup' component={Signup} />
                                     <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
@@ -125,7 +127,8 @@ class App extends Component {
                             return (
                                 <Switch>
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
-                                    <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} /> 
+                                    <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
+                                    <Route path='/tokenUpdate' component={TokenUpdate}/> 
                                     <Route exact={true} path='/login' component={Login} />
                                     <Route exact={true} path='/signup' component={Signup} />
                                     <Route exact={true} path='/forgotPassword' component={ForgotPassword} />

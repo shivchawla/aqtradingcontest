@@ -89,7 +89,7 @@ export const handleGetError = (error, history, redirectUrl) => {
             }
         }
     } else {
-        window.location.href = '/login';
+        this.props.history.push('/login');
     }
     return error;
 }
@@ -108,7 +108,7 @@ export const handleCreateAjaxError = (error, history, redirectUrl, disableNotifi
             !disableNotification && openNotification('error', 'Error', errorMessage);
         }
     } else {
-        window.location.href = '/login';
+        this.props.history.push('/login');
     }
     return error;
 }

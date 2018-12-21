@@ -210,7 +210,7 @@ class TradingContest extends React.Component {
             this.setState({listViewType: this.getListViewType(listViewType)});
         }
         if (!Utils.isLoggedIn()) {
-            window.location.assign('/login');
+            this.props.history.push('/login');
         }
         this.setState({selectedTab});
     }
@@ -300,7 +300,7 @@ class TradingContest extends React.Component {
                                 :   this.redirectToLogin(`${this.props.match.path}`)
                             }
                         />
-                        <Route component={PageNotFound} />
+                        <Redirect push to='/404' />
                     </Switch>
                 </Grid>
             </AqLayout>
@@ -389,7 +389,7 @@ class TradingContest extends React.Component {
                             }
                         />
                         {/* <Redirect to='/404'/> */}
-                        <Route component={PageNotFound} />
+                        <Redirect push to='/404' />
                     </Switch>
                 </AqLayoutDesktop>
             </div>
