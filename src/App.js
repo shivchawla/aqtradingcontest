@@ -8,7 +8,7 @@ import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
@@ -68,7 +68,7 @@ class App extends React.Component {
                         query="(max-width: 800px)"
                         render={() => {
                             return (
-                                <React.Suspense fallback={<CircularProgress />}>
+                                <React.Suspense fallback={<Loader />}>
                                     <Switch>
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
@@ -144,7 +144,7 @@ class App extends React.Component {
                         query="(min-width: 801px)"
                         render={() => {
                             return (
-                                <React.Suspense fallback={<CircularProgress />}>
+                                <React.Suspense fallback={<Loader />}>
                                     <Switch>
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />

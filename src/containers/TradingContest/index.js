@@ -11,7 +11,7 @@ import {withRouter} from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Loader from './Misc/Loader';
 import AqLayout from '../../components/ui/AqLayout';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
@@ -255,7 +255,7 @@ class TradingContest extends React.Component {
                             <STab label="Metrics"/>
                         </STabs>
                     </Grid>
-                    <React.Suspense fallback={<CircularProgress />}>
+                    <React.Suspense fallback={<Loader />}>
                         <Switch>
                             <Route 
                                 exact
@@ -337,7 +337,7 @@ class TradingContest extends React.Component {
                         header={this.getDesktopHeader()}
                         defaultSelected={this.state.selectedTab}
                 >
-                    <React.Suspense fallback={<CircularProgress />}>
+                    <React.Suspense fallback={<Loader />}>
                         <Switch>
                             <Route 
                                 exact
