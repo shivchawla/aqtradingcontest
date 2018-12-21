@@ -138,13 +138,21 @@ export const getPctFromRatio = value => {
 }
 
 export const getDailyContestStats = (history, currentUrl, handleError = true) => {
-    const url = `${requestUrl}/dailycontest/stats`;
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    let url = `${requestUrl}/dailycontest/stats`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}?advisor=${selectedAdvisorId}`;
+    }
 
     return fetchAjaxPromise(url, history, currentUrl, handleError);
 }
 
 export const getDailyContestStatsBySymbol = (symbol = '', history, currentUrl, handleError = true) => {
-    const url = `${requestUrl}/dailycontest/stats?symbol=${symbol}`;
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    let url = `${requestUrl}/dailycontest/stats?symbol=${symbol}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}?advisor=${selectedAdvisorId}`;
+    }
 
     return fetchAjaxPromise(url, history, currentUrl, handleError);
 }

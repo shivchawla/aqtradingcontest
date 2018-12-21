@@ -62,7 +62,11 @@ class WatchlistComponent extends React.Component {
     }
 
     getWatchlists = () => {
-        const url = `${requestUrl}/watchlist`;
+        const selectedUserId = Utils.getFromLocalStorage('selectedUserId');
+        let url = `${requestUrl}/watchlist`;
+        if (Utils.isAdmin() && Utils.isLocalStorageItemPresent(selectedUserId)) {
+            url = `${url}?userId=${selectedUserId}`;
+        }
         this.setState({loading: true});
         return fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
@@ -137,7 +141,11 @@ class WatchlistComponent extends React.Component {
     })
 
     getWatchlist = id => {
-        const url = `${requestUrl}/watchlist/${id}`;
+        const selectedUserId = Utils.getFromLocalStorage('selectedUserId');
+        let url = `${requestUrl}/watchlist/${id}`;
+        if (Utils.isAdmin() && Utils.isLocalStorageItemPresent(selectedUserId)) {
+            url = `${url}?userId=${selectedUserId}`;
+        }
         fetchAjaxPromise(url, this.props.history, this.props.match.url, false)
         .then(response => {
             this.subscribeToWatchList(id);
@@ -456,7 +464,11 @@ class WatchlistComponent extends React.Component {
             if (this.state.noWatchlistPresent) {
                 this.createWatchlistForDefault(data);
             } else {
-                const url = `${requestUrl}/watchlist/${watchlistId}`;
+                let url = `${requestUrl}/watchlist/${watchlistId}`;
+                const selectedUserId = Utils.getFromLocalStorage('selectedUserId');
+                if (Utils.isAdmin() && Utils.isLocalStorageItemPresent(selectedUserId)) {
+                    url = `${url}?userId=${selectedUserId}`;
+                }
                 axios({
                     url,
                     headers: Utils.getAuthTokenHeader(),
@@ -546,7 +558,11 @@ class WatchlistComponent extends React.Component {
         const watchlistId = _.get(selectedWatchlist, 'id', null);
         const watchlistName = _.get(selectedWatchlist, 'name', '');
         const newTickers = _.pull(tickers, name);
-        const url = `${requestUrl}/watchlist/${watchlistId}`;
+        let url = `${requestUrl}/watchlist/${watchlistId}`;
+        const selectedUserId = Utils.getFromLocalStorage('selectedUserId');
+        if (Utils.isAdmin() && Utils.isLocalStorageItemPresent(selectedUserId)) {
+            url = `${url}?userId=${selectedUserId}`;
+        }
         const data = {
             name: watchlistName,
             securities: processPositions(newTickers)
@@ -596,7 +612,11 @@ class WatchlistComponent extends React.Component {
     deleteWatchlist = () => {
         const selectedWatchlist = this.getSelectedWatchlist();
         const watchlistId = _.get(selectedWatchlist, 'id', null);
-        const url = `${requestUrl}/watchlist/${watchlistId}`;
+        let url = `${requestUrl}/watchlist/${watchlistId}`;
+        const selectedUserId = Utils.getFromLocalStorage('selectedUserId');
+        if (Utils.isAdmin() && Utils.isLocalStorageItemPresent(selectedUserId)) {
+            url = `${url}?userId=${selectedUserId}`;
+        }
         this.setState({updateWatchlistLoading: true});
         axios({
             url,

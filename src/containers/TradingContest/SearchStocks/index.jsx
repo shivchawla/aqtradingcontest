@@ -293,7 +293,6 @@ export class SearchStocks extends React.Component {
 
     handleStockListItemClick = stock => {
         // this.props.toggleStockPerformanceOpen && this.props.toggleStockPerformanceOpen();
-        console.log('called this');
         this.setState({selectedStock: stock});
     }
 
@@ -387,7 +386,9 @@ export class SearchStocks extends React.Component {
             }
 
             clonedStocks[selectedStockIndex] = selectedStock;
-            this.setState({stocks: clonedStocks, newStocks: clonedNewStocks});
+            this.setState({stocks: clonedStocks, newStocks: clonedNewStocks}, () => {
+                this.props.updateCount && this.props.updateCount(this.state.newStocks.length);
+            });
         }
     }
 
@@ -873,6 +874,7 @@ export class SearchStocks extends React.Component {
 
     componentDidMount() {
         this.props.setFetchStocks && this.props.setFetchStocks(this.fetchStocks);
+        this.props.setAddStockMethodCb && this.props.setAddStockMethodCb(this.addSelectedStocksToPortfolio);
         setTimeout(() => {
             this.setState({showFilter: true});
         }, 400)
@@ -956,46 +958,6 @@ export class SearchStocks extends React.Component {
                     />
                     <Grid item xs={12}>
                         {this.renderStockListDetails()}
-                        {
-                            this.state.newStocks.length > 0 &&
-                            <Media 
-                                query='(max-width: 800px)'
-                                render={() => (
-                                    <div 
-                                            style={{
-                                                ...verticalBox,
-                                                position: 'fixed',
-                                                height: '50px',
-                                                width: '100%',
-                                                bottom: '10px',
-                                                zIndex:2,
-                                            }}
-                                    >
-                                        <Button 
-                                                variant='contained'
-                                                onClick={this.addSelectedStocksToPortfolio}
-                                                style={{
-                                                    background: 'linear-gradient(rgb(41, 135, 249), rgb(56, 111, 255))',
-                                                    fontFamily: 'Lato, sans-serif',
-                                                    fontSize: '14px',
-                                                    color: '#fff'
-                                                }}
-                                        >
-                                            Done
-                                            <Icon 
-                                                    style={{
-                                                        color: '#fff', 
-                                                        fontSize: '22px',
-                                                        marginLeft: '5px'
-                                                    }}
-                                            >
-                                                check_circle
-                                            </Icon>
-                                        </Button>
-                                    </div>
-                                )}
-                            />
-                        }
                     </Grid>
                 </SGrid>
             </React.Fragment>
