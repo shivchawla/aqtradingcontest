@@ -17,6 +17,7 @@ import TradingContestTopPicks from './containers/TradingContestTopPicks';
 import Login from './containers/AuthPages/Login';
 import Signup from './containers/AuthPages/SignUp';
 import ForgotPassword from './containers/AuthPages/ForgotPassword';
+import ForbiddenAccess from './containers/ErrorPages/ForbiddenAccess';
 import ResetPassword from './containers/AuthPages/ResetPassword';
 import AuthFeedback from './containers/AuthPages/AuthFeedback';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
@@ -70,6 +71,7 @@ class App extends Component {
                                     <Route exact={true} path='/login' component={Login} />
                                     <Route exact={true} path='/signup' component={Signup} />
                                     <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
+                                    <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                     <Route exact={true} path='/resetPassword' component={ResetPassword} />
                                     <Route path='/authMessage' component={AuthFeedback} /> 
                                     {/* <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} />  */}
@@ -132,6 +134,7 @@ class App extends Component {
                                     <Route exact={true} path='/login' component={Login} />
                                     <Route exact={true} path='/signup' component={Signup} />
                                     <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
+                                    <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                     <Route exact={true} path='/resetPassword' component={ResetPassword} />
                                     <Route path='/authMessage' component={AuthFeedback} />
                                     <Route 

@@ -85,7 +85,8 @@ export const handleGetError = (error, history, redirectUrl) => {
             if (error.response.status === 400 || 
                         (error.response.status === 403 && _.get(error, 'response.data.code', '') !== 'server_error')
                 ) {
-                window.location.href = '/forbiddenAccess';
+                // window.location.href = '/forbiddenAccess';
+                this.props.history.push('/forbiddenAccess');
             }
         }
     } else {
