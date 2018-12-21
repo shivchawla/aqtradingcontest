@@ -61,7 +61,6 @@ class Login extends React.Component {
     }
 
     processError = error => {
-        console.log(error);
         this.setState({
             error: JSON.stringify(_.get(error, 'response.data', 'Error Occured')),
             loading: false
@@ -86,6 +85,10 @@ class Login extends React.Component {
             this.processLogin(response)
         })
         .catch(error => this.processError(error))
+    }
+
+    responseGoogleFailure = err => {
+        this.setState({error: 'Error occurred in Google Login'});
     }
 
     componentWillMount(){
@@ -178,7 +181,7 @@ class Login extends React.Component {
                             <GoogleLoginButton 
                                 marginTop='15px'
                                 onSuccess={this.responseGoogle}
-                                onFailure={this.responseGoogle}
+                                onFailure={this.responseGoogleFailure}
                                 clientId={googleClientId}
                             />
                             <CustomForm 
@@ -239,7 +242,7 @@ class Login extends React.Component {
                         <GoogleLoginButton 
                             marginTop='15px'
                             onSuccess={this.responseGoogle}
-                            onFailure={this.responseGoogle}
+                            onFailure={this.responseGoogleFailure}
                             clientId={googleClientId}
                         />
                         <CustomForm 
