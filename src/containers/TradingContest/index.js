@@ -23,6 +23,7 @@ import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
 import DummyLogin from '../DummyLogin';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
+import PageNotFound from '../../containers/ErrorPages/PageNotFound';
 import Header from '../Header';
 import {primaryColor, verticalBox, metricColor} from '../../constants';
 import {isMarketOpen}  from './utils';
@@ -214,6 +215,12 @@ class TradingContest extends React.Component {
         this.setState({selectedTab});
     }
 
+    redirectToLogin = (redirectUrl) => {
+        Utils.localStorageSave('redirectToUrlFromLogin', redirectUrl);
+
+        return <Redirect push to='/login' />;
+    }
+
     renderMobile = () => {
         const {selectedTab} = this.state;
         const isMarketTrading = !DateHelper.isHoliday();
@@ -246,25 +253,6 @@ class TradingContest extends React.Component {
                             <STab label="Metrics"/>
                         </STabs>
                     </Grid>
-                    {/* <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
-                        {
-                            !marketOpen &&
-                            this.state.selectedTab === 1 &&
-                            <MartketOpenTag 
-                                    color={marketOpen
-                                        ? metricColor.positive 
-                                        : '#fc4c55'
-                                    }
-                                    style={{marginTop: '10px'}}
-                            >   
-                                {
-                                    marketOpen
-                                        ? 'Market Open'
-                                        : 'Market Closed'
-                                }
-                            </MartketOpenTag>
-                        }
-                    </Grid> */}
                     <Switch>
                         <Route 
                             exact
@@ -277,7 +265,7 @@ class TradingContest extends React.Component {
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
                                         updateDate={this.updateDate}
                                     />
-                                :   <DummyLogin />
+                                :   this.redirectToLogin(`${this.props.match.path}/mypicks`)
                             }
                         />
                         <Route 
@@ -288,7 +276,7 @@ class TradingContest extends React.Component {
                                         selectedDate={this.state.selectedDate}
                                         updateDate={this.updateDate}
                                     />
-                                :   <DummyLogin />
+                                :   this.redirectToLogin(`${this.props.match.path}/stockpredictions`)
                             }
                         />
                         <Route 
@@ -296,7 +284,7 @@ class TradingContest extends React.Component {
                             path={`${this.props.match.path}/metrics`}
                             render={() => Utils.isLoggedIn()
                                 ?   <Dashboard />
-                                :   <DummyLogin />
+                                :   this.redirectToLogin(`${this.props.match.path}/metrics`)
                             }
                         />
                         <Route 
@@ -309,15 +297,10 @@ class TradingContest extends React.Component {
                                         updateDate={this.updateDate}
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
                                     />
-                                :   <DummyLogin />
+                                :   this.redirectToLogin(`${this.props.match.path}`)
                             }
                         />
-                        <Route 
-                            render={() => {
-                                window.location.href = '/404'
-                            }}
-                        />
-                        {/* <Redirect to='/404'/> */}
+                        <Route component={PageNotFound} />
                     </Switch>
                 </Grid>
             </AqLayout>
@@ -360,7 +343,7 @@ class TradingContest extends React.Component {
                                         componentType='preview'
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
                                     />
-                                :   <DummyLogin />
+                                :   this.redirectToLogin(`${this.props.match.path}`)
                             }
                         />
                         <Route 
@@ -372,7 +355,7 @@ class TradingContest extends React.Component {
                                         componentType='preview'
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
                                     />
-                                :   <DummyLogin />
+                                :   this.redirectToLogin(`${this.props.match.path}/mypicks`)
                             }
                         />
                         <Route 
@@ -382,7 +365,7 @@ class TradingContest extends React.Component {
                                 ?   <TopPicks 
                                         selectedDate={this.state.selectedDate}
                                     />
-                                :   <DummyLogin />
+                                :   this.redirectToLogin(`${this.props.match.path}/toppicks`)
                             }
                         />
                         <Route 
@@ -392,7 +375,7 @@ class TradingContest extends React.Component {
                                 ?   <Leaderboard 
                                         selectedDate={this.state.selectedDate}
                                     />
-                                : <DummyLogin />
+                                :   this.redirectToLogin(`${this.props.match.path}/leaderboard`)
                             }
                         />
                         <Route 
@@ -402,16 +385,11 @@ class TradingContest extends React.Component {
                                 ?   <StockPredictions 
                                         selectedDate={this.state.selectedDate}
                                     />
-                                :   <DummyLogin />
+                                :   this.redirectToLogin(`${this.props.match.path}/stockpredictions`)
                             }
                         />
-                        <Route 
-                            render={() => {
-                                window.location.href = '/404'
-                            }}
-                        />
                         {/* <Redirect to='/404'/> */}
-                        {/* <Route component={PageNotFound} /> */}
+                        <Route component={PageNotFound} />
                     </Switch>
                 </AqLayoutDesktop>
             </div>

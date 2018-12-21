@@ -20,7 +20,7 @@ import ForgotPassword from './containers/AuthPages/ForgotPassword';
 import ResetPassword from './containers/AuthPages/ResetPassword';
 import AuthFeedback from './containers/AuthPages/AuthFeedback';
 import StockDetail from './containers/StockDetail';
-import DummyLogin from './containers/DummyLogin';
+import PageNotFound from './containers/ErrorPages/PageNotFound';
 import {Utils} from './utils';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
 import './App.css';
@@ -47,6 +47,12 @@ class App extends Component {
         this.fireTracking();
     }
 
+    redirectToLogin = (redirectUrl) => {
+        Utils.localStorageSave('redirectToUrlFromLogin', redirectUrl);
+
+        return <Redirect push to='/login' />;
+    }
+
     render() {
         return (
             <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -71,7 +77,7 @@ class App extends Component {
                                         render={() => {
                                             return Utils.isLoggedIn()
                                                 ? <TradingContestLeaderboard />
-                                                : <DummyLogin />
+                                                : this.redirectToLogin('/dailycontest/leaderboard')
                                         }}
                                     />
                                     <Route
@@ -79,7 +85,7 @@ class App extends Component {
                                         render={() => {
                                             return Utils.isLoggedIn()
                                                 ? <TradingContestTopPicks />
-                                                : <DummyLogin />
+                                                : this.redirectToLogin('/dailycontest/toppicks')
                                         }}
                                     />
                                     <Route
@@ -87,7 +93,7 @@ class App extends Component {
                                         render={() => {
                                             return Utils.isLoggedIn()
                                                 ? <StockCardPredictions />
-                                                : <DummyLogin />
+                                                : this.redirectToLogin('/contest')
                                         }}
                                     />
                                     <Route 
@@ -95,11 +101,12 @@ class App extends Component {
                                         render={() => {
                                             return Utils.isLoggedIn() 
                                                 ? <TradingContest /> 
-                                                : <DummyLogin />
+                                                : this.redirectToLogin('/dailycontest')
                                             }
                                         }
                                     /> 
-                                    {
+                                    <Route component={PageNotFound}/>
+                                    {/* {
                                         develop 
                                         ?   <Redirect push to='/404' />
                                         :   <Route 
@@ -107,7 +114,7 @@ class App extends Component {
                                                     window.location.href = '/404'
                                                 }}
                                             />
-                                    }
+                                    } */}
                                 </Switch>
                             );
                         }}
@@ -128,10 +135,11 @@ class App extends Component {
                                         path='/dailycontest' 
                                         render={() => Utils.isLoggedIn() 
                                                 ? <TradingContest /> 
-                                                : <DummyLogin />
+                                                : this.redirectToLogin('/dailycontest')
                                         }
                                     /> 
-                                    {
+                                    <Route component={PageNotFound}/>
+                                    {/* {
                                         develop 
                                         ?   <Redirect push to='/404' />
                                         :   <Route 
@@ -139,7 +147,7 @@ class App extends Component {
                                                     window.location.href = '/404'
                                                 }}
                                             />
-                                    }
+                                    } */}
                                 </Switch>
                             );
                         }}

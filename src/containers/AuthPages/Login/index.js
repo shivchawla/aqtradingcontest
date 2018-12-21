@@ -43,7 +43,6 @@ class Login extends React.Component {
     }
 
     processLogin = response => {
-        console.log('processLogin Called');
         if (response.data.token) {
             Utils.localStorageSaveObject(Utils.userInfoString, response.data);
             Utils.setLoggedInUserInfo(response.data);
@@ -70,7 +69,6 @@ class Login extends React.Component {
     }
 
     handleLogin = values => {
-        console.log('handelLogin Called');
         this.setState({loading: true});
         loginUser(values)
         .then(response => {
@@ -80,15 +78,19 @@ class Login extends React.Component {
     }
 
     responseGoogle =  (googleUser) => {
-        console.log('responseGoogle Called');
         this.setState({loading: true});
         googleLogin(googleUser)
         .then(response => {
-            console.log(response);
             this.processLogin(response)
         })
         .catch(error => this.processError(error))
     }
+
+    componentWillMount(){
+        if (Utils.isLoggedIn()) {
+            window.location.href = '/dailycontest/home';
+        }
+      }
 
     renderForm = ({
         values,
