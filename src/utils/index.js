@@ -186,7 +186,7 @@ export class Utils{
 		}
 		if (history){
 			!redirect && Utils.logoutUser();
-			window.location.assign('/login');
+			history.push('/login');
 		}
 	}
 
@@ -200,7 +200,8 @@ export class Utils{
 						return;
 					}else{
 						this.setShouldUpdateToken(true);
-						window.location.assign(`/tokenUpdate?redirectUrl=${encodeURIComponent(fromUrl)}`);
+						// window.location.assign(`/tokenUpdate?redirectUrl=${encodeURIComponent(fromUrl)}`);
+						history.push(`/tokenUpdate?redirectUrl=${encodeURIComponent(fromUrl)}`);
 						reject(false);
 					}
 				}else{

@@ -12,12 +12,12 @@ export default class ForbiddenAccess extends React.Component {
                         <h1 
                                 style={{fontSize: '30px', fontWeight: '500', color: '#fb4d4d'}}
                         >
-                            404 Not Found
+                            403 Forbidden
                         </h1>
                         <span 
                                 style={{fontSize: '16px', fontWeight: '400', marginLeft: '5px', color: '#7b7b7b'}}
                         >
-                            The page you are looking for isn't found
+                            Access Denied
                         </span>
                         <Button 
                                 type="primary" 
