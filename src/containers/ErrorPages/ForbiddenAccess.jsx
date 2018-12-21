@@ -10,19 +10,19 @@ export default class ForbiddenAccess extends React.Component {
                 <Grid item xs={12} style={{...verticalBox, height: '100vh'}}>
                     <div style={{...verticalBox, justifyContent: 'center', height: '100vh', width: '100vw'}}>
                         <h1 
-                                style={{fontSize: '40px', fontWeight: '500', color: '#fb4d4d'}}
+                                style={{fontSize: '30px', fontWeight: '500', color: '#fb4d4d'}}
                         >
                             403 Forbidden
                         </h1>
                         <span 
-                                style={{fontSize: '20px', fontWeight: '400', marginLeft: '5px', color: '#fb4d4d'}}
+                                style={{fontSize: '16px', fontWeight: '400', marginLeft: '5px', color: '#7b7b7b'}}
                         >
                             Access Denied
                         </span>
                         <Button 
                                 type="primary" 
                                 onClick={() => this.props.history.push('/dailycontest')}
-                                style={{marginTop: '5%', backgroundColor: '#5e627c'}}
+                                style={{marginTop: '5%', backgroundColor: '#5e627c', boxShadow: 'none'}}
                                 variant='contained'
                                 color='primary'
                         >
