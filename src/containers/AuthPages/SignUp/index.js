@@ -49,7 +49,6 @@ class SignUp extends React.Component {
     }
 
     processError = error => {
-        console.log(error);
         if (error.response && error.response.status === 401){
             this.setState({
                 loading: false,
@@ -64,10 +63,10 @@ class SignUp extends React.Component {
     }
 
     handleSignUp = values => {
-        console.log('handleSignUp called');
         this.setState({loading: true});
         registerUser(values)
         .then(response => {
+            this.setState({error: null});
             this.processSignUp(response);
         })
         .catch(error => this.processError(error))
@@ -174,6 +173,18 @@ class SignUp extends React.Component {
                                 render={this.renderForm}
                                 validate={validateSchema(getValidationSchema)}
                             />
+                            {
+                                this.state.error &&
+                                <div 
+                                        style={{
+                                            ...horizontalBox,
+                                            justifyContent: 'center',
+                                            marginTop: '5px'
+                                        }}
+                                >
+                                    <ErrorText>{this.state.error}</ErrorText>
+                                </div>
+                            }
                             <div 
                                     style={{
                                         ...horizontalBox, 
@@ -216,6 +227,18 @@ class SignUp extends React.Component {
                             render={this.renderForm}
                             validate={validateSchema(getValidationSchema)}
                         />
+                        {
+                            this.state.error &&
+                            <div 
+                                    style={{
+                                        ...horizontalBox,
+                                        justifyContent: 'center',
+                                        marginTop: '5px'
+                                    }}
+                            >
+                                <ErrorText>{this.state.error}</ErrorText>
+                            </div>
+                        }
                         <div 
                                 style={{
                                     ...horizontalBox, 
@@ -284,4 +307,11 @@ const CompanyTagLine = styled.h3`
     font-style: italic;
     color: #37474f;
     font-weight: 400;
+`;
+
+const ErrorText = styled.h3`
+    font-size: 14px;
+    color: #fd6262;
+    font-weight: 400;
+    font-family: 'Lato', sans-serif;
 `;

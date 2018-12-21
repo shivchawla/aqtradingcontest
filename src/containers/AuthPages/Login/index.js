@@ -72,6 +72,7 @@ class Login extends React.Component {
         this.setState({loading: true});
         loginUser(values)
         .then(response => {
+            this.setState({error: null});
             this.processLogin(response);
         })
         .catch(error => this.processError(error))
@@ -81,6 +82,7 @@ class Login extends React.Component {
         this.setState({loading: true});
         googleLogin(googleUser)
         .then(response => {
+            this.setState({error: null});
             this.processLogin(response)
         })
         .catch(error => this.processError(error))
@@ -88,7 +90,7 @@ class Login extends React.Component {
 
     componentWillMount(){
         if (Utils.isLoggedIn()) {
-            window.location.href = '/dailycontest/home';
+            this.props.history.push('/dailycontest/home');
         }
       }
 
@@ -184,6 +186,18 @@ class Login extends React.Component {
                                 renderForm={this.renderForm}
                                 onSubmit={this.handleLogin}
                             />
+                            {
+                                this.state.error &&
+                                <div 
+                                        style={{
+                                            ...horizontalBox,
+                                            justifyContent: 'center',
+                                            marginTop: '5px'
+                                        }}
+                                >
+                                    <ErrorText>{this.state.error}</ErrorText>
+                                </div>
+                            }
                             <div 
                                     style={{
                                         ...horizontalBox, 
@@ -233,6 +247,18 @@ class Login extends React.Component {
                             renderForm={this.renderForm}
                             onSubmit={this.handleLogin}
                         />
+                        {
+                            this.state.error &&
+                            <div 
+                                    style={{
+                                        ...horizontalBox,
+                                        justifyContent: 'center',
+                                        marginTop: '5px'
+                                    }}
+                            >
+                                <ErrorText>{this.state.error}</ErrorText>
+                            </div>
+                        }
                         <div 
                                 style={{
                                     ...horizontalBox, 
@@ -301,6 +327,13 @@ const CompanyTagLine = styled.h3`
     font-style: italic;
     color: #37474f;
     font-weight: 400;
+`;
+
+const ErrorText = styled.h3`
+    font-size: 14px;
+    color: #fd6262;
+    font-weight: 400;
+    font-family: 'Lato', sans-serif;
 `;
 
 const GoogleLoginButton = styled(GoogleLogin)`
