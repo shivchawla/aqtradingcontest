@@ -139,7 +139,7 @@ class DefaultSettings extends React.Component {
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
         ));
-        const radioGroupStyle = {...verticalBox, alignItems: 'flex-start', minHeight: '80px', width: '100%'};
+        const radioGroupStyle = {...verticalBox, alignItems: 'flex-start', minHeight: '80px', width: '90%'};
 
         return (
             <BottomSheet
@@ -189,7 +189,7 @@ class DefaultSettings extends React.Component {
                                 <MetricLabel 
                                         style={{
                                             marginBottom: '10px',
-                                            marginTop: '20px'
+                                            marginTop: '10px'
                                         }}
                                 >
                                     Horizon in Days

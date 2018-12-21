@@ -85,11 +85,12 @@ export const handleGetError = (error, history, redirectUrl) => {
             if (error.response.status === 400 || 
                         (error.response.status === 403 && _.get(error, 'response.data.code', '') !== 'server_error')
                 ) {
-                window.location.href = '/forbiddenAccess';
+                // window.location.href = '/forbiddenAccess';
+                this.props.history.push('/forbiddenAccess');
             }
         }
     } else {
-        window.location.href = '/login';
+        this.props.history.push('/login');
     }
     return error;
 }
@@ -108,7 +109,7 @@ export const handleCreateAjaxError = (error, history, redirectUrl, disableNotifi
             !disableNotification && openNotification('error', 'Error', errorMessage);
         }
     } else {
-        window.location.href = '/login';
+        this.props.history.push('/login');
     }
     return error;
 }

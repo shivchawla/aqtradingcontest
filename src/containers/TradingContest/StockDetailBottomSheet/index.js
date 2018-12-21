@@ -95,7 +95,7 @@ export default class StockDetailBottomSheet extends React.Component {
                             }}
                     >
                         <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
-                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(chg)} ({chgPct}%)</Change>
+                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(chg)} ({chgPct.toFixed(2)}%)</Change>
                     </div>
                 </div>
             </div>

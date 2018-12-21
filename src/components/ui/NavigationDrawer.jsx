@@ -75,7 +75,8 @@ class NavigationDrawerImpl extends React.Component {
                                 if(Utils.isLoggedIn()){
                                     Utils.logoutUser()
                                 }
-                                window.location='/login';
+                                this.props.onToggle();
+                                this.props.history.push('/login')
                             }}>
                             
                             <ListItemIcon>

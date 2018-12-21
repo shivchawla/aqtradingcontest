@@ -111,7 +111,7 @@ class WatchlistComponent extends React.Component {
         .catch(error => {
             this.setState({noWatchlistPresent: true});
             this.openSnackbar('Error Occurred while fetching Watchlist');
-            // console.log(error);
+
         })
         .finally(() => {
             this.setState({loading: false});
@@ -165,7 +165,7 @@ class WatchlistComponent extends React.Component {
         })
         .catch(error => {
             this.openSnackbar('Error Occurred while fetching Watchlist');
-            // console.log(error);
+
         })
         .finally(() => {
             this.setState({updateWatchlistLoading: false});
