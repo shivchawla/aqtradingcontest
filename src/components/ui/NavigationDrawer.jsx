@@ -72,6 +72,7 @@ class NavigationDrawerImpl extends React.Component {
                                 if(Utils.isLoggedIn()){
                                     Utils.logoutUser()
                                 }
+                                this.props.onToggle();
                                 this.props.history.push('/login')
                             }}>
                             
