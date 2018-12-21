@@ -37,7 +37,7 @@ export default class SearchStockHeaderDesktop extends React.Component {
                         </h3>
                     </div>
                 </Grid>
-                <Button 
+                {/* <Button 
                         size="small"
                         onClick={this.props.addSelectedStocksToPortfolio} 
                         type="primary" 
@@ -55,7 +55,7 @@ export default class SearchStockHeaderDesktop extends React.Component {
                         // count={this.props.selectedStocks.length} 
                         count={this.props.stocksCount} 
                     />
-                </Button>
+                </Button> */}
             </Grid>
         );
     }

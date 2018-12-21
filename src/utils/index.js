@@ -12,6 +12,7 @@ var MobileDetect = require('mobile-detect'),
     md = new MobileDetect(window.navigator.userAgent);
 
 export const dateFormat = 'Do MMMM YYYY';
+const DateHelper = require('../utils/date');
 
 export const getUnixTimeSeries = (data) => {
     return new Promise((resolve, reject) => {
@@ -33,12 +34,12 @@ export const getUnixStockData = (data) => {
     })
 }
 
-export const getStockPerformance = (tickerName, detailType='detail', field='priceHistory') => {
+export const getStockPerformance = (tickerName, detailType='detail', field='priceHistory', startDate = null, endDate = null) => {
     return new Promise((resolve, reject) => {
-        getStockData(tickerName, field, detailType)
+        getStockData(tickerName, field, detailType, startDate, endDate)
         .then(performance => {
             const data = performance.data.priceHistory;
-            if (data.length > 0) { // Check if ticker is valid
+			if (data.length > 0) { // Check if ticker is valid
                 const performanceArray = data.map((item, index) => {
                     return [moment(item.date).valueOf(), item.price]
                 });
@@ -51,6 +52,50 @@ export const getStockPerformance = (tickerName, detailType='detail', field='pric
             reject(error);
         });
     });
+}
+
+export const getIntraDayStockPerformance = (tickerName, detailType='detail') => {
+	const requiredDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days'))).format('YYYY-MM-DD');
+
+	return new Promise((resolve, reject) => {
+        getStockData(tickerName, 'intraDay', detailType, requiredDate)
+        .then(performance => {
+			const data = performance.data.intradayHistory;
+			if (data.length > 0) { // Check if ticker is valid
+				const formattedData = data.map(item => {
+					const stillUtc = moment.utc(item.datetime).toDate();
+					const local = moment(stillUtc).local().add(1, 'minutes').startOf('minute').valueOf();
+					return [local, item.close];
+				})
+				const throttledData = getIntraDayThrottledPerformance(formattedData);
+				if (formattedData.length <=20) {
+					resolve(sortPerformanceData(formattedData));
+				} else {
+					resolve(sortPerformanceData(throttledData));
+				}
+            } else {
+                resolve([]);
+            }
+        })
+        .catch(error => {
+			console.log(error);
+            reject(error);
+        });
+    });
+}
+
+export const sortPerformanceData = data => {
+	return _.sortBy(data, item => item[0]);
+}
+
+export const getIntraDayThrottledPerformance = (data) => {
+	const clonedData = _.map(data, _.cloneDeep);
+	const performanceArray = [];
+	for (let i=clonedData.length - 1; i >= 0; i-=5) {
+		const item = clonedData[i];
+		performanceArray.push(item);
+	}
+	return (_.reverse(performanceArray));
 }
 
 export const getStockStaticPerformance = (tickerName, detailType='detail', field='staticPerformance') => {
@@ -296,6 +341,16 @@ export class Utils{
 			stringy = data.email;
 		}
 		return stringy;
+	}
+
+	static isAdmin() {
+		let isAdmin = false;
+		const data = this.getUserInfo();
+		if (data) {
+			isAdmin = _.get(data, 'isAdmin', false);
+		}
+
+		return isAdmin;
 	}
 
 	static getLoggedInUserInitials(){
@@ -552,6 +607,10 @@ export class Utils{
 
 	static isNull(value) {
 		return value === null && value === 'null';
+	}
+
+	static isLocalStorageItemPresent = (item) => {
+		return item !== undefined && item !== 'null' && item !== null;
 	}
 }
 

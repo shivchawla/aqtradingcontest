@@ -32,7 +32,7 @@ export default class SelectionMetricsMini extends React.Component {
         const {netValue = 0, pnlNegative = 0, pnlPositive = 0, profitFactor = 0, pnl = 0, pnlPct = 0, cost = 0} = _.get(this.props, 'net', {});
         
         return (
-            <SGrid container justify="center" alignItems="center" style={{border:'1px solid lightgrey'}}>
+            <SGrid container justify="center" alignItems="center" style={{border:'1px solid #dff0ff'}}>
 
                 <Grid item xs={12} style={{marginTop:'-22px', alignItems:'start'}}>
                     <div style={{width: '80px', backgroundColor: '#fff', color:'#1763c6'}}>
@@ -102,4 +102,5 @@ const MetricLabelText = styled.h5`
 
 const SGrid = styled(Grid)`
     padding: 10px;
+    border-radius: 3px;
 `;

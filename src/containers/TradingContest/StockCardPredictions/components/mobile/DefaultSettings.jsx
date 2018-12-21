@@ -14,8 +14,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
+import ActionIcon from '../../../Misc/ActionIcons';
+import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
 
 const styles = theme => ({
@@ -47,29 +49,43 @@ class DefaultSettings extends React.Component {
     }
 
     onSectorMenuItemClicked = (event, selectedSector) => {
+        const listMode = _.get(this.props, 'defaultStockData.listMode', false);
         this.setState({anchorEl: null}, () => {
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
                 sector: selectedSector
             })
             .then(() => {
-                this.props.skipStock();
+                listMode ? this.props.fetchStocks('', false, selectedSector, 0) : this.props.skipStock();
                 this.props.undoStockSkips(false);
-            });
+            })
+            .catch(err => {
+                console.log('Error', err);
+            })
         });
     }
 
-    handleHorizonChange = value => {
+    handleHorizonChange = (value, format = true) => {
+        const requiredHorizon = format ? getHorizonValue(value) : value;
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
-            horizon: getHorizonValue(value)
+            horizon: requiredHorizon
         });
     }
 
-    handleTargetChange = value => {
+    handleTargetChange = (value, format = true) => {
+        const requiredTarget = format ? getTargetValue(value) : value;
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
-            target: getTargetValue(value)
+            target: requiredTarget
+        });
+    }
+
+    handleStopLossChange = (value, format = true) => {
+        const requiredStopLoss = format ? getTargetValue(value) : value;
+        this.props.modifyDefaultStockData({
+            ...this.props.defaultStockData,
+            stopLoss: requiredStopLoss
         });
     }
 
@@ -81,89 +97,93 @@ class DefaultSettings extends React.Component {
         this.props.updateEditMode(value === 1);
     }
 
+    onListModeChanged = (value) => {
+        this.props.modifyDefaultStockData({
+            ...this.props.defaultStockData,
+            listMode: value === 1
+        });
+        this.props.updateListMode(value === 1);
+    }
+
+    renderHeader = () => {
+        return (
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        background: 'linear-gradient(to right, #5443F0, #335AF0)',
+                        width: '100%',
+                        padding: '5px 0'
+                    }}
+            >
+                <DialogHeader>Filters</DialogHeader>
+                <ActionIcon 
+                    onClick={this.props.onClose} 
+                    color='#fff'
+                    type="close"
+                />
+            </div>
+        );
+    }
+
     render() {
         const {classes} = this.props;
-        let {horizon = 2, target = 0, sector = '', editMode = false} = this.props.defaultStockData;
-        target = getTarget(target);
-        horizon = getHorizon(horizon);
+        let {horizon = 2, target = 0, sector = '', editMode = false, listMode = false, stopLoss = 0} = this.props.defaultStockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
         ));
+        const radioGroupStyle = {...verticalBox, alignItems: 'flex-start', minHeight: '80px', width: '90%'};
 
         return (
-            <Dialog
-                fullScreen
-                open={this.props.open}
-                onClose={this.props.toggleSettingsDialog}
-                TransitionComponent={Transition}
-                style={{overflow: 'hidden'}}
+            <BottomSheet
+                    open={this.props.open}
+                    customHeader={this.renderHeader}
             >
-                <DialogContent
-                        classes={{
-                            root: classes.dialogContentRoot
-                        }}
-                >
-                    <div 
-                        style={{
-                            ...horizontalBox,
-                            width: '100%',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}
+                <Grid container>
+                    <Grid 
+                            item xs={12} 
+                            style={{
+                                ...verticalBox,
+                                alignItems: 'center'
+                            }}
                     >
-                        <Header>Filters</Header>
-                        <IconButton 
-                                color="inherit" 
-                                onClick={this.props.onClose} 
-                                aria-label="Close"
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </div>
-                    <Grid container>
-                        <Grid 
-                                item xs={12} 
+                        <div 
                                 style={{
-                                    ...verticalBox,
-                                    alignItems: 'center'
+                                    ...horizontalBox, 
+                                    justifyContent: isDesktop ? 'flex-start': 'space-between',
+                                    width: '100%'
                                 }}
                         >
-                            <div 
+                            <MetricLabel 
                                     style={{
-                                        ...horizontalBox, 
-                                        justifyContent: isDesktop ? 'flex-start': 'space-between',
-                                        width: '100%'
+                                        marginLeft: '20px',
+                                        marginRight: isDesktop ? '20px' : 0
                                     }}
                             >
-                                <MetricLabel 
-                                        style={{
-                                            marginLeft: '20px',
-                                            marginRight: isDesktop ? '20px' : 0
-                                        }}
-                                >
-                                    Sectors
-                                </MetricLabel>
-                                <SectorMenu 
-                                    anchorEl={this.state.anchorEl}
-                                    onClick={this.onSectorkMenuClicked}
-                                    onClose={this.onSectorMenuClose}
-                                    onMenuItemClicked={this.onSectorMenuItemClicked}
-                                    selectedSector={sector}
-                                />
-                            </div>
-                            <div 
-                                    style={{
-                                        ...verticalBox, 
-                                        width: '100%', 
-                                        alignItems: 'flex-start',
-                                        paddingLeft: '40px',
-                                    }}
-                            >
+                                Sectors
+                            </MetricLabel>
+                            <SectorMenu 
+                                anchorEl={this.state.anchorEl}
+                                onClick={this.onSectorkMenuClicked}
+                                onClose={this.onSectorMenuClose}
+                                onMenuItemClicked={this.onSectorMenuItemClicked}
+                                selectedSector={sector}
+                            />
+                        </div>
+                        <div 
+                                style={{
+                                    ...verticalBox, 
+                                    width: '100%', 
+                                    alignItems: 'flex-start',
+                                    paddingLeft: '40px',
+                                }}
+                        >
+                            <div style={radioGroupStyle}>
                                 <MetricLabel 
                                         style={{
                                             marginBottom: '10px',
-                                            marginTop: '20px'
+                                            marginTop: '10px'
                                         }}
                                 >
                                     Horizon in Days
@@ -172,12 +192,17 @@ class DefaultSettings extends React.Component {
                                     items={horizonItems}
                                     onChange={this.handleHorizonChange}
                                     defaultSelected={horizon}
+                                    getIndex={getHorizon}
+                                    checkIfCustom={checkIfCustomHorizon}
+                                    showSlider
+                                    label='Days'
                                 />
-
+                            </div>
+                            <div style={radioGroupStyle}>
                                 <MetricLabel 
                                         style={{
                                             marginBottom: '10px',
-                                            marginTop: '30px'
+                                            marginTop: '20px'
                                         }}
                                 >
                                     Target in %
@@ -187,8 +212,55 @@ class DefaultSettings extends React.Component {
                                     onChange={this.handleTargetChange}
                                     defaultSelected={target}
                                     hideLabel={true}
+                                    getIndex={getTarget}
+                                    checkIfCustom={checkIfCustomTarget}
+                                    showSlider
+                                    label='%'
                                 />
                             </div>
+                            <div style={radioGroupStyle}>
+                                <MetricLabel 
+                                        style={{
+                                            marginBottom: '10px',
+                                            marginTop: '20px'
+                                        }}
+                                >
+                                    Stop-Loss %
+                                </MetricLabel>
+                                <StockCardRadioGroup 
+                                    items={targetItems}
+                                    onChange={this.handleStopLossChange}
+                                    defaultSelected={stopLoss}
+                                    hideLabel={true}
+                                    getIndex={getTarget}
+                                    checkIfCustom={checkIfCustomTarget}
+                                    showSlider
+                                    label='%'
+                                />
+                            </div>
+                        </div>
+                        <div
+                                style={{
+                                    paddingLeft: '40px',
+                                    width: '100%',
+                                    justifyContent: 'flex-start',
+                                    marginTop: '30px'
+                                }}
+                        >
+                            <MetricLabel >
+                                View Mode
+                            </MetricLabel>
+                            <RadioGroup style={{margin:'0px auto 10px auto'}}
+                                items={['Card', 'List']}
+                                defaultSelected={listMode === true ? 1 : 0}
+                                onChange={this.onListModeChanged}
+                                style={{
+                                    marginLeft: '-13px'
+                                }}
+                            />
+                        </div>
+                        {
+                            !listMode &&
                             <div
                                     style={{
                                         paddingLeft: '40px',
@@ -198,39 +270,53 @@ class DefaultSettings extends React.Component {
                                     }}
                             >
                                 <MetricLabel >
-                                    View Mode
+                                    Card Mode
                                 </MetricLabel>
                                 <RadioGroup style={{margin:'0px auto 10px auto'}}
-			                        items={['Normal', 'Customize']}
-			                        defaultSelected={editMode === true ? 1 : 0}
+                                    items={['Normal', 'Customize']}
+                                    defaultSelected={editMode === true ? 1 : 0}
                                     onChange={this.onEditModeChanged}
                                     style={{
                                         marginLeft: '-13px'
                                     }}
-			                    />
+                                    disabled={listMode}
+                                />
                             </div>
+                        }
+                        <div
+                                style={{
+                                    ...horizontalBox,
+                                    width: '90%',
+                                    justifyContent: this.props.skippedStocks.length > 0 
+                                        ? 'space-between'
+                                        : 'center',
+                                    marginTop: '30px'
+                                }}
+                        >
                             {
                                 this.props.skippedStocks.length > 0 &&
-                                <div
-                                        style={{
-                                            ...horizontalBox,
-                                            width: '100%',
-                                            justifyContent: 'center',
-                                            marginTop: '30px'
-                                        }}
+                                <Button 
+                                        variant="outlined"
+                                        onClick={this.props.undoStockSkips}
+                                        style={{minWidth: '115px'}}
                                 >
-                                    <Button 
-                                            variant="outlined"
-                                            onClick={this.props.undoStockSkips}
-                                    >
-                                        Undo Skips
-                                    </Button>
-                                </div>
+                                    Undo Skips
+                                </Button>
                             }
-                        </Grid>
+                            <Button 
+                                    variant="contained"
+                                    style={applyButtonStyle}
+                                    onClick={this.props.onClose}
+                                    variant="contained"
+                                    color="primary"
+                            >
+                                Apply
+                            </Button>
+                        </div>
                     </Grid>
-                </DialogContent>
-            </Dialog>
+                    <Grid item xs={12} style={{height: '100px'}}></Grid>
+                </Grid>
+            </BottomSheet>
         );
     }
 }
@@ -283,6 +369,11 @@ const SectorMenu = ({anchorEl, selectedSector = '', onClick , onClose, onMenuIte
 
 export default withStyles(styles)(DefaultSettings);
 
+const applyButtonStyle = {
+    boxShadow: 'none',
+    width: '115px'
+}
+
 const Header = styled.h3`
     color: #0D0D0D;
     font-weight: 500;
@@ -298,4 +389,12 @@ const MetricLabel = styled.h3`
     text-align: start;
     font-weight: 400;
     font-family: 'Lato', sans-serif;
+`;
+
+const DialogHeader = styled.h3`
+    color: #fff;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    margin-left: 20px;
 `;

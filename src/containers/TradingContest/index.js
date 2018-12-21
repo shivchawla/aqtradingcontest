@@ -21,6 +21,7 @@ import Dashboard from './Dashboard';
 import StockPredictions from './StockCardPredictions';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import DateComponent from './Misc/DateComponent';
+import DummyLogin from '../DummyLogin';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
 import Header from '../Header';
 import {primaryColor, verticalBox, metricColor} from '../../constants';
@@ -245,15 +246,7 @@ class TradingContest extends React.Component {
                             <STab label="Metrics"/>
                         </STabs>
                     </Grid>
-                    <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
-                        {
-                            selectedTab === 1 &&
-                            <DateComponent 
-                                selectedDate={this.state.selectedDate}
-                                color='grey'
-                                onDateChange={this.updateDate}
-                            />
-                        }
+                    {/* <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
                         {
                             !marketOpen &&
                             this.state.selectedTab === 1 &&
@@ -262,6 +255,7 @@ class TradingContest extends React.Component {
                                         ? metricColor.positive 
                                         : '#fc4c55'
                                     }
+                                    style={{marginTop: '10px'}}
                             >   
                                 {
                                     marketOpen
@@ -270,7 +264,7 @@ class TradingContest extends React.Component {
                                 }
                             </MartketOpenTag>
                         }
-                    </Grid>
+                    </Grid> */}
                     <Switch>
                         <Route 
                             exact
@@ -281,8 +275,9 @@ class TradingContest extends React.Component {
                                         selectedDate={this.state.selectedDate}
                                         componentType='preview'
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
+                                        updateDate={this.updateDate}
                                     />
-                                :   <Redirect push to='/login'/>
+                                :   <DummyLogin />
                             }
                         />
                         <Route 
@@ -291,8 +286,9 @@ class TradingContest extends React.Component {
                             render={() => Utils.isLoggedIn()
                                 ?   <StockPredictions 
                                         selectedDate={this.state.selectedDate}
+                                        updateDate={this.updateDate}
                                     />
-                                :   <Redirect push to='/login'/>
+                                :   <DummyLogin />
                             }
                         />
                         <Route 
@@ -300,7 +296,7 @@ class TradingContest extends React.Component {
                             path={`${this.props.match.path}/metrics`}
                             render={() => Utils.isLoggedIn()
                                 ?   <Dashboard />
-                                :   <Redirect push to='/login'/>
+                                :   <DummyLogin />
                             }
                         />
                         <Route 
@@ -310,9 +306,10 @@ class TradingContest extends React.Component {
                                 ?   <CreateEntry 
                                         selectedDate={this.state.selectedDate}
                                         componentType='preview'
+                                        updateDate={this.updateDate}
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
                                     />
-                                :   <Redirect push to='/login'/>
+                                :   <DummyLogin />
                             }
                         />
                         <Route 
@@ -363,7 +360,7 @@ class TradingContest extends React.Component {
                                         componentType='preview'
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
                                     />
-                                :   <Redirect push to='/login'/>
+                                :   <DummyLogin />
                             }
                         />
                         <Route 
@@ -375,7 +372,7 @@ class TradingContest extends React.Component {
                                         componentType='preview'
                                         listViewType={this.getListViewTypeFromUrl(this.props)}
                                     />
-                                :   <Redirect push to='/login'/>
+                                :   <DummyLogin />
                             }
                         />
                         <Route 
@@ -385,7 +382,7 @@ class TradingContest extends React.Component {
                                 ?   <TopPicks 
                                         selectedDate={this.state.selectedDate}
                                     />
-                                :   <Redirect push to='/login'/>
+                                :   <DummyLogin />
                             }
                         />
                         <Route 
@@ -395,7 +392,7 @@ class TradingContest extends React.Component {
                                 ?   <Leaderboard 
                                         selectedDate={this.state.selectedDate}
                                     />
-                                : <Redirect />
+                                : <DummyLogin />
                             }
                         />
                         <Route 
@@ -405,7 +402,7 @@ class TradingContest extends React.Component {
                                 ?   <StockPredictions 
                                         selectedDate={this.state.selectedDate}
                                     />
-                                :   <Redirect push to='/login'/>
+                                :   <DummyLogin />
                             }
                         />
                         <Route 

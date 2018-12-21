@@ -3,13 +3,14 @@ import axios from 'axios';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
-import AutoComplete from '../../../../components/input/AutoComplete';
+import StockDetailBottomSheet from '../../../TradingContest/StockDetailBottomSheet';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
+import TranslucentLoader from '../../../../components/Loaders/TranslucentLoader';
 import {withRouter} from 'react-router';
-import {ChartTickerItem} from './ChartTickerItem';
+import StockListItemMobile from '../../../TradingContest/SearchStocks/components/StockListItemMobile';
 import {Utils} from '../../../../utils';
-import { verticalBox, horizontalBox, primaryColor } from '../../../../constants';
+import { verticalBox, horizontalBox, primaryColor, metricColor} from '../../../../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -23,20 +24,72 @@ class WatchList extends React.Component {
             dataSource: [],
             loading: false,
             searchInputOpen: false,
-            watchlistEditMode: false
+            watchlistEditMode: false,
+            selectedInfoStock: {},
+            stockDetailBottomSheetOpen: false,
+        }
+    }
+
+    toggleStockDetailBottomSheetOpen = () => {
+        this.setState({stockDetailBottomSheetOpen: !this.state.stockDetailBottomSheetOpen});
+    }
+
+    renderDeleteIcon = (symbol) => {
+        return (
+            <ActionIcon 
+                size={18}
+                color='#fe626a'
+                type='delete'
+                onClick={() => this.props.deleteItem(symbol)}
+            />
+        );
+    }
+
+    onStockInfoClicked = (symbol, name, lastPrice, change, changePct) => {
+        this.setState({
+            selectedInfoStock: {symbol, name, lastPrice, chg: change, chgPct: changePct}
+        }, () => {
+            this.toggleStockDetailBottomSheetOpen()
+        });
+    }
+
+    onStockAdded = symbol => {
+        let {stockData = {}} = this.props;
+        const {tickers = []} = this.props;
+        const selectedStockIndex = _.findIndex(tickers, item => item.symbol === symbol);
+        if (selectedStockIndex > -1) {
+            const selectedStock = tickers[selectedStockIndex];
+            const symbol = _.get(selectedStock, 'symbol', '');
+            const name = _.get(selectedStock, 'name', '');
+            const changePct = _.get(selectedStock, 'changePct', 0);
+            const change = _.get(selectedStock, 'change', 0);
+            const lastPrice = _.get(selectedStock, 'current', 0);
+            stockData = {
+                ...stockData,
+                symbol,
+                name,
+                lastPrice,
+                change,
+                changePct: Number((changePct * 100).toFixed(2)),
+                shortable: _.get(selectedStock, 'shortable', false)
+            };
+            this.props.toggleStockCardBottomSheet();
+            this.props.selectStock(stockData);
+        } else {
+            return null;
         }
     }
 
     renderTickers = () => {
         const {tickers = [], preview = true} = this.props;
         return tickers.map((ticker, index) => 
-            <ChartTickerItem 
-                watchlist={true}
+            <StockListItemMobile 
+                {...ticker} 
                 key={index} 
-                legend={ticker} 
-                deleteItem={this.deleteItem} 
-                onClick={this.props.onClick}
-                edit={this.state.watchlistEditMode}
+                extraContent={this.props.watchlistEditMode ? this.renderDeleteIcon : null}
+                onInfoClicked={this.onStockInfoClicked}
+                onAddIconClick={this.onStockAdded}
+                showPredict={true}
             />
         );
     }
@@ -66,89 +119,6 @@ class WatchList extends React.Component {
         })
     }
 
-    onSelect = stock => {
-        const value = _.get(stock, 'label', null);
-        const presentTickers = this.props.tickers.map(item => item.name); // present ticker list 
-        const newTickers = _.uniq([...presentTickers, value]); // unique ticker list after adding the selected item  
-        // Calculating the difference to check if any item was added in the watchlist, a new request will only be sent
-        // with the introduction of a new position
-        this.setState({loading: true});
-        const differenceArray = _.without(newTickers, ...presentTickers);
-        if (differenceArray.length > 0) {
-            const data = {
-                name: this.props.name,
-                securities: this.processPositions(newTickers)
-            };
-            const url = `${requestUrl}/watchlist/${this.props.id}`;
-            axios({
-                url,
-                headers: Utils.getAuthTokenHeader(),
-                data,
-                method: 'PUT'
-            })
-            .then(response => {
-                console.log('Successfully Updated Wishlist');
-                // message.success('Successfully Updated Wishlist');
-                this.props.getWatchlist(this.props.id);
-            })
-            .catch(error => {
-                // console.log(error);
-                if (error.response) {
-                    Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
-                }
-            })
-            .finally(() => {
-                this.setState({loading: false});
-            })
-        }
-        
-    }
-
-    deleteItem = name => {
-        // console.log(name);
-        const tickers = this.props.tickers.map(item => item.name);
-        const newTickers = _.pull(tickers, name);
-        const url = `${requestUrl}/watchlist/${this.props.id}`;
-        const data = {
-            name: this.props.name,
-            securities: this.processPositions(newTickers)
-        };
-        this.setState({loading: true});
-        return axios({
-            url,
-            headers: Utils.getAuthTokenHeader(),
-            data,
-            method: 'PUT'
-        })
-        .then(response => {
-            // console.log(`Successfully Deleted ${name} from Wishlist`);
-            // message.success(`Successfully Deleted ${name} from Wishlist`);
-            this.props.getWatchlist(this.props.id);
-        })
-        .catch(error => {
-            // console.log(error);
-            // console.log(`Error occured while deleting ${name} from wishlist`);
-            // message.error(`Error occured while deleting ${name} from wishlist`);
-            if (error.response) {
-                Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
-            }
-        })
-        .finally(() => {
-            this.setState({loading: false});
-        })
-    }
-
-    processPositions = positions => {
-        return positions.map(item => {
-            return {
-                ticker: item,
-                securityType: "EQ",
-                country: "IN",
-                exchange: "NSE"
-            };
-        });
-    }
-
     componentWillUnmount() {
         this.mounted = false;
     }
@@ -160,53 +130,24 @@ class WatchList extends React.Component {
     }
     
     toggleEditWatclistMode = () => {
-        this.setState({watchlistEditMode: !this.state.watchlistEditMode});
+        this.setState({watchlistEditMode: !this.props.watchlistEditMode});
     }   
 
     render() {
         return (
             <Grid container>
-                <Grid item xs={12}>
-                    <Grid container justify="flex-end">
-                    {
-                            this.state.searchInputOpen &&
-                            <Grid 
-                                    item 
-                                    xs={9} 
-                                    style={{
-                                        ...horizontalBox, 
-                                        marginTop: '10px',
-                                        justifyContent: 'flex-end',
-                                        padding: '0 10px'
-                                    }}
-                            >
-                                <AutoComplete 
-                                    handleSearch={this.handleSearch}
-                                    onClick={this.onSelect}
-                                />
-                            </Grid>
-                        }
-                        <Grid item xs={3} style={{...horizontalBox, marginTop: '10px', justifyContent: 'flex-end'}}>
-                            <ActionIcon 
-                                type='search' 
-                                color={primaryColor}
-                                style={{fontSize: '24px'}}
-                                onClick={this.toggleSearchMode}
-                            />
-                            {
-                                this.props.tickers.length > 0 &&
-                                <ActionIcon 
-                                    type={this.state.watchlistEditMode ? 'lock' : 'edit'} 
-                                    color={primaryColor}
-                                    style={{fontSize: '24px'}}
-                                    onClick={this.toggleEditWatclistMode}
-                                />
-                            }
-                        </Grid>
-                    </Grid>
-                </Grid>
+                <StockDetailBottomSheet 
+                    open={this.state.stockDetailBottomSheetOpen}
+                    onClose={this.toggleStockDetailBottomSheetOpen}
+                    selectStock={this.props.selectStock}
+                    toggleStockCardBottomSheet={this.props.toggleStockCardBottomSheet}
+                    toggleStockDetailBottomSheetOpen={this.toggleStockDetailBottomSheetOpen}
+                    stockData={this.props.stockData}
+                    {...this.state.selectedInfoStock}
+                />
                 {
-                    this.props.tickers.length === 0 &&
+                    this.props.tickers.length === 0 && 
+                    !(this.state.loading || this.props.updateWatchlistLoading) &&
                     <Grid item xs={12} style={noStocksFoundContainer}>
                         <ErrorText>No Stocks Found</ErrorText>
                     </Grid>
@@ -217,22 +158,28 @@ class WatchList extends React.Component {
                         <CircularProgress />
                     </Grid>
                 }
-                {
-                    this.props.tickers.length > 0 &&
-                    <Grid 
-                            item 
-                            xs={12} 
-                            style={{
-                                overflow: 'hidden', 
-                                overflowY: 'scroll', 
-                                marginTop: '10px',
-                                padding: '0 10px',
-                                marginTop: '15px'
-                            }}
-                    >
-                        {this.renderTickers()}
-                    </Grid>
-                }
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            overflow: 'hidden', 
+                            overflowY: 'scroll', 
+                            marginTop: '10px',
+                            padding: '0 10px',
+                            marginTop: '5px',
+                            position: 'relative'
+                        }}
+                >
+                    {
+                        this.props.updateWatchlistLoading &&
+                        <TranslucentLoader />
+                    }
+                    {
+                        this.props.tickers.length > 0 &&
+                        this.renderTickers()
+                    }
+                    <div style={{height: '80px'}}></div>
+                </Grid>
             </Grid>
         );
     }

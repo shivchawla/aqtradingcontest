@@ -6,6 +6,8 @@ import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../..
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
 
+const neutralColor = '#717171';
+
 export default class ParticipantListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
@@ -28,36 +30,45 @@ export default class ParticipantListItem extends React.Component {
         }  = this.props;
         
         const medal = getRankMedal(rank);
-        const changeColor = pnl[listType] > 0 ? metricColor.positive : pnl[listType] === 0 ? metricColor.neutral : metricColor.negative;
+        const changeColor = pnl[listType] > 0 ? metricColor.positive : pnl[listType] === 0 ? neutralColor : metricColor.negative;
         
         return (
             <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(userName, advisorId)}>
-                <Grid item xs={1} style={{textAlign: 'start'}}>
-                    <img src={medal} width={20}/>
-                </Grid>
-                <Grid item xs={8} style={{textAlign: 'start'}}>
+                <Grid 
+                        item 
+                        xs={12}
+                        style={{
+                            ...horizontalBox,
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}
+                >
                     <Name>{userName}</Name>
+                    <img src={medal} width={24}/>
                 </Grid>
-                <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                    <Score>
+                <Grid 
+                        item xs={12} 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'space-between', 
+                            marginTop: '5px',
+                            borderTop: '1px solid #F1F1F1',
+                            padding: '10px 0',
+                            marginTop: '15px'
+                        }}
+                >
+                    <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
+                        <p style={labelStyle}>PnL</p>
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl[listType] * 1000)}
+                    </SecondaryText>
+                    <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
+                        <p style={labelStyle}>PnL Pct</p>
+                        {(pnlPct[listType] * 100).toFixed(2)}%
+                    </SecondaryText>
+                    <SecondaryText style={{marginLeft: '5px'}}>
+                        <p style={labelStyle}>Investment</p>
                         {Utils.formatInvestmentValue(cost[listType])}
-                    </Score>
-                </Grid>
-                <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start', marginTop: '5px'}}>
-                    <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
-                        <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
-                            ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl[listType] * 1000)}
-                            <p style={labelStyle}>PnL</p>
-                        </SecondaryText>
-                        <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
-                            {(pnlPct[listType] * 100).toFixed(2)}%
-                            <p style={labelStyle}>PnL Pct</p>
-                        </SecondaryText>
-                        <SecondaryText style={{marginLeft: '5px'}}>
-                            {(profitFactor[listType] || 0).toFixed(2)}
-                            <p style={labelStyle}>Profit Factor</p>
-                        </SecondaryText>
-                    </div>
+                    </SecondaryText>
                 </Grid>
             </SGrid>
         ); 
@@ -76,30 +87,35 @@ const SGrid = styled(Grid)`
     background-color: #fff;
     box-shadow: 0 2px 6px #f1f1f1;
     padding-bottom: 0px;
+    padding-top: 5px;
 `;
 
 const Name = styled.h3`
     font-size: 16px;
-    font-weight: 500;
-    color: #232323;
+    font-weight: 700;
+    color: #222;
+    font-family: 'Lato', sans-serif;
 `;
 
 const SecondaryText = styled.h3`
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
     color: ${props => props.color || '#717171'};
     text-align: start;
+    font-family: 'Lato', sans-serif;
 `;
 
 const Score = styled.h3`
-    font-size: 20px;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 700;
     color: #717171;
-    color: ${primaryColor}
+    color: ${primaryColor};
 `;
 
 const labelStyle = {
     fontSize:'12px',
-    marginTop:'-2px',
-    color: '#878787'
+    color: '#535353',
+    margin: 0,
+    fontFamily: 'Lato, sans-serif',
+    marginBottom: '2px'
 };

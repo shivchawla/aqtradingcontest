@@ -42,8 +42,8 @@ class CustomRadio extends React.Component {
         return (
             <div 
                     style={{
-                        width: '55px',
-                        marginRight: '13px'
+                        width: '48px',
+                        marginRight: '5px'
                     }}
             >
                 <Button
@@ -69,7 +69,7 @@ class CustomRadio extends React.Component {
 export default withStyles(styles)(CustomRadio);
 
 const Label = styled.h3`
-    font-size: 12px;
+    font-size: 10px;
     color: #8B8B8B;
     font-weight: 500;
     font-family: 'Lato', sans-serif;

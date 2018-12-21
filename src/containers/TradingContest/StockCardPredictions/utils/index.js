@@ -2,8 +2,11 @@ import _ from 'lodash';
 import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
 import {targetKvp, horizonKvp} from '../constants';
+import {getStockTicker} from '../../utils';
 import {sectors} from '../../../../constants';
 const dateFormat = 'YYYY-MM-DD';
+
+const DateHelper = require('../../../../utils/date');
 
 export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultTarget = _.get(defaultStockData, 'target', 2);
@@ -11,12 +14,15 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultBenchmark = _.get(defaultStockData, 'benchmark', 'NIFTY_50');
     const defaultSector = _.get(defaultStockData, 'sector', '')
     const name = _.get(stockData, 'detail.Nse_Name', '');
-    const symbol = _.get(stockData, 'ticker', '');
+    const symbol = getStockTicker(stockData);
+    // const symbol = _.get(stockData, 'ticker', '');
     const lastPrice = _.get(stockData, 'latestDetailRT.current', null) || _.get(stockData, 'latestDetail.Close', 0);
     const change = _.get(stockData, 'latestDetailRT.change', null) || _.get(stockData, 'latestDetail.Change', 0);
     let changePct = _.get(stockData, 'latestDetailRT.changePct', null) || _.get(stockData, 'latestDetail.ChangePct', 0);
     const sector = _.get(stockData, 'detail.Sector', '');
     const industry = _.get(stockData, 'Industry', '');
+    const shortable = _.get(stockData, 'shortable', false)
+
     const target = defaultTarget;
     const horizon = defaultHorizon;
     const buyTarget = getPercentageModifiedValue(2, lastPrice);
@@ -35,6 +41,7 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
         horizon,
         buyTarget, 
         sellTarget,
+        shortable,
         predictions: [
             {new: true, locked: false}, 
             {new: true, locked: false}, 
@@ -46,10 +53,11 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
 }
 
 export const constructPrediction = (stockData, type = 'buy') => {
-    let {target = 0, lastPrice = 0, symbol = '', horizon = 1} = stockData;
+    let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0} = stockData;
     const targetValue = getTargetFromLastPrice(lastPrice, target, type);
     const startDate = moment().format(dateFormat);
-    const endDate = moment().add(horizon, 'days').format(dateFormat);
+    const endDate = moment(DateHelper.getNextNonHolidayWeekday(startDate, horizon)).format(dateFormat);
+    stopLoss = -1 * (stopLoss / 100);
     
     return [
         {
@@ -66,7 +74,8 @@ export const constructPrediction = (stockData, type = 'buy') => {
                 },
             startDate,
             endDate,
-            target: targetValue
+            target: targetValue,
+            stopLoss
         }
     ];
 }
@@ -84,7 +93,14 @@ export const getTarget = (targetValue = 0) => {
         return targetKvp[targetValueIndex].index;
     }
 
-    return 0;
+    return targetValue;
+}
+
+// Checks if custom target
+export const checkIfCustomTarget = (targetValue = 0) => {
+    const targetValueIndex = _.findIndex(targetKvp, target => target.value === targetValue);
+
+    return targetValueIndex === -1;
 }
 
 // Gives the horizon index from the horizon value
@@ -94,7 +110,14 @@ export const getHorizon = (horizonValue = 0) => {
         return horizonKvp[horizonValueIndex].index;
     }
 
-    return 0;
+    return horizonValue;
+}
+
+// Checks if custom horizon
+export const checkIfCustomHorizon = (horizonValue = 0) => {
+    const horizonValueIndex = _.findIndex(horizonKvp, target => target.value === horizonValue);
+
+    return horizonValueIndex === -1;
 }
 
 // Gives the target value from the target index
@@ -104,7 +127,7 @@ export const getTargetValue = (value = 0) => {
         return targetKvp[targetValueIndex].value;
     }
 
-    return 0;
+    return value;
 }
 
 // Gives the horizon value from the horizon index
@@ -114,5 +137,5 @@ export const getHorizonValue = (value = 0) => {
         return horizonKvp[horizonValueIndex].value;
     }
 
-    return 0;
+    return value;
 }

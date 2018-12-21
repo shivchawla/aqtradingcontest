@@ -19,10 +19,10 @@ import Signup from './containers/AuthPages/SignUp';
 import ForgotPassword from './containers/AuthPages/ForgotPassword';
 import ResetPassword from './containers/AuthPages/ResetPassword';
 import AuthFeedback from './containers/AuthPages/AuthFeedback';
+import StockDetail from './containers/StockDetail';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
 import DailyContestTnc from './containers/TradingContest/TnC/DailyContestTnC';
-import Watchlist from './containers/Watchlist';
 import './App.css';
 
 const {develop = false, gaTrackingId = null} = require('./localConfig');
@@ -59,12 +59,13 @@ class App extends Component {
                                 <Switch>
                                     <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                     <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
-                                    <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} /> 
                                     <Route exact={true} path='/login' component={Login} />
                                     <Route exact={true} path='/signup' component={Signup} />
                                     <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
                                     <Route exact={true} path='/resetPassword' component={ResetPassword} />
                                     <Route path='/authMessage' component={AuthFeedback} /> 
+                                    {/* <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} />  */}
+                                    <Route exact={true} path='/dailycontest/stockdetail' component={StockDetail} /> 
                                     <Route
                                         path='/dailycontest/leaderboard'
                                         render={() => {

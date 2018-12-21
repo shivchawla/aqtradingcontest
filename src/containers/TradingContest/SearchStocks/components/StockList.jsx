@@ -14,12 +14,20 @@ export default class StockListComponent extends React.Component {
         return false;
     }
 
+    isAlreadyAdded = stock => {
+        const symbol = _.get(stock, 'symbol', '');
+        const stockCart = _.get(this.props, 'stockCart', []);
+        const symbolIndex = _.findIndex(stockCart, stock => stock.symbol === symbol);
+
+        return symbolIndex > -1;
+    }
+
     render() {
-        const {stocks = []} = this.props;
+        const {stocks = [], showPredict = false} = this.props;
         return (
             <React.Fragment>
                 {
-                    stocks.length === 0 &&
+                    stocks.length === 0 && !this.props.loading &&
                     <h3 style={{fontSize: '16px', textAlign: 'center', marginTop: '100px', fontWeight: '300'}}>No Stocks Found</h3>
                 }
                 {
@@ -31,9 +39,13 @@ export default class StockListComponent extends React.Component {
                                     <StockListItemMobile 
                                         key={index} 
                                         {...stock} 
+                                        showPredict={showPredict}
                                         onClick={this.props.handleStockListItemClick} 
-                                        onAddIconClick={this.props.conditionallyAddToggleStock}
+                                        onAddIconClick={this.props.conditionallyAddItemToSelectedArray}
+                                        // onAddIconClick={this.props.conditionallyAddToggleStock}
                                         onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
+                                        isAlreadyAdded={this.isAlreadyAdded(stock)}
+                                        onInfoClicked={this.props.onInfoClicked}
                                     />
                                 )}
                             />

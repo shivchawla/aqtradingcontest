@@ -15,9 +15,10 @@ import {
     nameEllipsisStyle, 
     metricColor
 } from '../../../../../constants';
+import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue} from '../../utils';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget} from '../../utils';
 import {targetKvp, horizonKvp} from '../../constants';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
@@ -35,17 +36,17 @@ export default class StockCard extends React.Component {
         return false;
     }
 
-    handleHorizonChange = value => {
-        let horizon = getHorizonValue(value);
+    handleHorizonChange = (value, format = true) => {
+        let horizon = format ? getHorizonValue(value) : value;
         this.props.modifyStockData({
             ...this.props.stockData,
             horizon
         });
     }
 
-    handleTargetChange = targetIndex => {
+    handleTargetChange = (targetIndex, format = true) => {
         let stockData = this.props.stockData;
-        let target = getTargetValue(targetIndex);
+        let target = format ? getTargetValue(targetIndex) : targetIndex;
         stockData = {
             ...stockData,
             target,
@@ -53,8 +54,16 @@ export default class StockCard extends React.Component {
         this.props.modifyStockData(stockData);
     }
 
+    handleStopLossChange = (value, format = true) => {
+        const requiredStopLoss = format ? getTargetValue(value) : value;
+        this.props.modifyStockData({
+            ...this.props.stockData,
+            stopLoss: requiredStopLoss
+        });
+    }
+
     renderViewMode = () => {
-        const {horizon = 1, target = 2} = this.props.stockData;
+        const {horizon = 1, target = 2, stopLoss = 2} = this.props.stockData;
 
         return (
             <React.Fragment>
@@ -77,24 +86,35 @@ export default class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
-        const {horizon = 2, target = 2} = this.props.stockData;
+        const {horizon = 2, target = 2, stopLoss = 2} = this.props.stockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
+        const radioGroupStyle = {
+            ...verticalBox, 
+            justifyContent: 'flex-start', 
+            alignItems: 'flex-start', 
+            minHeight: '80px', 
+            width: '100%'
+        };
 
         return (
-            <React.Fragment>
-                <div 
-                        style={{
-                            ...verticalBox, 
-                            alignItems: 'flex-start'
-                        }}
-                >
+            <div 
+                    style={{
+                        ...verticalBox, 
+                        alignItems: 'flex-start',
+                        justifyContent: 'flex-start',
+                        width: '100%',
+                    }}
+            >
+                <div style={radioGroupStyle}>
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: '0'
+                                marginTop: '0',
+                                fontSize: '12px',
+                                color: '#222'
                             }}
                     >
                         Horizon in Days
@@ -102,13 +122,21 @@ export default class StockCard extends React.Component {
                     <StockCardRadioGroup 
                         items={horizonItems}
                         onChange={this.handleHorizonChange}
-                        defaultSelected={getHorizon(horizon)}
+                        defaultSelected={horizon}
+                        getIndex={getHorizon}
+                        showSlider
+                        checkIfCustom={checkIfCustomHorizon}
+                        label='Days'
+                        date={true}
                     />
-
+                </div>
+                <div style={radioGroupStyle}>
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '30px' : '10px'
+                                marginTop: isDesktop ? '30px' : '10px',
+                                fontSize: '12px',
+                                color: '#222'
                             }}
                     >
                         Target in %
@@ -116,11 +144,37 @@ export default class StockCard extends React.Component {
                     <StockCardRadioGroup 
                         items={targetItems}
                         onChange={this.handleTargetChange}
-                        defaultSelected={getTarget(target)}
+                        defaultSelected={target}
+                        getIndex={getTarget}
+                        checkIfCustom={checkIfCustomTarget}
+                        showSlider
                         hideLabel={true}
+                        label='%'
                     />
                 </div>
-            </React.Fragment>
+                <div style={radioGroupStyle}>
+                    <MetricLabel 
+                            style={{
+                                marginBottom: '10px',
+                                marginTop: isDesktop ? '30px' : '10px',
+                                fontSize: '12px',
+                                color: '#222'
+                            }}
+                    >
+                        Stop-Loss in %
+                    </MetricLabel>
+                    <StockCardRadioGroup 
+                        items={targetItems}
+                        onChange={this.handleStopLossChange}
+                        defaultSelected={stopLoss}
+                        getIndex={getTarget}
+                        checkIfCustom={checkIfCustomTarget}
+                        showSlider
+                        hideLabel={true}
+                        label='%'
+                    />
+                </div>
+            </div>
         );
     }
 
@@ -169,7 +223,7 @@ export default class StockCard extends React.Component {
                 <MainText style={{marginRight: '5px', fontSize: '26px'}}>
                     ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                 </MainText>
-                <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)} ({changePct}%)</Change>
+                <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)} ({changePct.toFixed(2)}%)</Change>
             </div>
         );
     }
@@ -191,7 +245,7 @@ export default class StockCard extends React.Component {
                 <MainText style={{marginRight: '5px'}}>
                     ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                 </MainText>
-                <Change color={changeColor}>{changePct}%</Change>
+                <Change color={changeColor}>{changePct.toFixed(2)}%</Change>
             </div>
         );
     }
@@ -205,7 +259,8 @@ export default class StockCard extends React.Component {
             change = 0,
             target = 2,
             loading = false,
-            horizon = 1
+            horizon = 1,
+            shortable = true
         } = this.props.stockData;
         const changeColor = change > 0 
             ? metricColor.positive 
@@ -213,10 +268,36 @@ export default class StockCard extends React.Component {
                 ? metricColor.neutral 
                 : metricColor.negative;
         const editMode = isDesktop || this.props.editMode;
+        const {bottomSheet = false} = this.props;
+        // const actionButtonContainerStyle = shortable 
+        //     ?   {
+        //             ...horizontalBox, 
+        //             justifyContent: 'space-around',
+        //             width: isDesktop ? '70%' : '100%',
+        //             marginTop: editMode ? '10px' : '15px'
+        //         }
+        //     :   {
+        //         ...verticalBox,
+        //         justifyContent: 'center',
+        //         width: isDesktop ? '70%' : '100%',
+        //         marginTop: editMode ? '10px' : '15px'
+        //     };
+        const actionButtonContainerStyle = {
+            ...horizontalBox, 
+            justifyContent: 'space-around',
+            width: isDesktop ? '70%' : '100%',
+            marginTop: editMode ? '10px' : '15px'
+        };
 
         return (
-            <React.Fragment>
-                <Grid item xs={12}>
+            <Grid container>
+                <Grid 
+                        item 
+                        xs={12}
+                        style={{
+                            padding: bottomSheet ? '0 10px' : '0'
+                        }}
+                >
                     <div 
                             style={{
                                 ...horizontalBox, 
@@ -231,8 +312,8 @@ export default class StockCard extends React.Component {
                                     }}
                             >
                                 <MainText>{symbol}</MainText>
-                                {
-                                    editMode &&
+                                {/* {
+                                    editMode && !bottomSheet &&
                                     <ActionIcon
                                         type="search"
                                         onClick={this.props.toggleSearchStocksDialog}
@@ -241,7 +322,7 @@ export default class StockCard extends React.Component {
                                             marginLeft: '5px'
                                         }}
                                     />
-                                }
+                                } */}
                             </div>
                             <h3 style={nameStyle}>{name}</h3>
                         </div>
@@ -256,14 +337,15 @@ export default class StockCard extends React.Component {
                     </div>
                 </Grid>
                 {
-                    !editMode &&
+                    !editMode && !bottomSheet &&
                     <Grid 
                             item 
                             xs={12} 
                             style={{
                                 ...horizontalBox, 
                                 justifyContent: 'flex-start',
-                                margin: '10px 0'
+                                margin: '10px 0',
+                                padding: bottomSheet ? '0 10px' : '0'
                             }}
                     >
                         <Button 
@@ -281,11 +363,12 @@ export default class StockCard extends React.Component {
                         style={{
                             ...horizontalBox, 
                             justifyContent: 'flex-start',
-                            marginTop: '20px'
+                            marginTop: '10px',
+                            padding: bottomSheet ? '0 10px' : '0',
                         }}
                 >
                     {
-                        editMode
+                        (editMode || bottomSheet)
                         ? this.renderEditMode()
                         : this.renderViewMode()
                     }
@@ -295,13 +378,18 @@ export default class StockCard extends React.Component {
                         xs={12} 
                         style={{
                             ...verticalBox,
-                            borderTop: '1px solid #E2E2E2',
-                            marginTop: isDesktop ? '20px' : '20px',
+                            // borderTop: '1px solid #E2E2E2',
+                            marginTop: isDesktop ? '20px' : '0px',
                             paddingTop: isDesktop ? '15px' : '20px'
                         }}
                 >
                     <QuestionText>
                         Will the price be higher or lower in
+                        {/* {
+                            shortable
+                            ?   "Will the price be higher or lower in"
+                            :   "How high will the price go in"
+                        } */}
                         <span 
                                 style={{
                                     color: primaryColor, 
@@ -313,35 +401,64 @@ export default class StockCard extends React.Component {
                         </span>?
                     </QuestionText>
                     <div 
-                            style={{
-                                ...horizontalBox, 
-                                justifyContent: 'space-around',
-                                width: isDesktop ? '70%' : '100%',
-                                marginTop: editMode ? '10px' : '15px'
-                            }}
+                            style={actionButtonContainerStyle}
                     >
-                        <SubmitButton 
-                            onClick={() => this.props.createPrediction('sell')}
-                            target={target}
-                            lastPrice={lastPrice}
-                            type="sell"
-                        />
-                        <Button 
-                                style={skipButtonStyle} 
-                                variant="outlined"
-                                onClick={this.skipStock}
-                        >
-                            SKIP
-                        </Button>
+                        {
+                            // shortable && 
+                            <SubmitButton 
+                                onClick={() => this.props.createPrediction('sell')}
+                                target={target}
+                                lastPrice={lastPrice}
+                                type="sell"
+                            />
+                        }
+                        {
+                            // !bottomSheet && shortable &&
+                            !bottomSheet &&
+                            <Button 
+                                    style={skipButtonStyle} 
+                                    variant="outlined"
+                                    onClick={this.skipStock}
+                            >
+                                SKIP
+                            </Button>
+                        }
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('buy')}
                             target={target}
                             lastPrice={lastPrice}
                             type="buy"
                         />
+                        {/* {
+                            !bottomSheet && !shortable &&
+                            <Button 
+                                    style={{...skipButtonStyle, marginTop: '10px'}} 
+                                    variant="outlined"
+                                    onClick={this.skipStock}
+                            >
+                                SKIP
+                            </Button>
+                        } */}
                     </div>
+                    {
+                        bottomSheet &&
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'center'
+                                }}
+                        >
+                            <ActionIcon 
+                                type='cancel'
+                                size={45}
+                                style={{marginTop: '10px'}}
+                                color='#767676'
+                                onClick={this.props.onClose}
+                            />
+                        </div>
+                    }
                 </Grid>
-            </React.Fragment>
+            </Grid>
         );
     }
 
@@ -391,12 +508,16 @@ export default class StockCard extends React.Component {
         );
     }
 
-    render() {
+    renderStockCard = () => {
         const {symbol = null} = this.props.stockData;
         const noData = symbol === null || (symbol.length === 0);
+        const {bottomSheet = false} = this.props;
 
         return (
-            <Container container>
+            <Container 
+                    container 
+                    bottomSheet={bottomSheet}
+            >
                 {this.props.loading && <Loader />}
                 {
                     (this.props.loadingCreate || this.props.showSuccess) && 
@@ -414,6 +535,46 @@ export default class StockCard extends React.Component {
                 </Grid>
             </Container>
         );
+    }
+
+    renderHeader = () => {
+        return (
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        background: 'linear-gradient(to right, #5443F0, #335AF0)',
+                        width: '100%',
+                        padding: '5px 0'
+                    }}
+            >
+                <Header>Add Prediction</Header>
+                <ActionIcon 
+                    onClick={this.props.onClose} 
+                    color='#fff'
+                    type="close"
+                />
+            </div>
+        );
+    }
+
+    renderStockCardBottomSheet = () => {
+        return (
+            <BottomSheet 
+                    open={this.props.open}
+                    onClose={this.props.onClose}
+                    header="Predict"
+                    customHeader={this.renderHeader}
+            >
+                {this.renderStockCard()}
+            </BottomSheet>
+        );
+    }
+
+    render() {
+        const {bottomSheet = false} = this.props;
+
+        return bottomSheet ? this.renderStockCardBottomSheet() : this.renderStockCard();
     }
 }
 
@@ -464,7 +625,7 @@ const nameStyle = {
     color: '#525252',
     fontFamily: 'Lato, sans-serif',
     fontWeight: 500,
-    fontSize: isDesktop ? '16px' : '14xp'
+    fontSize: isDesktop ? '16px' : '12xp'
 };
 
 const skipButtonStyle = {
@@ -493,12 +654,13 @@ const editButtonStyle = {
 const Container = styled(Grid)`
     width: ${global.screen.width};
     border-radius: 4px;
-    box-shadow: ${isDesktop ? 'none' : '0 4px 16px #C3C3C3'};
+    box-shadow: ${props => (isDesktop || props.bottomSheet) ? 'none' : '0 4px 16px #C3C3C3'};
     background-color: #fff;
     position: relative;
     transition: all 0.4s ease-in-out;
     padding: 10px 0;
     padding-top: 0;
+    margin-top: ${props => props.bottomSheet ? '10px' : '0px'}
 `;
 
 const MainText = styled.h3`
@@ -519,7 +681,7 @@ const Change = styled.h3`
 
 const MetricLabel = styled.h3`
     font-size: 16px;
-    color: #5D5D5D;
+    color: #5d5d5d;
     font-weight: 600;
     text-align: start;
     font-weight: 400;
@@ -558,4 +720,12 @@ const NoDataText = styled.div`
     font-family: 'Lato', sans-serif;
     font-size: 20px;
     color: #3D3D3D;
+`;
+
+const Header = styled.h3`
+    color: #fff;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    margin-left: 20px;
 `;

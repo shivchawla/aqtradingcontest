@@ -3,13 +3,13 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
-import Button from '@material-ui/core/Button';
+import ButtonBase from '@material-ui/core/ButtonBase';
 import ActionIcon from '../../Misc/ActionIcons';
-import {maxPredictionLimit} from '../../MultiHorizonCreateEntry/constants';
 import {Utils} from '../../../../utils';
-import {metricColor, horizontalBox, verticalBox} from '../../../../constants';
+import {metricColor, horizontalBox, verticalBox, nameEllipsisStyle} from '../../../../constants';
 
 const textColor = '#757575';
+const inactiveColor = '#9C9C9C';
 
 const styles = {
     buyButton: {
@@ -49,23 +49,31 @@ export default class StockListItemMobile extends React.Component {
         const {symbol, checked = false, onAddIconClick, hideActions = false} = this.props;
         let iconType = 'remove_circle';
         let iconColor = metricColor.negative;
+        let checkedColor = '#90A4AE'
 
         if (checked) {
             iconType = 'remove_circle';
             iconColor = metricColor.negative;
         } else {
             iconType = 'add_circle';
-            iconColor = metricColor.neutral;
+            iconColor = '#13CC88';
         }
 
         if (hideActions) {
-            return null;
+            return (
+                <ActionIcon 
+                    color={checkedColor} 
+                    size={18} 
+                    type='check_circle' 
+                    onClick={() => {}}
+                />
+            );
         }
         
         return (
             <ActionIcon 
                 color={iconColor} 
-                size={30} 
+                size={22} 
                 type={iconType} 
                 onClick={() => onAddIconClick(symbol)}
             />
@@ -73,65 +81,193 @@ export default class StockListItemMobile extends React.Component {
     }
 
     render() {
-        const {symbol, name, change, changePct, current, onClick, checked=false, sellChecked = false} = this.props;
-        const containerStyle = {
+        const {
+            symbol, 
+            name, 
+            change, 
+            changePct, 
+            current, 
+            onClick, 
+            checked=false, 
+            sellChecked = false,
+            onAddIconClick = () => {},
+            hideInfo = false,
+            showPredict = false,
+            hide = false
+        } = this.props;
+        const itemContainerStyle = {
             borderBottom: '1px solid #eaeaea',
             color: textColor,
             cursor: 'pointer',
             backgroundColor: '#fff',
-            padding: '10px 0',
+            padding: '8px 0',
             width: '100%'
-        };
-
-        const detailContainerStyle = {
-            ...verticalBox,
-            alignItems: 'flex-end',
-        };
-
-        const leftContainerStyle = {
-            ...verticalBox,
-            alignItems: 'flex-start'
         };
 
         const changeColor = change < 0 ? metricColor.negative : metricColor.positive;
         const changeIcon = change < 0 ? 'arrow_drop_down' : 'arrow_drop_up';
         const nChangePct = (changePct * 100).toFixed(2);
 
-        return (
-            <SGrid container className='stock-row' style={containerStyle}>
-                <Grid item xs={6} style={leftContainerStyle} onClick={() => onClick({symbol, name})}>
-                    <div style={horizontalBox}>
-                        <h3 style={{fontSize: '18px', fontWeight: '500'}}>{symbol}</h3>
-                        <Icon color="error">{changeIcon}</Icon>
-                    </div>
-                    <div style={{...horizontalBox, alignItems: 'flex-end'}}>
-                        <h3 style={{fontSize: '15px', fontWeight: '500'}}>{Utils.formatMoneyValueMaxTwoDecimals(current)}</h3>
-                        <h3 
-                                style={{color: changeColor, fontSize: '13px', fontWeight: '400', marginLeft: '5px'}}
+        if (hide) {
+            return null;
+        } else {
+            return (
+                <SGrid container className='stock-row' style={itemContainerStyle}>
+                    <Grid 
+                            item 
+                            xs={12} 
+                            style={containerStyle} 
+                    >
+                        <div 
+                                style={{
+                                    ...verticalBox,
+                                    alignItems: 'flex-start',
+                                    width: '100%',
+                                }}
+                                // onClick={() => {
+                                //     showPredict 
+                                //     ?   this.props.onInfoClicked(symbol, name, current, change, changePct)
+                                //         :hideInfo ? 
+                                //             this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct) 
+                                //             : onAddIconClick(symbol)
+                                // }}
+                                onClick={() => this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct)}
                         >
-                            {change > 0 && '+'} {Utils.formatMoneyValueMaxTwoDecimals(change)}
-                        </h3>
-                        <h3 
-                                style={{color: changeColor, marginLeft: '5px', fontSize: '13px', fontWeight: '400'}}
-                        >
-                            ({change > 0 && '+'} {Utils.formatMoneyValueMaxTwoDecimals(nChangePct)} %)
-                        </h3>
-                    </div>
-                </Grid>
-                <Grid 
-                        item 
-                        style={{
-                            ...horizontalBox, 
-                            justifyContent: 'flex-end',
-                            paddingLeft: '10px'
-                        }}
-                        xs={6}
-                >
-                    {this.renderBuyActionButton()}
-                </Grid>
-            </SGrid>
-        );
+                            <div style={{...horizontalBox, justifyContent: 'space-between', width: '100%'}}>
+                                <div style={horizontalBox}>
+                                    <h3 style={{fontSize: '14px', fontWeight: '700', color: "#393939"}}>{symbol}</h3>
+                                    <Icon color="error" style={{color: changeColor}}>{changeIcon}</Icon>
+                                </div>
+                                <h3 style={{fontSize: '14px', fontWeight: '500', color: '#222'}}>
+                                    ₹{Utils.formatMoneyValueMaxTwoDecimals(current)}
+                                </h3>
+                            </div>
+                            <div 
+                                    style={{
+                                        ...horizontalBox, 
+                                        justifyContent: 'space-between', 
+                                        alignItems: 'center',
+                                        width: '100%',
+                                        // marginTop: '5px'
+                                    }}
+                            >
+                                <div style={{...horizontalBox, alignItems: 'flex-end'}}>
+                                    <h3
+                                            style={{
+                                                ...nameEllipsisStyle,
+                                                fontSize: '12px',
+                                                color: '#6E6E6E',
+                                                fontWeight: 400,
+                                                width: '130px',
+                                                textAlign: 'start'
+                                            }}
+                                    >
+                                        {name}
+                                    </h3>
+                                </div>
+                                <div 
+                                        style={{
+                                            ...horizontalBox, 
+                                            justifyContent: 'flex-end', 
+                                            alignItems: 'center'
+                                        }}
+                                >
+                                    <h3 
+                                            style={{
+                                                color: changeColor, 
+                                                fontSize: '12px', 
+                                                fontWeight: '400', 
+                                                marginLeft: '5px'
+                                            }}
+                                    >
+                                        ₹{Utils.formatMoneyValueMaxTwoDecimals(change)}
+                                    </h3>
+                                    <h3 
+                                            style={{
+                                                color: "#BCBCBC",
+                                                fontWeight: 400,
+                                                fontSize: '16px',
+                                                margin: '0 5px',
+                                                marginTop: '-1px'
+                                            }}
+                                    >
+                                        |
+                                    </h3>
+                                    <h3 
+                                            style={{color: changeColor, fontSize: '12px', fontWeight: '400'}}
+                                    >
+                                        {nChangePct} %
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                        {
+                            !showPredict &&
+                            this.renderBuyActionButton()
+                        }
+                        {
+                            showPredict &&
+                            <PredictButton onClick={() => onAddIconClick(symbol)}/>
+                        }
+                        {/* {
+                            !hideInfo && !this.props.extraContent && !showPredict &&
+                            <ActionIcon 
+                                type="info"
+                                size={18}
+                                color='#7e91f7'
+                                onClick={() => this.props.onInfoClicked(symbol, name, current, change, changePct)}
+                            />
+                        } */}
+                        {
+                            this.props.extraContent && this.props.extraContent(symbol)
+                        }
+                    </Grid>
+                </SGrid>
+            );
+        }
     }
+}
+
+const PredictButton = ({onClick}) => {
+    const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
+    const color = '#fff';
+    const fontSize = '12px';
+    const padding = '4px 8px';
+    // const boxShadow = '0 3px 7px #a3a3a3';
+
+    return (
+        <ButtonBase 
+                style={{
+                    ...predictButtonStyle, 
+                    color,
+                    fontSize,
+                    padding,
+                    background,
+                    // boxShadow,
+                    marginLeft: '10px'
+                }}
+                onClick={onClick}
+        >
+            <span style={{whiteSpace: 'nowrap'}}>Predict</span>
+        </ButtonBase>
+    );
+} 
+
+const containerStyle = {
+    ...horizontalBox,
+    justifyContent: 'space-between'
+};
+
+const predictButtonStyle = {
+    padding: '6px 12px',
+    fontSize: '15px',
+    transition: 'all 0.4s ease-in-out',
+    margin: '0 3px',
+    borderRadius: '2px',
+    cursor: 'pointer',
+    color: inactiveColor,
+    fontFamily: 'Lato, sans-serif',
+    fontWeight: 500
 }
 
 const SGrid = styled(Grid)`

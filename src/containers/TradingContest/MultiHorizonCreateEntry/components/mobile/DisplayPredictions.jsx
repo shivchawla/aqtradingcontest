@@ -4,14 +4,23 @@ import styled from 'styled-components';
 import Icon from '@material-ui/core/Icon';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import ActionIcon from '../../../Misc/ActionIcons';
+import InputAdornment from '@material-ui/core/InputAdornment';
 import {withRouter} from 'react-router-dom';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
+import WatchlistCustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
+import DateComponent from '../../../Misc/DateComponent';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
+import {searchPositions} from '../../utils';
 
+const DateHelper = require('../../../../../utils/date');
 const predictionTypes = ['Active', 'Ended', 'Started'];
 
 class DisplayPredictions extends React.Component {
@@ -20,6 +29,8 @@ class DisplayPredictions extends React.Component {
         this.state = {
             listView: this.getListViewFromUrl(props.listViewType),
             anchorEl: null,
+            searchInputValue: '',
+            searchInputOpen: false
         };
     }
 
@@ -50,12 +61,6 @@ class DisplayPredictions extends React.Component {
 
         return false;
     }
-
-    // componentWillReceiveProps(nextProps) {
-    //     if (!_.isEqual(this.props, nextProps)) {
-    //         this.setState({listView: this.getListViewFromUrl(nextProps.listViewType)})
-    //     }
-    // }
 
     onPredictionTypeMenuClicked = event => {
         this.setState({ anchorEl: event.currentTarget });
@@ -104,8 +109,21 @@ class DisplayPredictions extends React.Component {
         );
     }
 
+    handleSearchInputChange = e => {
+        const searchInput = e.target.value;
+        this.setState({searchInputValue: searchInput});
+    }
+
+    toggleSearchInput = () => {
+        this.setState({searchInputOpen: !this.state.searchInputOpen}, () => {
+            if (!this.state.searchInputOpen) {
+                this.setState({searchInputValue: ''});
+            }
+        });
+    }
+
     renderPredictionList = () => {
-        let positions = this.props.previewPositions;
+        let positions = searchPositions(this.state.searchInputValue, this.props.previewPositions);
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
@@ -118,24 +136,9 @@ class DisplayPredictions extends React.Component {
                 {
                     this.props.loadingPreview 
                     ?   <LoaderComponent />
-                    :   
-                		<React.Fragment>
-	                    	<div
-		                        style={{
-		                            ...horizontalBox, 
-		                            justifyContent: 'space-between',
-		                            width: '100%'
-		                        }}
-	                        >
-			                    <RadioGroup style={{margin:'0px auto 10px auto'}}
-			                        items={predictionTypes}
-			                        defaultSelected={this.state.listView}
-			                        onChange={this.onPredictionTypeRadioClicked}
-			                    />
-		                    </div>
-
+                    :   <React.Fragment>
                     		{
-                                (positions.length === 0 || this.props.noEntryFound)
+                                (this.props.previewPositions.length === 0 || this.props.noEntryFound)
                                 ?   <EmptyPositionsText>
                                         No Predictions Found!!
                                     </EmptyPositionsText>
@@ -149,23 +152,35 @@ class DisplayPredictions extends React.Component {
     		                                    onClick={toggleEntryDetailBottomSheet}
     		                                />
                                         </div>
-		                            }
+                                    }
+                                    {
+                                        this.state.searchInputOpen &&
+                                        <div style={{width: '100%'}}>
+                                            <SearchInputComponent 
+                                                searchInputValue={this.state.searchInputValue}
+                                                onChange={this.handleSearchInputChange}
+                                                clearInput={() => this.setState({searchInputValue: ''})}
+                                            />
+                                        </div>
+                                    }
                                     <StockPreviewList  
                                         positions={positions} 
                                         selectPosition={this.props.selectPosition}
+                                        toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
                                         togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
                                     />
 	                        	</React.Fragment>
                             }
-                            {
-                                isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
-                                // && marketOpen.status &&
-                                <div 
-                                        style={{
-                                            ...fabContainerStyle,
-                                            justifyContent: 'center'
-                                        }}
-                                >
+                            <div 
+                                    style={{
+                                        ...fabContainerStyle,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        minHeight: '36px'
+                                    }}
+                            >
+                                {
+                                    isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
                                     <Button 
                                             style={{
                                                 ...fabButtonStyle, 
@@ -174,14 +189,27 @@ class DisplayPredictions extends React.Component {
                                             size='small' 
                                             variant="extendedFab" 
                                             aria-label="Edit" 
-                                            // onClick={this.props.toggleSearchStockBottomSheet}
                                             onClick={() => this.props.history.push('/dailycontest/stockpredictions')}
                                     >
                                         <Icon style={{marginRight: '5px'}}>add_circle</Icon>
                                         ADD PREDICTIONS
                                     </Button>
-                                </div>
-                            }
+                                }
+                                <Button 
+                                        variant="fab" 
+                                        size="medium"
+                                        style={{
+                                            ...fabStyle,
+                                            marginRight: '30px',
+                                            backgroundColor: '#7b72d1'
+                                        }}
+                                        onClick={this.toggleSearchInput}
+                                >
+                                    <Icon style={{color: '#fff'}}>
+                                        search
+                                    </Icon>
+                                </Button>
+                            </div>
                     	</React.Fragment>
         		}
             </Grid>
@@ -201,11 +229,91 @@ class DisplayPredictions extends React.Component {
     }
 
     render() {
-        return this.props.loading ? <LoaderComponent /> : this.renderContent();
+        const isMarketTrading = !DateHelper.isHoliday();
+        const marketOpen = isMarketTrading && isMarketOpen().status;
+
+        return (
+            <Grid container>
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '0 2%',
+                            marginBottom: '10px'
+                        }}
+                >
+                    <RadioGroup
+                        items={predictionTypes}
+                        defaultSelected={this.state.listView}
+                        onChange={this.onPredictionTypeRadioClicked}
+                        CustomRadio={WatchlistCustomRadio}
+                    />
+                    <div style={{...verticalBox, justifyContent: 'center'}}>
+                        <DateComponent 
+                            selectedDate={this.props.selectedDate}
+                            color={primaryColor}
+                            onDateChange={this.props.updateDate}
+                            compact
+                        />
+                        {
+                            !marketOpen &&
+                            <Closed>Market Closed</Closed>
+                        }
+                    </div>
+                </Grid>
+                <Grid item xs={12}>
+                    {
+                        this.props.loading ? <LoaderComponent /> : this.renderContent()
+                    }
+                </Grid>
+            </Grid>
+        );
     }
 }
 
 export default withRouter(DisplayPredictions);
+
+const SearchInputComponent = ({searchInputValue, onChange, clearInput}) => {
+    return (
+        <FormControl
+                style={{
+                    margin: 0,
+                    marginTop: '5px',
+                    width: '90%'
+                }}
+        >
+            <InputLabel>Search Stocks</InputLabel>
+            <Input
+                label="Search Predictions"
+                value={searchInputValue}
+                onChange={onChange}
+                margin="normal"
+                autoFocus={true}
+                endAdornment={
+                    searchInputValue.length > 0 
+                    ?   <InputAdornment position="end">
+                            <ActionIcon 
+                                type='highlight_off'
+                                size={18}
+                                onClick={clearInput}
+                                color='#717171'
+                            />
+                        </InputAdornment>
+                    :   <InputAdornment position="end">
+                            <ActionIcon 
+                                type='search'
+                                size={18}
+                                color='#717171'
+                            />
+                        </InputAdornment>
+                }
+            />
+        </FormControl>
+    );
+}
 
 const fabContainerStyle = {
     display: 'flex', 
@@ -252,3 +360,19 @@ const EmptyPredictionsText = styled.h3`
     color: #535353;
     font-weight: 400;
 `;
+
+const Closed = styled.h3`
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Lato', sans-serif;
+    color: #444;
+    margin-top: -10px;
+    color: #f34545;
+`;
+
+const fabStyle = {
+    width: '45px',
+    height: '45px',
+    position: 'absolute',
+    right: '0px'
+}

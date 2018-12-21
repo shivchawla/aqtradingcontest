@@ -46,7 +46,25 @@ export const getDailyStatsDataForKey = dailycontestStats => {
         total: getPctFromRatio(_.get(dailycontestStats, 'net.winRatio', null)),
         long: getPctFromRatio(_.get(dailycontestStats, 'long.winRatio', null)),
         short: getPctFromRatio(_.get(dailycontestStats, 'short.winRatio', null))
-    }
+    };
+
+    const avgMaxLossPct = {
+        total: getPct(_.get(dailycontestStats, 'net.avgMaxLossPct', null)),
+        long: getPct(_.get(dailycontestStats, 'long.avgMaxLossPct', null)),
+        short: getPct(_.get(dailycontestStats, 'short.avgMaxLossPct', null))
+    };
+
+    const avgMaxGainPct = {
+        total: getPct(_.get(dailycontestStats, 'net.avgMaxGainPct', null)),
+        long: getPct(_.get(dailycontestStats, 'long.avgMaxGainPct', null)),
+        short: getPct(_.get(dailycontestStats, 'short.avgMaxGainPct', null))
+    };
+
+    const avgHoldingPeriod = {
+        total: toDecimal(_.get(dailycontestStats, 'net.avgHoldingPeriod', null)),
+        long: toDecimal(_.get(dailycontestStats, 'long.avgHoldingPeriod', null)),
+        short: toDecimal(_.get(dailycontestStats, 'short.avgHoldingPeriod', null))
+    };
 
     const mostProftableStock = {
         total: {
@@ -92,7 +110,10 @@ export const getDailyStatsDataForKey = dailycontestStats => {
         leastProfitableStock,
         predictions,
         winRatio,
-        tickers
+        tickers,
+        avgMaxLossPct,
+        avgMaxGainPct,
+        avgHoldingPeriod
     }
 }
 

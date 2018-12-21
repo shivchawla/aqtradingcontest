@@ -3,21 +3,16 @@ import axios from 'axios';
 import _ from 'lodash';
 import styled from 'styled-components';
 import {withRouter} from 'react-router';
-import Dialog from '@material-ui/core/Dialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import CloseIcon from '@material-ui/icons/Close';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Slide from '@material-ui/core/Slide';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
+import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
+import BottomSheet from '../../../../components/Alerts/BottomSheet';
+import DialogComponent from '../../../../components/Alerts/DialogComponent';
+import {createUserWatchlist} from '../../utils';
 import {Utils} from '../../../../utils';
-import { verticalBox } from '../../../../constants';
-
-const {requestUrl} = require('../../../../localConfig');
+import { verticalBox, horizontalBox } from '../../../../constants';
 
 class CreateWatchListImpl extends React.Component {
     mounted = false;
@@ -27,33 +22,24 @@ class CreateWatchListImpl extends React.Component {
             dataSource: [],
             watchlists: [],
             name: '',
-            loading: false
+            loading: false,
+            error: null
         };
     }
 
     createWatchList = () => {
         const {name} = this.state;
         if (name.length > 0) {
-            const data = {
-                name,
-                securities: this.processWatchListItem(this.state.watchlists)
-            };
-            const url = `${requestUrl}/watchlist`;
-            this.setState({loading: true});
-            axios({
-                url,
-                data,
-                method: 'POST',
-                headers: Utils.getAuthTokenHeader()
-            })
+            this.props.createWatchlist(name, this.processWatchListItem(this.state.watchlists))
             .then(response => {
+                this.setState({error: null});
                 return this.props.getWatchlists();
             })
             .then(() => {
                 this.props.toggleModal();
             })
             .catch(error => {
-                console.log(error);
+                this.setState({error: 'Error Occured while creating watchlist'});
                 if (error.response) {
                     Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
                 }
@@ -62,8 +48,7 @@ class CreateWatchListImpl extends React.Component {
                 this.setState({loading: false});
             })
         } else {
-            // message.error('Please provide a name for your watchlist');
-            // console.log('Please provide a name for your watchlist');
+            this.setState({error: 'Please provide a name for your watchlist'});
         }
     }
 
@@ -93,64 +78,85 @@ class CreateWatchListImpl extends React.Component {
         }
     }
 
+    renderHeader = () => {
+        return (
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        background: 'linear-gradient(to right, #5443F0, #335AF0)',
+                        width: '100%',
+                        padding: '5px 0'
+                    }}
+            >
+                <Header>Create Favourite List</Header>
+                <ActionIcon 
+                    onClick={this.props.toggleModal} 
+                    color='#fff'
+                    type="close"
+                />
+            </div>
+        );
+    }
+
     render() {
         return (
-            <Dialog
-                    fullScreen
+            <DialogComponent
                     open={this.props.visible}
                     onClose={this.props.toggleModal}
-                    TransitionComponent={Transition}
+                    onCancel={this.props.toggleModal}
+                    title='Create Watchlist'
+                    onOk={this.createWatchList}
+                    action
             >
-                <AppBar>
-                    <Toolbar>
-                        <IconButton color="inherit" onClick={this.props.toggleModal} aria-label="Close">
-                            <CloseIcon />
-                        </IconButton>
-                        <Typography variant="h6" color="inherit">
-                            CREATE WATCHLIST
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
                 <Container container>
-                    <Grid item xs={12} style={verticalBox}>
+                    <Grid item xs={12} style={{...verticalBox, width: '300px'}}>
                         <TextField
                             id="outlined-name"
-                            label="Watchlist Name"
+                            label="List Name"
                             value={this.state.name}
                             onChange={this.handleInputChange}
                             margin="normal"
-                            variant="filled"
-                            style={{width: '80%'}}
+                            variant="outlined"
+                            style={{width: '100%'}}
                         />
-                        <Button 
-                                onClick={this.createWatchList}
-                                color="primary"
-                                variant="contained"
-                                style={{marginTop: '10px', boxShadow: 'none'}}
-                        >
-                            CREATE WATCHLIST
-                            {
-                                this.state.loading && 
-                                <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />
-                            }
-                        </Button>
+                        {
+                            this.state.loading && 
+                            <CircularProgress style={{marginLeft: '5px', color: '#fff'}} size={24} />
+                        }
+                        {
+                            this.state.error !== null &&
+                            <ErrorText>{this.state.error}!</ErrorText>
+                        }
                     </Grid>
                 </Container>
-            </Dialog>
+            </DialogComponent>
         );
     }
 }
 
 export default withRouter(CreateWatchListImpl);
 
-function Transition(props) {
-    return <Slide direction="up" {...props} />;
-}
-
 const Container = styled(Grid)`
-    width: 100%;
-    height: calc(100vh - 56px);
+    width: 90vh;
+    /* height: calc(100vh - 56px); */
     display: flex;
     justify-content: center;
     align-items: center;
+`;
+
+const Header = styled.h3`
+    color: #fff;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    font-size: 18px;
+    margin-left: 20px;
+`;
+
+const ErrorText = styled.h3`
+    color: #f65864;
+    font-weight: 500;
+    font-size: 12px;
+    font-family: 'Lato', sans-serif;
+    margin-top: 10px;
 `;

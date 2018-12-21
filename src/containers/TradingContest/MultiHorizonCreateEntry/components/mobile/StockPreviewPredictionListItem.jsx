@@ -8,6 +8,7 @@ import {Utils} from '../../../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
 
+const DateHelper = require('../../../../../utils/date');
 const readableDateFormat = "Do MMM 'YY";
 const dateFormat = 'YYYY-MM-DD';
 
@@ -48,7 +49,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
     }
 
     render() {
-        const {
+        let {
             horizon = 1, 
             investment = 0, 
             target = 1, 
@@ -62,17 +63,24 @@ export default class StockPreviewPredictionListItem extends React.Component {
             active = false,
             lastPrice = 0,
             index = 0,
+            priceInterval = {}
         } = this.props.prediction;
         
+        const highPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'highPrice', 0));
+        const lowPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'lowPrice', 0));
         const typeColor = type === 'buy' ? 'green' : '#FE6662';
         const typeText = type === 'buy' ? 'HIGHER' : 'LOWER';
         const iconConfig = this.getIconConfig(targetAchieved, active);
+        const iconType = type === 'buy' ? 'trending_up' : 'trending_down';
+        startDate = moment(startDate).format(dateFormat);
+        endDate = moment(endDate).format(dateFormat);
 
         const directionUnit = type === 'buy' ? 1 : -1;
-        const changeInvestment = directionUnit * ((lastPrice - avgPrice) / avgPrice) * investment;
+        const changeInvestment = ((lastPrice - avgPrice) / avgPrice) * investment;
         const changedInvestment = investment + changeInvestment;
 
-        const duration = moment(endDate, dateFormat).diff(moment(startDate, dateFormat), 'days');
+        // const duration = moment(endDate, dateFormat).diff(moment(startDate, dateFormat), 'days');
+        const duration = DateHelper.getTradingDays(startDate, endDate);
         const targetPct = Number((((target - avgPrice) * 100) / avgPrice).toFixed(2));
 
         const changedInvestmentColor = changeInvestment > 0 ? metricColor.positive : changeInvestment < 0 ? metricColor.negative : metricColor.neutral;
@@ -88,8 +96,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             date={moment(startDate, dateFormat).format(readableDateFormat)}
                         />
                         <div style={verticalBox}>
-                            <ArrowHeaderText style={{marginBottom: '-4px'}}>{duration} Days</ArrowHeaderText>
-                            <Icon>trending_flat</Icon>
+                            <ArrowHeaderText>{duration} Days</ArrowHeaderText>
+                            <Icon style={{color: typeColor}}>{iconType}</Icon>
+                            <ArrowHeaderText style={{color: typeColor}}>{typeText}</ArrowHeaderText>
                         </div>
                         <PriceComponent 
                             label='Target Price'
@@ -109,19 +118,31 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     >
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
                             <MetricLabel>Chg. Investment</MetricLabel>
-                            <div style={{...horizontalBox}}>
+                            <div style={{...horizontalBox, minHeight: '22px'}}>
                                 <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
                                 <Icon>arrow_right_alt</Icon>
                                 <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
                             </div>
                         </div>
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                            <MetricLabel>Direction</MetricLabel>
-                            <MetricText color={typeColor}>{typeText}</MetricText>
+                            <MetricLabel>Price Interval</MetricLabel>
+                            <div style={{...horizontalBox, minHeight: '22px'}}>
+                                {
+                                    lowPrice !== null &&
+                                    <MetricText color='#222'>₹{lowPrice}</MetricText>
+                                }
+                                <Divider>-</Divider>
+                                {
+                                    highPrice !== null &&
+                                    <MetricText color='#222'>₹{highPrice}</MetricText>
+                                }
+                            </div>
                         </div>
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                            <MetricLabel>Prediction</MetricLabel>
-                            <MetricText color={iconConfig.color}>{iconConfig.type}</MetricText>
+                            <MetricLabel>Status</MetricLabel>
+                            <div style={{...horizontalBox, minHeight: '22px'}}>
+                                <MetricText color={iconConfig.color}>{iconConfig.type}</MetricText>
+                            </div>
                         </div>
                     </div>
                 </Grid>
@@ -155,12 +176,20 @@ const Container = styled(Grid)`
     padding: 10px
 `;
 
+const Divider = styled.h3`
+    font-size: 18px;
+    color: #444;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    margin: 0 5px;
+`;
+
 const MetricText = styled.h3`
-    font-size: 14px;
+    font-size: 13px;
     color: ${props => props.color || '#464646'};
     text-align: start;
     font-family: 'Lato', sans-serif;
-    font-weight: 700;
+    font-weight: 500;
 `;
 
 const DateText = styled.h3`

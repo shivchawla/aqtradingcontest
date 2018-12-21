@@ -33,7 +33,7 @@ export class TradingContestLeaderboardMobile extends React.Component {
 
     renderMobile = () => {        
         return (
-            <AqLayout pageTitle='TopPicks'>
+            <AqLayout pageTitle='Top Picks'>
                 <Grid 
                         container 
                         style={{
