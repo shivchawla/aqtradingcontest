@@ -98,7 +98,7 @@ export default class AuthFeedback extends React.Component {
         }
         return (
             <React.Fragment>
-                <h2 style={{'fontSize': '24px', 'color': 'teal'}}>
+                <h2 style={{'fontSize': '24px', 'color': 'teal', fontWeight: 400}}>
                     You have successfully unsubscribed from {emailType}!!
                 </h2>
                 {this.renderGoBackButton()}

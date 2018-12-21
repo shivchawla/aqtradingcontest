@@ -64,6 +64,7 @@ class SignUp extends React.Component {
     }
 
     handleSignUp = values => {
+        console.log('handleSignUp called');
         this.setState({loading: true});
         registerUser(values)
         .then(response => {
@@ -257,9 +258,10 @@ const companyNameStyle = {
 
 const submitButtonStyle = {
     width: '100%',
+    height: '40px',
     boxShadow: 'none',
-    background: '#03A7AD',
-    marginTop: '0px'
+    background: primaryColor,
+    marginTop: '5px'
 };
 
 const companyNameContainer = {

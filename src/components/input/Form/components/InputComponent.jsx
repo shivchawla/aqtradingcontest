@@ -1,10 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
-import FilledInput from '@material-ui/core/FilledInput';
+import FilledInput from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
+import {metricColor} from '../../../../constants';
 
 const styles = theme => ({
     container: {
@@ -12,11 +13,12 @@ const styles = theme => ({
       flexWrap: 'wrap',
     },
     formControl: {
-      margin: theme.spacing.unit,
-      marginTop: 16,
+    //   margin: theme.spacing.unit,
+    //   marginTop: 16,
+        marginBottom: '6px'
     },
     inputLabel: {
-        marginLeft: '10px',
+        // marginLeft: '10px',
         marginTop: '5px'
     },
 });
@@ -59,8 +61,8 @@ class InputComponent extends React.Component {
                     onBlur={handleBlur}
                     type={type}
                 />
-                <FormHelperText >
-                    {touched && error && error}
+                <FormHelperText style={{color: metricColor.negative}}>
+                    {error && error}
                 </FormHelperText>
             </FormControl>
         );

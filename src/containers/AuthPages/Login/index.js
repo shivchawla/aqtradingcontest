@@ -43,6 +43,7 @@ class Login extends React.Component {
     }
 
     processLogin = response => {
+        console.log('processLogin Called');
         if (response.data.token) {
             Utils.localStorageSaveObject(Utils.userInfoString, response.data);
             Utils.setLoggedInUserInfo(response.data);
@@ -69,6 +70,7 @@ class Login extends React.Component {
     }
 
     handleLogin = values => {
+        console.log('handelLogin Called');
         this.setState({loading: true});
         loginUser(values)
         .then(response => {
@@ -78,9 +80,11 @@ class Login extends React.Component {
     }
 
     responseGoogle =  (googleUser) => {
+        console.log('responseGoogle Called');
         this.setState({loading: true});
         googleLogin(googleUser)
         .then(response => {
+            console.log(response);
             this.processLogin(response)
         })
         .catch(error => this.processError(error))
@@ -97,7 +101,7 @@ class Login extends React.Component {
         const formData = {values, errors, touched};
 
         return (
-            <Form style={{width: '100%', marginTop: '20px'}} autoComplete='off'>
+            <Form style={{width: '100%'}} autoComplete='off'>
                 <div 
                         style={{
                             ...verticalBox,
@@ -271,8 +275,8 @@ const companyNameStyle = {
 const submitButtonStyle = {
     width: '100%',
     boxShadow: 'none',
-    background: '#03A7AD',
-    marginTop: '0px'
+    background: primaryColor,
+    marginTop: '5px'
 };
 
 const companyNameContainer = {
