@@ -109,6 +109,7 @@ class DefaultSettings extends React.Component {
     resetAdvisor = () => {
         Utils.localStorageSave('selectedAdvisorId', null);
         Utils.localStorageSave('selectedUserId', null);
+        Utils.localStorageSave('selectedUserName', null);
     }
 
     renderHeader = () => {

@@ -2,11 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
+import {withRouter} from 'react-router-dom';
 import {horizontalBox, primaryColor} from '../../../../constants';
 import InitialContainer from '../../../../components/ui/InitialContainer';
 import {Utils} from '../../../../utils';
 
-export default class AdvisorListItem extends React.Component {
+class AdvisorListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(nextProps, this.props) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -15,9 +16,11 @@ export default class AdvisorListItem extends React.Component {
         return false;
     }
 
-    onAdvisorClicked = (advisorId, userId) => {
+    onAdvisorClicked = (advisorId, userId, userName) => {
         Utils.localStorageSave('selectedAdvisorId', advisorId);
         Utils.localStorageSave('selectedUserId', userId);
+        Utils.localStorageSave('selectedUserName', userName);
+        this.props.history.push('/dailycontest/stockpredictions')
     }
 
     render() {
@@ -25,10 +28,10 @@ export default class AdvisorListItem extends React.Component {
         const {_id: advisorId = null} = advisor;
         const user = _.get(advisor, 'user', {});
         const {firstName = '', lastName = '', _id: userId = null} = user;
-        const userName = Utils.getInitials(firstName, lastName);
+        const userName = Utils.getInitials(firstName, lastName, userName);
 
         return (
-            <SGrid onClick={() => this.onAdvisorClicked(advisorId, userId)}>
+            <SGrid onClick={() => this.onAdvisorClicked(advisorId, userId, `${firstName} ${lastName}`)}>
                 <Grid 
                         item xs={12}
                         style={{
@@ -58,6 +61,8 @@ export default class AdvisorListItem extends React.Component {
         );
     }
 }
+
+export default withRouter(AdvisorListItem);
 
 const SGrid = styled(Grid)`
     background-color: #fff;

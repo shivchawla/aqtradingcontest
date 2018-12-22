@@ -86,7 +86,7 @@ class Winners extends React.Component {
             handleTimeLineChange: this.handleTimeLineChange,
             timelineView: this.state.timelineView,
             loading: this.state.loading,
-            selectedDate: this.state.selectedDate
+            selectedDate: this.state.selectedDate,
         };
 
         return (
@@ -94,7 +94,12 @@ class Winners extends React.Component {
                 <DailyContestCreateMeta />
                 <Media 
                     query="(max-width: 800px)"
-                    render={() => <TopPicksLayoutMobile {...props}/>}
+                    render={() => 
+                        <TopPicksLayoutMobile 
+                            {...props}
+                            onListItemClick={this.props.onListItemClick}
+                        />
+                    }
                 />
                 <Media 
                     query="(min-width: 801px)"

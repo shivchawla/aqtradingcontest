@@ -41,7 +41,7 @@
     "react-router-dom": "4.2.2",
     "react-scripts": "1.1.5",
     "react-select": "^2.1.1",
-    "react-spinners": "^0.4.5",
+    "react-spinners": "^0.4.8",
     "react-swipeable-bottom-sheet": "^1.1.1",
     "react-window-size": "^1.2.2",
     "reactjs-localstorage": "0.0.6",
