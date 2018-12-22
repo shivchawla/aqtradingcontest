@@ -14,7 +14,6 @@ import RadioGroup from '../../components/selections/RadioGroup';
 import WatchlistCustomRadio from './components/mobile/WatchlistCustomRadio';
 import RoundedButton from '../../components/Buttons/RoundedButton';
 import LoaderComponent from '../TradingContest/Misc/Loader';
-import ActionIcon from '../TradingContest/Misc/ActionIcons';
 import DialogComponent from '../../components/Alerts/DialogComponent';
 import {fetchAjaxPromise, Utils} from '../../utils';
 import {processPositions, createUserWatchlist} from './utils';

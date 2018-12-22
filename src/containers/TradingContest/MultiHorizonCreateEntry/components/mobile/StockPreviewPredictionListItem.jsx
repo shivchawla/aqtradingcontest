@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import ActionIcon from '../../../Misc/ActionIcons';
 import {Utils} from '../../../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
@@ -21,19 +22,18 @@ export default class StockPreviewPredictionListItem extends React.Component {
         return false;
     }
 
-    getIconConfig = (targetAchieved) => {
+    getIconConfig = (status) => {
         const {endDate = null} = this.props.prediction;
         const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
         const todayDate = moment().format(dateTimeFormat);
         let endTime = moment(endDate, dateFormat).hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
         endTime = endTime.format(dateTimeFormat);
         const active = moment(todayDate, dateTimeFormat).isBefore(moment(endTime, dateTimeFormat));
-        if (targetAchieved) {
-            return {
-                type: 'HIT',
-                color: '#3EF79B'
-            };
-        } else {
+        const manualExit = _.get(status, 'manualExit', false);
+        const profitTarget = _.get(status, 'profitTarget', false);
+        const stopLoss = _.get(status, 'stopLoss', false);
+
+        if (!manualExit && !profitTarget && !stopLoss) {
             if (active) {
                 return {
                     type: 'ACTIVE',
@@ -44,6 +44,23 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     type: 'MISS',
                     color: '#FE6662'
                 }
+            }
+        } else {
+            if (manualExit) {
+                return {
+                    type: 'EXITED',
+                    color: '#009688'
+                }
+            } else if (stopLoss) {
+                return {
+                    type: 'STOPPED',
+                    color: '#009688'
+                }
+            } else {
+                return {
+                    type: 'HIT',
+                    color: '#3EF79B'
+                };
             }
         }
     }
@@ -60,17 +77,19 @@ export default class StockPreviewPredictionListItem extends React.Component {
             startDate = null, 
             endDate = null,
             targetAchieved = false,
+            status = {},
             active = false,
             lastPrice = 0,
             index = 0,
-            priceInterval = {}
+            priceInterval = {},
+            _id = null
         } = this.props.prediction;
         
         const highPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'highPrice', 0));
         const lowPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'lowPrice', 0));
         const typeColor = type === 'buy' ? 'green' : '#FE6662';
         const typeText = type === 'buy' ? 'HIGHER' : 'LOWER';
-        const iconConfig = this.getIconConfig(targetAchieved, active);
+        const iconConfig = this.getIconConfig(status);
         const iconType = type === 'buy' ? 'trending_up' : 'trending_down';
         startDate = moment(startDate).format(dateFormat);
         endDate = moment(endDate).format(dateFormat);
@@ -79,16 +98,25 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const changeInvestment = ((lastPrice - avgPrice) / avgPrice) * investment;
         const changedInvestment = investment + changeInvestment;
 
-        // const duration = moment(endDate, dateFormat).diff(moment(startDate, dateFormat), 'days');
         const duration = DateHelper.getTradingDays(startDate, endDate);
-        const targetPct = Number((((target - avgPrice) * 100) / avgPrice).toFixed(2));
 
         const changedInvestmentColor = changeInvestment > 0 ? metricColor.positive : changeInvestment < 0 ? metricColor.negative : metricColor.neutral;
 
         return (
 
-            <Container container alignItems="flex-end">
-                <Grid item xs={12} style={{...verticalBox, alignItems: 'center'}}>
+            <Container container alignItems="flex-end" style={{position: 'relative'}}>
+                <Grid item xs={12} style={{...verticalBox, alignItems: 'center', marginTop: '13px'}}>
+                    <ActionIcon 
+                        type='power_settings_new' 
+                        size={18} 
+                        color='#737373'
+                        style={{
+                            position: 'absolute', 
+                            top: '-5px', 
+                            right: '-5px'
+                        }}
+                        onClick={() => this.props.openDialog(_id)}
+                    />
                     <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
                         <PriceComponent 
                             label='Call Price'

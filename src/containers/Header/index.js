@@ -61,6 +61,7 @@ class Header extends React.Component {
                             <HeaderLinks 
                                 menuOpenStatus={this.state.contestMenuOpen} 
                                 onClick={this.toggleContestMenu}
+                                history={this.props.history}
                             />
                         </Grid>
                     </Grid>
@@ -72,7 +73,7 @@ class Header extends React.Component {
 
 export default withStyles(styles)(withRouter(Header));
 
-const HeaderLinks = ({menuOpenStatus = false, onClick}) => {
+const HeaderLinks = ({menuOpenStatus = false, onClick, history}) => {
     const urls = [
         {name: 'Contest', url: '/dailycontest/home'},
         {name: 'Stock Research', url: '/stockresearch'},
@@ -95,7 +96,7 @@ const HeaderLinks = ({menuOpenStatus = false, onClick}) => {
                 <NavLink
                     onClick={() => {
                         Utils.logoutUser();
-                        this.props.history.push('/login');
+                        history.push('/login');
                     }}
                 >
                     Logout
