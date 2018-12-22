@@ -751,6 +751,7 @@ export class SearchStocks extends React.Component {
     }
 
     componentWillMount() {
+        this.props.updateCount && this.props.updateCount(0);
         this.props.loadOnMount && this.fetchStocks();
     }
 

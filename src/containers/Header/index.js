@@ -95,7 +95,7 @@ const HeaderLinks = ({menuOpenStatus = false, onClick}) => {
                 <NavLink
                     onClick={() => {
                         Utils.logoutUser();
-                        window.location.href='/login';
+                        this.props.history.push('/login');
                     }}
                 >
                     Logout
