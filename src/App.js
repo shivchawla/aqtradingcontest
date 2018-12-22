@@ -11,6 +11,7 @@ import Switch from 'react-router-dom/Switch';
 import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import DummyLogin from './containers/DummyLogin';
+import StockResearch from './containers/StockResearch';
 import {Utils} from './utils';
 import './App.css';
 
@@ -149,6 +150,7 @@ class App extends React.Component {
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
+                                        <Route path='/stockresearch' component={StockResearch}/> 
                                         <Route exact={true} path='/login' component={Login} />
                                         <Route exact={true} path='/signup' component={Signup} />
                                         <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
@@ -163,15 +165,6 @@ class App extends React.Component {
                                             }
                                         /> 
                                         <Route component={PageNotFound}/>
-                                        {/* {
-                                            develop 
-                                            ?   <Redirect push to='/404' />
-                                            :   <Route 
-                                                    render={() => {
-                                                        window.location.href = '/404'
-                                                    }}
-                                                />
-                                        } */}
                                     </Switch>
                                 </React.Suspense>
                             );

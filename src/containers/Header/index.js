@@ -30,7 +30,7 @@ class Header extends React.Component {
     }
 
     render() {
-        const {classes} = this.props;
+        const {classes, activeIndex = 0} = this.props;
 
         return (
             <AppBar 
@@ -59,8 +59,7 @@ class Header extends React.Component {
                         <Grid item xs={7}></Grid>
                         <Grid item xs={4} style={navLinkContainer}>
                             <HeaderLinks 
-                                menuOpenStatus={this.state.contestMenuOpen} 
-                                onClick={this.toggleContestMenu}
+                                activeIndex={activeIndex}
                                 history={this.props.history}
                             />
                         </Grid>
@@ -73,7 +72,7 @@ class Header extends React.Component {
 
 export default withStyles(styles)(withRouter(Header));
 
-const HeaderLinks = ({menuOpenStatus = false, onClick, history}) => {
+const HeaderLinks = ({activeIndex = 0, history}) => {
     const urls = [
         {name: 'Contest', url: '/dailycontest/home'},
         {name: 'Stock Research', url: '/stockresearch'},
@@ -84,8 +83,8 @@ const HeaderLinks = ({menuOpenStatus = false, onClick, history}) => {
             {
                 urls.map((item, index) => (
                     <NavLink
-                        active={index === 0}
-                        onClick={() => {window.location.href = item.url}}
+                        active={index === activeIndex}
+                        onClick={() => history.push(item.url)}
                     >
                         {item.name}
                     </NavLink>
