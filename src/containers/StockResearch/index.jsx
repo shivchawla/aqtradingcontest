@@ -382,6 +382,8 @@ class StockResearchImpl extends React.Component {
                         xs={12} 
                         style={{
                             ...shadowBoxStyle, 
+                            boxShadow: 'none',
+                            border: 'none',
                             ...this.props.style, 
                             marginBottom:'20px'
                         }}
@@ -501,7 +503,7 @@ class StockResearchImpl extends React.Component {
                     noHeader={this.props.openAsDialog}
                     content={
                         <Grid container>
-                            <Grid xs={10}>
+                            <Grid xs={9}>
                                 {this.renderPageContent()}
                             </Grid>
                         </Grid>
