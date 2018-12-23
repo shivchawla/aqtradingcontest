@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-09-11 20:06:27
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-11-16 14:25:02
+* @Last Modified time: 2018-12-10 13:07:04
 */
 
 import React, {Fragment} from 'react'
@@ -11,13 +11,13 @@ import createPortfolio from '../../../assets/CreatePortfolio.svg';
 import updateEntry from '../../../assets/UpdateEntry.svg';
 import winPrize from '../../../assets/WinPrizes.svg';
 
-export const scoringText = 'The theme of the Stock Prediction Contest is to award best stock pickers with most profitable ideas. For this purpose, our scoring function will only depend on net realized profit on anyday.';
+export const scoringText = 'The theme of the Stock Prediction Contest is to award best stock pickers with most profitable ideas. For this purpose, our scoring function will only depend on net ACTIVE profit on anyday.';
 
 
 export const faqs = [
     {
         header: 'How do I enter the contest?', 
-        content: 'Click “Enter Contest", Add your favorite stocks to buy or sell. Choose target-price/horizon for each predicton. Then click “Submit".'
+        content: 'Click “Enter Contest", Add your favorite stocks to buy or sell. Choose target-price/horizon for each predicton. Then click “Higher/Lower".'
     },
     {
         header: 'What stocks/universe is allowed?',
@@ -45,7 +45,7 @@ export const faqs = [
     },
     {
         header: 'How long are the entries evaluated?',
-        content: 'The entries are evaluated each day based on predictions ending on that day. The realized profit is used to select the winners.'
+        content: 'The entries are evaluated each day based on predictions active on that day. The active profit is used to select the winners.'
     },
     {
         header: 'Do I have to submit predictions daily?',
@@ -53,7 +53,7 @@ export const faqs = [
     },
     {
         header: 'When are winners declared?',
-        content: 'Winners are decided at the end of each trading day based on realized profit that day'
+        content: 'Winners are decided at the end of each trading day based on active profit that day'
     },
     {
         header: 'What’s the fine print?',
@@ -66,7 +66,7 @@ export const faqs = [
 export const howItWorksContents = [
     {image: createPortfolio, header: 'Pick your stocks', content: 'Select your favorite stocks to Buy or Sell'},
     {image: updateEntry, header: 'Set your prediction', content: 'Choose price-target/horizon for each stock prediction.'},
-    {image: winPrize, header: 'Win prizes daily', content: 'Highest realized profit win cash prizes everyday'}
+    {image: winPrize, header: 'Win prizes daily', content: 'Highest active profit win cash prizes everyday'}
 ];
 
 export const prizeText = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";
