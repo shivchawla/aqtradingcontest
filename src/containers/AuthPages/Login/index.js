@@ -16,6 +16,7 @@ import InputComponent from '../../../components/input/Form/components/InputCompo
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../constants';
 import {getFormProps} from '../../../utils/form';
 import {Utils} from '../../../utils';
+import AuthHeader from '../common/AuthHeader';
 import {loginValidationSchema, loginUser, googleLogin} from './utils';
 import googleLogo from '../../../assets/google-logo.svg';
 import advicequbeLogo from '../../../assets/logo-advq-new.png';
@@ -221,30 +222,26 @@ class Login extends React.Component {
 
     renderMobile = () => {
         return (
-            <AqLayoutMobile pageTitle='Login'>
+            <AqLayoutMobile pageTitle='Login' lightMode={true}>
                 <Container container>
                     <Grid 
                             item xs={12} 
                             style={verticalBox}
                     >
-                        <Logo src={advicequbeLogo} />
-                        {/* Name Container Starts*/}
-                        <div style={companyNameContainer}> 
-                            <p style={companyNameStyle}>
-                                <span style={{'color': tealColor}}>A</span>
-                                <span style={{'color': tealColor, fontSize: '18px'}}>DVICE</span>
-                                <span style={{'color': redColor}}>Q</span>
-                                <span style={{'color': redColor, fontSize: '18px'}}>UBE</span>
-                            </p>
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                        >
+                            <AuthHeader>Login</AuthHeader>
+                            <GoogleLoginButton 
+                                onSuccess={this.responseGoogle}
+                                onFailure={this.responseGoogleFailure}
+                                clientId={googleClientId}
+                            />
                         </div>
-                        {/* Name Container Ends*/}
-                        <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
-                        <GoogleLoginButton 
-                            marginTop='15px'
-                            onSuccess={this.responseGoogle}
-                            onFailure={this.responseGoogleFailure}
-                            clientId={googleClientId}
-                        />
                         <CustomForm 
                             validationSchema={loginValidationSchema}
                             renderForm={this.renderForm}

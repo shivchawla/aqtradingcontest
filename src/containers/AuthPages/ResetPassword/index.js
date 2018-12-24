@@ -13,7 +13,7 @@ import AqLayoutMobile from '../../../components/ui/AqLayout';
 import InputComponent from '../../../components/input/Form/components/InputComponent';
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../constants';
 import {getFormProps, validateSchema} from '../../../utils/form';
-import {Utils} from '../../../utils';
+import AuthHeader from '../common/AuthHeader';
 import {getValidationSchema, sendResetPasswordRequest} from './utils';
 import advicequbeLogo from '../../../assets/logo-advq-new.png';
 
@@ -171,24 +171,21 @@ class SignUp extends React.Component {
 
     renderMobile = () => {
         return (
-            <AqLayoutMobile pageTitle='Reset Password'>
+            <AqLayoutMobile pageTitle='Reset Password' lightMode={true}>
                 <Container container>
                     <Grid 
                             item xs={12} 
                             style={verticalBox}
                     >
-                        <Logo src={advicequbeLogo} />
-                        {/* Name Container Starts*/}
-                        <div style={companyNameContainer}> 
-                            <p style={companyNameStyle}>
-                                <span style={{'color': tealColor}}>A</span>
-                                <span style={{'color': tealColor, fontSize: '18px'}}>DVICE</span>
-                                <span style={{'color': redColor}}>Q</span>
-                                <span style={{'color': redColor, fontSize: '18px'}}>UBE</span>
-                            </p>
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                        >
+                            <AuthHeader>Reset Password</AuthHeader>
                         </div>
-                        {/* Name Container Ends*/}
-                        <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
                         <Formik 
                             onSubmit={this.handleResetPasswordRequest}
                             render={this.renderForm}
@@ -237,7 +234,7 @@ const companyNameStyle = {
 const submitButtonStyle = {
     width: '100%',
     boxShadow: 'none',
-    background: '#03A7AD',
+    background: primaryColor,
     marginTop: '0px'
 };
 

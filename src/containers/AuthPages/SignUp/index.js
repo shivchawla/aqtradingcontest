@@ -13,6 +13,7 @@ import AqLayoutMobile from '../../../components/ui/AqLayout';
 import InputComponent from '../../../components/input/Form/components/InputComponent';
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../constants';
 import {getFormProps, validateSchema} from '../../../utils/form';
+import AuthHeader from '../common/AuthHeader';
 import {Utils} from '../../../utils';
 import {getValidationSchema, registerUser} from './utils';
 import advicequbeLogo from '../../../assets/logo-advq-new.png';
@@ -204,24 +205,21 @@ class SignUp extends React.Component {
 
     renderMobile = () => {
         return (
-            <AqLayoutMobile pageTitle='Sign Up'>
+            <AqLayoutMobile pageTitle='Sign Up' lightMode={true}>
                 <Container container>
                     <Grid 
                             item xs={12} 
                             style={verticalBox}
                     >
-                        <Logo src={advicequbeLogo} />
-                        {/* Name Container Starts*/}
-                        <div style={companyNameContainer}> 
-                            <p style={companyNameStyle}>
-                                <span style={{'color': tealColor}}>A</span>
-                                <span style={{'color': tealColor, fontSize: '18px'}}>DVICE</span>
-                                <span style={{'color': redColor}}>Q</span>
-                                <span style={{'color': redColor, fontSize: '18px'}}>UBE</span>
-                            </p>
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                        >
+                            <AuthHeader>Register</AuthHeader>
                         </div>
-                        {/* Name Container Ends*/}
-                        <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
                         <Formik 
                             onSubmit={this.handleSignUp}
                             render={this.renderForm}
