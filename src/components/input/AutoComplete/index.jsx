@@ -27,7 +27,7 @@ class AutoComplete extends React.Component {
     };
     
     render() {
-        const {classes, theme, async = true, options = []} = this.props;
+        const {classes, theme, async = true, options = [], defaultMenuIsOpen = true} = this.props;
         const selectStyles = {
             input: base => ({
               ...base,
@@ -72,7 +72,7 @@ class AutoComplete extends React.Component {
                           components={components}
                           onChange={this.handleChange}
                           placeholder="Search Stocks"
-                          defaultMenuIsOpen={true}
+                          defaultMenuIsOpen={defaultMenuIsOpen}
                       />
                     }
                     {
@@ -86,7 +86,7 @@ class AutoComplete extends React.Component {
                           onChange={this.handleChange}
                           placeholder="Search Stocks"
                           autoFocus={false}
-                          defaultMenuIsOpen={true}
+                          defaultMenuIsOpen={defaultMenuIsOpen}
                       />
                     }
                 </NoSsr>
@@ -139,6 +139,7 @@ function NoOptionsMessage(props) {
         component="div"
         style={{
           fontWeight: props.isSelected ? 500 : 400,
+          zIndex: 20
         }}
         {...props.innerProps}
       >

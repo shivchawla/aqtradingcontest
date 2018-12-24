@@ -16,12 +16,9 @@ import AqLayout from '../../components/ui/AqLayout';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
-import DateComponent from './Misc/DateComponent';
-import DummyLogin from '../DummyLogin';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
-import PageNotFound from '../../containers/ErrorPages/PageNotFound';
 import Header from '../Header';
-import {primaryColor, verticalBox, metricColor} from '../../constants';
+import {primaryColor, verticalBox, metricColor, horizontalBox} from '../../constants';
 import {isMarketOpen}  from './utils';
 import {Utils} from '../../utils';
 const DateHelper = require('../../utils/date');
@@ -225,8 +222,8 @@ class TradingContest extends React.Component {
 
     renderMobile = () => {
         const {selectedTab} = this.state;
-        const isMarketTrading = !DateHelper.isHoliday();
-        const marketOpen = isMarketTrading && isMarketOpen().status;
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        const selectedUserName = Utils.getFromLocalStorage('selectedUserName');
         
         return (
             <AqLayout
@@ -250,11 +247,24 @@ class TradingContest extends React.Component {
                         >
                             <STab label="PREDICT"/>
                             <STab label="MY PICKS" />
-                            {/* <STab label="TOP PICKS" /> */}
-                            {/* <STab label="LEADER"/> */}
                             <STab label="Metrics"/>
                         </STabs>
                     </Grid>
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                width: '100%', 
+                                justifyContent: 'center',
+                                backgroundColor: '#fff'
+                            }}
+                    >
+                        {
+                            Utils.isAdmin() && 
+                            Utils.isLocalStorageItemPresent(selectedAdvisorId) && 
+                            Utils.isLocalStorageItemPresent(selectedUserName) &&
+                            <SelectedUserName>{selectedUserName}</SelectedUserName>
+                        }
+                    </div>
                     <React.Suspense fallback={<Loader />}>
                         <Switch>
                             <Route 
@@ -430,6 +440,17 @@ const STab = styled(Tab)`
     min-width: 100px;
 `;
 
+const SelectedUserName = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    color: #436ebc;
+    border: 1px solid #8399c9;
+    padding: 5px;
+    border-radius: 50px;
+    margin-top: 5px;
+`;
+
 const desktopStyles = {
     root: {
         flexGrow: 1
@@ -438,14 +459,3 @@ const desktopStyles = {
         marginTop: 100
     }
 };
-
-const MartketOpenTag = styled.div`
-    padding: 5px;
-    border-radius: 4px;
-    font-size: 12px;
-    border: 1px solid ${props => props.color || '#fff'};
-    background-color: transparent;
-    color: ${props => props.color || '#fff'};
-    width: 80px;
-    margin: 0 auto;
-`;

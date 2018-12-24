@@ -11,6 +11,7 @@ import Header from '../../Header';
 import NavLink from '../components/NavLinkButton';
 import AqLayoutMobile from '../../../components/ui/AqLayout';
 import CustomForm from '../../../components/input/Form';
+import AuthHeader from '../common/AuthHeader';
 import InputComponent from '../../../components/input/Form/components/InputComponent';
 import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
 import {getFormProps} from '../../../utils/form';
@@ -165,24 +166,21 @@ class ForgotPassword extends React.Component {
 
     renderMobile = () => {
         return (
-            <AqLayoutMobile pageTitle='Forgot Password'>
+            <AqLayoutMobile pageTitle='Forgot Password' lightMode={true}>
                 <Container container>
                     <Grid 
                             item xs={12} 
                             style={verticalBox}
                     >
-                        <Logo src={advicequbeLogo} />
-                        {/* Name Container Starts*/}
-                        <div style={companyNameContainer}> 
-                            <p style={companyNameStyle}>
-                                <span style={{'color': tealColor}}>A</span>
-                                <span style={{'color': tealColor, fontSize: '18px'}}>DVICE</span>
-                                <span style={{'color': redColor}}>Q</span>
-                                <span style={{'color': redColor, fontSize: '18px'}}>UBE</span>
-                            </p>
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                        >
+                            <AuthHeader>Forgot Password</AuthHeader>
                         </div>
-                        {/* Name Container Ends*/}
-                        <CompanyTagLine>Crowd-Sourced Investment Portfolio</CompanyTagLine>
                         <CustomForm 
                             validationSchema={forgotPasswordValidationSchema}
                             renderForm={this.renderForm}

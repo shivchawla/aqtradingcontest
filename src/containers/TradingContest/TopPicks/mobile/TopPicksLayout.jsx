@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import WinnerList from '../common/WinnerList';
 import LoaderComponent from '../../Misc/Loader';
-import RadioGroup from '../../../../components/selections/RadioGroup';
-import {verticalBox, horizontalBox} from '../../../../constants';
+import {verticalBox} from '../../../../constants';
 import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
 export default class TopPicksLayout extends React.Component {
@@ -40,20 +39,9 @@ export default class TopPicksLayout extends React.Component {
                     (winnerStocksByInvestment.length === 0 && winnerStocksByUsers.length === 0)
                     ?   <NoDataFound />
                     :   <Grid item xs={12} style={{padding: '10px'}}>
-                            {/* <div 
-                                    style={{
-                                        ...horizontalBox, 
-                                        width: '100%',
-                                        justifyContent: 'center'
-                                    }}
-                            >
-                                <RadioGroup 
-                                    items={['By Investment', 'By Users']} 
-                                    onChange={this.onRadioChange}
-                                />
-                            </div> */}
                             <WinnerList 
                                 winners={winners}
+                                onListItemClick={this.props.onListItemClick}
                             />
                         </Grid>
                 }

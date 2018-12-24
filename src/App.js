@@ -14,7 +14,7 @@ import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
 import './App.css';
 
-const {develop = false, gaTrackingId = null} = require('./localConfig');
+const {gaTrackingId = null} = require('./localConfig');
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
 const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
@@ -32,6 +32,10 @@ const StockDetail = React.lazy(() => import('./containers/StockDetail'));
 const NotAuthorized = React.lazy(() => import('./containers/ErrorPages/NotAuthorized'));
 const DailyContestTnc = React.lazy(() => import('./containers/TradingContest/TnC/DailyContestTnC'));
 const PageNotFound = React.lazy(() => import('./containers/ErrorPages/PageNotFound'));
+const StockResearch = React.lazy(() => import('./containers/StockResearch'));
+const AboutUs = React.lazy(() => import('./containers/AboutUs'));
+const TnC = React.lazy(() => import('./containers/TnC'));
+const Policy = React.lazy(() => import('./containers/Policy'));
 
 class App extends React.Component {
     constructor(props) {
@@ -149,6 +153,16 @@ class App extends React.Component {
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
+                                        <Route 
+                                            path='/stockresearch' 
+                                            render={() => Utils.isLoggedIn()
+                                                    ? <StockResearch />
+                                                    : this.redirectToLogin('/stockresearch')
+                                            }
+                                        /> 
+                                        <Route path='/policies/tnc' component={TnC}/> 
+                                        <Route path='/policies/privacy' component={Policy}/> 
+                                        <Route path='/aboutus' component={AboutUs}/> 
                                         <Route exact={true} path='/login' component={Login} />
                                         <Route exact={true} path='/signup' component={Signup} />
                                         <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
@@ -163,15 +177,6 @@ class App extends React.Component {
                                             }
                                         /> 
                                         <Route component={PageNotFound}/>
-                                        {/* {
-                                            develop 
-                                            ?   <Redirect push to='/404' />
-                                            :   <Route 
-                                                    render={() => {
-                                                        window.location.href = '/404'
-                                                    }}
-                                                />
-                                        } */}
                                     </Switch>
                                 </React.Suspense>
                             );

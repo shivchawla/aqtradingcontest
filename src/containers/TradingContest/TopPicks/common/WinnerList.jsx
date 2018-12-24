@@ -25,6 +25,7 @@ export default class WinnerList extends React.Component {
                 {...winner} 
                 key={index} 
                 type={this.props.type}
+                onListItemClick={this.props.onListItemClick}
             />
         ));
     }

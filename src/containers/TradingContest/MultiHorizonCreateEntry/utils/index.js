@@ -38,8 +38,7 @@ export const getPredictionsFromPositions = (positions = []) => {
     }));
 }
 
-export const createPredictions = (predictions = [], create = true) => {
-    // const operation = create ? 'insert' : 'update';
+export const createPredictions = (predictions = []) => {
     const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
     const operation = 'insert';
     let url = `${requestUrl}/dailycontest/prediction?operation=${operation}`;
@@ -99,6 +98,63 @@ export const getPnlStats = (date = moment(), type = 'started', history, currentU
     return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
 }
 
+export const exitPrediction = predictionId => {
+    const url = `${requestUrl}/dailycontest/exitPrediction?predictionId=${predictionId}`;
+
+    return axios({
+        method: 'POST',
+        url,
+        data: {},
+        headers: Utils.getAuthTokenHeader()
+    });
+}
+
+export const deletePredictionFromPositions = (predictionId, positions, selectedPositionIndex) => {
+    const clonedPositions = _.map(positions, _.cloneDeep);
+    const requiredPosition = clonedPositions[selectedPositionIndex];
+
+    if (requiredPosition !== undefined) {
+        const predictions = _.get(requiredPosition, 'predictions', []);
+        const requiredPredictionIndex = _.findIndex(predictions, prediction => prediction._id === predictionId);
+        if (requiredPredictionIndex > -1) {
+            predictions.splice(requiredPredictionIndex, 1); // predictions modified
+            requiredPosition.predictions = predictions;
+            clonedPositions[selectedPositionIndex] = requiredPosition;
+            
+            return clonedPositions;
+        } else {
+            return clonedPositions;
+        }
+    } else {
+        return clonedPositions;
+    }
+}
+
+export const stopPredictionInPositions = (predictionId, positions, selectedPositionIndex) => {
+    const clonedPositions = _.map(positions, _.cloneDeep);
+    const requiredPosition = clonedPositions[selectedPositionIndex];
+
+    if (requiredPosition !== undefined) {
+        const predictions = _.get(requiredPosition, 'predictions', []);
+        const requiredPredictionIndex = _.findIndex(predictions, prediction => prediction._id === predictionId);
+        if (requiredPredictionIndex > -1) {
+            // predictions.splice(requiredPredictionIndex, 1); // predictions modified
+            predictions[requiredPredictionIndex].status = {
+                ...predictions[requiredPredictionIndex].status,
+                manualExit: true
+            }
+            requiredPosition.predictions = predictions;
+            clonedPositions[selectedPositionIndex] = requiredPosition;
+            
+            return clonedPositions;
+        } else {
+            return clonedPositions;
+        }
+    } else {
+        return clonedPositions;
+    }
+}
+
 // converts predictions to positions obtained from the backend
 export const convertPredictionsToPositions = (predictions = [], lockPredictions = false, newPrediction = true, active = false) => {
     let positions = [];
@@ -125,7 +181,9 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
             startDate: moment(startDate).format(dateFormat),
             endDate: moment(endDate).format(dateFormat),
             targetAchieved: _.get(prediction, 'success.status', false),
-            active
+            active,
+            _id: _.get(prediction, '_id', null),
+            status: _.get(prediction, 'status', {})
         };
 
         const positionIndex = _.findIndex(positions, position => position.symbol === symbol);

@@ -30,7 +30,7 @@ class Header extends React.Component {
     }
 
     render() {
-        const {classes} = this.props;
+        const {classes, activeIndex = 0} = this.props;
 
         return (
             <AppBar 
@@ -59,8 +59,8 @@ class Header extends React.Component {
                         <Grid item xs={7}></Grid>
                         <Grid item xs={4} style={navLinkContainer}>
                             <HeaderLinks 
-                                menuOpenStatus={this.state.contestMenuOpen} 
-                                onClick={this.toggleContestMenu}
+                                activeIndex={activeIndex}
+                                history={this.props.history}
                             />
                         </Grid>
                     </Grid>
@@ -72,7 +72,7 @@ class Header extends React.Component {
 
 export default withStyles(styles)(withRouter(Header));
 
-const HeaderLinks = ({menuOpenStatus = false, onClick}) => {
+const HeaderLinks = ({activeIndex = 0, history}) => {
     const urls = [
         {name: 'Contest', url: '/dailycontest/home'},
         {name: 'Stock Research', url: '/stockresearch'},
@@ -83,8 +83,8 @@ const HeaderLinks = ({menuOpenStatus = false, onClick}) => {
             {
                 urls.map((item, index) => (
                     <NavLink
-                        active={index === 0}
-                        onClick={() => {window.location.href = item.url}}
+                        active={index === activeIndex}
+                        onClick={() => history.push(item.url)}
                     >
                         {item.name}
                     </NavLink>
@@ -95,7 +95,7 @@ const HeaderLinks = ({menuOpenStatus = false, onClick}) => {
                 <NavLink
                     onClick={() => {
                         Utils.logoutUser();
-                        this.props.history.push('/login');
+                        history.push('/login');
                     }}
                 >
                     Logout
