@@ -550,7 +550,14 @@ class MyChartNewImpl extends React.Component {
                                 </span>
                             </h2>
                         </Grid>
-                        <Grid item xs={6} style={{display: 'flex', justifyContent: 'flex-end'}}>
+                        <Grid 
+                                item xs={6} 
+                                style={{
+                                    display: 'flex', 
+                                    justifyContent: 'flex-end',
+                                    paddingRight: '5px'
+                                }}
+                        >
                             <AutoComplete 
                                 handleSearch={this.handleSearch}
                                 onClick={this.onCompareSelect}
