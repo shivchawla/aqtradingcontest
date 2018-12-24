@@ -110,7 +110,7 @@ class CreateWatchListImpl extends React.Component {
                     action
             >
                 <Container container>
-                    <Grid item xs={12} style={{...verticalBox, width: '300px'}}>
+                    <Grid item xs={12} style={{...verticalBox}}>
                         <TextField
                             id="outlined-name"
                             label="List Name"
@@ -138,7 +138,7 @@ class CreateWatchListImpl extends React.Component {
 export default withRouter(CreateWatchListImpl);
 
 const Container = styled(Grid)`
-    width: 90vh;
+    width: '100%';
     /* height: calc(100vh - 56px); */
     display: flex;
     justify-content: center;
