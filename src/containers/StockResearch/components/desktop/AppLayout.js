@@ -56,14 +56,15 @@ class AppLayout extends React.Component {
                 {
                     !this.props.loading &&
                     <div className={classes.root}>
-                        <Header activeIndex={1} />
+                        <Header activeIndex={this.props.activeNav || 1} />
                         <div 
                                 style={{
                                     height: 'calc(100vh - 64px)',
                                     ...verticalBox,
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    paddingLeft: '20px'
+                                    paddingLeft: '20px',
+                                    ...this.props.style
                                 }}
                         >
                             {this.props.content}

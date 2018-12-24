@@ -1,33 +1,48 @@
 import React from 'react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {verticalBox} from '../../constants';
+import {withRouter} from 'react-router-dom';
+import { horizontalBox } from '../../constants';
 
-export default class Footer extends React.Component {
+class Footer extends React.Component {
     render() {
         return (
             <SGrid container>
                 <ColGrid item xs={4}>
                     <ListHeader>Company</ListHeader>
-                    <ListItem url='/aboutus'>About Us</ListItem>
-                    <ListItem url='/aboutus/people'>People</ListItem>
-                    <ListItem url='/aboutus/careers'>Careers</ListItem>
-                    <ListItem url='/aboutus/connect'>Connect</ListItem>
+                    <ListItem history={this.props.history} url='/aboutus'>About Us</ListItem>
+                    <ListItem history={this.props.history} url='/aboutus/people'>People</ListItem>
+                    <ListItem history={this.props.history} url='/aboutus/careers'>Careers</ListItem>
+                    <ListItem history={this.props.history} url='/aboutus/connect'>Connect</ListItem>
                 </ColGrid>
                 <ColGrid item xs={4}>
                     <ListHeader>Policies</ListHeader>
-                    <ListItem url='/policies/tnc'>Terms of Use</ListItem>
-                    <ListItem url='/policies/privacy'>Privacy Policy</ListItem>
-                    <ListItem url='/dailycontest/rules'>Contest Rules</ListItem>
+                    <ListItem history={this.props.history} url='/policies/tnc'>Terms of Use</ListItem>
+                    <ListItem history={this.props.history} url='/policies/privacy'>Privacy Policy</ListItem>
+                    <ListItem history={this.props.history} url='/dailycontest/rules'>Contest Rules</ListItem>
                 </ColGrid>
+                <Grid 
+                        item 
+                        xs={12}
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'flex-end', 
+                            marginBottom: '20px',
+                            marginTop: '80px'
+                        }}
+                >
+                    <CompanyName>AimsQuant Private Limited</CompanyName>
+                </Grid>
             </SGrid>
         );
     }
 }
 
-const ListItem = ({url, children}) => {
+export default withRouter(Footer);
+
+const ListItem = ({url, children, history}) => {
     return (
-        <ListItemText onClick={() => {window.location.href = url}}>{children}</ListItemText>
+        <ListItemText onClick={() => {history.push(url)}}>{children}</ListItemText>
     );
 }
 
@@ -58,5 +73,13 @@ const ListItemText = styled.h3`
     font-size: 14px;
     color: #fff;
     font-weight: 400;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+`;
+
+const CompanyName = styled.h3`
+    color: #fff;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    margin-right: 10px;
 `;

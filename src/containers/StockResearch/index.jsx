@@ -13,6 +13,7 @@ import MyChartNew from './components/desktop/MyChartNew';
 import {getStockData, Utils, getStockPerformance} from '../../utils';
 import './css/stockResearch.css';
 import AppLayout from './components/desktop/AppLayout';
+import Footer from '../Footer';
 
 const {requestUrl} = require('../../localConfig');
 
@@ -501,10 +502,14 @@ class StockResearchImpl extends React.Component {
                     loading={this.state.loading}
                     noFooter={this.props.openAsDialog}
                     noHeader={this.props.openAsDialog}
+                    style={{paddingLeft: '0'}}
                     content={
                         <Grid container>
-                            <Grid xs={9}>
+                            <Grid item xs={9} style={{marginTop: '30px'}}>
                                 {this.renderPageContent()}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Footer />
                             </Grid>
                         </Grid>
                     }>

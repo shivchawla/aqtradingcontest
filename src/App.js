@@ -12,10 +12,13 @@ import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import DummyLogin from './containers/DummyLogin';
 import StockResearch from './containers/StockResearch';
+import AboutUs from './containers/AboutUs';
+import TnC from './containers/TnC';
+import Policy from './containers/Policy';
 import {Utils} from './utils';
 import './App.css';
 
-const {develop = false, gaTrackingId = null} = require('./localConfig');
+const {gaTrackingId = null} = require('./localConfig');
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
 const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
@@ -151,6 +154,9 @@ class App extends React.Component {
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
                                         <Route path='/stockresearch' component={StockResearch}/> 
+                                        <Route path='/policies/tnc' component={TnC}/> 
+                                        <Route path='/policies/privacy' component={Policy}/> 
+                                        <Route path='/aboutus' component={AboutUs}/> 
                                         <Route exact={true} path='/login' component={Login} />
                                         <Route exact={true} path='/signup' component={Signup} />
                                         <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
