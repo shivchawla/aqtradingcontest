@@ -5,6 +5,7 @@ import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ActionIcon from '../../../Misc/ActionIcons';
+import {isMarketOpen} from '../../../utils';
 import {Utils} from '../../../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
@@ -104,6 +105,8 @@ export default class StockPreviewPredictionListItem extends React.Component {
             priceInterval = {},
             _id = null
         } = this.props.prediction;
+        const isMarketTrading = !DateHelper.isHoliday();
+        const marketOpen = isMarketTrading && isMarketOpen().status;
         
         const highPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'highPrice', 0));
         const lowPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'lowPrice', 0));
@@ -130,17 +133,20 @@ export default class StockPreviewPredictionListItem extends React.Component {
 
             <Container container alignItems="flex-end" style={{position: 'relative'}}>
                 <Grid item xs={12} style={{...verticalBox, alignItems: 'center', marginTop: '13px'}}>
-                    <ActionIcon 
-                        type='power_settings_new' 
-                        size={18} 
-                        color='#737373'
-                        style={{
-                            position: 'absolute', 
-                            top: '-5px', 
-                            right: '-5px'
-                        }}
-                        onClick={() => this.props.openDialog(_id)}
-                    />
+                    {
+                        marketOpen &&
+                        <ActionIcon 
+                            type='power_settings_new' 
+                            size={18} 
+                            color='#737373'
+                            style={{
+                                position: 'absolute', 
+                                top: '-5px', 
+                                right: '-5px'
+                            }}
+                            onClick={() => this.props.openDialog(_id)}
+                        />
+                    }
                     <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
                         <PriceComponent 
                             label='Call Price'
