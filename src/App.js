@@ -11,10 +11,6 @@ import Switch from 'react-router-dom/Switch';
 import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import DummyLogin from './containers/DummyLogin';
-import StockResearch from './containers/StockResearch';
-import AboutUs from './containers/AboutUs';
-import TnC from './containers/TnC';
-import Policy from './containers/Policy';
 import {Utils} from './utils';
 import './App.css';
 
@@ -36,6 +32,10 @@ const StockDetail = React.lazy(() => import('./containers/StockDetail'));
 const NotAuthorized = React.lazy(() => import('./containers/ErrorPages/NotAuthorized'));
 const DailyContestTnc = React.lazy(() => import('./containers/TradingContest/TnC/DailyContestTnC'));
 const PageNotFound = React.lazy(() => import('./containers/ErrorPages/PageNotFound'));
+const StockResearch = React.lazy(() => import('./containers/StockResearch'));
+const AboutUs = React.lazy(() => import('./containers/AboutUs'));
+const TnC = React.lazy(() => import('./containers/TnC'));
+const Policy = React.lazy(() => import('./containers/Policy'));
 
 class App extends React.Component {
     constructor(props) {
