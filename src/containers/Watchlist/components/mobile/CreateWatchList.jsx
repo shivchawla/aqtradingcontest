@@ -1,16 +1,12 @@
 import * as React from 'react';
-import axios from 'axios';
 import _ from 'lodash';
 import styled from 'styled-components';
 import {withRouter} from 'react-router';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
-import BottomSheet from '../../../../components/Alerts/BottomSheet';
 import DialogComponent from '../../../../components/Alerts/DialogComponent';
-import {createUserWatchlist} from '../../utils';
 import {Utils} from '../../../../utils';
 import { verticalBox, horizontalBox } from '../../../../constants';
 

@@ -65,6 +65,26 @@ export default class StockPreviewPredictionListItem extends React.Component {
         }
     }
 
+    getInvestmentColor = (investment, changedInvestment) => {
+        const {type = 'buy'} = this.props.prediction;
+        let color = metricColor.neutral;
+        if (type === 'buy') {
+            color = changedInvestment > investment 
+                ?   metricColor.positive
+                :   changedInvestment === investment
+                    ?   metricColor.neutral
+                    :   metricColor.negative;
+        } else {
+            color = changedInvestment < investment 
+                ?   metricColor.positive
+                :   changedInvestment === investment
+                    ?   metricColor.neutral
+                    :   metricColor.negative;
+        }
+
+        return color;
+    }
+
     render() {
         let {
             horizon = 1, 
@@ -96,11 +116,15 @@ export default class StockPreviewPredictionListItem extends React.Component {
 
         const directionUnit = type === 'buy' ? 1 : -1;
         const changeInvestment = ((lastPrice - avgPrice) / avgPrice) * investment;
-        const changedInvestment = investment + changeInvestment;
+        const changedInvestment = investment + (changeInvestment * directionUnit);
 
         const duration = DateHelper.getTradingDays(startDate, endDate);
 
-        const changedInvestmentColor = changeInvestment > 0 ? metricColor.positive : changeInvestment < 0 ? metricColor.negative : metricColor.neutral;
+        const changedInvestmentColor = changedInvestment > investment
+            ? metricColor.positive 
+            : changedInvestment < investment 
+                ? metricColor.negative 
+                : metricColor.neutral;        
 
         return (
 
@@ -149,7 +173,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             <div style={{...horizontalBox, minHeight: '22px'}}>
                                 <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
                                 <Icon>arrow_right_alt</Icon>
-                                <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
+                                <MetricText 
+                                        color={changedInvestmentColor}
+                                >
+                                    {Utils.formatInvestmentValue(changedInvestment)}
+                                </MetricText>
                             </div>
                         </div>
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
