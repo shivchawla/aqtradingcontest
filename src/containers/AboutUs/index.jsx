@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Media from 'react-media';
 import Grid from '@material-ui/core/Grid';
+import windowSize from 'react-window-size';
 import Button from '@material-ui/core/Button';
 import ReactDOM from 'react-dom';
 import AppLayout from '../StockResearch/components/desktop/AppLayout';
@@ -69,7 +70,7 @@ class AboutUsItem extends React.Component {
     }
 }
 
-export default class AboutUs extends React.Component {
+class AboutUs extends React.Component {
   constructor(props){
   	super();
   	this.state = {
@@ -78,12 +79,14 @@ export default class AboutUs extends React.Component {
   	};
   }
 
-  handleScrollToElement = (key) =>{
-    const tesNode = ReactDOM.findDOMNode(this.refs[key]);
-    if (tesNode){
-      window.scrollTo(0, tesNode.offsetTop);
+    handleScrollToElement = (key) => {
+        console.log(this.refs);
+        const tesNode = ReactDOM.findDOMNode(this.refs[key]);
+        console.log('Test Node', tesNode);
+        if (tesNode){
+        window.scrollTo(0, tesNode.offsetTop);
+        }
     }
-  }
 
   componentWillReceiveProps(nextProps){
 
@@ -164,34 +167,21 @@ export default class AboutUs extends React.Component {
   }
 
   render() {
-      return (
-          <React.Fragment>
-              <Media 
-                query="(max-width: 599px)"
-                render={() => {
-                    return (
-                        <AqLayout>
-                            {this.renderPageContent()}
-                        </AqLayout>
-                    );
-                }}
+    return this.props.windowWidth
+        ?   (
+                <AqLayout>
+                    {this.renderPageContent()}
+                </AqLayout>
+            )
+        :   <AppLayout 
+                content = {this.renderPageContent()}
+                style={{paddingLeft: 0}}
+                activeNav={6}
             />
-            <Media 
-                query="(min-width: 600px)"
-                render={() => {
-                    return (
-                        <AppLayout 
-                            content = {this.renderPageContent()}
-                            style={{paddingLeft: 0}}
-                            activeNav={6}
-                        />
-                    );
-                }}
-            />
-          </React.Fragment>
-      );
   }
 }
+
+export default windowSize(AboutUs);
 
 const aboutUsActionButton = {
     height: '35px',

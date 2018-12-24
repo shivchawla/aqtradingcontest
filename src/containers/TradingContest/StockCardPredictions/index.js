@@ -4,7 +4,6 @@ import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
 import Badge from '@material-ui/core/Badge';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
