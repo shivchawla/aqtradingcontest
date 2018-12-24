@@ -48,7 +48,7 @@ export default class ContactUsModal extends React.Component {
 
         return (
             <Form style={{width: '100%'}} autoComplete='off'>
-                <Grid container style={{width: '400px'}}>
+                <Grid container>
                     <Grid item xs={12}>
                         <SubjectText>Connect with AimsQuant</SubjectText>
                     </Grid>
