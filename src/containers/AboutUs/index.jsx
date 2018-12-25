@@ -1,9 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
+import Media from 'react-media';
 import Grid from '@material-ui/core/Grid';
+import windowSize from 'react-window-size';
 import Button from '@material-ui/core/Button';
 import ReactDOM from 'react-dom';
 import AppLayout from '../StockResearch/components/desktop/AppLayout';
+import AqLayout from '../../components/ui/AqLayout';
 import Footer from '../Footer';
 import ContactUsModal from './components/desktop/ContactUsModal';
 import {aboutUsText, primaryColor} from '../../constants';
@@ -17,7 +20,11 @@ class AboutUsItem extends React.Component {
                     item 
                     xs={12} 
                     className="full-screen-container" 
-                    style={{'background': 'white', 'padding': '0% 10% 14% 10%', height: '80vh'}}
+                    style={{
+                        background: 'white', 
+                        padding: global.screen.width > 599 ? '0% 10% 14% 10%' : '0 5%', 
+                        height: '80vh'
+                    }}
             >
                 <AboutUsHeader>{item.header}</AboutUsHeader>
                 <AboutUsTagline>{item.tagline}</AboutUsTagline>
@@ -63,7 +70,7 @@ class AboutUsItem extends React.Component {
     }
 }
 
-export default class AboutUs extends React.Component {
+class AboutUs extends React.Component {
   constructor(props){
   	super();
   	this.state = {
@@ -72,12 +79,14 @@ export default class AboutUs extends React.Component {
   	};
   }
 
-  handleScrollToElement = (key) =>{
-    const tesNode = ReactDOM.findDOMNode(this.refs[key]);
-    if (tesNode){
-      window.scrollTo(0, tesNode.offsetTop);
+    handleScrollToElement = (key) => {
+        console.log(this.refs);
+        const tesNode = ReactDOM.findDOMNode(this.refs[key]);
+        console.log('Test Node', tesNode);
+        if (tesNode){
+        window.scrollTo(0, tesNode.offsetTop);
+        }
     }
-  }
 
   componentWillReceiveProps(nextProps){
 
@@ -143,7 +152,6 @@ export default class AboutUs extends React.Component {
                 item={careers} 
                 scrollButton
                 careerOnClick={() => {document.location.href = 'mailto:connect@aimsquant.com'}}
-            // readMoreClick={() => this.handleScrollToElement('whatWeBuild')}
             />
             <AboutUsItem
                 ref="connectWithUs" 
@@ -159,15 +167,21 @@ export default class AboutUs extends React.Component {
   }
 
   render() {
-      return (
-        <AppLayout 
-            content = {this.renderPageContent()}
-            style={{paddingLeft: 0}}
-            activeNav={6}
-        />
-      );
+    return this.props.windowWidth
+        ?   (
+                <AqLayout>
+                    {this.renderPageContent()}
+                </AqLayout>
+            )
+        :   <AppLayout 
+                content = {this.renderPageContent()}
+                style={{paddingLeft: 0}}
+                activeNav={6}
+            />
   }
 }
+
+export default windowSize(AboutUs);
 
 const aboutUsActionButton = {
     height: '35px',
@@ -197,7 +211,7 @@ const AboutUsTagline = styled.h3`
 
 const AboutUsText = styled.h3`
     font-size: 17px;
-    width: 80%;
+    width: ${global.screen.width > 599 ? '80%' : '100%'};
     margin-top: 5px;
     color: #000000d9;
     text-align: start;

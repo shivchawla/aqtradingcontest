@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import Media from 'react-media';
 import ReactQuill from 'react-quill';
 import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {Utils} from '../../utils';
 import axios from 'axios';
 import {withRouter} from 'react-router-dom';
@@ -8,7 +10,9 @@ import 'react-loading-bar/dist/index.css'
 import 'react-quill/dist/quill.snow.css';
 import './css/quillContainer.css';
 import AppLayout from '../StockResearch/components/desktop/AppLayout';
+import AqLayout from '../../components/ui/AqLayout';
 import Footer from '../Footer';
+import { verticalBox } from '../../constants';
 
 class TnC extends Component {
 
@@ -103,13 +107,34 @@ class TnC extends Component {
     }
 
     return ( 
-        <AppLayout 
-            loading = {this.state.loading}
-            content = {getTotalDiv()}
-            style={{paddingLeft: 0}}
-            activeNav={8}
-        >
-        </AppLayout>
+        <React.Fragment>
+            <Media 
+                query="(max-width: 599px)"
+                render={() => {
+                    return this.state.loading
+                        ?   <div style={{...verticalBox, height: '100vh', width: '100vw'}}>
+                                <CircularProgress />
+                            </div>
+                        :   <AqLayout>
+                                {getTotalDiv()}
+                            </AqLayout>
+                }}
+            />
+            <Media 
+                query="(min-width: 600px)"
+                render={() => {
+                    return (
+                        <AppLayout 
+                            loading = {this.state.loading}
+                            content = {getTotalDiv()}
+                            style={{paddingLeft: 0}}
+                            activeNav={8}
+                        >
+                        </AppLayout>
+                    );
+                }}
+            />
+        </React.Fragment>
     );
 
   }

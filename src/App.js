@@ -90,6 +90,9 @@ class App extends React.Component {
                                         <Route path='/tokenUpdate' component={TokenUpdate}/>
                                         <Route exact={true} path='/login' component={Login} />
                                         <Route exact={true} path='/signup' component={Signup} />
+                                        <Route path='/policies/tnc' component={TnC}/> 
+                                        <Route path='/policies/privacy' component={Policy}/> 
+                                        <Route path='/aboutus' component={AboutUs}/> 
                                         <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route exact={true} path='/resetPassword' component={ResetPassword} />
@@ -130,15 +133,6 @@ class App extends React.Component {
                                             }
                                         /> 
                                         <Route component={PageNotFound}/>
-                                        {/* {
-                                            develop 
-                                            ?   <Redirect push to='/404' />
-                                            :   <Route 
-                                                    render={() => {
-                                                        window.location.href = '/404'
-                                                    }}
-                                                />
-                                        } */}
                                     </Switch>
                                 </React.Suspense>
                             );

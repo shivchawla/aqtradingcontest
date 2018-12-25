@@ -11,9 +11,16 @@ export default class DailyContestTnC extends React.Component {
     renderPageContent() {
         return (
             <Grid container>
-                <Grid item xs={12}>
-                    <Header activeIndex={9} />
-                </Grid>
+                <Media 
+                    query="(min-width: 600px)"
+                    render={() => {
+                        return (
+                            <Grid item xs={12}>
+                                <Header activeIndex={9} />
+                            </Grid>
+                        );
+                    }}
+                />
                 <Grid item xs={12}>
                     <div style={{padding: '20px 40px', fontSize: '16px', textAlign: 'start'}}>
                         

@@ -74,7 +74,7 @@ class StockSelection extends React.Component {
     }
 
     renderSearchStocks = () => {
-        const {showPredict = false} = this.props;
+        const {showPredict = false, watchlistPredict = false} = this.props;
         return (
             <SearchStocks 
                 showPredict={showPredict}
@@ -101,6 +101,8 @@ class StockSelection extends React.Component {
                 hideSelectedItems={this.props.hideSelectedItems}
                 updateCount={this.updateCount}
                 setAddStockMethodCb={this.setAddStockMethodCb}
+                watchlistPredict={watchlistPredict}
+                createPrediction={this.props.createPrediction}
             />
         );
     }

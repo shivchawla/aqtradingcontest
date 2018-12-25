@@ -5,6 +5,7 @@ import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ActionIcon from '../../../Misc/ActionIcons';
+import {isMarketOpen} from '../../../utils';
 import {Utils} from '../../../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
@@ -65,6 +66,26 @@ export default class StockPreviewPredictionListItem extends React.Component {
         }
     }
 
+    getInvestmentColor = (investment, changedInvestment) => {
+        const {type = 'buy'} = this.props.prediction;
+        let color = metricColor.neutral;
+        if (type === 'buy') {
+            color = changedInvestment > investment 
+                ?   metricColor.positive
+                :   changedInvestment === investment
+                    ?   metricColor.neutral
+                    :   metricColor.negative;
+        } else {
+            color = changedInvestment < investment 
+                ?   metricColor.positive
+                :   changedInvestment === investment
+                    ?   metricColor.neutral
+                    :   metricColor.negative;
+        }
+
+        return color;
+    }
+
     render() {
         let {
             horizon = 1, 
@@ -84,6 +105,8 @@ export default class StockPreviewPredictionListItem extends React.Component {
             priceInterval = {},
             _id = null
         } = this.props.prediction;
+        const isMarketTrading = !DateHelper.isHoliday();
+        const marketOpen = isMarketTrading && isMarketOpen().status;
         
         const highPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'highPrice', 0));
         const lowPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'lowPrice', 0));
@@ -96,27 +119,34 @@ export default class StockPreviewPredictionListItem extends React.Component {
 
         const directionUnit = type === 'buy' ? 1 : -1;
         const changeInvestment = ((lastPrice - avgPrice) / avgPrice) * investment;
-        const changedInvestment = investment + changeInvestment;
+        const changedInvestment = investment + (changeInvestment * directionUnit);
 
         const duration = DateHelper.getTradingDays(startDate, endDate);
 
-        const changedInvestmentColor = changeInvestment > 0 ? metricColor.positive : changeInvestment < 0 ? metricColor.negative : metricColor.neutral;
+        const changedInvestmentColor = changedInvestment > investment
+            ? metricColor.positive 
+            : changedInvestment < investment 
+                ? metricColor.negative 
+                : metricColor.neutral;        
 
         return (
 
             <Container container alignItems="flex-end" style={{position: 'relative'}}>
                 <Grid item xs={12} style={{...verticalBox, alignItems: 'center', marginTop: '13px'}}>
-                    <ActionIcon 
-                        type='power_settings_new' 
-                        size={18} 
-                        color='#737373'
-                        style={{
-                            position: 'absolute', 
-                            top: '-5px', 
-                            right: '-5px'
-                        }}
-                        onClick={() => this.props.openDialog(_id)}
-                    />
+                    {
+                        marketOpen &&
+                        <ActionIcon 
+                            type='power_settings_new' 
+                            size={18} 
+                            color='#737373'
+                            style={{
+                                position: 'absolute', 
+                                top: '-5px', 
+                                right: '-5px'
+                            }}
+                            onClick={() => this.props.openDialog(_id)}
+                        />
+                    }
                     <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
                         <PriceComponent 
                             label='Call Price'
@@ -149,7 +179,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             <div style={{...horizontalBox, minHeight: '22px'}}>
                                 <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
                                 <Icon>arrow_right_alt</Icon>
-                                <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
+                                <MetricText 
+                                        color={changedInvestmentColor}
+                                >
+                                    {Utils.formatInvestmentValue(changedInvestment)}
+                                </MetricText>
                             </div>
                         </div>
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>

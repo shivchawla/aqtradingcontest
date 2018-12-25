@@ -21,6 +21,7 @@ import {maxPredictionLimit} from '../MultiHorizonCreateEntry/constants'
 import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
 import {fetchAjaxPromise} from '../../../utils';
 import './css/searchStocks.css';
+import { fas } from '@fortawesome/free-solid-svg-icons';
 
 const {requestUrl} = require('../../../localConfig');
 let searchInputTimeout = null;
@@ -183,7 +184,6 @@ export class SearchStocks extends React.Component {
             try {
                 this.cancelFetchStocks(requestCancelledMessage);
             } catch(err) {
-                console.log('Cancel Error', err);
             }
             const limit = 10;
             const stocks = [...this.state.stocks];
@@ -264,7 +264,7 @@ export class SearchStocks extends React.Component {
 
     renderStockList = () => {
         const {stocks = []} = this.state;
-        const {showPredict} = this.props;
+        const {showPredict = false, watchlistPredict = false} = this.props;
         const selectedStock = _.get(this.state, 'selectedStock.symbol', '');
 
         return (
@@ -280,6 +280,7 @@ export class SearchStocks extends React.Component {
                     onInfoClicked={this.onStockInfoClicked}
                     loading={this.state.loadingStocks}
                     showPredict={showPredict}
+                    watchlistPredict={watchlistPredict}
                 />
         )
     }
@@ -397,8 +398,7 @@ export class SearchStocks extends React.Component {
         const {stocks = []} = this.state;
         const selectedStockIndex = _.findIndex(stocks, stock => stock.symbol === symbol);
         if (selectedStockIndex > -1) {
-            this.props.addPositions([stocks[selectedStockIndex]]);
-            this.props.toggleBottomSheet();
+            this.props.createPrediction && this.props.createPrediction(stocks[selectedStockIndex]);
         }
     }
 
