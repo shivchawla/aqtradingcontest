@@ -424,6 +424,28 @@ export class Utils{
 		}
 	}
 
+	static formatInvestmentValueNormal(value) {
+		if (value && typeof(value) == "number"){
+			var valueThousand = value / 1000;
+			var valueLac = value / 100000;
+			var valueCr = value / 10000000;
+			var roundVal = value - Math.floor(value) > 0; 
+			var roundThousand = valueThousand - Math.floor(valueThousand) > 0;
+			var roundLacs = valueLac - Math.floor(valueLac) > 0;
+			var roundCrs = valueCr - Math.floor(valueCr) > 0;
+
+			return valueThousand >= 1.0 
+				? 	valueLac >= 1.0 
+						? 	valueCr >= 1.0 
+								? 	(roundCrs > 0 ? `${(valueCr).toFixed(2)}Cr` : `${valueCr.toFixed(0)}Cr`) 
+								: 	(roundLacs ? `${valueLac.toFixed(2)}L` : `${valueLac.toFixed(0)}L`) 
+						: 	(roundThousand > 0 ? `${valueThousand.toFixed(2)}K` : `${valueThousand.toFixed(0)}K`)
+				: 	(roundVal ? `${value.toFixed(2)}K` : `${value.toFixed(0)}K`);
+		} else{
+			return value;
+		}
+	}
+
 	static formatReturnTypeVariable(value) {
 		if (value && typeof(value) == "number"){
 			return `${(value * 100.0).toFixed(2)}%`; 

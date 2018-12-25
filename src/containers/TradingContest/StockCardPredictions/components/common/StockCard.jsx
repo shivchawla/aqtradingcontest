@@ -18,8 +18,8 @@ import {
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget} from '../../utils';
-import {targetKvp, horizonKvp} from '../../constants';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
+import {targetKvp, horizonKvp, investmentKvp} from '../../constants';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from '../mobile/SubmitButton';
@@ -62,6 +62,14 @@ export default class StockCard extends React.Component {
         });
     }
 
+    handleInvestmentChange = (value) => {
+        const requiredInvestment = getInvestmentValue(value);
+        this.props.modifyStockData({
+            ...this.props.stockData,
+            investment: requiredInvestment
+        });
+    }
+
     renderViewMode = () => {
         const {horizon = 1, target = 2, stopLoss = 2} = this.props.stockData;
 
@@ -86,8 +94,9 @@ export default class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
-        const {horizon = 2, target = 2, stopLoss = 2} = this.props.stockData;
+        const {horizon = 2, target = 2, stopLoss = 2, investment = 50000} = this.props.stockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
+        const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
@@ -174,6 +183,29 @@ export default class StockCard extends React.Component {
                         label='%'
                     />
                 </div>
+                <div style={radioGroupStyle}>
+                    <MetricLabel 
+                            style={{
+                                marginBottom: '10px',
+                                marginTop: isDesktop ? '30px' : '10px',
+                                fontSize: '12px',
+                                color: '#222'
+                            }}
+                    >
+                        Investment
+                    </MetricLabel>
+                    <StockCardRadioGroup 
+                        items={investmentItems}
+                        onChange={this.handleInvestmentChange}
+                        defaultSelected={investment}
+                        getIndex={getInvestment}
+                        showSlider
+                        hideLabel={true}
+                        label='%'
+                        hideSlider={true}
+                        formatValue={Utils.formatInvestmentValueNormal}
+                    />
+                </div>
             </div>
         );
     }
@@ -255,33 +287,11 @@ export default class StockCard extends React.Component {
             name = '', 
             symbol = '', 
             lastPrice = 0, 
-            changePct = 0,
-            change = 0,
             target = 2,
-            loading = false,
             horizon = 1,
-            shortable = true
         } = this.props.stockData;
-        const changeColor = change > 0 
-            ? metricColor.positive 
-            : change === 0 
-                ? metricColor.neutral 
-                : metricColor.negative;
         const editMode = isDesktop || this.props.editMode;
         const {bottomSheet = false} = this.props;
-        // const actionButtonContainerStyle = shortable 
-        //     ?   {
-        //             ...horizontalBox, 
-        //             justifyContent: 'space-around',
-        //             width: isDesktop ? '70%' : '100%',
-        //             marginTop: editMode ? '10px' : '15px'
-        //         }
-        //     :   {
-        //         ...verticalBox,
-        //         justifyContent: 'center',
-        //         width: isDesktop ? '70%' : '100%',
-        //         marginTop: editMode ? '10px' : '15px'
-        //     };
         const actionButtonContainerStyle = {
             ...horizontalBox, 
             justifyContent: 'space-around',
@@ -312,17 +322,6 @@ export default class StockCard extends React.Component {
                                     }}
                             >
                                 <MainText>{symbol}</MainText>
-                                {/* {
-                                    editMode && !bottomSheet &&
-                                    <ActionIcon
-                                        type="search"
-                                        onClick={this.props.toggleSearchStocksDialog}
-                                        style={{
-                                            padding: 0,
-                                            marginLeft: '5px'
-                                        }}
-                                    />
-                                } */}
                             </div>
                             <h3 style={nameStyle}>{name}</h3>
                         </div>

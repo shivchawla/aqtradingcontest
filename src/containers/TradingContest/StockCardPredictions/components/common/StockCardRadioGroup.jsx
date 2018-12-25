@@ -62,7 +62,7 @@ class StockCardRadioGroup extends React.Component {
     }
 
     render() {
-        const {items = ['One', 'Two'], showSlider = false, classes} = this.props;
+        const {items = ['One', 'Two'], showSlider = false, classes, hideSlider = false} = this.props;
 
         return (
             <Grid container style={{...verticalBox, alignItems: 'flex-start'}}>
@@ -95,6 +95,7 @@ class StockCardRadioGroup extends React.Component {
                                             checked={this.state.selected === item.key}
                                             onChange={() => this.handleChange(index)}
                                             hideLabel={this.props.hideLabel}
+                                            formatValue={this.props.formatValue}
                                         />
                                     );
                                 })
@@ -107,6 +108,7 @@ class StockCardRadioGroup extends React.Component {
                                     }}
                             >
                                 {
+                                    this.props.checkIfCustom && 
                                     this.props.checkIfCustom(this.props.defaultSelected) && 
                                     <div 
                                             style={{
@@ -124,12 +126,15 @@ class StockCardRadioGroup extends React.Component {
                                         }
                                     </div>
                                 }
-                                <ActionIcon 
-                                    type="edit" 
-                                    color='#444' 
-                                    onClick={this.toggleSlider} 
-                                    style={{marginLeft: '-10px'}}
-                                />
+                                {
+                                    !hideSlider &&
+                                    <ActionIcon 
+                                        type="edit" 
+                                        color='#444' 
+                                        onClick={this.toggleSlider} 
+                                        style={{marginLeft: '-10px'}}
+                                    />
+                                }
                             </div>
                         </div>
                     }

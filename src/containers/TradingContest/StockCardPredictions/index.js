@@ -17,7 +17,7 @@ import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
 import {getDailyContestPredictions} from '../MultiHorizonCreateEntry/utils';
-import {horizontalBox, primaryColor, verticalBox} from '../../../constants';
+import {horizontalBox, primaryColor} from '../../../constants';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -75,7 +75,8 @@ class StockCardPredictions extends React.Component {
                 editMode: _.get(defaultStockData, 'editMode', false),
                 sector: _.get(defaultStockData, 'sector', ''),
                 listMode: _.get(defaultStockData, 'listMode', true),
-                stopLoss: _.get(defaultStockData, 'stopLoss', 5)
+                stopLoss: _.get(defaultStockData, 'stopLoss', 5),
+                investment: _.get(defaultStockData, 'investment', 50000)
             });
         } catch (err) {
             reject(err);
@@ -89,6 +90,7 @@ class StockCardPredictions extends React.Component {
                 this.initializeDefaultStockData(),
             ])
             .then(([skippedStocks, defaultStockData]) => {
+                console.log(defaultStockData);
                 this.setState({
                     skippedStocks,
                     defaultStockData,

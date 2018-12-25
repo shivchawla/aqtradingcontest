@@ -1,25 +1,21 @@
 import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
-import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import DialogContent from '@material-ui/core/DialogContent';
 import Slide from '@material-ui/core/Slide';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget} from '../../utils';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
 import {Utils} from '../../../../../utils';
-import {targetKvp, horizonKvp} from '../../constants';
+import {targetKvp, horizonKvp, investmentKvp} from '../../constants';
 
 const styles = theme => ({
     dialogContentRoot: {
@@ -90,6 +86,14 @@ class DefaultSettings extends React.Component {
         });
     }
 
+    handleInvestmentChange = (value) => {
+        const requiredInvestment = getInvestmentValue(value);
+        this.props.modifyDefaultStockData({
+            ...this.props.defaultStockData,
+            investment: requiredInvestment
+        });
+    }
+
     onEditModeChanged = (value) => {
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
@@ -135,8 +139,9 @@ class DefaultSettings extends React.Component {
 
     render() {
         const {classes} = this.props;
-        let {horizon = 2, target = 0, sector = '', editMode = false, listMode = false, stopLoss = 0} = this.props.defaultStockData;
+        let {horizon = 2, target = 0, sector = '', editMode = false, listMode = false, stopLoss = 0, investment = 1} = this.props.defaultStockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
+        const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
         ));
@@ -243,6 +248,26 @@ class DefaultSettings extends React.Component {
                                     checkIfCustom={checkIfCustomTarget}
                                     showSlider
                                     label='%'
+                                />
+                            </div>
+                            <div style={radioGroupStyle}>
+                                <MetricLabel 
+                                        style={{
+                                            marginBottom: '10px',
+                                            marginTop: '20px'
+                                        }}
+                                >
+                                    Investment
+                                </MetricLabel>
+                                <StockCardRadioGroup 
+                                    items={investmentItems}
+                                    onChange={this.handleInvestmentChange}
+                                    defaultSelected={investment}
+                                    hideLabel={true}
+                                    getIndex={getInvestment}
+                                    label='%'
+                                    hideSlider={true}
+                                    formatValue={Utils.formatInvestmentValueNormal}
                                 />
                             </div>
                         </div>
