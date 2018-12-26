@@ -186,15 +186,15 @@ class StockResearchImpl extends React.Component {
 
     componentDidMount() {
         this.mounted = true;
-        if (!Utils.isLoggedIn()) {
-            Utils.goToLoginPage(this.props.history, this.props.match.url);
-        } else {
+        // if (!Utils.isLoggedIn()) {
+        //     Utils.goToLoginPage(this.props.history, this.props.match.url);
+        // } else {
             if (!this.props.openAsDialog) {
                 this.onSelect("NIFTY_50", true);
             } else {
                 this.onSelect(this.props.ticker, true);
             }
-        }
+        // }
     }
 
     componentWillUnmount() {
