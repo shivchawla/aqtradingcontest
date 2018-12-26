@@ -451,7 +451,7 @@ class MyChartNewImpl extends React.Component {
     renderVerticalLegendList = () => {
         const {legendItems} = this.state;
         return (
-            <Grid container style={{marginTop: '10px', height: '300px', overflow: 'hidden', overflowY: 'scroll'}}>
+            <Grid container style={{height: '300px', overflow: 'hidden', overflowY: 'scroll'}}>
                 <Grid 
                         item 
                         xs={12}
@@ -468,6 +468,8 @@ class MyChartNewImpl extends React.Component {
                                     legend={legend}
                                     onChange={(e) => this.onCheckboxChange(e, legend)}
                                     deleteItem = {this.deleteTicker}
+                                    hideCheckbox={index === 0}
+                                    disabled={index === 0}
                                 />
                             );
                         })
@@ -562,6 +564,7 @@ class MyChartNewImpl extends React.Component {
                                 handleSearch={this.handleSearch}
                                 onClick={this.onCompareSelect}
                                 defaultMenuIsOpen={false}
+                                placeholder='Compare Stocks'
                             />
                         </Grid>
                     </Grid>
@@ -631,3 +634,4 @@ const searchIconStyle = {
     marginRight: '20px',
     fontSize: '18px'
 };
+

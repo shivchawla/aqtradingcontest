@@ -48,7 +48,7 @@ export class ChartTickerItem extends React.Component {
                 {
                     !hideCheckbox &&
                     <Grid item xs={1}>
-                        <Checkbox disabled={disabled} checked={checked} onChange={this.props.onChange}/>
+                        <Checkbox disabled={this.props.disabled || disabled} checked={checked} onChange={this.props.onChange}/>
                     </Grid>
                 }
                 <Grid item xs={5}>
@@ -66,7 +66,7 @@ export class ChartTickerItem extends React.Component {
                 </Grid>
                 <Grid item xs={2}>
                     {
-                        !disabled &&
+                        !disabled && !this.props.disabled &&
                         <ActionIcon 
                             type="close-circle-o" 
                             style={{
