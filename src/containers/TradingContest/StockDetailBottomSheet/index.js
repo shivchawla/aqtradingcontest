@@ -3,6 +3,7 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import BottomSheet from '../../../components/Alerts/BottomSheet';
+import DialogComponent from '../../../components/Alerts/DialogComponent';
 import StockDetail from '../../StockDetail';
 import {Utils} from '../../../utils';
 import ActionIcon from '../Misc/ActionIcons';
@@ -109,7 +110,7 @@ export default class StockDetailBottomSheet extends React.Component {
         }});
     }
 
-    render() {
+    renderBottomsheet = () => {
         return (
             <BottomSheet 
                     open={this.props.open}
@@ -131,6 +132,34 @@ export default class StockDetailBottomSheet extends React.Component {
                 </Container>
             </BottomSheet>
         );
+    }
+
+    renderDialogMode = () => {
+        return (
+            <DialogComponent
+                    open={this.props.open}
+                    onClose={this.props.onClose}
+            >
+                <Container style={{minWidth: '38vw'}}>
+                    <Grid item xs={12}>
+                        <StockDetail 
+                            symbol={this.props.symbol}
+                            updateStockData={this.updateStockData}
+                            selectStock={this.props.selectStock}
+                            toggleStockCardBottomSheet={this.props.toggleStockCardBottomSheet}
+                            toggleStockDetailBottomSheetOpen={this.props.toggleStockDetailBottomSheetOpen}
+                            stockData={this.props.stockData}
+                        />
+                    </Grid>
+                </Container>
+            </DialogComponent>
+        );
+    }
+
+    render() {
+        const {dialog = false} = this.props;
+
+        return dialog ? this.renderDialogMode() : this.renderBottomsheet();
     }
 }
 

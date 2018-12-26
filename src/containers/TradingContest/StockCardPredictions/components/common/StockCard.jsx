@@ -16,6 +16,7 @@ import {
     metricColor
 } from '../../../../../constants';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
+import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
@@ -576,10 +577,19 @@ export default class StockCard extends React.Component {
         );
     }
 
+    renderStockCardDialog = () => {
+        return <DialogComponent
+                        open={this.props.open}
+                        onClose={this.props.onClose}
+                >
+                    {this.renderStockCard()}
+                </DialogComponent>
+    }
+
     render() {
         const {bottomSheet = false} = this.props;
 
-        return bottomSheet ? this.renderStockCardBottomSheet() : this.renderStockCard();
+        return bottomSheet ? this.renderStockCardBottomSheet() : this.renderStockCardDialog();
     }
 }
 

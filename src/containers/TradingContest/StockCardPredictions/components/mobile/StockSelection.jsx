@@ -5,7 +5,7 @@ import {withStyles} from '@material-ui/core/styles';
 import {withRouter} from 'react-router';
 import ActionIcon from '../../../Misc/ActionIcons';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
-import {SearchStocks} from '../../../SearchStocks';
+import SearchStocks from '../../../SearchStocks';
 import {horizontalBox} from '../../../../../constants';
 
 const styles = theme => ({
@@ -103,6 +103,8 @@ class StockSelection extends React.Component {
                 createPrediction={this.props.createPrediction}
                 mobile={this.props.mobile}
                 searchInput={this.props.searchInput}
+                updateSearchInput={this.props.updateSearchInput}
+                hideInput={this.props.hideInput}
             />
         );
     }

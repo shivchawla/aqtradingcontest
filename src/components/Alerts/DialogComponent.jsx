@@ -25,7 +25,7 @@ export default class DialogComponent extends React.Component {
     }
 
     render() {
-        const {open = false, title = 'Title', action = false} = this.props;
+        const {open = false, title = null, action = false} = this.props;
 
         return (
             <Dialog 
@@ -34,7 +34,10 @@ export default class DialogComponent extends React.Component {
                     onBackdropClick={this.props.onClose}
                     onEscapeKeyDown={this.props.onClose}
             >
-                <DialogTitle>{title}</DialogTitle>
+                {
+                    title &&
+                    <DialogTitle>{title}</DialogTitle>
+                }
                 <DialogContent style={this.props.style}>
                     {this.props.children}
                 </DialogContent>

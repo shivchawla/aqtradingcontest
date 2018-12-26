@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -12,6 +13,7 @@ import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
+import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
 import {Utils} from '../../../../../utils';
@@ -26,8 +28,6 @@ const styles = theme => ({
         }        
     }
 });
-
-const isDesktop = global.screen.width > 600 ? true : false;
 
 class DefaultSettings extends React.Component {
     constructor(props) {
@@ -138,18 +138,28 @@ class DefaultSettings extends React.Component {
     }
 
     render() {
-        const {classes} = this.props;
-        let {horizon = 2, target = 0, sector = '', editMode = false, listMode = false, stopLoss = 0, investment = 1} = this.props.defaultStockData;
+        let {
+            horizon = 2, 
+            target = 0, 
+            sector = '', 
+            editMode = false, 
+            listMode = false, 
+            stopLoss = 0, 
+            investment = 1
+        } = this.props.defaultStockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
         ));
         const radioGroupStyle = {...verticalBox, alignItems: 'flex-start', minHeight: '80px', width: '90%'};
+        const Dialog = this.props.dialog ? DialogComponent : BottomSheet;
+        const isDesktop = this.props.windowWidth > 800;
 
         return (
-            <BottomSheet
+            <Dialog
                     open={this.props.open}
+                    onClose={this.props.onClose}
                     customHeader={this.renderHeader}
             >
                 <Grid container>
@@ -369,7 +379,7 @@ class DefaultSettings extends React.Component {
                     </Grid>
                     <Grid item xs={12} style={{height: '100px'}}></Grid>
                 </Grid>
-            </BottomSheet>
+            </Dialog>
         );
     }
 }
@@ -420,7 +430,7 @@ const SectorMenu = ({anchorEl, selectedSector = '', onClick , onClose, onMenuIte
 }
 
 
-export default withStyles(styles)(DefaultSettings);
+export default withStyles(styles)(windowSize(DefaultSettings));
 
 const applyButtonStyle = {
     boxShadow: 'none',

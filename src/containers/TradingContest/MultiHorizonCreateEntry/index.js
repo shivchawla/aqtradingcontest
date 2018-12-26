@@ -7,7 +7,7 @@ import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
 import Snackbar from '@material-ui/core/Snackbar';
 import {withRouter} from 'react-router';
-import {SearchStocks} from '../SearchStocks';
+import SearchStocks from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
 import CreateEntryEditMobile from './components/mobile/CreateEntryEditScreen';
 import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Media from 'react-media';
+import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import _  from 'lodash';
 import Chip from '@material-ui/core/Chip';
@@ -27,7 +28,7 @@ const {requestUrl} = require('../../../localConfig');
 let searchInputTimeout = null;
 const requestCancelledMessage = 'requestCancelled';
 
-export class SearchStocks extends React.Component {
+class SearchStocks extends React.Component {
     constructor(props) {
         super(props);
         this.cancelFetchStocks = undefined;
@@ -118,19 +119,22 @@ export class SearchStocks extends React.Component {
                             // margin: '0 10px'
                         }}
                 >
-                    <Media 
-                        query={`(max-width: ${screenSize.mobile})`}
-                        render={() => (
-                            <SearchInput
-                                style={{width: '100%', marginTop: 0}}
-                                label="Search Stocks"
-                                type="search"
-                                margin="normal"
-                                variant="outlined"
-                                onChange={value => this.handleSearchInputChange(value, 'mobile')}
-                            />
-                        )}
-                    />
+                    {
+                        !this.props.hideInput &&
+                        <Media 
+                            query={`(max-width: ${screenSize.mobile})`}
+                            render={() => (
+                                <SearchInput
+                                    style={{width: '100%', marginTop: 0}}
+                                    label="Search Stocks"
+                                    type="search"
+                                    margin="normal"
+                                    variant="outlined"
+                                    onChange={value => this.handleSearchInputChange(value, 'mobile')}
+                                />
+                            )}
+                        />
+                    }
                     {
                         this.state.loadingStocks &&
                         <div 
@@ -567,17 +571,6 @@ export class SearchStocks extends React.Component {
             // getting the stock from the position if present
             const stockPosition = selectedPositions.filter(position => position.symbol === stock.symbol)[0];
             if (stockPosition !== undefined) { // if stock found
-                // const foundInNewStocks = _.findIndex(this.state.newStocks, newStock => newStock.symbol === stock.symbol) > -1;
-                // if (_.get(stockPosition, 'predictions', []).length < 3 && foundInNewStocks === false) {
-                //     stock.checked = false;
-                // } else if (_.get(stockPosition, 'predictions', []).length < 3 && foundInNewStocks === true) {
-                //     stock.checked = true;
-                // } else {
-                //     const lockedPredictions = stockPosition.predictions.filter(prediction => prediction.locked === true);
-                //     const newPredictions = stockPosition.predictions.filter(prediction => prediction.new === true);
-                //     stock.checked = newPredictions.length > 0;
-                //     stock.hideActions = lockedPredictions.length >= 3;
-                // }
                 stock.checked = true;
                 stock.hideActions = true;
             } else {
@@ -926,8 +919,17 @@ export class SearchStocks extends React.Component {
         }
     }
 
+    onDonePressed = () => {
+        this.props.updateSearchInput && this.props.updateSearchInput('')
+        .then(async () => {
+            const positions = await this.processPositionsPositionsForPortolioNew();
+            this.props.addPositions(positions, this.initilizeAddDeletePredictions);
+        })
+    }
+
     render() { 
         const {zIndex = 20000} = this.props;
+        const isDesktop = this.props.windowWidth > 800;
 
         return (
             <React.Fragment>
@@ -935,6 +937,7 @@ export class SearchStocks extends React.Component {
                     open={this.state.stockDetailBottomSheetOpen}
                     onClose={this.toggleStockDetailBottomSheetOpen}
                     {...this.state.selectedInfoStock}
+                    dialog={isDesktop}
                 />
                 <Snackbar
                     anchorOrigin={{
@@ -983,12 +986,19 @@ export class SearchStocks extends React.Component {
                         />
                     }
                     {
-                        this.props.mobile &&
+                        this.props.mobile && this.state.newStocks.length > 0 &&
                         <Media 
                             query='(min-width: 801px)'
                             render={() => 
                                 <Grid item xs={12}>
-                                    <Button onClick={this.addSelectedStocksToPortfolio}>Done</Button>
+                                    <Button 
+                                            style={submitButtonStyle}
+                                            onClick={this.onDonePressed}
+                                            size='small'
+                                    >
+                                        Done
+                                        <Icon>check_circle</Icon>
+                                    </Button>
                                 </Grid>
                             }
                         />
@@ -1001,6 +1011,8 @@ export class SearchStocks extends React.Component {
         );
     }
 }
+
+export default windowSize(SearchStocks);
 
 const SGrid = styled(Grid)`
     background-color: #fff;
@@ -1035,3 +1047,14 @@ const LoaderContainer = styled.div`
     z-index: 1000;
     border-radius: 4px;
 `;
+
+const submitButtonStyle = {
+    background: 'linear-gradient(to bottom, #2987F9, #386FFF)',
+    color: '#fff',
+    fontFamily: 'Lato, sans-serif',
+    fontWeight: 400,
+    height: '30px',
+    padding: '3px 6px',
+    borderRadius: '2px',
+    fontSize: '10px'
+};

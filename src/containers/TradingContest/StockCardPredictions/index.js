@@ -410,6 +410,8 @@ class StockCardPredictions extends React.Component {
     }
 
     renderContent = () => {
+        const isDesktop = this.props.windowWidth > 800;
+
         return (
             <Container container alignItems='flex-start'>
                 <Snackbar 
@@ -429,9 +431,11 @@ class StockCardPredictions extends React.Component {
                     updateListMode={this.updateListMode}
                     skipStock={this.skipStock}
                     fetchStocks={this.fetchStocks}
+                    dialog={isDesktop}
                 />
                 <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-between'}}>
-                    {/* <Tooltip title="Started Today" placement="bottom"> */}
+                    {
+                        !isDesktop &&
                         <IconButton 
                                 onClick={() => {
                                     this.props.history.push(`/dailycontest/mypicks?&date=${this.getCurrentTradingDay().format(dateFormat)}&type=started`)
@@ -444,7 +448,7 @@ class StockCardPredictions extends React.Component {
                                 <Icon style={{color: '#707070'}}>shopping_cart</Icon>
                             </Badge>
                         </IconButton>
-                    {/* </Tooltip> */}
+                    }
                     <div 
                             style={{
                                 ...horizontalBox, 
@@ -452,29 +456,24 @@ class StockCardPredictions extends React.Component {
                             }}
                     >
                         
-                        {/* <Tooltip title="Default Settings" placement="bottom"> */}
-                            <IconButton 
-                                    onClick={this.toggleDefaultSettingsBottomSheet}
-                            >
-                                <Icon style={{color: '#707070'}}>settings</Icon>
-                            </IconButton>
-                        {/* </Tooltip> */}
+                        <IconButton 
+                                onClick={this.toggleDefaultSettingsBottomSheet}
+                        >
+                            <Icon style={{color: '#707070'}}>settings</Icon>
+                        </IconButton>
                     </div>
                 </Grid>
                 <Grid item xs={12}>
-                    {
-                        this.shouldShowListView() &&
-                        <WatchlistComponent 
-                            stockSelectionOpen={this.state.searchStockOpen}
-                            toggleStockSelection={this.toggleSearchStocksBottomSheet}
-                            selectStock={this.modifyStockData}
-                            stockData={this.state.stockData}
-                            toggleStockCardBottomSheet={this.toggleStockCardBottomSheet}
-                        />
-                    }
+                    <WatchlistComponent 
+                        stockSelectionOpen={this.state.searchStockOpen}
+                        toggleStockSelection={this.toggleSearchStocksBottomSheet}
+                        selectStock={this.modifyStockData}
+                        stockData={this.state.stockData}
+                        toggleStockCardBottomSheet={this.toggleStockCardBottomSheet}
+                    />
                 </Grid>
                 <Grid item xs={12}>
-                    {this.renderStockCard(this.shouldShowListView())}
+                    {this.renderStockCard(!isDesktop)}
                 </Grid>
             </Container>
         );

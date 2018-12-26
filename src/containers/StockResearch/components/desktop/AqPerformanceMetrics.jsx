@@ -62,9 +62,31 @@ export class AqPerformanceMetrics extends React.Component {
                             this.state.metrics.map((metric, index) => {
                                 var color = metric.color || '#3b3737'; 
                                 return (
-                                    <Grid item xs={6} key={index} span={8} style={{marginTop: '20px', textAlign: 'center'}}>
-                                        <Label style={{fontSize: '18px', color: color, fontWeight: 300}}>{metric.value}</Label>
-                                        <Value style={{fontSize: '12px', color: '#000000a6'}}>{metric.label}</Value>
+                                    <Grid 
+                                            item 
+                                            xs={6} 
+                                            key={index} 
+                                            style={{
+                                                marginTop: '20px', 
+                                                textAlign: 'center'
+                                            }}
+                                    >
+                                        <Grid container>
+                                            <Grid item xs={8}>
+                                                <Label 
+                                                        style={{fontSize: '18px', color: color, fontWeight: 300}}
+                                                >
+                                                    {metric.value}
+                                                </Label>
+                                            </Grid>
+                                            <Grid item xs={4}>
+                                                <Value 
+                                                        style={{fontSize: '12px', color: '#000000a6'}}
+                                                >
+                                                    {metric.label}
+                                                </Value>
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
                                 );
                             })
@@ -86,8 +108,22 @@ export class AqPerformanceMetrics extends React.Component {
                                                 marginBottom: '10px'
                                             }}
                                     >
-                                        <Label style={{fontSize: '14px', color: '#000000a6'}}>{metric.label}</Label>
-                                        <Value style={{fontSize: '14px', color: '#3b3737'}}>{metric.value}</Value>
+                                        <Grid container>
+                                            <Grid item xs={8}>
+                                                <Label 
+                                                        style={{fontSize: '14px', color: '#000000a6'}}
+                                                >
+                                                    {metric.label}
+                                                </Label>
+                                            </Grid>
+                                            <Grid item xs={4}>
+                                                <Value 
+                                                        style={{fontSize: '14px', color: '#3b3737'}}
+                                                >
+                                                    {metric.value}
+                                                </Value>
+                                            </Grid>
+                                        </Grid>
                                     </Grid>
                                 );
                             })
@@ -116,8 +152,8 @@ export class AqPerformanceMetrics extends React.Component {
         const metrics = [
             {label: 'Ann. Return', value: Utils.formatReturnTypeVariable(_.get(returns, 'annualreturn', 0)), color: _.get(returns, 'annualreturn', 0) > 0 ? metricColor.positive : metricColor.negative},
             {label: 'Volatility', value: Utils.formatReturnTypeVariable(_.get(deviation, 'annualstandarddeviation', 0))},
-            {label: 'Beta', value: _.get(ratios, 'beta', 0)},
-            {label: 'Sharpe Ratio', value: _.get(ratios, 'sharperatio', 0)},
+            {label: 'Beta', value: _.get(ratios, 'beta', 0).toFixed(2)},
+            {label: 'Sharpe Ratio', value: _.get(ratios, 'sharperatio', 0).toFixed(2)},
             {label: 'Alpha', value: Utils.formatReturnTypeVariable(_.get(ratios, 'alpha', 0)), color: _.get(ratios, 'alpha', 0) > 0 ? metricColor.positive : metricColor.negative},
             {label: 'Max Loss', value: Utils.formatReturnTypeVariable(_.get(drawdown, 'maxdrawdown', 0)), color: _.get(drawdown, 'maxdrawdown', 0) > 0 ? metricColor.negative : metricColor.neutral},
         ];

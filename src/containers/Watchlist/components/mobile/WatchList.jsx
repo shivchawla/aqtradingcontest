@@ -1,5 +1,6 @@
 import * as React from 'react';
 import axios from 'axios';
+import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
@@ -134,9 +135,12 @@ class WatchList extends React.Component {
     }   
 
     render() {
+        const isDesktop = this.props.windowWidth > 800;
+
         return (
             <Grid container>
-                <StockDetailBottomSheet 
+                <StockDetailBottomSheet
+                    dialog={isDesktop} 
                     open={this.state.stockDetailBottomSheetOpen}
                     onClose={this.toggleStockDetailBottomSheetOpen}
                     selectStock={this.props.selectStock}
@@ -185,7 +189,7 @@ class WatchList extends React.Component {
     }
 }
 
-export default withRouter(WatchList);
+export default withRouter(windowSize(WatchList));
 
 const noStocksFoundContainer = {
     ...verticalBox,

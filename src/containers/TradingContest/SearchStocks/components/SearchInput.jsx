@@ -1,6 +1,4 @@
 import React from 'react';
-import InputBase from '@material-ui/core/InputBase';
-import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import {withStyles} from '@material-ui/core/styles';
 
@@ -23,17 +21,17 @@ const styles = theme => ({
 
 class SearchInput extends React.Component {
     render() {
-        const {classes} = this.props;
+        const {classes, inputValue = ''} = this.props;
 
         return (
             <TextField
                 {...this.props}
+                value={this.props.inputValue}
                 classes={{
                     root: classes.bootstrapRoot,
                     input: classes.bootstrapInput,
                     notchedOutline: classes.notchedOutline
                 }}
-                // {...this.props}
             />
         );
     }
