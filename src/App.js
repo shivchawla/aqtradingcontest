@@ -190,13 +190,14 @@ class App extends React.Component {
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
-                                        <Route 
+                                        <Route path='/stockresearch' component={StockResearch}/> 
+                                        {/* <Route 
                                             path='/stockresearch' 
                                             render={(props) => Utils.isLoggedIn()
                                                     ? <StockResearch {...props} />
                                                     : this.redirectToLogin('/stockresearch')
                                             }
-                                        /> 
+                                        />  */}
                                         <Route path='/policies/tnc' component={TnC}/> 
                                         <Route path='/policies/privacy' component={Policy}/> 
                                         <Route path='/aboutus' component={AboutUs}/> 
