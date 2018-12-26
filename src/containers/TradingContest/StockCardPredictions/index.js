@@ -373,7 +373,7 @@ class StockCardPredictions extends React.Component {
     shouldShowListView = () => {
         const isDesktop = this.props.windowWidth > 800;
         
-        return !isDesktop && this.state.listMode;
+        return (!isDesktop || this.props.mobile) && this.state.listMode;
     }
 
     toggleStockCardBottomSheet = () => {
@@ -387,6 +387,7 @@ class StockCardPredictions extends React.Component {
     renderStockCard = (bottomSheet = false) => {
         return (
             <StockCard 
+                mobile={this.props.mobile}
                 stockData={this.state.stockData}
                 skipStock={this.skipStock}
                 loading={this.state.loadingStockData}

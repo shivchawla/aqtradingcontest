@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import axios from 'axios';
+import Media from 'react-media';
 import styled from 'styled-components';
 import {withRouter} from 'react-router-dom';
 import CreateWatchlist from './components/mobile/CreateWatchList';
@@ -9,6 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
+import SearchInput from '../TradingContest/SearchStocks/components/SearchInput';
 import StockSelection from '../TradingContest/StockCardPredictions/components/mobile/StockSelection';
 import RadioGroup from '../../components/selections/RadioGroup';
 import WatchlistCustomRadio from './components/mobile/WatchlistCustomRadio';
@@ -41,8 +43,13 @@ class WatchlistComponent extends React.Component {
             snackbar: {
                 open: false,
                 message: ''
-            }
+            },
+            watchlistSearchInput: ''
         };
+    }
+
+    handleWatchlistSearchInput = e => {
+        this.setState({watchlistSearchInput: e.target.value});
     }
 
     openSnackbar = (message = '') => {
@@ -210,12 +217,10 @@ class WatchlistComponent extends React.Component {
                         targetSecurity.price = validCurrentPrice;
                         targetSecurity.current = validCurrentPrice;
                         targetSecurity.changePct = changePct;
-                        // console.log('Target Security', targetSecurity);
                         this.setState({watchlists});
                     }
                 }
             } catch(error) {
-                // console.log(error);
             }
         }
     }
@@ -352,6 +357,10 @@ class WatchlistComponent extends React.Component {
     }
 
     renderContent() {
+        const selectedWatchlist = this.getSelectedWatchlist();
+        const nStockData = _.pick(this.props.stockData, 'sector');
+        const selectedWatchlistPositions = _.get(selectedWatchlist, 'positions', []);
+
         return (
             <Grid container>
                 <CreateWatchlist 
@@ -388,58 +397,104 @@ class WatchlistComponent extends React.Component {
                         />
                     </FavouritesContainer>
                 </Grid>
-                <Grid item xs={12}>
-                    {this.renderWatchList()}
-                </Grid>
-                <Grid item xs={12}>
-                    <div 
-                            style={{
-                                ...fabContainerStyle,
-                                justifyContent: 'flex-end'
-                            }}
-                    >
-                        {
-                            this.state.watchlistEditMode && !this.state.noWatchlistPresent &&
-                            <Button 
-                                    variant="fab" 
-                                    size="medium"
-                                    style={{
-                                        ...fabStyle,
-                                        marginRight: '30px',
-                                        backgroundColor: '#f65864'
-                                    }}
-                                    onClick={this.toggleWatchlistDeleteDialog}
-                            >
-                                <Icon style={{color: '#fff'}}>delete</Icon>
-                            </Button>
-                        }
-                        <Button 
-                                variant="fab" 
-                                size="medium"
-                                style={{
-                                    ...fabStyle,
-                                    marginRight: '30px',
-                                    backgroundColor: '#7b72d1'
-                                }}
-                                onClick={this.toggleWatchListMode}
-                        >
-                            <Icon style={{color: '#fff'}}>
-                                {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
-                            </Icon>
-                        </Button>
-                        <Button 
-                                variant="fab" 
-                                size="medium"
-                                style={{
-                                    ...fabStyle,
-                                    backgroundColor: '#316dff'
-                                }}
-                                onClick={this.toggleStockSelectionDialog}
-                        >
-                            <Icon style={{color: '#fff'}}>zoom_in</Icon>
-                        </Button>
-                    </div>
-                </Grid>
+                {
+                    <Media 
+                        query="(min-width: 801px)"
+                        render={() => (
+                            <React.Fragment>
+                                <Grid item xs={12}>
+                                    <SearchInput 
+                                        style={{width: '100%'}}
+                                        label="Search Stocks"
+                                        type="search"
+                                        margin="normal"
+                                        variant="outlined"
+                                        onChange={this.handleWatchlistSearchInput}
+                                    />
+                                </Grid>
+                                {
+                                    this.state.watchlistSearchInput.length > 0
+                                    ?   <Grid item xs={12}>
+                                            <StockSelection 
+                                                list={true}
+                                                toggleSearchStocksDialog={this.toggleStockSelectionDialog}
+                                                stockData={nStockData}
+                                                addStock={this.addStockToWatchlist}
+                                                selectedPositions={selectedWatchlistPositions}
+                                                hideSelectedItems={true}
+                                                createPrediction={this.createPrediction}
+                                                watchlistPredict={true}
+                                                mobile={true}
+                                                searchInput={this.state.watchlistSearchInput}
+                                            />
+                                        </Grid>
+                                    :   <Grid item xs={12}>
+                                            {this.renderWatchList()}
+                                        </Grid>
+                                }
+                            </React.Fragment>
+                        )}
+                    />
+                }
+                <Media 
+                    query="(max-width: 800px)"
+                    render={() => (
+                        <React.Fragment>
+                            <Grid item xs={12}>
+                                {this.renderWatchList()}
+                            </Grid>
+                            <Grid item xs={12}>
+                                <div 
+                                        style={{
+                                            ...fabContainerStyle,
+                                            justifyContent: 'flex-end'
+                                        }}
+                                >
+                                    {
+                                        this.state.watchlistEditMode && !this.state.noWatchlistPresent &&
+                                        <Button 
+                                                variant="fab" 
+                                                size="medium"
+                                                style={{
+                                                    ...fabStyle,
+                                                    marginRight: '30px',
+                                                    backgroundColor: '#f65864'
+                                                }}
+                                                onClick={this.toggleWatchlistDeleteDialog}
+                                        >
+                                            <Icon style={{color: '#fff'}}>delete</Icon>
+                                        </Button>
+                                    }
+                                    <Button 
+                                            variant="fab" 
+                                            size="medium"
+                                            style={{
+                                                ...fabStyle,
+                                                marginRight: '30px',
+                                                backgroundColor: '#7b72d1'
+                                            }}
+                                            onClick={this.toggleWatchListMode}
+                                    >
+                                        <Icon style={{color: '#fff'}}>
+                                            {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
+                                        </Icon>
+                                    </Button>
+                                    <Button 
+                                            variant="fab" 
+                                            size="medium"
+                                            style={{
+                                                ...fabStyle,
+                                                backgroundColor: '#316dff'
+                                            }}
+                                            onClick={this.toggleStockSelectionDialog}
+                                    >
+                                        <Icon style={{color: '#fff'}}>zoom_in</Icon>
+                                    </Button>
+                                </div>
+                            </Grid>
+                        </React.Fragment>
+                    )}
+                />
             </Grid>
         );
     }

@@ -118,13 +118,18 @@ export class SearchStocks extends React.Component {
                             // margin: '0 10px'
                         }}
                 >
-                    <SearchInput
-                        style={{width: '100%', marginTop: 0}}
-                        label="Search Stocks"
-                        type="search"
-                        margin="normal"
-                        variant="outlined"
-                        onChange={value => this.handleSearchInputChange(value, 'mobile')}
+                    <Media 
+                        query={`(max-width: ${screenSize.mobile})`}
+                        render={() => (
+                            <SearchInput
+                                style={{width: '100%', marginTop: 0}}
+                                label="Search Stocks"
+                                type="search"
+                                margin="normal"
+                                variant="outlined"
+                                onChange={value => this.handleSearchInputChange(value, 'mobile')}
+                            />
+                        )}
                     />
                     {
                         this.state.loadingStocks &&
@@ -281,6 +286,7 @@ export class SearchStocks extends React.Component {
                     loading={this.state.loadingStocks}
                     showPredict={showPredict}
                     watchlistPredict={watchlistPredict}
+                    mobile={this.props.mobile}
                 />
         )
     }
@@ -421,10 +427,7 @@ export class SearchStocks extends React.Component {
                         clonedStocks = clonedStocks.map(stock => ({...stock, checked: false}));
                         selectedStock.checked = true;
                         clonedNewStocks = [selectedStock];
-                    } /*else {
-                        clonedNewStocks.splice(newStockIndex, 1);
-                        selectedStock.checked = false;
-                    }*/
+                    }
                 }
             } else {
                 const newStockIndex = _.findIndex(this.state.newStocks, newStock => newStock.symbol === symbol);
@@ -432,16 +435,12 @@ export class SearchStocks extends React.Component {
                     clonedStocks = clonedStocks.map(stock => ({...stock, checked: false}));
                     selectedStock.checked = true;
                     clonedNewStocks = [selectedStock];
-                } /*else {
-                    clonedNewStocks.splice(newStockIndex, 1);
-                    selectedStock.checked = false;
-                }*/
+                }
             }
             clonedStocks[selectedStockIndex] = selectedStock;
             this.setState({stocks: clonedStocks, newStocks: clonedNewStocks}, () => {
                 this.addSelectedStocksToPortfolio();
             });
-            // this.props.toggleBottomSheet();
         }
     }
 
@@ -752,8 +751,20 @@ export class SearchStocks extends React.Component {
     }
 
     componentWillMount() {
+        const searchInput = _.get(this.props, 'searchInput', '');
+        this.setState({searchInput: searchInput})
         this.props.updateCount && this.props.updateCount(0);
-        this.props.loadOnMount && this.fetchStocks();
+        this.props.loadOnMount && this.fetchStocks(searchInput);
+    }
+
+    componentWillReceiveProps(nextProps, nextState) {
+        const searchInput = _.get(nextProps, 'searchInput', null);
+        const oldSearchInput = _.get(this.props, 'searchInput', null);
+        if (!_.isEqual(searchInput, oldSearchInput)) {
+            if (searchInput !== null) {
+                this.handleSearchInputChange({target: {value: searchInput}});
+            }
+        }
     }
 
     componentWillUnmount() {
@@ -796,78 +807,89 @@ export class SearchStocks extends React.Component {
     }
 
     renderStockListDetails = () => {
-        return (
-            <React.Fragment>
-                <Media 
-                    query={`(max-width: ${screenSize.mobile})`}
-                    render={() => (
-                        <Grid
-                                item 
-                                xs={12} 
-                        >
-                            {this.renderSearchStockListMobile()}
-                        </Grid>
-                    )}
-                />
-                <Media 
-                    query={`(min-width: ${screenSize.desktop})`}
-                    render={() => (
-                        <React.Fragment>
-                            {
-                                this.shouldFiltersBeShown() &&
+        if (this.props.mobile) {
+            return (
+                <Grid
+                        item 
+                        xs={12} 
+                >
+                    {this.renderSearchStockListMobile()}
+                </Grid>
+            );
+        } else {
+            return (
+                <React.Fragment>
+                    <Media 
+                        query={`(max-width: ${screenSize.mobile})`}
+                        render={() => (
+                            <Grid
+                                    item 
+                                    xs={12} 
+                            >
+                                {this.renderSearchStockListMobile()}
+                            </Grid>
+                        )}
+                    />
+                    <Media 
+                        query={`(min-width: ${screenSize.desktop})`}
+                        render={() => (
+                            <React.Fragment>
+                                {
+                                    this.shouldFiltersBeShown() &&
+                                    <Grid 
+                                            item 
+                                            xs={2} 
+                                            style={{
+                                                height: global.screen.height - 195,
+                                                overflow: 'hidden',
+                                                overflowY: 'scroll',
+                                                borderRight: '1px solid #eaeaea'
+                                            }}
+                                    >
+                                        {
+                                            this.state.showFilter && 
+                                            <StockFilter 
+                                                onFilterChange={this.onFilterChange}
+                                                filters={this.props.filters}
+                                            />
+                                        }
+                                    </Grid>
+                                }
                                 <Grid 
-                                        item 
-                                        xs={2} 
+                                        item
+                                        xs={this.shouldFiltersBeShown() ? 5 : 6} 
                                         style={{
+                                            padding: '20px',
                                             height: global.screen.height - 195,
                                             overflow: 'hidden',
                                             overflowY: 'scroll',
                                             borderRight: '1px solid #eaeaea'
                                         }}
                                 >
-                                    {
-                                        this.state.showFilter && 
-                                        <StockFilter 
-                                            onFilterChange={this.onFilterChange}
-                                            filters={this.props.filters}
-                                        />
-                                    }
+                                    {this.renderSearchStocksList()}
+                                </Grid> 
+                                <Grid 
+                                        item
+                                        xs={this.shouldFiltersBeShown() ? 5 : 6}
+                                        style={{
+                                            padding: '20px',
+                                            height: global.screen.height - 195,
+                                            overflow: 'hidden',
+                                            overflowY: 'scroll',
+                                            borderRight: '1px solid #eaeaea'
+                                        }}
+                                >
+                                    <StockDetail 
+                                        symbol={_.get(this.state, 'selectedStock.symbol', null)}
+                                        updateStockData={this.updateStockData}
+                                    />
                                 </Grid>
-                            }
-                            <Grid 
-                                    item
-                                    xs={this.shouldFiltersBeShown() ? 5 : 6} 
-                                    style={{
-                                        padding: '20px',
-                                        height: global.screen.height - 195,
-                                        overflow: 'hidden',
-                                        overflowY: 'scroll',
-                                        borderRight: '1px solid #eaeaea'
-                                    }}
-                            >
-                                {this.renderSearchStocksList()}
-                            </Grid> 
-                            <Grid 
-                                    item
-                                    xs={this.shouldFiltersBeShown() ? 5 : 6}
-                                    style={{
-                                        padding: '20px',
-                                        height: global.screen.height - 195,
-                                        overflow: 'hidden',
-                                        overflowY: 'scroll',
-                                        borderRight: '1px solid #eaeaea'
-                                    }}
-                            >
-                                <StockDetail 
-                                    symbol={_.get(this.state, 'selectedStock.symbol', null)}
-                                    updateStockData={this.updateStockData}
-                                />
-                            </Grid>
-                        </React.Fragment>
-                    )}
-                />
-            </React.Fragment>
-        );
+                            </React.Fragment>
+                        )}
+                    />
+                </React.Fragment>
+            );
+        }
     }
 
     toggleSelectedStocksDialogClose = () => {
@@ -943,20 +965,34 @@ export class SearchStocks extends React.Component {
                             position: 'relative',
                         }}
                 >
-                    <Media 
-                        query='(min-width: 801px)'
-                        render={() => 
-                            <SearchStockHeaderDesktop
-                                filters={this.props.filters}
-                                selectedStocks={this.state.newStocks}
-                                stocksCount={this.state.newStocks.length}
-                                stockPerformanceOpen={this.props.stockPerformanceOpen}
-                                toggleBottomSheet={this.props.toggleBottomSheet}
-                                addSelectedStocksToPortfolio={this.addSelectedStocksToPortfolio}
-                                portfolioLoading={this.state.portfolioLoading}
-                            />
-                        }
-                    />
+                    {
+                        !this.props.mobile &&
+                        <Media 
+                            query='(min-width: 801px)'
+                            render={() => 
+                                <SearchStockHeaderDesktop
+                                    filters={this.props.filters}
+                                    selectedStocks={this.state.newStocks}
+                                    stocksCount={this.state.newStocks.length}
+                                    stockPerformanceOpen={this.props.stockPerformanceOpen}
+                                    toggleBottomSheet={this.props.toggleBottomSheet}
+                                    addSelectedStocksToPortfolio={this.addSelectedStocksToPortfolio}
+                                    portfolioLoading={this.state.portfolioLoading}
+                                />
+                            }
+                        />
+                    }
+                    {
+                        this.props.mobile &&
+                        <Media 
+                            query='(min-width: 801px)'
+                            render={() => 
+                                <Grid item xs={12}>
+                                    <Button onClick={this.addSelectedStocksToPortfolio}>Done</Button>
+                                </Grid>
+                            }
+                        />
+                    }
                     <Grid item xs={12}>
                         {this.renderStockListDetails()}
                     </Grid>

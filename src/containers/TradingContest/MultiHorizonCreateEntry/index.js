@@ -708,20 +708,25 @@ class CreateEntry extends React.Component {
             updateDate: this.props.updateDate,
             stopPrediction: this.stopPrediction
         };
+        const {mobile = false} = this.props;
 
-        return (
-            <React.Fragment>
-                <Media 
-                    query="(max-width: 800px)"
-                    render={() => this.renderMobileLayout(props)}
-                />
-
-                <Media 
-                    query="(min-width: 801px)"
-                    render={() => this.renderDesktopLayout(props)}
-                />
-            </React.Fragment>
-        );
+        if (mobile) {
+            return this.renderMobileLayout(props);
+        } else {
+            return (
+                <React.Fragment>
+                    <Media 
+                        query="(max-width: 800px)"
+                        render={() => this.renderMobileLayout(props)}
+                    />
+    
+                    <Media 
+                        query="(min-width: 801px)"
+                        render={() => this.renderDesktopLayout(props)}
+                    />
+                </React.Fragment>
+            );
+        }
     }
 
     toggleDuplicateHorizonDialog = () => {

@@ -10,7 +10,7 @@ import TranslucentLoader from '../../../../components/Loaders/TranslucentLoader'
 import {withRouter} from 'react-router';
 import StockListItemMobile from '../../../TradingContest/SearchStocks/components/StockListItemMobile';
 import {Utils} from '../../../../utils';
-import { verticalBox, horizontalBox, primaryColor, metricColor} from '../../../../constants';
+import {verticalBox} from '../../../../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 

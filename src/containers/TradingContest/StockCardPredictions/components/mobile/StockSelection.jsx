@@ -1,14 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
-import Slide from '@material-ui/core/Slide';
-import Button from '@material-ui/core/Button';
 import {withStyles} from '@material-ui/core/styles';
 import {withRouter} from 'react-router';
 import ActionIcon from '../../../Misc/ActionIcons';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {SearchStocks} from '../../../SearchStocks';
-import {horizontalBox, verticalBox} from '../../../../../constants';
+import {horizontalBox} from '../../../../../constants';
 
 const styles = theme => ({
     dialogContentRoot: {
@@ -103,6 +101,8 @@ class StockSelection extends React.Component {
                 setAddStockMethodCb={this.setAddStockMethodCb}
                 watchlistPredict={watchlistPredict}
                 createPrediction={this.props.createPrediction}
+                mobile={this.props.mobile}
+                searchInput={this.props.searchInput}
             />
         );
     }

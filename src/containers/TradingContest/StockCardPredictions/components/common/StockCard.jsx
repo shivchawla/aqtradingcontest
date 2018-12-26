@@ -325,14 +325,20 @@ export default class StockCard extends React.Component {
                             </div>
                             <h3 style={nameStyle}>{name}</h3>
                         </div>
-                        <Media 
-                            query="(max-width: 800px)"
-                            render={() => this.renderPriceMetricsMobile()}
-                        />
-                        <Media 
-                            query="(min-width: 801px)"
-                            render={() => this.renderPriceMetricsDesktop()}
-                        />
+                        {
+                            this.props.mobile
+                                ?   this.renderPriceMetricsMobile()
+                                :   <React.Fragment>
+                                        <Media 
+                                            query="(max-width: 800px)"
+                                            render={() => this.renderPriceMetricsMobile()}
+                                        />
+                                        <Media 
+                                            query="(min-width: 801px)"
+                                            render={() => this.renderPriceMetricsDesktop()}
+                                        />
+                                    </React.Fragment>
+                        }
                     </div>
                 </Grid>
                 {

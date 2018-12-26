@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash';
-import moment from 'moment';
 import styled from 'styled-components';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -10,6 +9,8 @@ import DateComponent from '../../containers/TradingContest/Misc/DateComponent';
 import {metricColor, primaryColor} from '../../constants';
 import {isMarketOpen} from '../../containers/TradingContest/utils';
 import {isHoliday} from '../../utils';
+
+const StockPredictions = React.lazy(() => import('../../containers/TradingContest/StockCardPredictions'));
 
 class AqDesktopLayout extends React.Component {
     constructor(props) {
@@ -80,7 +81,10 @@ class AqDesktopLayout extends React.Component {
 
         return (
             <ContainerGrid container>
-                <LeftContainer item xs={9} style={{marginTop: '20px'}}>
+                <RightContainer item xs={4} style={{marginTop: '20px'}}>
+                    <StockPredictions mobile={true}/>
+                </RightContainer>
+                <LeftContainer item xs={8} style={{marginTop: '20px'}}>
                     <AbsoluteContainer 
                             style={{
                                 top: '10px',
@@ -99,10 +103,10 @@ class AqDesktopLayout extends React.Component {
                                         onChange={this.handleTabChange}
                                         indicatorColor="primary"
                                 >
-                                    {this.renderTab('Predict', 0)}
-                                    {this.renderTab('My Picks', 1)}
-                                    {this.renderTab('Top Picks', 2)}
-                                    {this.renderTab('Leaderboard', 3)}
+                                    {/* {this.renderTab('Predict', 0)} */}
+                                    {this.renderTab('My Picks', 0)}
+                                    {this.renderTab('Top Picks', 1)}
+                                    {this.renderTab('Leaderboard', 2)}
                                 </Tabs>
                             </Grid>
                             {
@@ -143,7 +147,6 @@ class AqDesktopLayout extends React.Component {
                         {this.props.children}
                     </AbsoluteContainer>
                 </LeftContainer>
-                <Grid item xs={3}></Grid> 
             </ContainerGrid>
         );
     }
@@ -172,6 +175,13 @@ const LeftContainer = styled(Grid)`
     background-color: #fff;
     border-color: #F1F1F1;
     border-radius: 4px;
+`;
+
+const RightContainer = styled(Grid)`
+    display: 'flex';
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start
 `;
 
 const AbsoluteContainer = styled.div`

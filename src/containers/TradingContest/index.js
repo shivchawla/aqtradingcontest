@@ -18,8 +18,7 @@ import Icon from '@material-ui/core/Icon';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
 import Header from '../Header';
-import {primaryColor, verticalBox, metricColor, horizontalBox} from '../../constants';
-import {isMarketOpen}  from './utils';
+import {primaryColor, horizontalBox} from '../../constants';
 import {Utils} from '../../utils';
 const DateHelper = require('../../utils/date');
 
@@ -86,15 +85,11 @@ class TradingContest extends React.Component {
     getSelectedPage = (selectedTab = 1) => {
         switch(selectedTab) {
             case 0:
-                return 'stockpredictions'
-            case 1:
                 return 'mypicks';
-            case 2:
+            case 1:
                 return 'toppicks';
-            case 3:
+            case 2:
                 return 'leaderboard';
-            case 4:
-                return 'metrics';
             default:
                 return 'mypicks';
         }
@@ -115,16 +110,14 @@ class TradingContest extends React.Component {
 
     getSelectedTab = url => {
         switch(url) {
-            case "/dailycontest/stockpredictions":
-                return 0;
             case "/dailycontest/mypicks":
-                return 1;
+                return 0;
             case "/dailycontest/toppicks":
-                return 2;
+                return 1;
             case "/dailycontest/leaderboard":
-                return 3;
+                return 2;
             case "/dailycontest/metrics":
-                return 4;
+                return 3;
             default:
                 return 0;
         }
