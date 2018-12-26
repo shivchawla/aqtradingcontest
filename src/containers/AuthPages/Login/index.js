@@ -62,6 +62,7 @@ class Login extends React.Component {
     }
 
     processError = error => {
+        console.log(error);
         this.setState({
             error: JSON.stringify(_.get(error, 'response.data', 'Error Occured')),
             loading: false
@@ -153,7 +154,7 @@ class Login extends React.Component {
 
         return (
             <div className={classes.root}>
-                <Header />
+                <Header activeIndex={2} />
                 <div 
                         style={{
                             height: 'calc(100vh - 64px)',

@@ -79,7 +79,6 @@ const HeaderLinks = ({activeIndex = 0, history}) => {
     ];
     return (
         <React.Fragment>
-            {/* <ContestMenuLinks/> */}
             {
                 urls.map((item, index) => (
                     <NavLink
@@ -91,15 +90,18 @@ const HeaderLinks = ({activeIndex = 0, history}) => {
                 ))
             }
             {
-                Utils.isLoggedIn() &&
-                <NavLink
-                    onClick={() => {
-                        Utils.logoutUser();
-                        history.push('/login');
-                    }}
-                >
-                    Logout
-                </NavLink>
+                Utils.isLoggedIn()
+                ?   <NavLink
+                        onClick={() => {
+                            Utils.logoutUser();
+                            history.push('/login');
+                        }}
+                    >
+                        Logout
+                    </NavLink>
+                :   <NavLink onClick={() => {history.push('/login');}}>
+                        Login
+                    </NavLink>
             } 
         </React.Fragment>
     );

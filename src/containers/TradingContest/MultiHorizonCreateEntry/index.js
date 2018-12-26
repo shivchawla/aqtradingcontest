@@ -411,22 +411,34 @@ class CreateEntry extends React.Component {
     }
 
     subscribeToPredictions = (type = this.state.selectedView) => {
-        // console.log('Subscribed to ', type);
-        const msg = {
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        let msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-prediction",
             "category": type
         };
+        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+            msg = {
+                ...msg,
+                advisorId: selectedAdvisorId
+            };
+        }
         Utils.sendWSMessage(msg);
     }
 
     unSubscribeToPredictions = (type = this.state.selectedView) => {
-        // console.log('Un Subscribed to ', type);
-        const msg = {
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        let msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-predictions',
             'category': type,
         };
+        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+            msg = {
+                ...msg,
+                advisorId: selectedAdvisorId
+            };
+        }
         Utils.sendWSMessage(msg);
     }
 

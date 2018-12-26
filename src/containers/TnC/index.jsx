@@ -115,7 +115,7 @@ class TnC extends Component {
                         ?   <div style={{...verticalBox, height: '100vh', width: '100vw'}}>
                                 <CircularProgress />
                             </div>
-                        :   <AqLayout>
+                        :   <AqLayout lightMode>
                                 {getTotalDiv()}
                             </AqLayout>
                 }}

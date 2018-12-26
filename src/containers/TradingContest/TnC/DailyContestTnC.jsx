@@ -98,7 +98,7 @@ export default class DailyContestTnC extends React.Component {
                     query="(max-width: 599px)"
                     render={() => {
                         return (
-                            <AqLayout>
+                            <AqLayout lightMode>
                                 {this.renderPageContent()}
                             </AqLayout>
                         );
