@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash';
-import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import AppBar from '@material-ui/core/AppBar';
@@ -9,7 +8,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import {withStyles} from '@material-ui/core/styles';
 import {primaryColor, metricColor} from '../../constants';
 import {NavigationDrawer} from './NavigationDrawer';
-import {isMarketOpen} from '../../containers/TradingContest/utils';
 
 const styles = {
     root: {
@@ -37,7 +35,7 @@ class AqLayout extends React.Component {
         this.setState({navigationDrawerOpenStatus: !this.state.navigationDrawerOpenStatus});
     }
 
-    render() {
+    renderDarkMode() {
         const {
             pageTitle = 'Stock Prediction Contest', 
             classes
@@ -70,16 +68,66 @@ class AqLayout extends React.Component {
             </div>
         );
     }
+
+    renderLightMode = () => {
+        const {
+            pageTitle = 'AdviceQube', 
+            classes
+        } = this.props;
+
+        return (
+            <div style={{width: '100%'}}>
+                <NavigationDrawer 
+                    open={this.state.navigationDrawerOpenStatus} 
+                    onToggle={this.toggleNavigationDrawer}
+                />
+                <AppBar 
+                        position="relative" 
+                        className={classes.root} 
+                        style={{backgroundColor: '#fff', borderBottom: '1px solid #eaeaea'}}
+                >
+                    <Toolbar>
+                        <IconButton 
+                                style={{color: tealColor}}
+                                className={classes.icon}
+                                aria-label="Menu"
+                                onClick={this.toggleNavigationDrawer}
+                        >
+                            <MenuIcon />
+                        </IconButton>
+                        <div style={{...headerColor, cursor: 'pointer', marginLeft: '10px'}}>
+                            <span style={{...biggerFont, color: tealColor}}>A</span>
+                            <span style={{color: tealColor}}>DVICE</span>
+                            <span style={{...biggerFont, color: '#e06666'}}>Q</span>
+                            <span style={{color: '#e06666'}}>UBE</span>
+                        </div>
+                        {this.props.extraAction}
+                    </Toolbar>
+                </AppBar>
+                
+                {this.props.children}
+            </div>
+        );
+    }
+
+    render() {
+        const {lightMode = false} = this.props;
+
+        return lightMode ? this.renderLightMode() : this.renderDarkMode();
+    }
+
 }
 
 export default withStyles(styles)(AqLayout);
 
-const MartketOpenTag = styled.div`
-    padding: 5px;
-    border-radius: 4px;
-    font-size: 12px;
-    background-color: ${props => props.backgroundColor || primaryColor};
-    color: #fff;
-    width: 80px;
-    margin: 0 auto;
-`;
+const tealColor = '#03a7ad';
+
+const headerColor = {
+    color: '#595959',
+    fontSize: '16px'
+};
+
+const biggerFont = {
+    fontSize: '24px',
+    fontWeight: '400',
+}

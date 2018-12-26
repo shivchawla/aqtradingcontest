@@ -186,7 +186,7 @@ export class Utils{
 		}
 		if (history){
 			!redirect && Utils.logoutUser();
-			window.location.assign('/login');
+			history.push('/login');
 		}
 	}
 
@@ -200,7 +200,8 @@ export class Utils{
 						return;
 					}else{
 						this.setShouldUpdateToken(true);
-						window.location.assign(`/tokenUpdate?redirectUrl=${encodeURIComponent(fromUrl)}`);
+						// window.location.assign(`/tokenUpdate?redirectUrl=${encodeURIComponent(fromUrl)}`);
+						history.push(`/tokenUpdate?redirectUrl=${encodeURIComponent(fromUrl)}`);
 						reject(false);
 					}
 				}else{
@@ -341,6 +342,16 @@ export class Utils{
 			stringy = data.email;
 		}
 		return stringy;
+	}
+
+	static isAdmin() {
+		let isAdmin = false;
+		const data = this.getUserInfo();
+		if (data) {
+			isAdmin = _.get(data, 'isAdmin', false);
+		}
+
+		return isAdmin;
 	}
 
 	static getLoggedInUserInitials(){
@@ -597,6 +608,10 @@ export class Utils{
 
 	static isNull(value) {
 		return value === null && value === 'null';
+	}
+
+	static isLocalStorageItemPresent = (item) => {
+		return item !== undefined && item !== 'null' && item !== null;
 	}
 }
 

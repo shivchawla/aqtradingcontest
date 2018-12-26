@@ -14,6 +14,16 @@ export default class WinnerListItem extends React.Component {
 
         return false;
     }
+
+    onClick = ({name, symbol, lastPrice, change: chg, changePct: chgPct}) => {
+        this.props.onListItemClick && this.props.onListItemClick({
+            name,
+            symbol,
+            lastPrice,
+            chg,
+            chgPct
+        });
+    }
     
     render() {
         const {security = {}, numUsers = 1, rank = 5, lastDetail = {}, investment} = this.props;
@@ -21,21 +31,13 @@ export default class WinnerListItem extends React.Component {
         const name = _.get(security, 'detail.Nse_Name', null) || '';
         const lastPrice = _.get(security, 'latestDetailRT.current', null) || _.get(security, 'latestDetail.Close', 0);
         const change = Utils.formatMoneyValueMaxTwoDecimals(_.get(security, 'latestDetail.Change', 0));
-        const changePct = `(${(_.get(security, 'latestDetail.ChangePct', 0.0)*100).toFixed(2)}%)`;
-        
-        const colStyle = {...horizontalBox, justifyContent: 'space-between'};
+        const unformattedChangePct = _.get(security, 'latestDetail.ChangePct', 0.0);
+        const changePct = `(${(unformattedChangePct * 100).toFixed(2)}%)`;
         const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
-
         const medal = getRankMedal(rank);
 
-        var colorLongUsers = numUsers.long > 0 ? metricColor.positive : metricColor.neutral;
-        var colorShortUsers = numUsers.short > 0 ? metricColor.negative : metricColor.neutral;
-
-        var colorLongInvestment = investment.long > 0 ? metricColor.positive : metricColor.neutral;
-        var colorShortInvestment = investment.short > 0 ? metricColor.negative : metricColor.neutral;
-
         return (
-            <SGrid container>
+            <SGrid container onClick={() => this.onClick({symbol, name, lastPrice, change, changePct: unformattedChangePct})}>
                 <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <div style={{...horizontalBox, justifyContent: 'space-between', width: '100%'}}>
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>

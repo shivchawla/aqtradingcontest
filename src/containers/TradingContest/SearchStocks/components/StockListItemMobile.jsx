@@ -93,7 +93,9 @@ export default class StockListItemMobile extends React.Component {
             onAddIconClick = () => {},
             hideInfo = false,
             showPredict = false,
-            hide = false
+            watchlistPredict = false,
+            hide = false,
+            onPredictIconClicked = () => {}
         } = this.props;
         const itemContainerStyle = {
             borderBottom: '1px solid #eaeaea',
@@ -124,13 +126,6 @@ export default class StockListItemMobile extends React.Component {
                                     alignItems: 'flex-start',
                                     width: '100%',
                                 }}
-                                // onClick={() => {
-                                //     showPredict 
-                                //     ?   this.props.onInfoClicked(symbol, name, current, change, changePct)
-                                //         :hideInfo ? 
-                                //             this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct) 
-                                //             : onAddIconClick(symbol)
-                                // }}
                                 onClick={() => this.props.onInfoClicked && this.props.onInfoClicked(symbol, name, current, change, changePct)}
                         >
                             <div style={{...horizontalBox, justifyContent: 'space-between', width: '100%'}}>
@@ -148,7 +143,6 @@ export default class StockListItemMobile extends React.Component {
                                         justifyContent: 'space-between', 
                                         alignItems: 'center',
                                         width: '100%',
-                                        // marginTop: '5px'
                                     }}
                             >
                                 <div style={{...horizontalBox, alignItems: 'flex-end'}}>
@@ -206,18 +200,15 @@ export default class StockListItemMobile extends React.Component {
                             this.renderBuyActionButton()
                         }
                         {
-                            showPredict &&
-                            <PredictButton onClick={() => onAddIconClick(symbol)}/>
-                        }
-                        {/* {
-                            !hideInfo && !this.props.extraContent && !showPredict &&
-                            <ActionIcon 
-                                type="info"
-                                size={18}
-                                color='#7e91f7'
-                                onClick={() => this.props.onInfoClicked(symbol, name, current, change, changePct)}
+                            (showPredict || watchlistPredict) &&
+                            <PredictButton 
+                                onClick={() => {
+                                    showPredict
+                                        ?   onAddIconClick(symbol)
+                                        :   onPredictIconClicked(symbol)
+                                }}
                             />
-                        } */}
+                        }
                         {
                             this.props.extraContent && this.props.extraContent(symbol)
                         }

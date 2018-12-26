@@ -11,23 +11,23 @@ import {withRouter} from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import Loader from './Misc/Loader';
 import AqLayout from '../../components/ui/AqLayout';
 import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
-import TopPicks from './TopPicks';
-import Leaderboard from './Leaderboard';
-import CreateEntry from './MultiHorizonCreateEntry';
-import Dashboard from './Dashboard';
-import StockPredictions from './StockCardPredictions';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
-import DateComponent from './Misc/DateComponent';
-import DummyLogin from '../DummyLogin';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
 import Header from '../Header';
-import {primaryColor, verticalBox, metricColor} from '../../constants';
+import {primaryColor, verticalBox, metricColor, horizontalBox} from '../../constants';
 import {isMarketOpen}  from './utils';
 import {Utils} from '../../utils';
 const DateHelper = require('../../utils/date');
+
+const TopPicks = React.lazy(() => import('./TopPicks'));
+const Leaderboard = React.lazy(() => import('./Leaderboard'));
+const CreateEntry = React.lazy(() => import('./MultiHorizonCreateEntry'));
+const Dashboard = React.lazy(() => import('./Dashboard'));
+const StockPredictions = React.lazy(() => import('./StockCardPredictions'));
 
 const URLSearchParamsPoly = require('url-search-params');
 const dateFormat = 'YYYY-MM-DD';
@@ -209,15 +209,21 @@ class TradingContest extends React.Component {
             this.setState({listViewType: this.getListViewType(listViewType)});
         }
         if (!Utils.isLoggedIn()) {
-            window.location.assign('/login');
+            this.props.history.push('/login');
         }
         this.setState({selectedTab});
     }
 
+    redirectToLogin = (redirectUrl) => {
+        Utils.localStorageSave('redirectToUrlFromLogin', redirectUrl);
+
+        return <Redirect push to='/login' />;
+    }
+
     renderMobile = () => {
         const {selectedTab} = this.state;
-        const isMarketTrading = !DateHelper.isHoliday();
-        const marketOpen = isMarketTrading && isMarketOpen().status;
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        const selectedUserName = Utils.getFromLocalStorage('selectedUserName');
         
         return (
             <AqLayout
@@ -241,84 +247,75 @@ class TradingContest extends React.Component {
                         >
                             <STab label="PREDICT"/>
                             <STab label="MY PICKS" />
-                            {/* <STab label="TOP PICKS" /> */}
-                            {/* <STab label="LEADER"/> */}
                             <STab label="Metrics"/>
                         </STabs>
                     </Grid>
-                    {/* <Grid item xs={12} style={{...verticalBox, backgroundColor: '#fff'}}>
-                        {
-                            !marketOpen &&
-                            this.state.selectedTab === 1 &&
-                            <MartketOpenTag 
-                                    color={marketOpen
-                                        ? metricColor.positive 
-                                        : '#fc4c55'
-                                    }
-                                    style={{marginTop: '10px'}}
-                            >   
-                                {
-                                    marketOpen
-                                        ? 'Market Open'
-                                        : 'Market Closed'
-                                }
-                            </MartketOpenTag>
-                        }
-                    </Grid> */}
-                    <Switch>
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}/mypicks`}
-                            render={() => 
-                                Utils.isLoggedIn()
-                                ?   <CreateEntry 
-                                        selectedDate={this.state.selectedDate}
-                                        componentType='preview'
-                                        listViewType={this.getListViewTypeFromUrl(this.props)}
-                                        updateDate={this.updateDate}
-                                    />
-                                :   <DummyLogin />
-                            }
-                        />
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}/stockpredictions`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <StockPredictions 
-                                        selectedDate={this.state.selectedDate}
-                                        updateDate={this.updateDate}
-                                    />
-                                :   <DummyLogin />
-                            }
-                        />
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}/metrics`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <Dashboard />
-                                :   <DummyLogin />
-                            }
-                        />
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <CreateEntry 
-                                        selectedDate={this.state.selectedDate}
-                                        componentType='preview'
-                                        updateDate={this.updateDate}
-                                        listViewType={this.getListViewTypeFromUrl(this.props)}
-                                    />
-                                :   <DummyLogin />
-                            }
-                        />
-                        <Route 
-                            render={() => {
-                                window.location.href = '/404'
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                width: '100%', 
+                                justifyContent: 'center',
+                                backgroundColor: '#fff'
                             }}
-                        />
-                        {/* <Redirect to='/404'/> */}
-                    </Switch>
+                    >
+                        {
+                            Utils.isAdmin() && 
+                            Utils.isLocalStorageItemPresent(selectedAdvisorId) && 
+                            Utils.isLocalStorageItemPresent(selectedUserName) &&
+                            <SelectedUserName>{selectedUserName}</SelectedUserName>
+                        }
+                    </div>
+                    <React.Suspense fallback={<Loader />}>
+                        <Switch>
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}/mypicks`}
+                                render={() => 
+                                    Utils.isLoggedIn()
+                                    ?   <CreateEntry 
+                                            selectedDate={this.state.selectedDate}
+                                            componentType='preview'
+                                            listViewType={this.getListViewTypeFromUrl(this.props)}
+                                            updateDate={this.updateDate}
+                                        />
+                                    :   this.redirectToLogin(`${this.props.match.path}/mypicks`)
+                                }
+                            />
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}/stockpredictions`}
+                                render={() => Utils.isLoggedIn()
+                                    ?   <StockPredictions 
+                                            selectedDate={this.state.selectedDate}
+                                            updateDate={this.updateDate}
+                                        />
+                                    :   this.redirectToLogin(`${this.props.match.path}/stockpredictions`)
+                                }
+                            />
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}/metrics`}
+                                render={() => Utils.isLoggedIn()
+                                    ?   <Dashboard />
+                                    :   this.redirectToLogin(`${this.props.match.path}/metrics`)
+                                }
+                            />
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}`}
+                                render={() => Utils.isLoggedIn()
+                                    ?   <CreateEntry 
+                                            selectedDate={this.state.selectedDate}
+                                            componentType='preview'
+                                            updateDate={this.updateDate}
+                                            listViewType={this.getListViewTypeFromUrl(this.props)}
+                                        />
+                                    :   this.redirectToLogin(`${this.props.match.path}`)
+                                }
+                            />
+                            <Redirect push to='/404' />
+                        </Switch>
+                    </React.Suspense>
                 </Grid>
             </AqLayout>
         );
@@ -350,69 +347,66 @@ class TradingContest extends React.Component {
                         header={this.getDesktopHeader()}
                         defaultSelected={this.state.selectedTab}
                 >
-                    <Switch>
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <CreateEntry 
-                                        selectedDate={this.state.selectedDate}
-                                        componentType='preview'
-                                        listViewType={this.getListViewTypeFromUrl(this.props)}
-                                    />
-                                :   <DummyLogin />
-                            }
-                        />
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}/mypicks`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <CreateEntry 
-                                        selectedDate={this.state.selectedDate}
-                                        componentType='preview'
-                                        listViewType={this.getListViewTypeFromUrl(this.props)}
-                                    />
-                                :   <DummyLogin />
-                            }
-                        />
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}/toppicks`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <TopPicks 
-                                        selectedDate={this.state.selectedDate}
-                                    />
-                                :   <DummyLogin />
-                            }
-                        />
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}/leaderboard`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <Leaderboard 
-                                        selectedDate={this.state.selectedDate}
-                                    />
-                                : <DummyLogin />
-                            }
-                        />
-                        <Route 
-                            exact
-                            path={`${this.props.match.path}/stockpredictions`}
-                            render={() => Utils.isLoggedIn()
-                                ?   <StockPredictions 
-                                        selectedDate={this.state.selectedDate}
-                                    />
-                                :   <DummyLogin />
-                            }
-                        />
-                        <Route 
-                            render={() => {
-                                window.location.href = '/404'
-                            }}
-                        />
-                        {/* <Redirect to='/404'/> */}
-                        {/* <Route component={PageNotFound} /> */}
-                    </Switch>
+                    <React.Suspense fallback={<Loader />}>
+                        <Switch>
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}`}
+                                render={() => Utils.isLoggedIn()
+                                    ?   <CreateEntry 
+                                            selectedDate={this.state.selectedDate}
+                                            componentType='preview'
+                                            listViewType={this.getListViewTypeFromUrl(this.props)}
+                                        />
+                                    :   this.redirectToLogin(`${this.props.match.path}`)
+                                }
+                            />
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}/mypicks`}
+                                render={() => Utils.isLoggedIn()
+                                    ?   <CreateEntry 
+                                            selectedDate={this.state.selectedDate}
+                                            componentType='preview'
+                                            listViewType={this.getListViewTypeFromUrl(this.props)}
+                                        />
+                                    :   this.redirectToLogin(`${this.props.match.path}/mypicks`)
+                                }
+                            />
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}/toppicks`}
+                                render={() => Utils.isLoggedIn()
+                                    ?   <TopPicks 
+                                            selectedDate={this.state.selectedDate}
+                                        />
+                                    :   this.redirectToLogin(`${this.props.match.path}/toppicks`)
+                                }
+                            />
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}/leaderboard`}
+                                render={() => Utils.isLoggedIn()
+                                    ?   <Leaderboard 
+                                            selectedDate={this.state.selectedDate}
+                                        />
+                                    :   this.redirectToLogin(`${this.props.match.path}/leaderboard`)
+                                }
+                            />
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}/stockpredictions`}
+                                render={() => Utils.isLoggedIn()
+                                    ?   <StockPredictions 
+                                            selectedDate={this.state.selectedDate}
+                                        />
+                                    :   this.redirectToLogin(`${this.props.match.path}/stockpredictions`)
+                                }
+                            />
+                            {/* <Redirect to='/404'/> */}
+                            <Redirect push to='/404' />
+                        </Switch>
+                    </React.Suspense>
                 </AqLayoutDesktop>
             </div>
         );
@@ -446,6 +440,17 @@ const STab = styled(Tab)`
     min-width: 100px;
 `;
 
+const SelectedUserName = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    font-size: 10px;
+    color: #436ebc;
+    border: 1px solid #8399c9;
+    padding: 5px;
+    border-radius: 50px;
+    margin-top: 5px;
+`;
+
 const desktopStyles = {
     root: {
         flexGrow: 1
@@ -454,14 +459,3 @@ const desktopStyles = {
         marginTop: 100
     }
 };
-
-const MartketOpenTag = styled.div`
-    padding: 5px;
-    border-radius: 4px;
-    font-size: 12px;
-    border: 1px solid ${props => props.color || '#fff'};
-    background-color: transparent;
-    color: ${props => props.color || '#fff'};
-    width: 80px;
-    margin: 0 auto;
-`;

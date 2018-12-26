@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash';
-import axios from 'axios';
 import styled from 'styled-components';
 import moment from 'moment';
 import Media from 'react-media';
@@ -30,7 +29,9 @@ import {
     getPnlStats, 
     getDefaultPrediction,
     checkForUntouchedPredictionsInPositions,
-    getPositionsWithNewPredictions
+    getPositionsWithNewPredictions,
+    exitPrediction,
+    stopPredictionInPositions
 } from './utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -83,7 +84,8 @@ class CreateEntry extends React.Component {
             selectedView: this.getListViewType(props.listViewType) || 'active',
             predictionBottomSheetOpen: false,
             selectedPositionIndex: 0,
-            stockDetailBottomSheetOpen: false
+            stockDetailBottomSheetOpen: false,
+            stopPredictionLoading: false
         };
         this.mounted = false;
     }
@@ -274,6 +276,29 @@ class CreateEntry extends React.Component {
         });
     })
 
+    stopPrediction = predictionId => {
+        this.setState({stopPredictionLoading: true});
+        return exitPrediction(predictionId)
+        .then(() => {
+            const requiredPreviewPositions = stopPredictionInPositions(predictionId, this.state.previewPositions, this.state.selectedPositionIndex);
+            this.setState({
+                previewPositions: requiredPreviewPositions,
+                snackbarOpenStatus: true, 
+                snackbarMessage: 'Prediction successfully stopped'
+            });
+            
+        })
+        .catch(error => {
+            console.log('Error', error);
+            const errorMessage = _.get(error, 'response.data.msg', 'Error Occured :(');
+            this.setState({snackbarOpenStatus: true, snackbarMessage: errorMessage, todayDataLoaded: true});
+            return handleCreateAjaxError(error, this.props.history, this.props.match.url);
+        })
+        .finally(() => {
+            this.setState({stopPredictionLoading: false})
+        })
+    }
+
     updateDailyPredictions = async (predictions = []) => {
         const rawStalePredictions = predictions;
         const formattedPredictions = await processPredictions(predictions, true);
@@ -386,22 +411,34 @@ class CreateEntry extends React.Component {
     }
 
     subscribeToPredictions = (type = this.state.selectedView) => {
-        // console.log('Subscribed to ', type);
-        const msg = {
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        let msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-prediction",
             "category": type
         };
+        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+            msg = {
+                ...msg,
+                advisorId: selectedAdvisorId
+            };
+        }
         Utils.sendWSMessage(msg);
     }
 
     unSubscribeToPredictions = (type = this.state.selectedView) => {
-        // console.log('Un Subscribed to ', type);
-        const msg = {
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        let msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-predictions',
             'category': type,
         };
+        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+            msg = {
+                ...msg,
+                advisorId: selectedAdvisorId
+            };
+        }
         Utils.sendWSMessage(msg);
     }
 
@@ -680,7 +717,8 @@ class CreateEntry extends React.Component {
             togglePredictionsBottomSheet: this.togglePredictionsBottomSheet,
             listViewType: this.props.listViewType,
             toggleStockDetailBottomSheet: this.toggleStockDetailBottomSheet,
-            updateDate: this.props.updateDate
+            updateDate: this.props.updateDate,
+            stopPrediction: this.stopPrediction
         };
 
         return (
@@ -727,6 +765,8 @@ class CreateEntry extends React.Component {
                         open={this.state.predictionBottomSheetOpen}
                         onClose={this.togglePredictionsBottomSheet}
                         position={this.state.previewPositions[this.state.selectedPositionIndex]}
+                        stopPrediction={this.stopPrediction}
+                        stopPredictionLoading={this.state.stopPredictionLoading}
                     />
                     <StockDetailBottomSheet 
                         open={this.state.stockDetailBottomSheetOpen}

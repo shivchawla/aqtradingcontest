@@ -82,6 +82,8 @@ export default class PredictionsBottomSheet extends React.Component {
                     <Grid item xs={12} style={{padding: '0 10px'}}>
                         <StockPreviewPredictionList 
                             predictions={predictions} 
+                            stopPrediction={this.props.stopPrediction}
+                            stopPredictionLoading={this.props.stopPredictionLoading}
                         />
                         <div style={{height: '50px'}}></div>
                     </Grid>

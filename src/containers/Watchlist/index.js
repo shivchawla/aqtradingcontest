@@ -14,7 +14,6 @@ import RadioGroup from '../../components/selections/RadioGroup';
 import WatchlistCustomRadio from './components/mobile/WatchlistCustomRadio';
 import RoundedButton from '../../components/Buttons/RoundedButton';
 import LoaderComponent from '../TradingContest/Misc/Loader';
-import ActionIcon from '../TradingContest/Misc/ActionIcons';
 import DialogComponent from '../../components/Alerts/DialogComponent';
 import {fetchAjaxPromise, Utils} from '../../utils';
 import {processPositions, createUserWatchlist} from './utils';
@@ -445,6 +444,21 @@ class WatchlistComponent extends React.Component {
         );
     }
 
+    createPrediction = (stock) => {
+        let {stockData = {}} = this.props;
+        stockData = {
+            ...stockData,
+            symbol: _.get(stock, 'symbol', ''),
+            name: _.get(stock, 'name', ''),
+            lastPrice: _.get(stock, 'current', ''),
+            change: _.get(stock, 'change', ''),
+            changePct: Number((_.get(stock, 'changePct', 0) * 100).toFixed(2)),
+            shortable: _.get(stock, 'shortable', false)
+        }
+        this.props.selectStock(stockData);
+        this.props.toggleStockCardBottomSheet();
+    }
+
     addStockToWatchlist = (tickers = []) => {
         const selectedWatchlist = this.getSelectedWatchlist();
         const positions = _.get(selectedWatchlist, 'positions', []);
@@ -687,6 +701,8 @@ class WatchlistComponent extends React.Component {
                     addStock={this.addStockToWatchlist}
                     selectedPositions={selectedWatchlistPositions}
                     hideSelectedItems={true}
+                    createPrediction={this.createPrediction}
+                    watchlistPredict={true}
                 />
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
             </React.Fragment>

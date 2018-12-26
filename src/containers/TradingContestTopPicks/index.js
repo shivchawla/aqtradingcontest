@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import AqLayout from '../../components/ui/AqLayout';
 import TopPicks from '../TradingContest/TopPicks';
 import DateComponent from '../TradingContest/Misc/DateComponent';
+import StockDetailBottomSheet from '../TradingContest/StockDetailBottomSheet';
 import {Utils} from '../../utils';
 import {verticalBox} from '../../constants';
 
@@ -23,7 +24,8 @@ export class TradingContestLeaderboardMobile extends React.Component {
         this.state = {
             selectedTab: 0,
             selectedDate: defaultDate,
-            bottomSheetOpen: false,
+            stockDetailBottomSheetOpen: false,
+            selectedStock: {}
         };
     }
 
@@ -31,9 +33,25 @@ export class TradingContestLeaderboardMobile extends React.Component {
         this.setState({selectedDate: date});
     }
 
+    onListItemClick = stock => {
+        console.log('Selected Stock', stock);
+        this.setState({selectedStock: stock}, () => {
+            this.toggleStockDetailBottomSheet();
+        });
+    }
+
+    toggleStockDetailBottomSheet = () => {
+        this.setState({stockDetailBottomSheetOpen: !this.state.stockDetailBottomSheetOpen});
+    }
+
     renderMobile = () => {        
         return (
             <AqLayout pageTitle='Top Picks'>
+                <StockDetailBottomSheet 
+                    open={this.state.stockDetailBottomSheetOpen}
+                    onClose={this.toggleStockDetailBottomSheet}
+                    {...this.state.selectedStock}
+                />
                 <Grid 
                         container 
                         style={{
@@ -49,6 +67,7 @@ export class TradingContestLeaderboardMobile extends React.Component {
                     </Grid>
                     <TopPicks 
                         selectedDate={this.state.selectedDate}
+                        onListItemClick={this.onListItemClick}
                     />
                 </Grid>
             </AqLayout>
@@ -72,7 +91,7 @@ export class TradingContestLeaderboardMobile extends React.Component {
             this.setState({selectedDate: moment(date, dateFormat)});
         }
         if (!Utils.isLoggedIn()) {
-            window.location.assign('/login');
+            this.props.history.push('/login');
         }
     }
 

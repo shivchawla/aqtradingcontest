@@ -21,20 +21,18 @@ export default class StockPreviewPredictionListItem extends React.Component {
         return false;
     }
 
-    getIconConfig = (targetAchieved) => {
+    getIconConfig = (status) => {
         const {endDate = null} = this.props.prediction;
         const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
         const todayDate = moment().format(dateTimeFormat);
         let endTime = moment(endDate, dateFormat).hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
         endTime = endTime.format(dateTimeFormat);
         const active = moment(todayDate, dateTimeFormat).isBefore(moment(endTime, dateTimeFormat));
-        if (targetAchieved) {
-            return {
-                type: 'thumb_up_alt',
-                color: '#3EF79B',
-                status: 'Target Achieved'
-            };
-        } else {
+        const manualExit = _.get(status, 'manualExit', false);
+        const profitTarget = _.get(status, 'profitTarget', false);
+        const stopLoss = _.get(status, 'stopLoss', false);
+
+        if (!manualExit && !profitTarget && !stopLoss) {
             if (active) {
                 return {
                     type: 'loop',
@@ -47,6 +45,26 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     color: '#FE6662',
                     status: 'Target Missed'
                 }
+            }
+        } else {
+            if (manualExit) {
+                return {
+                    type: 'power_settings_new',
+                    color: '#009688',
+                    status: 'Exited'
+                }
+            } else if (stopLoss) {
+                return {
+                    type: 'pan_tool',
+                    color: '#009688',
+                    status: 'Stopped Loss'
+                }
+            } else {
+                return {
+                    type: 'thumb_up_alt',
+                    color: '#3EF79B',
+                    status: 'Target Achieved'
+                };
             }
         }
     }
@@ -64,13 +82,14 @@ export default class StockPreviewPredictionListItem extends React.Component {
             endDate = null,
             targetAchieved = false,
             active = false,
-            lastPrice = 0
+            lastPrice = 0,
+            status ={}
         } = this.props.prediction;
         const typeBackgroundColor = '#fff';
         const typeColor = type === 'buy' ? '#009688' : '#FE6662';
         const borderColor = type === 'buy' ? '#009688' : '#FE6662'
         const typeText = type === 'buy' ? 'BUY' : 'SELL';
-        const iconConfig = this.getIconConfig(targetAchieved, active);
+        const iconConfig = this.getIconConfig(status);
         const directionUnit = type === 'buy' ? 1 : -1;
         const changeInvestment = directionUnit * ((lastPrice - avgPrice) / avgPrice) * investment;
         const changedInvestment = investment + changeInvestment;

@@ -8,7 +8,6 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
-import StockPerformance from './components/StockPerformance';
 import StockDetail from '../../StockDetail';
 import StockDetailBottomSheet from '../StockDetailBottomSheet';
 import StockFilter from './components/StockFilter';
@@ -22,9 +21,11 @@ import {maxPredictionLimit} from '../MultiHorizonCreateEntry/constants'
 import {horizontalBox, verticalBox, primaryColor} from '../../../constants';
 import {fetchAjaxPromise} from '../../../utils';
 import './css/searchStocks.css';
+import { fas } from '@fortawesome/free-solid-svg-icons';
 
 const {requestUrl} = require('../../../localConfig');
 let searchInputTimeout = null;
+const requestCancelledMessage = 'requestCancelled';
 
 export class SearchStocks extends React.Component {
     constructor(props) {
@@ -68,7 +69,6 @@ export class SearchStocks extends React.Component {
         return (
             <SGrid container>
                 <Grid item xs={11} style={horizontalBox}>
-                    {/* <Search placeholder="Search Stocks" onChange={this.handleSearchInputChange}/> */}
                     <TextField
                         id="search"
                         label="Search"
@@ -180,57 +180,58 @@ export class SearchStocks extends React.Component {
     }
 
     fetchStocks = (searchQuery = this.state.searchInput, shoudlConcatenate = false, requiredSector = null, selectedPage = null) => new Promise(resolve => {
-        try {
-            this.cancelFetchStocks();
-        } catch(err) {}
-        const limit = 10;
-        const stocks = [...this.state.stocks];
-        let nSelectedPage = selectedPage === null ? this.state.selectedPage : selectedPage;
-        const skip = nSelectedPage * limit;
-        this.setState({selectedPage: nSelectedPage});
-        const populate = true;
-        const universe = _.get(this.props, 'filters.universe', 'NIFTY_500');
-        let sector = _.get(this.props, 'filters.sector', '').length === 0
-                ?   this.state.filter.sector
-                :   _.get(this.props, 'filters.sector', '');
-        if (requiredSector !== null) {
-            sector = requiredSector;
-        }
-        const industry = _.get(this.props, 'filters.industry', '').length === 0
-                ?   this.state.filter.industry
-                :   _.get(this.props, 'filters.industry', '');
-        const selectedTickers = _.get(this.props, 'portfolioPositions', []).map(position => position.symbol);
-        const skippedStocks = _.get(this.props, 'skippedStocks', []);
-        let stocksToSkip = [...skippedStocks];
-        if (this.props.hideSelectedItems) {
-            stocksToSkip = [...stocksToSkip, ...selectedTickers];
-        }
-        stocksToSkip = stocksToSkip.join(',');
-        const url = `${requestUrl}/stock?search=${encodeURIComponent(searchQuery)}&populate=${populate}&universe=${universe}&sector=${sector}&industry=${industry}&skip=${skip}&limit=${limit}&exclude=${stocksToSkip}`;
-
-        this.setState({loadingStocks: true});
-        fetchAjaxPromise(url, this.props.history, this.props.pageUrl, false, c => {
-            this.cancelFetchStocks = c
-        })
-        .then(({data: stockResponseData}) => {
-            const processedStocks = this.processStockList(stockResponseData);
-            let requiredStocks = [];
-            if (!shoudlConcatenate) {
-                requiredStocks = processedStocks;
-            } else {
-                requiredStocks = [...stocks, ...processedStocks];
+        this.setState({loadingStocks: true}, () => {
+            try {
+                this.cancelFetchStocks(requestCancelledMessage);
+            } catch(err) {
             }
-            return requiredStocks;
-        })
-        .then((stocks) => {
-            this.syncStockListWithPortfolioNew(stocks);
-        })
-        .catch(err => {
-            console.log(err);
-        })
-        .finally(() => {
-            this.setState({loadingStocks: false});
-        })
+            const limit = 10;
+            const stocks = [...this.state.stocks];
+            let nSelectedPage = selectedPage === null ? this.state.selectedPage : selectedPage;
+            const skip = nSelectedPage * limit;
+            this.setState({selectedPage: nSelectedPage});
+            const populate = true;
+            const universe = _.get(this.props, 'filters.universe', 'NIFTY_500');
+            let sector = _.get(this.props, 'filters.sector', '').length === 0
+                    ?   this.state.filter.sector
+                    :   _.get(this.props, 'filters.sector', '');
+            if (requiredSector !== null) {
+                sector = requiredSector;
+            }
+            const industry = _.get(this.props, 'filters.industry', '').length === 0
+                    ?   this.state.filter.industry
+                    :   _.get(this.props, 'filters.industry', '');
+            const selectedTickers = _.get(this.props, 'portfolioPositions', []).map(position => position.symbol);
+            const skippedStocks = _.get(this.props, 'skippedStocks', []);
+            let stocksToSkip = [...skippedStocks];
+            if (this.props.hideSelectedItems) {
+                stocksToSkip = [...stocksToSkip, ...selectedTickers];
+            }
+            stocksToSkip = stocksToSkip.join(',');
+            const url = `${requestUrl}/stock?search=${encodeURIComponent(searchQuery)}&populate=${populate}&universe=${universe}&sector=${sector}&industry=${industry}&skip=${skip}&limit=${limit}&exclude=${stocksToSkip}`;
+            fetchAjaxPromise(url, this.props.history, this.props.pageUrl, false, c => {
+                this.cancelFetchStocks = c
+            })
+            .then(({data: stockResponseData}) => {
+                const processedStocks = this.processStockList(stockResponseData);
+                let requiredStocks = [];
+                if (!shoudlConcatenate) {
+                    requiredStocks = processedStocks;
+                } else {
+                    requiredStocks = [...stocks, ...processedStocks];
+                }
+                return requiredStocks;
+            })
+            .then((stocks) => {
+                this.syncStockListWithPortfolioNew(stocks);
+                this.setState({loadingStocks: false});
+            })
+            .catch(err => {
+                if (err.message !== requestCancelledMessage) {
+                    this.setState({loadingStocks: false});
+                }
+            })
+        });
     })
 
     resetSearchFilters = () => new Promise((resolve, reject) => {
@@ -263,7 +264,7 @@ export class SearchStocks extends React.Component {
 
     renderStockList = () => {
         const {stocks = []} = this.state;
-        const {showPredict} = this.props;
+        const {showPredict = false, watchlistPredict = false} = this.props;
         const selectedStock = _.get(this.state, 'selectedStock.symbol', '');
 
         return (
@@ -279,6 +280,7 @@ export class SearchStocks extends React.Component {
                     onInfoClicked={this.onStockInfoClicked}
                     loading={this.state.loadingStocks}
                     showPredict={showPredict}
+                    watchlistPredict={watchlistPredict}
                 />
         )
     }
@@ -396,8 +398,7 @@ export class SearchStocks extends React.Component {
         const {stocks = []} = this.state;
         const selectedStockIndex = _.findIndex(stocks, stock => stock.symbol === symbol);
         if (selectedStockIndex > -1) {
-            this.props.addPositions([stocks[selectedStockIndex]]);
-            this.props.toggleBottomSheet();
+            this.props.createPrediction && this.props.createPrediction(stocks[selectedStockIndex]);
         }
     }
 
@@ -751,6 +752,7 @@ export class SearchStocks extends React.Component {
     }
 
     componentWillMount() {
+        this.props.updateCount && this.props.updateCount(0);
         this.props.loadOnMount && this.fetchStocks();
     }
 
@@ -939,7 +941,6 @@ export class SearchStocks extends React.Component {
                             overflow: 'hidden', 
                             height: '100%',
                             position: 'relative',
-                            // zIndex
                         }}
                 >
                     <Media 

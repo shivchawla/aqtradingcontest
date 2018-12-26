@@ -23,7 +23,7 @@ export default class StockListComponent extends React.Component {
     }
 
     render() {
-        const {stocks = [], showPredict = false} = this.props;
+        const {stocks = [], showPredict = false, watchlistPredict = false} = this.props;
         return (
             <React.Fragment>
                 {
@@ -42,10 +42,11 @@ export default class StockListComponent extends React.Component {
                                         showPredict={showPredict}
                                         onClick={this.props.handleStockListItemClick} 
                                         onAddIconClick={this.props.conditionallyAddItemToSelectedArray}
-                                        // onAddIconClick={this.props.conditionallyAddToggleStock}
+                                        onPredictIconClicked={this.props.conditionallyAddToggleStock}
                                         onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
                                         isAlreadyAdded={this.isAlreadyAdded(stock)}
                                         onInfoClicked={this.props.onInfoClicked}
+                                        watchlistPredict={watchlistPredict}
                                     />
                                 )}
                             />
