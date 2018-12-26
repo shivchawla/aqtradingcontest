@@ -21,7 +21,7 @@ export default class ForbiddenAccess extends React.Component {
                         </span>
                         <Button 
                                 type="primary" 
-                                onClick={() => this.props.history.push('/dailycontest')}
+                                onClick={() => this.props.history.push('/dailycontest/home')}
                                 style={{marginTop: '5%', backgroundColor: '#5e627c', boxShadow: 'none'}}
                                 variant='contained'
                                 color='primary'

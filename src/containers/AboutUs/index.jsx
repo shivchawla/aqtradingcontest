@@ -167,12 +167,10 @@ class AboutUs extends React.Component {
   }
 
   render() {
-    return this.props.windowWidth
-        ?   (
-                <AqLayout>
-                    {this.renderPageContent()}
-                </AqLayout>
-            )
+    return this.props.windowWidth <= 800
+        ?   <AqLayout lightMode>
+                {this.renderPageContent()}
+            </AqLayout>
         :   <AppLayout 
                 content = {this.renderPageContent()}
                 style={{paddingLeft: 0}}
@@ -186,7 +184,7 @@ export default windowSize(AboutUs);
 const aboutUsActionButton = {
     height: '35px',
     boxShadow: 'none',
-    background: primaryColor,
+    background: '#03a7ad',
     marginTop: '5px',
     color: '#fff',
     fontWeight: 400
@@ -202,7 +200,7 @@ const AboutUsHeader = styled.h3`
 
 const AboutUsTagline = styled.h3`
     font-size: calc(10px + 1.5vw);
-    color: ${primaryColor};
+    color: #008080;
     margin-bottom: 0px;
     text-align: start;
     font-weight: 400;
@@ -217,4 +215,5 @@ const AboutUsText = styled.h3`
     text-align: start;
     font-weight: 400;
     margin-top: 10px;
+    line-height: 1.5;
 `;
