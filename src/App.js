@@ -63,6 +63,10 @@ class App extends React.Component {
         return <Redirect push to='/login' />;
     }
 
+    redirectToDailyContest = () => {
+        return <Redirect push to='/dailycontest/home' />;
+    }
+
     render() {
         return (
             <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -88,16 +92,55 @@ class App extends React.Component {
                                             }
                                         />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/>
-                                        <Route exact={true} path='/login' component={Login} />
-                                        <Route exact={true} path='/signup' component={Signup} />
+                                        <Route 
+                                            exact={true}
+                                            path='/login'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <Login {...props} />
+                                            }}
+                                        />
+                                        <Route 
+                                            exact={true}
+                                            path='/signup'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <Signup {...props} />
+                                            }}
+                                        />
                                         <Route path='/policies/tnc' component={TnC}/> 
                                         <Route path='/policies/privacy' component={Policy}/> 
                                         <Route path='/aboutus' component={AboutUs}/> 
-                                        <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
+                                        <Route 
+                                            exact={true}
+                                            path='/forgotPassword'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <ForgotPassword {...props} />
+                                            }}
+                                        />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
-                                        <Route exact={true} path='/resetPassword' component={ResetPassword} />
-                                        <Route path='/authMessage' component={AuthFeedback} /> 
-                                        {/* <Route exact={true} path='/dailycontest/watchlist' component={Watchlist} />  */}
+                                        <Route 
+                                            exact={true}
+                                            path='/resetPassword'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <ResetPassword {...props} />
+                                            }}
+                                        />
+                                        <Route 
+                                            exact={true}
+                                            path='/authMessage'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <AuthFeedback {...props} />
+                                            }}
+                                        />
                                         <Route exact={true} path='/dailycontest/stockdetail' component={StockDetail} /> 
                                         <Route
                                             path='/dailycontest/leaderboard'
@@ -149,20 +192,60 @@ class App extends React.Component {
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
                                         <Route 
                                             path='/stockresearch' 
-                                            render={() => Utils.isLoggedIn()
-                                                    ? <StockResearch />
+                                            render={(props) => Utils.isLoggedIn()
+                                                    ? <StockResearch {...props} />
                                                     : this.redirectToLogin('/stockresearch')
                                             }
                                         /> 
                                         <Route path='/policies/tnc' component={TnC}/> 
                                         <Route path='/policies/privacy' component={Policy}/> 
                                         <Route path='/aboutus' component={AboutUs}/> 
-                                        <Route exact={true} path='/login' component={Login} />
-                                        <Route exact={true} path='/signup' component={Signup} />
-                                        <Route exact={true} path='/forgotPassword' component={ForgotPassword} />
+                                        <Route 
+                                            exact={true}
+                                            path='/login'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <Login {...props} />
+                                            }}
+                                        />
+                                        <Route 
+                                            exact={true}
+                                            path='/signup'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <Signup {...props} />
+                                            }}
+                                        />
+                                        <Route 
+                                            exact={true}
+                                            path='/forgotPassword'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <ForgotPassword {...props} />
+                                            }}
+                                        />
+                                        <Route 
+                                            exact={true}
+                                            path='/resetPassword'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <ResetPassword {...props} />
+                                            }}
+                                        />
+                                        <Route 
+                                            exact={true}
+                                            path='/authMessage'
+                                            render={(props) => {
+                                                return Utils.isLoggedIn()
+                                                    ? this.redirectToDailyContest()
+                                                    : <AuthFeedback {...props} />
+                                            }}
+                                        />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
-                                        <Route exact={true} path='/resetPassword' component={ResetPassword} />
-                                        <Route path='/authMessage' component={AuthFeedback} />
                                         <Route 
                                             path='/dailycontest' 
                                             render={() => Utils.isLoggedIn() 
