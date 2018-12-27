@@ -133,7 +133,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
 
             <Container container alignItems="flex-end" style={{position: 'relative'}}>
                 <Grid item xs={12} style={{...verticalBox, alignItems: 'center', marginTop: '13px'}}>
-                    {
+                    {/* {
                         marketOpen &&
                         <ActionIcon 
                             type='power_settings_new' 
@@ -146,7 +146,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             }}
                             onClick={() => this.props.openDialog(_id)}
                         />
-                    }
+                    } */}
                     <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
                         <PriceComponent 
                             label='Call Price'
