@@ -6,11 +6,9 @@ import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
 import DateComponent from '../../containers/TradingContest/Misc/DateComponent';
-import {metricColor, primaryColor} from '../../constants';
+import {metricColor} from '../../constants';
 import {isMarketOpen} from '../../containers/TradingContest/utils';
 import {isHoliday} from '../../utils';
-
-const StockPredictions = React.lazy(() => import('../../containers/TradingContest/StockCardPredictions'));
 
 class AqDesktopLayout extends React.Component {
     constructor(props) {
@@ -82,7 +80,7 @@ class AqDesktopLayout extends React.Component {
         return (
             <ContainerGrid container>
                 <RightContainer item xs={4} style={{marginTop: '20px'}}>
-                    <StockPredictions mobile={true}/>
+                    {this.props.rightContainer && this.props.rightContainer()}
                 </RightContainer>
                 <LeftContainer item xs={8} style={{marginTop: '20px'}}>
                     <AbsoluteContainer 
@@ -144,7 +142,7 @@ class AqDesktopLayout extends React.Component {
                                 }
                             </MartketOpenTag>
                         }
-                        {this.props.children}
+                        {React.cloneElement(this.props.children, {eventEmitter: this.eventEmitter})}
                     </AbsoluteContainer>
                 </LeftContainer>
             </ContainerGrid>

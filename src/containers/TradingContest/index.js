@@ -20,8 +20,9 @@ import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
 import Header from '../Header';
 import {primaryColor, horizontalBox} from '../../constants';
 import {Utils} from '../../utils';
-const DateHelper = require('../../utils/date');
+import {Event} from '../../utils/events';
 
+const DateHelper = require('../../utils/date');
 const TopPicks = React.lazy(() => import('./TopPicks'));
 const Leaderboard = React.lazy(() => import('./Leaderboard'));
 const CreateEntry = React.lazy(() => import('./MultiHorizonCreateEntry'));
@@ -42,6 +43,7 @@ class TradingContest extends React.Component {
             selectedDate: defaultDate,
             bottomSheetOpen: false,
         };
+        this.eventEmitter = new Event();
     }
 
     getListViewType = (type) => {
@@ -327,6 +329,15 @@ class TradingContest extends React.Component {
         };
     }
 
+    renderStockCardPredictionsDesktop = () => {
+        return (
+            <StockPredictions 
+                mobile={true}
+                eventEmitter={this.eventEmitter}
+            />
+        );
+    }
+
     renderDesktop = () => {
         const {classes} = this.props;
 
@@ -339,6 +350,7 @@ class TradingContest extends React.Component {
                         handleTabChange={this.handleChange}
                         header={this.getDesktopHeader()}
                         defaultSelected={this.state.selectedTab}
+                        rightContainer={this.renderStockCardPredictionsDesktop}
                 >
                     <React.Suspense fallback={<Loader />}>
                         <Switch>
@@ -350,6 +362,7 @@ class TradingContest extends React.Component {
                                             selectedDate={this.state.selectedDate}
                                             componentType='preview'
                                             listViewType={this.getListViewTypeFromUrl(this.props)}
+                                            eventEmitter={this.eventEmitter}
                                         />
                                     :   this.redirectToLogin(`${this.props.match.path}`)
                                 }
@@ -362,6 +375,7 @@ class TradingContest extends React.Component {
                                             selectedDate={this.state.selectedDate}
                                             componentType='preview'
                                             listViewType={this.getListViewTypeFromUrl(this.props)}
+                                            eventEmitter={this.eventEmitter}
                                         />
                                     :   this.redirectToLogin(`${this.props.match.path}/mypicks`)
                                 }
