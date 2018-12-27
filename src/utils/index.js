@@ -407,7 +407,6 @@ export class Utils{
 
 	static formatInvestmentValue(value) {
 		if (value && typeof(value) == "number"){
-			
 			var valueLac = value/100;
 			var valueCr = value/10000;
 			var roundVal = value - Math.floor(value) > 0; 

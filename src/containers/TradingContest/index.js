@@ -48,10 +48,10 @@ class TradingContest extends React.Component {
     }
 
     getListViewType = (type) => {
-        const allowedTypes = ['active', 'started', 'ended'];
+        const allowedTypes = ['active', 'started', 'ended', 'all'];
         const allowedTypeIndex = allowedTypes.indexOf(type)
         if (allowedTypeIndex === -1) {
-            return 'active';
+            return 'all';
         }
 
         return allowedTypes[allowedTypeIndex];
@@ -189,11 +189,11 @@ class TradingContest extends React.Component {
             if (listViewType !== null) {
                 return this.getListViewType(listViewType);
             } else {
-                return "active";
+                return "all";
             }
         }
 
-        return "active";
+        return "all";
     }
 
     componentWillMount() {

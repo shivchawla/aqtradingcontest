@@ -337,6 +337,8 @@ class WatchlistComponent extends React.Component {
                 updateWatchlistLoading={this.state.updateWatchlistLoading}
                 deleteItem={this.deleteItem}
                 watchlistEditMode={this.state.watchlistEditMode}
+                predictionsAllowed={this.props.predictionsAllowed}
+                openSnackbar={this.openSnackbar}
             />
         );
     }
@@ -412,6 +414,18 @@ class WatchlistComponent extends React.Component {
                             onClick={this.toggleCreateWatchlistDialog}
                         />
                     </FavouritesContainer>
+                    {
+                        !isDesktop &&
+                        <ActionIcon 
+                            type='settings' 
+                            size={18} 
+                            color='#707070'
+                            onClick={() => {
+                                this.props.toggleDefaultSettingsBottomSheet 
+                                && this.props.toggleDefaultSettingsBottomSheet()
+                            }}
+                        />
+                    }
                 </Grid>
                     <Grid 
                             item 
@@ -460,6 +474,8 @@ class WatchlistComponent extends React.Component {
                                     updateSearchInput={this.updateSearchInput}
                                     searchInput={this.state.watchlistSearchInput}
                                     hideInput={true}
+                                    predictionsAllowed={this.props.predictionsAllowed}
+                                    openSnackbar={this.openSnackbar}
                                 />
                             </Grid>
                         :   <Grid item xs={12}>
@@ -467,7 +483,6 @@ class WatchlistComponent extends React.Component {
                             </Grid>
                     }
                 {
-                    // !this.state.searchInputFocused &&
                     <Media 
                         query="(max-width: 800px)"
                         render={() => (
@@ -499,7 +514,6 @@ class WatchlistComponent extends React.Component {
                                                 size="medium"
                                                 style={{
                                                     ...fabStyle,
-                                                    marginRight: '30px',
                                                     backgroundColor: '#7b72d1'
                                                 }}
                                                 onClick={this.toggleWatchListMode}
@@ -507,17 +521,6 @@ class WatchlistComponent extends React.Component {
                                             <Icon style={{color: '#fff'}}>
                                                 {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
                                             </Icon>
-                                        </Button>
-                                        <Button 
-                                                variant="fab" 
-                                                size="medium"
-                                                style={{
-                                                    ...fabStyle,
-                                                    backgroundColor: '#316dff'
-                                                }}
-                                                onClick={this.toggleStockSelectionDialog}
-                                        >
-                                            <Icon style={{color: '#fff'}}>zoom_in</Icon>
                                         </Button>
                                     </div>
                                 </Grid>
@@ -778,17 +781,6 @@ class WatchlistComponent extends React.Component {
                         watchlist ?
                     </DialogText>
                 </DialogComponent>
-                <StockSelection 
-                    open={this.state.stockSelectionOpen}
-                    list={false}
-                    toggleSearchStocksDialog={this.toggleStockSelectionDialog}
-                    stockData={nStockData}
-                    addStock={this.addStockToWatchlist}
-                    selectedPositions={selectedWatchlistPositions}
-                    hideSelectedItems={true}
-                    createPrediction={this.createPrediction}
-                    watchlistPredict={true}
-                />
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
             </React.Fragment>
         );

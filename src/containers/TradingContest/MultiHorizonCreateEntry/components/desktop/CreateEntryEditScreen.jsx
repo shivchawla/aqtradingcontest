@@ -25,7 +25,7 @@ class CreateEntryEditScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: this.props.listViewType || 'active',
+            listView: this.props.listViewType || 'all',
             anchorEl: null
         };
     }
@@ -243,14 +243,17 @@ class CreateEntryEditScreen extends React.Component {
                                 pnlFound && positions.length > 0 &&
                                 <div style={{padding:'0 10px 20px 10px'}}>
                                     <SelectionMetricsMini 
-                                        {..._.get(getRequiredMetrics(), 'cumulative.all', {})}
+                                        {..._.get(getRequiredMetrics(), 'cumulative.portfolio', {})}
                                         onClick={toggleEntryDetailBottomSheet}
                                     />
                                 </div>
                             }
                             {
                                 positions.length > 0 &&
-                                    <StockPreviewList positions={positions} />
+                                    <StockPreviewList 
+                                        positions={positions} 
+                                        deletePrediction={this.props.stopPrediction}
+                                    />
                             }
                             {
                                 this.props.positions.length > 0 && positions.length === 0 &&
@@ -319,7 +322,7 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
         case "started":
             buttonText = "Started Today";
             break;
-        case "active":
+        case "all":
             buttonText = "Active Today";
             break;
         case "ended":
@@ -356,8 +359,8 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
                     Started Today
                 </MenuItem>
                 <MenuItem 
-                        onClick={e => onMenuItemClicked(e, 'active')}
-                        selected={type === 'active'}
+                        onClick={e => onMenuItemClicked(e, 'all')}
+                        selected={type === 'all'}
                 >
                     Active
                 </MenuItem>

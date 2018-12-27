@@ -63,8 +63,6 @@ export default class StockEditPredictionList extends React.Component {
                                 <StockPreviewPredictionListItem 
                                     prediction={{...prediction, index: index+1}} 
                                     key={index}
-                                    modifyPrediction={this.props.modifyPrediction}
-                                    deletePrediction={this.props.deletePrediction}
                                     openDialog={this.openStopPredictionDialog}
                                 />
                             )

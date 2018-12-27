@@ -21,7 +21,7 @@ import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
 import {searchPositions} from '../../utils';
 
 const DateHelper = require('../../../../../utils/date');
-const predictionTypes = ['Active', 'Ended', 'Started'];
+const predictionTypes = ['All', 'Ended', 'Started'];
 
 class DisplayPredictions extends React.Component {
     constructor(props) {
@@ -37,7 +37,7 @@ class DisplayPredictions extends React.Component {
     getListViewFromUrl = (listViewType) => {
         let listView = 0;
         switch(listViewType) {
-            case "active":
+            case "all":
                 listView = 0;
                 break;
             case "ended":
@@ -127,7 +127,8 @@ class DisplayPredictions extends React.Component {
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
-            pnlFound = false
+            pnlFound = false,
+            portfolioStats = {}
         } = this.props;
         const marketOpen = isMarketOpen();
 
@@ -148,8 +149,9 @@ class DisplayPredictions extends React.Component {
 		                                pnlFound &&
                                         <div style={{width:'95%', margin: '0 auto'}}>
     		                                <SelectionMetricsMini 
-    		                                    {..._.get(getRequiredMetrics(), 'cumulative.all', {})}
-    		                                    onClick={toggleEntryDetailBottomSheet}
+    		                                    {..._.get(getRequiredMetrics(), 'cumulative.portfolio', {})}
+                                                onClick={toggleEntryDetailBottomSheet}
+                                                portfolioStats={portfolioStats}
     		                                />
                                         </div>
                                     }

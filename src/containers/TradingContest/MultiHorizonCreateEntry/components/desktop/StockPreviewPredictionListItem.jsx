@@ -5,11 +5,14 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import ActionIcon from '../../../Misc/ActionIcons';
 import {Utils} from '../../../../../utils';
+import {isMarketOpen} from '../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
 
 const readableDateFormat = "Do MMM 'YY";
+const DateHelper = require('../../../../../utils/date');
 const dateFormat = 'YYYY-MM-DD';
 
 export default class StockPreviewPredictionListItem extends React.Component {
@@ -83,7 +86,8 @@ export default class StockPreviewPredictionListItem extends React.Component {
             targetAchieved = false,
             active = false,
             lastPrice = 0,
-            status ={}
+            status ={},
+            _id = null
         } = this.props.prediction;
         const typeBackgroundColor = '#fff';
         const typeColor = type === 'buy' ? '#009688' : '#FE6662';
@@ -98,6 +102,8 @@ export default class StockPreviewPredictionListItem extends React.Component {
             : changeInvestment === 0 
                 ? metricColor.neutral
                 : metricColor.negative;
+        const isMarketTrading = !DateHelper.isHoliday();
+        const marketOpen = isMarketTrading && isMarketOpen().status;
 
         return (
             <Container container alignItems="center">
@@ -121,10 +127,19 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
                 </Grid>
                 <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
-                <Grid item xs={1}>
+                <Grid item xs={1} style={{...horizontalBox, justifyContent: 'space-between'}}>
                     <Tooltip title={iconConfig.status}>
-                        <Icon style={{color: iconConfig.color}}>{iconConfig.type}</Icon>
+                        <Icon style={{color: iconConfig.color, fontSize: '17px'}}>{iconConfig.type}</Icon>
                     </Tooltip>
+                    {
+                        marketOpen && iconConfig.status.toLowerCase() === 'active' &&
+                        <ActionIcon 
+                            type='power_settings_new' 
+                            size={18} 
+                            color='#f3211b'
+                            onClick={() => this.props.openDialog(_id)}
+                        />
+                    }
                 </Grid>
             </Container>
         );

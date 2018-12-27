@@ -2,9 +2,28 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import TranslucentLoader from '../../../../../components/Loaders/TranslucentLoader';
+import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import StockPreviewPredictionListItem from './StockPreviewPredictionListItem';
 
 export default class StockEditPredictionList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            deletePredictionDialogOpen: false,
+            selectedPrediction: null
+        }
+    }
+
+    toggleDeletePredictionDialog = () => {
+        this.setState({deletePredictionDialogOpen: !this.state.deletePredictionDialogOpen});
+    }
+
+    openStopPredictionDialog = predictionId => {
+        console.log(predictionId);
+        this.setState({selectedPrediction: predictionId}, () => this.toggleDeletePredictionDialog());
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -12,12 +31,28 @@ export default class StockEditPredictionList extends React.Component {
 
         return false;
     }
+
+    onDialogOkPressed = () => {
+        this.props.deletePrediction(this.state.selectedPrediction);
+        this.toggleDeletePredictionDialog();
+    }
  
     render() {
         const {predictions = []} = this.props;
 
         return (
             <Grid item xs={12}>
+                <DialogComponent 
+                        open={this.state.deletePredictionDialogOpen}
+                        onOk={this.onDialogOkPressed}
+                        onCancel={this.toggleDeletePredictionDialog}
+                        action
+                        title='Stop Prediction'
+                >
+                    <DialogText>
+                        Are you sure you want to stop this prediction?
+                    </DialogText>
+                </DialogComponent>
                 <StockPreviewPredictionListHeader />
                 {
                     predictions.map((prediction, index) => {
@@ -25,8 +60,7 @@ export default class StockEditPredictionList extends React.Component {
                             <StockPreviewPredictionListItem 
                                 prediction={prediction} 
                                 key={index}
-                                modifyPrediction={this.props.modifyPrediction}
-                                deletePrediction={this.props.deletePrediction}
+                                openDialog={this.openStopPredictionDialog}
                             />
                         )
                     })
@@ -52,4 +86,11 @@ const HeaderText = styled.h3`
     text-align: start;
     font-weight: 400;
     color: #6F6F6F;
+`;
+
+const DialogText = styled.h3`
+    font-weight: 400;
+    color: #575757;
+    font-size: 16px;
+    font-family: 'Lato', sans-serif;
 `;

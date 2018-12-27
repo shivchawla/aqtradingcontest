@@ -98,6 +98,17 @@ export const getPnlStats = (date = moment(), type = 'started', history, currentU
     return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
 }
 
+export const getPortfolioStats = (date = moment(), history, currentUrl, handleError = true, cancelCb = null) => {
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    const requiredDate = date.format(dateFormat);
+    let url =`${requestUrl}/dailycontest/portfoliostats?date=${requiredDate}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}&advisorId=${selectedAdvisorId}`;
+    }
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
+}
+
 export const exitPrediction = predictionId => {
     const url = `${requestUrl}/dailycontest/exitPrediction?predictionId=${predictionId}`;
 
