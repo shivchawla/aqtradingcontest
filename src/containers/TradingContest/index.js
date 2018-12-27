@@ -21,6 +21,7 @@ import Header from '../Header';
 import {primaryColor, horizontalBox} from '../../constants';
 import {Utils} from '../../utils';
 import {Event} from '../../utils/events';
+import {onSettingsClicked, onPredictionCreated} from './constants/events';
 
 const DateHelper = require('../../utils/date');
 const TopPicks = React.lazy(() => import('./TopPicks'));
@@ -174,6 +175,11 @@ class TradingContest extends React.Component {
                 : this.getSelectedTabMobile(currentLocation);
             this.setState({selectedTab});
         }
+    }
+
+    componentWillUnmount() {
+        this.eventEmitter.removeEventListener(onPredictionCreated, () => {});
+        this.eventEmitter.removeEventListener(onSettingsClicked, () => {});
     }
 
     getListViewTypeFromUrl = (props) => {
@@ -338,6 +344,12 @@ class TradingContest extends React.Component {
         );
     }
 
+    onDesktopSettingsClicked = () => {
+        try {
+            this.eventEmitter.emit(onSettingsClicked, 'Settings Clicked');
+        } catch(err) {}
+    }
+
     renderDesktop = () => {
         const {classes} = this.props;
 
@@ -351,6 +363,8 @@ class TradingContest extends React.Component {
                         header={this.getDesktopHeader()}
                         defaultSelected={this.state.selectedTab}
                         rightContainer={this.renderStockCardPredictionsDesktop}
+                        eventEmitter={this.eventEmitter}
+                        onSettingsClicked={this.onDesktopSettingsClicked}
                 >
                     <React.Suspense fallback={<Loader />}>
                         <Switch>
@@ -404,8 +418,11 @@ class TradingContest extends React.Component {
                                 exact
                                 path={`${this.props.match.path}/stockpredictions`}
                                 render={() => Utils.isLoggedIn()
-                                    ?   <StockPredictions 
+                                    ?   <CreateEntry 
                                             selectedDate={this.state.selectedDate}
+                                            componentType='preview'
+                                            listViewType={this.getListViewTypeFromUrl(this.props)}
+                                            eventEmitter={this.eventEmitter}
                                         />
                                     :   this.redirectToLogin(`${this.props.match.path}/stockpredictions`)
                                 }

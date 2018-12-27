@@ -71,7 +71,7 @@ const SGrid = styled(Grid)`
     background-color: #fff;
     padding-bottom: 0px;
     margin-bottom: 20px;
-    width: 60%;
+    width: 100%;
     height: 85px;
     box-shadow: 0 3px 5px #C3E0F9;
 `;

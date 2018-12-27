@@ -18,7 +18,7 @@ import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
 import {getDailyContestPredictions} from '../MultiHorizonCreateEntry/utils';
 import {horizontalBox, primaryColor} from '../../../constants';
-import {onPredictionCreated} from '../constants/events';
+import {onPredictionCreated, onSettingsClicked} from '../constants/events';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -252,6 +252,12 @@ class StockCardPredictions extends React.Component {
         return goupedPredictions;
     }
 
+    componentDidMount() {
+        try {
+            this.props.eventEmitter.on(onSettingsClicked, this.toggleDefaultSettingsBottomSheet);
+        } catch(err) {}
+    }
+
     componentWillMount() {
         const currentTradingDay = this.getCurrentTradingDay();
         this.setState({loading: true});
@@ -438,32 +444,26 @@ class StockCardPredictions extends React.Component {
                 <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-between'}}>
                     {
                         !isDesktop &&
-                        <IconButton 
-                                onClick={() => {
-                                    this.props.history.push(`/dailycontest/mypicks?&date=${this.getCurrentTradingDay().format(dateFormat)}&type=started`)
-                                }}
-                        >
-                            <Badge 
-                                    badgeContent={this.state.stockCartCount} 
-                                    style={{color: primaryColor, fontSize: '14px'}}
+                        <React.Fragment>
+                            <IconButton 
+                                    onClick={() => {
+                                        this.props.history.push(`/dailycontest/mypicks?&date=${this.getCurrentTradingDay().format(dateFormat)}&type=started`)
+                                    }}
                             >
-                                <Icon style={{color: '#707070'}}>shopping_cart</Icon>
-                            </Badge>
-                        </IconButton>
+                                <Badge 
+                                        badgeContent={this.state.stockCartCount} 
+                                        style={{color: primaryColor, fontSize: '14px'}}
+                                >
+                                    <Icon style={{color: '#707070'}}>shopping_cart</Icon>
+                                </Badge>
+                            </IconButton>
+                            <IconButton 
+                                    onClick={this.toggleDefaultSettingsBottomSheet}
+                            >
+                                <Icon style={{color: '#707070'}}>settings</Icon>
+                            </IconButton>
+                        </React.Fragment>
                     }
-                    <div 
-                            style={{
-                                ...horizontalBox, 
-                                justifyContent: 'flex-end'
-                            }}
-                    >
-                        
-                        <IconButton 
-                                onClick={this.toggleDefaultSettingsBottomSheet}
-                        >
-                            <Icon style={{color: '#707070'}}>settings</Icon>
-                        </IconButton>
-                    </div>
                 </Grid>
                 <Grid item xs={12}>
                     <WatchlistComponent 
@@ -508,5 +508,4 @@ const Container = styled(Grid)`
     width: 100%;
     align-items: ${props => props.alignItems || 'flex-start'};
     position: relative;
-    margin-top: ${global.screen.width > 800 ? '-3%' : 0}
 `;

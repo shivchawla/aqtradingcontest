@@ -10,7 +10,6 @@ import DateComponent from '../../containers/TradingContest/Misc/DateComponent';
 import {metricColor, horizontalBox} from '../../constants';
 import {isMarketOpen} from '../../containers/TradingContest/utils';
 import {isHoliday} from '../../utils';
-
 class AqDesktopLayout extends React.Component {
     constructor(props) {
         super(props);
@@ -69,21 +68,41 @@ class AqDesktopLayout extends React.Component {
                     border:'1px solid #1763c6',
                     height: '20px'
                 }}
+                size='small'
             />
         );
     }
 
     render() {
-        const {loading} = this.props;
+        const {loading, onSettingsClicked = () => {}} = this.props;
         const isMarketTrading = !isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
 
         return (
             <ContainerGrid container>
-                <RightContainer item xs={4} style={{marginTop: '20px'}}>
+                <RightContainer 
+                        item 
+                        xs={4}
+                        style={{
+                            height: 'calc(100vh - 65px)',
+                            overflow: 'hidden',
+                            overflowY: 'scroll',
+                            marginTop: '10px',
+                            borderRight: '1px solid #e9e8e8',
+                            paddingRight: '10px'
+                        }}
+                >
                     {this.props.rightContainer && this.props.rightContainer()}
                 </RightContainer>
-                <LeftContainer item xs={8} style={{marginTop: '20px'}}>
+                <LeftContainer 
+                        item 
+                        xs={8}
+                        style={{
+                            height: 'calc(100vh - 65px)',
+                            overflow: 'hidden',
+                            overflowY: 'scroll'
+                        }}
+                >
                     <AbsoluteContainer 
                             style={{
                                 top: '10px',
@@ -92,30 +111,31 @@ class AqDesktopLayout extends React.Component {
                     >
                         <Grid 
                                 container 
-                                justify='space-between' 
                                 alignItems='center'
-                                style={{width: '100%'}}
+                                style={{width: '100%', paddingRight: '5%'}}
                         >
-                            <Grid item xs={8}>
-                                <Tabs 
-                                        value={this.state.activeSegment} 
-                                        onChange={this.handleTabChange}
-                                        indicatorColor="primary"
-                                >
-                                    {/* {this.renderTab('Predict', 0)} */}
-                                    {this.renderTab('My Picks', 0)}
-                                    {this.renderTab('Top Picks', 1)}
-                                    {this.renderTab('Leaderboard', 2)}
-                                </Tabs>
-                            </Grid>
-                                <Grid 
-                                        item 
-                                        xs={4}
-                                        style={{
-                                            ...horizontalBox,
-                                            justifyContent: 'flex-start'
-                                        }}
-                                >
+                            <Grid 
+                                    item 
+                                    xs={12}
+                                    style={{
+                                        ...horizontalBox,
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center'
+                                    }}
+                            >
+                                <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                                    <Tabs 
+                                            value={this.state.activeSegment} 
+                                            onChange={this.handleTabChange}
+                                            indicatorColor="primary"
+                                    >
+                                        {/* {this.renderTab('Predict', 0)} */}
+                                        {this.renderTab('My Picks', 0)}
+                                        {this.renderTab('Top Picks', 1)}
+                                        {this.renderTab('Leaderboard', 2)}
+                                    </Tabs>
+                                </div>
+                                <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
                                     {
                                         this.state.activeSegment !== 0 &&
                                         <DateComponent 
@@ -124,8 +144,14 @@ class AqDesktopLayout extends React.Component {
                                             onDateChange={this.props.handleDateChange}
                                         />
                                     }
-                                    {/* Action Icon goes here */}
-                                </Grid>
+                                    <ActionIcon 
+                                        type='settings' 
+                                        size={24} 
+                                        color='#707070' 
+                                        onClick={onSettingsClicked}
+                                    />
+                                </div>
+                            </Grid>
                         </Grid>
                     </AbsoluteContainer>
                     <AbsoluteContainer 

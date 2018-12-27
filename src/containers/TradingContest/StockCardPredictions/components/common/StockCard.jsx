@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import windowSize from 'react-window-size';
 import moment from 'moment';
 import Media from 'react-media';
 import styled from 'styled-components';
@@ -17,6 +18,7 @@ import {
 } from '../../../../../constants';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
+import DialogHeaderComponent from '../../../../../components/Alerts/DialogHeader';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
@@ -28,7 +30,7 @@ import SubmitButton from '../mobile/SubmitButton';
 const readableDateFormat = 'Do MMM';
 const isDesktop = global.screen.width > 800 ? true : false;
 
-export default class StockCard extends React.Component {
+class StockCard extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -105,9 +107,10 @@ export default class StockCard extends React.Component {
             ...verticalBox, 
             justifyContent: 'flex-start', 
             alignItems: 'flex-start', 
-            minHeight: '80px', 
+            minHeight: isDesktop ? '60px' : '80px', 
             width: '100%'
         };
+        const isDesktop = this.props.windowWidth > 800;
 
         return (
             <div 
@@ -144,7 +147,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '30px' : '10px',
+                                marginTop: isDesktop ? '15px' : '10px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -166,7 +169,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '30px' : '10px',
+                                marginTop: isDesktop ? '15px' : '10px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -188,7 +191,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '30px' : '10px',
+                                marginTop: isDesktop ? '15px' : '10px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -299,6 +302,7 @@ export default class StockCard extends React.Component {
             width: isDesktop ? '70%' : '100%',
             marginTop: editMode ? '10px' : '15px'
         };
+        const isDesktop = this.props.windowWidth > 800;
 
         return (
             <Grid container>
@@ -306,7 +310,7 @@ export default class StockCard extends React.Component {
                         item 
                         xs={12}
                         style={{
-                            padding: bottomSheet ? '0 10px' : '0'
+                            padding: '0 10px'
                         }}
                 >
                     <div 
@@ -351,7 +355,7 @@ export default class StockCard extends React.Component {
                                 ...horizontalBox, 
                                 justifyContent: 'flex-start',
                                 margin: '10px 0',
-                                padding: bottomSheet ? '0 10px' : '0'
+                                padding: '0 10px'
                             }}
                     >
                         <Button 
@@ -370,13 +374,14 @@ export default class StockCard extends React.Component {
                             ...horizontalBox, 
                             justifyContent: 'flex-start',
                             marginTop: '10px',
-                            padding: bottomSheet ? '0 10px' : '0',
+                            padding: '0 10px',
                         }}
                 >
                     {
-                        (editMode || bottomSheet)
-                        ? this.renderEditMode()
-                        : this.renderViewMode()
+                        // (editMode || bottomSheet)
+                        // ? this.renderEditMode()
+                        // : this.renderViewMode()
+                        this.renderEditMode()
                     }
                 </Grid>
                 <Grid 
@@ -420,7 +425,7 @@ export default class StockCard extends React.Component {
                         }
                         {
                             // !bottomSheet && shortable &&
-                            !bottomSheet &&
+                            !bottomSheet && !isDesktop &&
                             <Button 
                                     style={skipButtonStyle} 
                                     variant="outlined"
@@ -435,16 +440,6 @@ export default class StockCard extends React.Component {
                             lastPrice={lastPrice}
                             type="buy"
                         />
-                        {/* {
-                            !bottomSheet && !shortable &&
-                            <Button 
-                                    style={{...skipButtonStyle, marginTop: '10px'}} 
-                                    variant="outlined"
-                                    onClick={this.skipStock}
-                            >
-                                SKIP
-                            </Button>
-                        } */}
                     </div>
                     {
                         bottomSheet &&
@@ -523,6 +518,7 @@ export default class StockCard extends React.Component {
             <Container 
                     container 
                     bottomSheet={bottomSheet}
+                    style={{marginTop: bottomSheet ? 0 : '8%'}}
             >
                 {this.props.loading && <Loader />}
                 {
@@ -581,7 +577,9 @@ export default class StockCard extends React.Component {
         return <DialogComponent
                         open={this.props.open}
                         onClose={this.props.onClose}
+                        style={{padding: 0}}
                 >
+                    <DialogHeaderComponent title='Predict' onClose={this.props.onClose} />
                     {this.renderStockCard()}
                 </DialogComponent>
     }
@@ -592,6 +590,8 @@ export default class StockCard extends React.Component {
         return bottomSheet ? this.renderStockCardBottomSheet() : this.renderStockCardDialog();
     }
 }
+
+export default windowSize(StockCard);
 
 const Loader = ({text = null, success= false}) => {
     return (

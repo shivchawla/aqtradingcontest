@@ -103,6 +103,70 @@ export default class StockDetailBottomSheet extends React.Component {
         );
     }
 
+    renderDialogHeader = () => {
+        const positiveColor = '#32FFD8';
+        const negativeColor = '#FF7B7B';
+        const neutralCOlor = '#DFDFDF';
+        let {
+            name = '',
+            symbol = '',
+            lastPrice=0, 
+            chg=0,
+            chgPct=0
+        } = this.state.stockData;
+        chgPct = Number((chgPct * 100).toFixed(2));
+        const changeColor = chg > 0 ? positiveColor : chg === 0 ? neutralCOlor : negativeColor;
+
+        return (
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        background: 'linear-gradient(to right, rgb(84, 67, 240), rgb(51, 90, 240))',
+                        position: 'absolute',
+                        width: '100%',
+                        zIndex: 10,
+                        padding: '5px 0',
+                        paddingLeft: '10px',
+                        boxSizing: 'border-box'
+                    }}
+            >
+                <div 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'space-between',
+                            width: '100%'
+                        }}
+                >
+                    <div 
+                            style={{
+                                ...verticalBox, 
+                                alignItems: 'flex-start',
+                            }}
+                    >
+                        <Symbol>{symbol}</Symbol>
+                        <h3 style={nameStyle}>{name}</h3>
+                    </div>
+                    <div 
+                        style={{
+                            ...verticalBox, 
+                            alignItems: 'flex-end',
+                            marginRight: '10px'
+                        }}
+                    >
+                        <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
+                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(chg)} ({chgPct.toFixed(2)}%)</Change>
+                    </div>
+                </div>
+                <ActionIcon 
+                    onClick={this.props.onClose} 
+                    color='#fff'
+                    type="close"
+                />
+            </div>
+        );
+    }
+
     updateStockData = (stockData) => {
         this.setState({stockData: {
             ...this.state.stockData,
@@ -139,8 +203,10 @@ export default class StockDetailBottomSheet extends React.Component {
             <DialogComponent
                     open={this.props.open}
                     onClose={this.props.onClose}
+                    style={{padding: 0}}
             >
-                <Container style={{minWidth: '38vw'}}>
+                {this.renderDialogHeader()}
+                <Container style={{minWidth: '38vw', marginTop: '9%'}}>
                     <Grid item xs={12}>
                         <StockDetail 
                             symbol={this.props.symbol}
@@ -197,4 +263,12 @@ const Change = styled.h3`
     font-family: 'Lato', sans-serif;
     font-weight: 500;
     font-size: 15px;
+`;
+
+const DialogHeader = styled.h3`
+    color: #fff;
+    font-weight: 400;
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    margin-left: 20px;
 `;
