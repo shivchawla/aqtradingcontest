@@ -18,6 +18,7 @@ import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
 import {getDailyContestPredictions} from '../MultiHorizonCreateEntry/utils';
 import {horizontalBox, primaryColor} from '../../../constants';
+import {onPredictionCreated} from '../constants/events';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -319,6 +320,7 @@ class StockCardPredictions extends React.Component {
         .then(() => {
             this.showSuccess();
             this.updateStockDataToDefaultSettings();
+            this.props.eventEmitter.emit(onPredictionCreated, 'Prediction Successfully Created');
         })
         .catch(error => {
             let errorMessage = _.get(error, 'response.data.msg', '');

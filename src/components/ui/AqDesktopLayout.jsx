@@ -5,8 +5,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
+import ActionIcon from '../../containers/TradingContest/Misc/ActionIcons';
 import DateComponent from '../../containers/TradingContest/Misc/DateComponent';
-import {metricColor} from '../../constants';
+import {metricColor, horizontalBox} from '../../constants';
 import {isMarketOpen} from '../../containers/TradingContest/utils';
 import {isHoliday} from '../../utils';
 
@@ -95,7 +96,7 @@ class AqDesktopLayout extends React.Component {
                                 alignItems='center'
                                 style={{width: '100%'}}
                         >
-                            <Grid item xs={9}>
+                            <Grid item xs={8}>
                                 <Tabs 
                                         value={this.state.activeSegment} 
                                         onChange={this.handleTabChange}
@@ -107,16 +108,24 @@ class AqDesktopLayout extends React.Component {
                                     {this.renderTab('Leaderboard', 2)}
                                 </Tabs>
                             </Grid>
-                            {
-                                this.state.activeSegment !== 0 &&
-                                <Grid item xs={3}>
-                                    <DateComponent 
-                                        selectedDate={this.props.selectedDate}
-                                        color='#1763c6'
-                                        onDateChange={this.props.handleDateChange}
-                                    />
+                                <Grid 
+                                        item 
+                                        xs={4}
+                                        style={{
+                                            ...horizontalBox,
+                                            justifyContent: 'flex-start'
+                                        }}
+                                >
+                                    {
+                                        this.state.activeSegment !== 0 &&
+                                        <DateComponent 
+                                            selectedDate={this.props.selectedDate}
+                                            color='#1763c6'
+                                            onDateChange={this.props.handleDateChange}
+                                        />
+                                    }
+                                    {/* Action Icon goes here */}
                                 </Grid>
-                            }
                         </Grid>
                     </AbsoluteContainer>
                     <AbsoluteContainer 

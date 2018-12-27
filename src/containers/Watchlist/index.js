@@ -441,6 +441,7 @@ class WatchlistComponent extends React.Component {
                                 type={this.state.watchlistEditMode ? 'done_outline' : 'edit'}
                                 onClick={this.toggleWatchListMode}
                                 color='#7b72d1'
+                                style={{marginTop: '10px'}}
                             />
                         }
                     </Grid>

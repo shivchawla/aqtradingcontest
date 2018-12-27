@@ -33,6 +33,7 @@ import {
     exitPrediction,
     stopPredictionInPositions
 } from './utils';
+import {onPredictionCreated} from '../constants/events';
 
 const dateFormat = 'YYYY-MM-DD';
 const pnlCancelledMessage = 'pnlCancelled';
@@ -608,8 +609,15 @@ class CreateEntry extends React.Component {
         this.setUpSocketConnection();
     }
 
+    captureEvent = payload => {
+        this.fetchPredictionsAndPnl(this.state.selectedDate);
+    }
+
     componentDidMount() {
-        this.mounted = true;
+        try {
+            this.props.eventEmitter.on(onPredictionCreated, this.captureEvent);
+            this.mounted = true;
+        } catch(err) {}
     }
 
     componentWillUnmount() {
