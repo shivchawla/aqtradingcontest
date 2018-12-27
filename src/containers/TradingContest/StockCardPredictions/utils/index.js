@@ -13,6 +13,7 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultHorizon = _.get(defaultStockData, 'horizon', 1);
     const defaultBenchmark = _.get(defaultStockData, 'benchmark', 'NIFTY_50');
     const defaultSector = _.get(defaultStockData, 'sector', '');
+    const defaultStopLoss = _.get(defaultStockData, 'stopLoss', 5);
     const defaultInvestment = _.get(defaultStockData, 'investment', 50000);
     const name = _.get(stockData, 'detail.Nse_Name', '');
     const symbol = getStockTicker(stockData);
@@ -50,7 +51,8 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
         ], // adding predictions so that it get's checked in searchs stocks
         benchmark: defaultBenchmark,
         sector: defaultSector,
-        investment: defaultInvestment
+        investment: defaultInvestment,
+        stopLoss: defaultStopLoss
     };
 }
 
