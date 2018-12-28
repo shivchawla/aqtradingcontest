@@ -113,9 +113,6 @@ class SelectionMetricsMini extends React.Component {
         liquidCash = Utils.formatInvestmentValue(liquidCash);
         netTotal = Utils.formatInvestmentValue(netTotal);
         netEquity = Utils.formatInvestmentValue(netEquity);
-        console.log('Liquid Cash', liquidCash);
-        console.log('Net Total', netTotal);
-        console.log('Net Equity', netEquity);
 
         return (
             <Grid container spacing={8}>

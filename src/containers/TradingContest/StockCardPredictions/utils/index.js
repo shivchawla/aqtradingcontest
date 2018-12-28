@@ -57,7 +57,7 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
 }
 
 export const constructPrediction = (stockData, type = 'buy') => {
-    let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0} = stockData;
+    let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0, investment = 0} = stockData;
     const targetValue = getTargetFromLastPrice(lastPrice, target, type);
     const startDate = moment().format(dateFormat);
     const endDate = moment(DateHelper.getNextNonHolidayWeekday(startDate, horizon)).format(dateFormat);
@@ -72,7 +72,7 @@ export const constructPrediction = (stockData, type = 'buy') => {
                     country: "IN",
                     exchange: "NSE"
                 },
-                    investment: (type === 'buy' ? 1 : -1) * 100,
+                    investment: (type === 'buy' ? 1 : -1) * (investment / 1000),
                     quantity: 0,
                     avgPrice: 0
                 },
