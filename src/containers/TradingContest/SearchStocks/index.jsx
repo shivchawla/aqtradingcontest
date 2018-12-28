@@ -217,7 +217,7 @@ class SearchStocks extends React.Component {
                 stocksToSkip = [...stocksToSkip, ...selectedTickers];
             }
             stocksToSkip = stocksToSkip.join(',');
-            const url = `${requestUrl}/stock?search=${encodeURIComponent(searchQuery)}&populate=${populate}&universe=${universe}&sector=${sector}&industry=${industry}&skip=${skip}&limit=${limit}&exclude=${stocksToSkip}`;
+            const url = `${requestUrl}/stock?search=${encodeURIComponent(searchQuery)}&populate=${populate}&universe=${universe}&industry=${industry}&skip=${skip}&limit=${limit}&exclude=${stocksToSkip}`;
             fetchAjaxPromise(url, this.props.history, this.props.pageUrl, false, c => {
                 this.cancelFetchStocks = c
             })

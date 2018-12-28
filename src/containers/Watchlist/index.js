@@ -461,7 +461,7 @@ class WatchlistComponent extends React.Component {
                     </Grid>
                     {
                         this.state.watchlistSearchInput.length > 0
-                        ?   <Grid item xs={12}>
+                        ?   <Grid item xs={12} style={{paddingBottom: '30px'}}>
                                 <StockSelection 
                                     list={true}
                                     toggleSearchStocksDialog={this.toggleStockSelectionDialog}

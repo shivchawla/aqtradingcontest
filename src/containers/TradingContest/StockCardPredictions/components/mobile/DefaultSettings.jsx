@@ -182,7 +182,7 @@ class DefaultSettings extends React.Component {
                                 alignItems: 'center'
                             }}
                     >
-                        <div 
+                        {/* <div 
                                 style={{
                                     ...horizontalBox, 
                                     justifyContent: isDesktop ? 'flex-start': 'space-between',
@@ -204,7 +204,7 @@ class DefaultSettings extends React.Component {
                                 onMenuItemClicked={this.onSectorMenuItemClicked}
                                 selectedSector={sector}
                             />
-                        </div>
+                        </div> */}
                         <div 
                                 style={{
                                     ...verticalBox, 

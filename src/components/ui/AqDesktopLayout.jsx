@@ -137,7 +137,7 @@ class AqDesktopLayout extends React.Component {
                                 </div>
                                 <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
                                     {
-                                        this.state.activeSegment !== 0 &&
+                                        // this.state.activeSegment !== 0 &&
                                         <DateComponent 
                                             selectedDate={this.props.selectedDate}
                                             color='#1763c6'

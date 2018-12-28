@@ -33,7 +33,7 @@ const StockPredictions = React.lazy(() => import('./StockCardPredictions'));
 const URLSearchParamsPoly = require('url-search-params');
 const dateFormat = 'YYYY-MM-DD';
 const defaultDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate()));
-const tabsWithDate = [1, 2, 3]; // mypicks, toppicks, leaderboard
+const tabsWithDate = [0, 1, 2]; // mypicks, toppicks, leaderboard
 
 class TradingContest extends React.Component {
     params = {}
