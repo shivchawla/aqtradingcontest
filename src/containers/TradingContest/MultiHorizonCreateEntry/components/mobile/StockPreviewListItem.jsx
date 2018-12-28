@@ -3,7 +3,8 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {withStyles} from '@material-ui/core/styles';
-import {horizontalBox, metricColor, nameEllipsisStyle, verticalBox} from '../../../../../constants';
+import ActionIcon from '../../../Misc/ActionIcons';
+import {horizontalBox, metricColor, nameEllipsisStyle, verticalBox, primaryColor} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
 
 const styles = theme => ({
@@ -97,7 +98,6 @@ class StockPreviewListItem extends React.Component {
                     <SymbolComponent 
                         symbol={`${symbol} (${nPredictions})`} 
                         name={name} 
-                        onClick={this.onSymbolClick}
                     />
                 </Grid>
                 <Grid item xs={4}>
@@ -107,11 +107,18 @@ class StockPreviewListItem extends React.Component {
                         changePct={chgPct}
                     />
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'space-between'}}>
                     <div style={{color: pnlColor, fontSize: '15px', display:'grid'}}>
                         ₹{totalPnl}
                         <span style={{fontSize:'12px'}}>{totalPnlPct}</span>
                     </div>
+                </Grid>
+                <Grid item xs={1}>
+                    <ActionIcon 
+                        size={16} 
+                        type='timeline' color={primaryColor} 
+                        onClick={this.onSymbolClick}
+                    /> 
                 </Grid>
             </Grid>
         );
@@ -166,7 +173,7 @@ const Prediction = ({prediction = 0}) => {
 
 const nameStyle = {
     ...nameEllipsisStyle, 
-    width: '100px', 
+    width: '80px', 
     color: '#464646', 
     textAlign: 'start', 
     marginTop:'4px',
@@ -179,7 +186,7 @@ const Symbol = styled.div`
     text-align: start;
     font-weight: 600;
     font-size: 14px;
-    color: #6175e4;
+    color: #545454;
     font-family: 'Lato', sans-serif;
 `;
 

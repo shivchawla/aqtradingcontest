@@ -1,8 +1,8 @@
 import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
-import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
+import ButtonBase from '@material-ui/core/ButtonBase';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -46,7 +46,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 return {
                     type: 'thumb_down_alt',
                     color: '#FE6662',
-                    status: 'Target Missed'
+                    status: 'Missed'
                 }
             }
         } else {
@@ -60,13 +60,13 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 return {
                     type: 'pan_tool',
                     color: '#009688',
-                    status: 'Stopped Loss'
+                    status: 'Stopped'
                 }
             } else {
                 return {
                     type: 'thumb_up_alt',
                     color: '#3EF79B',
-                    status: 'Target Achieved'
+                    status: 'Hit'
                 };
             }
         }
@@ -92,7 +92,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const typeBackgroundColor = '#fff';
         const typeColor = type === 'buy' ? '#009688' : '#FE6662';
         const borderColor = type === 'buy' ? '#009688' : '#FE6662'
-        const typeText = type === 'buy' ? 'BUY' : 'SELL';
+        const typeText = type === 'buy' ? 'HIGHER' : 'LOWER';
         const iconConfig = this.getIconConfig(status);
         const directionUnit = type === 'buy' ? 1 : -1;
         const changeInvestment = directionUnit * ((lastPrice - avgPrice) / avgPrice) * investment;
@@ -113,13 +113,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 </Grid>
                 <Grid item xs={2}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
                 <Grid item xs={2}>
-                    <TypeTag 
-                        backgroundColor={typeBackgroundColor}
-                        color={typeColor}
-                        borderColor={borderColor}
-                    >
+                    <MetricText style={{color: typeColor}}>
                         {typeText}
-                    </TypeTag>
+                    </MetricText>
                 </Grid>
                 <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
                     <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
@@ -128,24 +124,55 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 </Grid>
                 <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
                 <Grid item xs={1} style={{...verticalBox, alignItems: 'center', justifyContent: 'center'}}>
-                    <Tooltip title={iconConfig.status}>
-                        <Icon style={{color: iconConfig.color, fontSize: '17px'}}>{iconConfig.type}</Icon>
-                    </Tooltip>
+                    <MetricText style={{color: iconConfig.color, fontWeight: 500}}>
+                        {iconConfig.status}
+                    </MetricText>
                     {
                         marketOpen && iconConfig.status.toLowerCase() === 'active' &&
-                        <Button 
-                                size='small' 
-                                color='secondary' 
-                                style={{fontSize: '10px', color: '#f54444'}}
+                        <StopPredictionButton 
                                 onClick={() => this.props.openDialog(_id)}
                         >
-                            Stop
-                        </Button>
+                            EXIT
+                        </StopPredictionButton>
                     }
                 </Grid>
             </Container>
         );
     }
+}
+
+const StopPredictionButton = ({onClick}) => {
+    const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
+    const color = '#fff';
+    const fontSize = '10px';
+    const padding = '2px 8px';
+
+    return (
+        <ButtonBase 
+                style={{
+                    ...stopPredictionButtonStyle, 
+                    color,
+                    fontSize,
+                    padding,
+                    background,
+                    marginTop: '3px'
+                }}
+                onClick={onClick}
+        >
+            <span style={{whiteSpace: 'nowrap'}}>EXIT</span>
+        </ButtonBase>
+    );
+} 
+
+const stopPredictionButtonStyle = {
+    padding: '3px 12px',
+    fontSize: '12px',
+    transition: 'all 0.4s ease-in-out',
+    borderRadius: '2px',
+    cursor: 'pointer',
+    color: '#fff',
+    fontFamily: 'Lato, sans-serif',
+    fontWeight: 400,
 }
 
 const Container = styled(Grid)`
@@ -157,7 +184,7 @@ const Container = styled(Grid)`
 `;
 
 const MetricText = styled.h3`
-    font-size: 16px;
+    font-size: 14px;
     color: ${props => props.color || '#4B4A4A'};
     font-weight: 400;
     text-align: start;

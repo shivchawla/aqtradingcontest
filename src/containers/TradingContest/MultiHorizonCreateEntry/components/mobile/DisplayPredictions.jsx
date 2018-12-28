@@ -11,6 +11,7 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import {withRouter} from 'react-router-dom';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
+import EnclosedContainer from '../../../../../components/Display/EnclosedContainer';
 import WatchlistCustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
@@ -165,12 +166,23 @@ class DisplayPredictions extends React.Component {
                                             />
                                         </div>
                                     }
-                                    <StockPreviewList  
-                                        positions={positions} 
-                                        selectPosition={this.props.selectPosition}
-                                        toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
-                                        togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
-                                    />
+                                    <Grid 
+                                            item 
+                                            xs={12}
+                                            style={{
+                                                padding: '0 10px',
+                                                marginTop: '20px'
+                                            }}
+                                    >
+                                        <EnclosedContainer label='Predictions'>
+                                            <StockPreviewList  
+                                                positions={positions} 
+                                                selectPosition={this.props.selectPosition}
+                                                toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
+                                                togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
+                                            />
+                                        </EnclosedContainer>
+                                    </Grid>
 	                        	</React.Fragment>
                             }
                             <div 

@@ -116,7 +116,7 @@ const StockPreviewPredictionListHeader = () => (
         <Grid item xs={2} style={{textAlign: 'start'}}><HeaderText>TYPE</HeaderText></Grid>
         <Grid item xs={3} style={{textAlign: 'start'}}><HeaderText>INVESTMENT</HeaderText></Grid>
         <Grid item xs={2} style={{textAlign: 'start'}}><HeaderText>ENDING ON</HeaderText></Grid>
-        <Grid item xs={1} style={{textAlign: 'center'}}><HeaderText>Status</HeaderText></Grid>
+        <Grid item xs={1} style={{textAlign: 'center'}}><HeaderText style={{textAlign: 'center'}}>Status</HeaderText></Grid>
     </Grid>
 );
 

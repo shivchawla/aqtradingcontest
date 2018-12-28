@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
-import RadioGroup from '../../../../../components/selections/RadioGroup';
+import EnclosedContainer from '../../../../../components/Display/EnclosedContainer';
 import {metricColor, primaryColor, horizontalBox} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
 
@@ -117,31 +117,23 @@ class SelectionMetricsMini extends React.Component {
         return (
             <Grid container spacing={8}>
                 <Grid item xs={6}>
-                    <SGrid 
-                            container 
-                            justify="center" 
-                            alignItems="center" 
-                            style={{border:'1px solid #dff0ff', height: '95px'}}
-                    >
+                    <EnclosedContainer label='Profit/Loss' containerStyle={{height: '94px'}}>
                         <Grid 
                                 item xs={12} 
                                 style={{
-                                    marginTop:'-22px', 
+                                    marginTop:'-28px', 
                                     alignItems:'start',
                                     justifyContent: 'space-between',
                                     position: 'relative'
                                 }}
                         >
-                            <div style={{width: '80px', backgroundColor: '#fff', color:'#1763c6'}}>
-                                <h5>{title}</h5>
-                            </div>
                             <IconButton 
                                     onClick={() => this.props.onClick && this.props.onClick()}
                                     style={{
                                         fontSize: '16px',
                                         position: 'absolute',
-                                        top: 0,
-                                        right: '-20px'
+                                        top: '10px',
+                                        right: '-10px'
                                     }}
                             >
                                 <Icon style={{color: primaryColor}}>fullscreen</Icon>
@@ -149,7 +141,7 @@ class SelectionMetricsMini extends React.Component {
                         </Grid>
 
                         <Grid item xs={12} style={{marginTop: '26px'}}>
-                            <Grid container spacing={8}>
+                            <Grid container>
                                 <MetricItemMobile 
                                     label='PnL' 
                                     value={((pnl || 0) * 1000)} 
@@ -164,32 +156,19 @@ class SelectionMetricsMini extends React.Component {
                                 />
                             </Grid>
                         </Grid>
-                    </SGrid>
+                    </EnclosedContainer>
                 </Grid>
                 <Grid item xs={6}>
-                <SGrid 
-                        container 
-                        justify="center" 
-                        alignItems="center" 
-                        style={{
-                            border:'1px solid #dff0ff', 
-                            height: '95px'
-                        }}
-                >
-                    <Grid item xs={12} style={{marginTop:'-22px', alignItems:'start'}}>
-                            <div style={{width: '95px', backgroundColor: '#fff', color:'#1763c6'}}>
-                                <h5>Portfolio Stats</h5>
-                            </div>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Grid container spacing={8}>
+                    <EnclosedContainer label='Portfolio Stats' containerStyle={{height: '94px'}}>
+                        <Grid item xs={12} style={{marginTop: '8px'}}>
+                            <Grid container>
                                 <MetricItemMobile 
                                     label='Net Equity' 
                                     value={`₹${netEquity}`} 
                                     string
                                 />
                                 <MetricItemMobile 
-                                    label='Cash' 
+                                    label='Avl. Cash' 
                                     value={`₹${liquidCash}`} 
                                     string
                                 />
@@ -200,7 +179,7 @@ class SelectionMetricsMini extends React.Component {
                                 />
                             </Grid>
                         </Grid>
-                    </SGrid>
+                    </EnclosedContainer>
                 </Grid>
             </Grid>
         );
@@ -252,12 +231,12 @@ const MetricItemMobile = ({label, value, percentage = false, coloured = false, m
     nValue = percentage ? `${nValue} %` : nValue;
 
     return (
-        <PaperGrid item xs={12}>
+        <PaperGrid item xs={12} style={{padding: 0}}>
             <Grid container alignItems='center'>
                 {
                     vertical
                     ?   <React.Fragment>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} style={{padding: 0}}>
                                 <MetricValueText 
                                         color={color}
                                         isDesktop={isDesktop}
@@ -266,7 +245,7 @@ const MetricItemMobile = ({label, value, percentage = false, coloured = false, m
                                     {nValue}
                                 </MetricValueText>
                             </Grid>
-                            <Grid item xs={12} style={{marginTop: '3px'}}>
+                            <Grid item xs={12} style={{marginTop: '3px', padding: 0}}>
                                 <MetricLabelText
                                         isDesktop={isDesktop}
                                 >
@@ -302,11 +281,11 @@ const PaperGrid = styled(Grid)`
     border-radius: 4px;
     background-color: #fff;
     padding: 5px 10px;
-    margin-bottom: 1px;
+    margin-bottom: 6px;
 `;
 
 const MetricValueText = styled.h3`
-    font-size: ${props => props.isDesktop ? '20px' : '15px'};
+    font-size: ${props => props.isDesktop ? '20px' : '14px'};
     font-weight: 500;
     color: ${props => props.color || '#222'};
     text-align: ${props => props.isDesktop ? 'center' : 'start'};
