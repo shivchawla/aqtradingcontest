@@ -6,8 +6,18 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import Slide from '@material-ui/core/Slide';
+import {withStyles} from '@material-ui/core/styles';
 
-export default class DialogComponent extends React.Component {
+const dialogStyles = theme => ({
+    root: {
+        '&:first-child': {
+            padding: 0,
+            backgroundColor: 'red',
+        },
+    }
+})
+
+class DialogComponent extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || (!_.isEqual(this.state, nextState))) {
             return true;
@@ -25,7 +35,7 @@ export default class DialogComponent extends React.Component {
     }
 
     render() {
-        const {open = false, title = 'Title', action = false} = this.props;
+        const {open = false, title = null, action = false, classes} = this.props;
 
         return (
             <Dialog 
@@ -34,8 +44,16 @@ export default class DialogComponent extends React.Component {
                     onBackdropClick={this.props.onClose}
                     onEscapeKeyDown={this.props.onClose}
             >
-                <DialogTitle>{title}</DialogTitle>
-                <DialogContent style={this.props.style}>
+                {
+                    title &&
+                    <DialogTitle>{title}</DialogTitle>
+                }
+                <DialogContent 
+                        style={this.props.style}
+                        // classes={{
+                        //     root: classes.root
+                        // }}
+                >
                     {this.props.children}
                 </DialogContent>
                 {
@@ -53,6 +71,8 @@ export default class DialogComponent extends React.Component {
         );
     }
 }
+
+export default withStyles(dialogStyles)(DialogComponent);
 
 const Transition = props => {
     return <Slide direction="up" {...props} />;

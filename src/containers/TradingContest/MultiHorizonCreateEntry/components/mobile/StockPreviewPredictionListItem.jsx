@@ -103,7 +103,8 @@ export default class StockPreviewPredictionListItem extends React.Component {
             lastPrice = 0,
             index = 0,
             priceInterval = {},
-            _id = null
+            _id = null,
+            stopLoss = 0
         } = this.props.prediction;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
@@ -157,6 +158,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             <ArrowHeaderText>{duration} Days</ArrowHeaderText>
                             <Icon style={{color: typeColor}}>{iconType}</Icon>
                             <ArrowHeaderText style={{color: typeColor}}>{typeText}</ArrowHeaderText>
+                            <ArrowHeaderText>
+                                SL: 
+                                <span style={{color: '#222'}}>{Utils.formatMoneyValueMaxTwoDecimals(stopLoss)}</span>
+                            </ArrowHeaderText>
                         </div>
                         <PriceComponent 
                             label='Target Price'

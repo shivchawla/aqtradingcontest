@@ -15,7 +15,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import HorizontalToggleScreen from '../../../../../components/ui/HorizontalToggleScreen';
-import {SearchStocks} from '../../../SearchStocks';
+import SearchStocks from '../../../SearchStocks';
 import StockList from '../common/StockList';
 import ActionIcon from '../../../Misc/ActionIcons';
 import EditPredictionScreen from './EditPredictionScreen';

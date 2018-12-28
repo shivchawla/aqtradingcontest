@@ -37,7 +37,8 @@ class CustomRadio extends React.Component {
     }
 
     render() {
-        const {checked = false, label = 1, classes, secondaryLabel = '28th Oct', hideLabel = false} = this.props;
+        let {checked = false, label = 1, classes, secondaryLabel = '28th Oct', hideLabel = false, formatValue = null} = this.props;
+        label = formatValue !== null ? formatValue(label) : label;
 
         return (
             <div 

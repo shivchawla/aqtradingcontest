@@ -106,6 +106,7 @@ class StockPreviewListItem extends React.Component {
                             predictions={predictions} 
                             modifyPrediction={this.props.modifyPrediction}
                             deletePrediction={this.props.deletePrediction}
+                            stopPredictionLoading={this.props.stopPredictionLoading}
                         />
                     </Grid>
                 </ExpansionPanelDetails>
