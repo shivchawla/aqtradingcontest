@@ -144,6 +144,7 @@ export const deletePredictionFromPositions = (predictionId, positions, selectedP
 export const stopPredictionInPositions = (predictionId, positions, selectedPositionIndex) => {
     const clonedPositions = _.map(positions, _.cloneDeep);
     const requiredPosition = clonedPositions[selectedPositionIndex];
+    console.log('Required Position', requiredPosition);
 
     if (requiredPosition !== undefined) {
         const predictions = _.get(requiredPosition, 'predictions', []);
