@@ -135,7 +135,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
             <Container container alignItems="flex-end" style={{position: 'relative'}}>
                 <Grid item xs={12} style={{...verticalBox, alignItems: 'center', marginTop: '13px'}}>
                     {
-                        marketOpen &&
+                        marketOpen && iconConfig.type.toLowerCase() === 'active' &&
                         <ActionIcon 
                             type='power_settings_new' 
                             size={18} 
@@ -157,10 +157,22 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         <div style={verticalBox}>
                             <ArrowHeaderText>{duration} Days</ArrowHeaderText>
                             <Icon style={{color: typeColor}}>{iconType}</Icon>
-                            <ArrowHeaderText style={{color: typeColor}}>{typeText}</ArrowHeaderText>
+                            {/* <ArrowHeaderText style={{color: typeColor}}>{typeText}</ArrowHeaderText> */}
                             <ArrowHeaderText>
                                 SL: 
-                                <span style={{color: '#222'}}>{Utils.formatMoneyValueMaxTwoDecimals(stopLoss)}</span>
+                                <span 
+                                        style={{
+                                            color: '#222',
+                                            marginLeft: '4px',
+                                            fontSize: '13px'
+                                        }}
+                                >
+                                    {
+                                        stopLoss === 0
+                                        ? '-'
+                                        : Utils.formatMoneyValueMaxTwoDecimals(stopLoss)
+                                    }
+                                </span>
                             </ArrowHeaderText>
                         </div>
                         <PriceComponent 

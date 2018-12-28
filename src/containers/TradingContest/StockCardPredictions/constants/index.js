@@ -15,8 +15,9 @@ export const horizonKvp = [
 ];  
 
 export const investmentKvp = [
-    {index: 0, value: 25000},
-    {index: 1, value: 50000},
-    {index: 2, value: 75000},
-    {index: 3, value: 100000},
+    {index: 0, value: 10000},
+    {index: 1, value: 25000},
+    {index: 2, value: 50000},
+    {index: 3, value: 75000},
+    {index: 4, value: 100000},
 ]

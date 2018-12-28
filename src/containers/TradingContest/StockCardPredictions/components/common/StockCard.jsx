@@ -171,7 +171,7 @@ class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '15px' : '10px',
+                                marginTop: isDesktop ? '15px' : '5px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -194,7 +194,7 @@ class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '15px' : '10px',
+                                marginTop: isDesktop ? '15px' : '0px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -304,7 +304,7 @@ class StockCard extends React.Component {
             ...horizontalBox, 
             justifyContent: 'space-around',
             width: isDesktop ? '70%' : '100%',
-            marginTop: editMode ? '10px' : '15px'
+            marginTop: '5px'
         };
         const isDesktop = this.props.windowWidth > 800;
 
@@ -395,7 +395,7 @@ class StockCard extends React.Component {
                             ...verticalBox,
                             // borderTop: '1px solid #E2E2E2',
                             marginTop: isDesktop ? '20px' : '0px',
-                            paddingTop: isDesktop ? '15px' : '20px'
+                            paddingTop: isDesktop ? '15px' : '0px'
                         }}
                 >
                     <QuestionText>
@@ -644,7 +644,7 @@ const nameStyle = {
     color: '#525252',
     fontFamily: 'Lato, sans-serif',
     fontWeight: 500,
-    fontSize: isDesktop ? '16px' : '12xp'
+    fontSize: isDesktop ? '16px' : '14px'
 };
 
 const skipButtonStyle = {

@@ -245,6 +245,7 @@ class CreateEntryEditScreen extends React.Component {
                                     <SelectionMetricsMini 
                                         {..._.get(getRequiredMetrics(), 'cumulative.portfolio', {})}
                                         onClick={toggleEntryDetailBottomSheet}
+                                        portfolioStats={this.props.portfolioStats}
                                     />
                                 </div>
                             }
@@ -267,24 +268,7 @@ class CreateEntryEditScreen extends React.Component {
                             {
                                 isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
                                 this.props.positions.length === 0 && positions.length === 0 &&
-                                <div style={{...verticalBox, marginTop: '20%'}}>
-                                    <Button 
-                                            style={{
-                                                ...fabButtonStyle, 
-                                                ...addStocksStyle,
-                                                width: 'inherit',
-                                                fontSize: '16px',
-                                                height: '50px'
-                                            }} 
-                                            size='small' 
-                                            variant="contained" 
-                                            aria-label="Delete" 
-                                            onClick={() => this.props.history.push('/dailycontest/stockpredictions')}
-                                    >
-                                        <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                        ADD PREDICTION
-                                    </Button>
-                                </div>
+                                <NoDataFound />
                             }
                             {
                                 !isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&

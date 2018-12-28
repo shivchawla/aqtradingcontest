@@ -113,6 +113,9 @@ class SelectionMetricsMini extends React.Component {
         liquidCash = Utils.formatInvestmentValue(liquidCash);
         netTotal = Utils.formatInvestmentValue(netTotal);
         netEquity = Utils.formatInvestmentValue(netEquity);
+        console.log('Liquid Cash', liquidCash);
+        console.log('Net Total', netTotal);
+        console.log('Net Equity', netEquity);
 
         return (
             <Grid container spacing={8}>
@@ -153,7 +156,6 @@ class SelectionMetricsMini extends React.Component {
                                 <MetricItemMobile 
                                     label='PnL' 
                                     value={((pnl || 0) * 1000)} 
-                                    isDesktop={isDesktop}
                                     money 
                                     coloured 
                                 />
@@ -162,7 +164,6 @@ class SelectionMetricsMini extends React.Component {
                                     coloured 
                                     label='PnL %' 
                                     value={((pnlPct || 0) * 100).toFixed(2)} 
-                                    isDesktop={isDesktop}
                                 />
                             </Grid>
                         </Grid>
@@ -211,7 +212,7 @@ class SelectionMetricsMini extends React.Component {
     render() {
         const isDesktop = this.props.windowWidth > 800;
         
-        return isDesktop ? this.renderDesktopView() : this.renderMobileView();
+        return isDesktop ? this.renderMobileView() : this.renderMobileView();
     }
 }
 
