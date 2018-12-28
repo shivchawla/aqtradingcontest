@@ -986,22 +986,26 @@ class SearchStocks extends React.Component {
                         />
                     }
                     {
-                        this.props.mobile && this.state.newStocks.length > 0 &&
-                        <Media 
-                            query='(min-width: 801px)'
-                            render={() => 
-                                <Grid item xs={12}>
-                                    <Button 
-                                            style={submitButtonStyle}
-                                            onClick={this.onDonePressed}
-                                            size='small'
-                                    >
-                                        Done
-                                        <Icon>check_circle</Icon>
-                                    </Button>
-                                </Grid>
-                            }
-                        />
+                        this.props.mobile && 
+                        this.state.newStocks.length > 0 && 
+                        this.state.stocks.filter(stock => stock.checked === true).length > 0 &&
+                        <Grid 
+                                item 
+                                xs={12}
+                                style={{...horizontalBox, justifyContent: 'center'}}
+                        >
+                            {/* <SelectedText>
+                                Selected: {this.state.newStocks.length}
+                            </SelectedText> */}
+                            <Button 
+                                    style={submitButtonStyle}
+                                    onClick={this.onDonePressed}
+                                    size='small'
+                            >
+                                Done
+                                <Icon>check_circle</Icon>
+                            </Button>
+                        </Grid>
                     }
                     <Grid item xs={12}>
                         {this.renderStockListDetails()}
@@ -1018,22 +1022,12 @@ const SGrid = styled(Grid)`
     background-color: #fff;
 `;
 
-const Loader = ({text = null, success= false}) => {
-    return (
-        <LoaderContainer>
-            <h3 
-                    style={{
-                        marginBottom: '10px',
-                        fontFamily: 'Lato, sans-serif',
-                        color: primaryColor
-                    }}
-            >
-                {success === true ? 'Successful' : text}
-            </h3>
-            <CircularProgress />
-        </LoaderContainer>
-    );
-}
+const SelectedText = styled.h3`
+    font-size: 14px;
+    font-weight: 400;
+    color: #222;
+    font-family: 'Lato', sans-serif;
+`;
 
 const LoaderContainer = styled.div`
     display: flex;
@@ -1055,6 +1049,6 @@ const submitButtonStyle = {
     fontWeight: 400,
     height: '30px',
     padding: '3px 6px',
-    borderRadius: '2px',
+    borderRadius: '4px',
     fontSize: '10px'
 };
