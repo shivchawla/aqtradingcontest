@@ -175,6 +175,21 @@ class DisplayPredictions extends React.Component {
                                             }}
                                     >
                                         <EnclosedContainer label='Predictions'>
+                                            <Grid item xs={12}>
+                                                <Grid container>
+                                                    <Grid item xs={5}>
+                                                        <ListHeader style={{marginLeft: '10px'}}>
+                                                            Stock
+                                                        </ListHeader>
+                                                    </Grid>
+                                                    <Grid item xs={4}>
+                                                        <ListHeader>Price</ListHeader>
+                                                    </Grid>
+                                                    <Grid item xs={2}>
+                                                        <ListHeader>PnL</ListHeader>
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
                                             <StockPreviewList  
                                                 positions={positions} 
                                                 selectPosition={this.props.selectPosition}
@@ -382,6 +397,14 @@ const Closed = styled.h3`
     color: #444;
     margin-top: -10px;
     color: #f34545;
+`;
+
+const ListHeader = styled.h3`
+    font-size: 12px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    color: #8f8f8f;
+    text-align: start;
 `;
 
 const fabStyle = {

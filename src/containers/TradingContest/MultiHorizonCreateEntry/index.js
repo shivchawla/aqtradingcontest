@@ -338,7 +338,6 @@ class CreateEntry extends React.Component {
     }
 
     updatePortfolioStats = portfolioStats => {
-        console.log('Portfolio Stats ', portfolioStats);
         this.setState({
             portfolioStatsFound: true,
             portfolioStats

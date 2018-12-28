@@ -14,7 +14,7 @@ const styles = theme => ({
         borderBottom: '1px solid #EAEAEA',
         borderRadius: '0px',
         boxShadow: 'none',
-        padding: '14px 10px',
+        padding: '7px 10px',
         '&::before': {
             backgroundColor: 'transparent'
         }

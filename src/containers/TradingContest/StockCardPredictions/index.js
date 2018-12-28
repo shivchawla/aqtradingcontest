@@ -274,7 +274,7 @@ class StockCardPredictions extends React.Component {
             this.setState({
                 stockCartCount: predictions.length, 
                 stockCart: this.groupPredictions(predictions),
-                predictionsAllowed: liquidCash > 0
+                predictionsAllowed: liquidCash > Math.abs(_.get(this.state, 'stockData.investment', 0) / 1000)
             });
         })
         .catch(error => {
@@ -337,7 +337,7 @@ class StockCardPredictions extends React.Component {
             this.props.eventEmitter.emit(onPredictionCreated, 'Prediction Successfully Created');
         })
         .catch(error => {
-            let errorMessage = _.get(error, 'response.data.msg', '');
+            let errorMessage = _.get(error, 'response.data.message', '');
             errorMessage = errorMessage.length === 0 
                 ? 'Error Occured while creating predictions'
                 : `Error: ${errorMessage}`
