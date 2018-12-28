@@ -172,9 +172,13 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
     predictions.map((prediction, index) => {
         const symbol = getStockTicker(_.get(prediction, 'position.security', null));
         const startDate = _.get(prediction, 'startDate', null);
+        const realStopLoss = _.get(prediction, 'stopLoss', 0);
         const endDate = _.get(prediction, 'endDate', null);
         const investment = _.get(prediction, 'position.investment', 0);
         const horizon = moment(endDate, dateFormat).diff(moment(startDate, dateFormat), 'days');
+        const stopLossDirection = investment > 0 ? -1 : 1;
+        const avgPrice = _.get(prediction, 'position.avgPrice', null);
+        const stopLoss = (1 + (stopLossDirection * Math.abs(realStopLoss))) * avgPrice;
 
         const nPrediction = {
             horizon,
@@ -194,7 +198,8 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
             targetAchieved: _.get(prediction, 'success.status', false),
             active,
             _id: _.get(prediction, '_id', null),
-            status: _.get(prediction, 'status', {})
+            status: _.get(prediction, 'status', {}),
+            stopLoss
         };
 
         const positionIndex = _.findIndex(positions, position => position.symbol === symbol);

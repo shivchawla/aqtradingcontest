@@ -253,6 +253,7 @@ class CreateEntryEditScreen extends React.Component {
                                     <StockPreviewList 
                                         positions={positions} 
                                         deletePrediction={this.props.stopPrediction}
+                                        stopPredictionLoading={this.props.stopPredictionLoading}
                                     />
                             }
                             {

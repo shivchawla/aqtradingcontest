@@ -760,7 +760,8 @@ class CreateEntry extends React.Component {
             toggleStockDetailBottomSheet: this.toggleStockDetailBottomSheet,
             updateDate: this.props.updateDate,
             stopPrediction: this.stopPrediction,
-            portfolioStats: this.state.portfolioStats
+            portfolioStats: this.state.portfolioStats,
+            stopPredictionLoading: this.state.stopPredictionLoading
         };
         const {mobile = false} = this.props;
 

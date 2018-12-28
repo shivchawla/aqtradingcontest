@@ -137,6 +137,7 @@ class StockCard extends React.Component {
                         onChange={this.handleHorizonChange}
                         defaultSelected={horizon}
                         getIndex={getHorizon}
+                        getValue={getHorizonValue}
                         showSlider
                         checkIfCustom={checkIfCustomHorizon}
                         label='Days'
@@ -159,6 +160,7 @@ class StockCard extends React.Component {
                         onChange={this.handleTargetChange}
                         defaultSelected={target}
                         getIndex={getTarget}
+                        getValue={getTargetValue}
                         checkIfCustom={checkIfCustomTarget}
                         showSlider
                         hideLabel={true}
@@ -182,6 +184,7 @@ class StockCard extends React.Component {
                         defaultSelected={stopLoss}
                         getIndex={getTarget}
                         checkIfCustom={checkIfCustomTarget}
+                        getValue={getTargetValue}
                         showSlider
                         hideLabel={true}
                         label='%'
@@ -203,6 +206,7 @@ class StockCard extends React.Component {
                         onChange={this.handleInvestmentChange}
                         defaultSelected={investment}
                         getIndex={getInvestment}
+                        getValue={getInvestmentValue}
                         showSlider
                         hideLabel={true}
                         label='%'

@@ -44,7 +44,7 @@ class StockCardRadioGroup extends React.Component {
     }
 
     handleChange = value => {
-        this.setState({selected: value});
+        this.setState({selected: this.props.getValue ? this.props.getValue(value) : value})
         this.props.onChange && this.props.onChange(value);
     }
 
