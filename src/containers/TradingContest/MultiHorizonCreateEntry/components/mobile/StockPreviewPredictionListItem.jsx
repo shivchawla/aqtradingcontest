@@ -147,7 +147,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             }}
                             onClick={() => this.props.openDialog(_id)}
                         />
-                    } */}
+                    } 
                     <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
                         <PriceComponent 
                             label='Call Price'
