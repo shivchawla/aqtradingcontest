@@ -2,9 +2,11 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import TranslucentLoader from '../../../../../components/Loaders/TranslucentLoader';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import StockPreviewPredictionListItem from './StockPreviewPredictionListItem';
+import { horizontalBox } from '../../../../../constants';
 
 export default class StockEditPredictionList extends React.Component {
     constructor(props) {
@@ -20,7 +22,6 @@ export default class StockEditPredictionList extends React.Component {
     }
 
     openStopPredictionDialog = predictionId => {
-        console.log(predictionId);
         this.setState({selectedPrediction: predictionId}, () => this.toggleDeletePredictionDialog());
     }
 
@@ -33,12 +34,18 @@ export default class StockEditPredictionList extends React.Component {
     }
 
     onDialogOkPressed = () => {
-        this.props.deletePrediction(this.state.selectedPrediction);
-        this.toggleDeletePredictionDialog();
+        const requiredPositionIndex = _.findIndex(this.props.predictions, prediction => prediction._id === this.state.selectedPrediction);
+        if (requiredPositionIndex > -1) {
+            const symbol = _.get(this.props, 'predictions', [])[requiredPositionIndex].symbol;
+            this.props.deletePrediction(this.state.selectedPrediction, symbol)
+            .then(() => {
+                this.toggleDeletePredictionDialog();
+            })
+        }
     }
  
     render() {
-        const {predictions = []} = this.props;
+        const {predictions = [], stopPredictionLoading = false} = this.props;
 
         return (
             <Grid item xs={12}>
@@ -46,12 +53,44 @@ export default class StockEditPredictionList extends React.Component {
                         open={this.state.deletePredictionDialogOpen}
                         onOk={this.onDialogOkPressed}
                         onCancel={this.toggleDeletePredictionDialog}
-                        action
+                        // action={!stopPredictionLoading}
                         title='Stop Prediction'
+                        style={{
+                            paddingBottom: 0,
+                            height: '80px'
+                        }}
                 >
+                    {stopPredictionLoading && <TranslucentLoader style={{top: 0, left: 0}}/>}
                     <DialogText>
                         Are you sure you want to stop this prediction?
                     </DialogText>
+                    {
+                        <div 
+                                style={{
+                                    ...horizontalBox,
+                                    justifyContent: 'flex-end',
+                                    height: '36px', 
+                                    width: '100%',
+                                    marginTop: '15px'
+                                }}
+                        >
+                            <Button 
+                                    size='small' 
+                                    color='secondary'
+                                    onClick={this.toggleDeletePredictionDialog}
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                    size='small' 
+                                    color='primary' 
+                                    style={{marginLeft: '5px'}}
+                                    onClick={this.onDialogOkPressed}
+                            >
+                                ok
+                            </Button>
+                        </div>
+                    }
                 </DialogComponent>
                 <StockPreviewPredictionListHeader />
                 {

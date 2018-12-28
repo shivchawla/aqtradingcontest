@@ -105,19 +105,24 @@ class SelectionMetricsMini extends React.Component {
             netEquity = 0,
             cash = 0,
             grossEquity = 0,
-            netTotal = 0
+            netTotal = 0,
+            liquidCash = 0
         } = _.get(this.props, 'portfolioStats', {});
         const isDesktop = this.props.windowWidth > 800;
         const {title = 'Profit/Loss'} = this.props;
-        cash = Utils.formatInvestmentValue(cash);
+        liquidCash = Utils.formatInvestmentValue(liquidCash);
         netTotal = Utils.formatInvestmentValue(netTotal);
-        console.log('Cash', cash);
-        console.log('netTotal', netTotal);
+        netEquity = Utils.formatInvestmentValue(netEquity);
 
         return (
             <Grid container spacing={8}>
                 <Grid item xs={6}>
-                    <SGrid container justify="center" alignItems="center" style={{border:'1px solid #dff0ff'}}>
+                    <SGrid 
+                            container 
+                            justify="center" 
+                            alignItems="center" 
+                            style={{border:'1px solid #dff0ff', height: '95px'}}
+                    >
                         <Grid 
                                 item xs={12} 
                                 style={{
@@ -143,7 +148,7 @@ class SelectionMetricsMini extends React.Component {
                             </IconButton>
                         </Grid>
 
-                        <Grid item xs={12} style={{marginTop: '20px'}}>
+                        <Grid item xs={12} style={{marginTop: '26px'}}>
                             <Grid container spacing={8}>
                                 <MetricItemMobile 
                                     label='PnL' 
@@ -164,22 +169,36 @@ class SelectionMetricsMini extends React.Component {
                     </SGrid>
                 </Grid>
                 <Grid item xs={6}>
-                <SGrid container justify="center" alignItems="center" style={{border:'1px solid #dff0ff'}}>
+                <SGrid 
+                        container 
+                        justify="center" 
+                        alignItems="center" 
+                        style={{
+                            border:'1px solid #dff0ff', 
+                            height: '95px'
+                        }}
+                >
                     <Grid item xs={12} style={{marginTop:'-22px', alignItems:'start'}}>
                             <div style={{width: '95px', backgroundColor: '#fff', color:'#1763c6'}}>
                                 <h5>Portfolio Stats</h5>
                             </div>
                         </Grid>
-                        <Grid item xs={12} style={{marginTop: '20px'}}>
+                        <Grid item xs={12}>
                             <Grid container spacing={8}>
                                 <MetricItemMobile 
-                                    label='Cash' 
-                                    value={cash} 
+                                    label='Net Equity' 
+                                    value={`₹${netEquity}`} 
+                                    string
                                 />
                                 <MetricItemMobile 
-                                    coloured 
+                                    label='Cash' 
+                                    value={`₹${liquidCash}`} 
+                                    string
+                                />
+                                <MetricItemMobile 
                                     label='Net Total' 
-                                    value={netTotal}
+                                    value={`₹${netTotal}`}
+                                    string
                                 />
                             </Grid>
                         </Grid>
@@ -201,7 +220,7 @@ export default windowSize(SelectionMetricsMini);
 const MetricItem = ({label, value, percentage = false, coloured = false, money = false, string = false, isDesktop = false}) => {
     let nValue = string ? value : Number(value);
     const color = coloured ? nValue < 0 ? metricColor.negative : nValue === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
-    nValue = money ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(nValue)}` : nValue;
+    nValue = money ? `₹${Utils.formatMoneyValueMaxTwoDecimals(nValue)}` : nValue;
     nValue = percentage ? `${nValue} %` : nValue;
     const xs = isDesktop ? 3 : 6;
 
@@ -230,7 +249,6 @@ const MetricItem = ({label, value, percentage = false, coloured = false, money =
 
 const MetricItemMobile = ({label, value, percentage = false, coloured = false, money = false, string = false, isDesktop = false, vertical = false}) => {
     let nValue = string ? value : Number(value);
-    console.log(nValue);
     const color = coloured ? nValue < 0 ? metricColor.negative : nValue === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
     nValue = money ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(nValue)}` : nValue;
     nValue = percentage ? `${nValue} %` : nValue;

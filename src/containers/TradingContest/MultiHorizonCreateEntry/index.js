@@ -282,11 +282,15 @@ class CreateEntry extends React.Component {
         });
     })
 
-    stopPrediction = predictionId => {
+    stopPrediction = (predictionId, symbol =null) => {
         this.setState({stopPredictionLoading: true});
+
         return exitPrediction(predictionId)
         .then(() => {
-            const requiredPreviewPositions = stopPredictionInPositions(predictionId, this.state.previewPositions, this.state.selectedPositionIndex);
+            const positonIndex = symbol !== null 
+                ? this.getToBeStoppedPositionIndex(symbol) 
+                : this.state.selectedPositionIndex;
+            const requiredPreviewPositions = stopPredictionInPositions(predictionId, this.state.previewPositions, positonIndex);
             this.setState({
                 previewPositions: requiredPreviewPositions,
                 snackbarOpenStatus: true, 
@@ -303,6 +307,10 @@ class CreateEntry extends React.Component {
         .finally(() => {
             this.setState({stopPredictionLoading: false})
         })
+    }
+
+    getToBeStoppedPositionIndex = (symbol) => {
+        return _.findIndex(this.state.previewPositions, position => position.symbol === symbol);
     }
 
     updateDailyPredictions = async (predictions = []) => {

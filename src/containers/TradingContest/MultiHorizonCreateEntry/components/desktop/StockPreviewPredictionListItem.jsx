@@ -5,7 +5,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import ActionIcon from '../../../Misc/ActionIcons';
+import Button from '@material-ui/core/Button';
 import {Utils} from '../../../../../utils';
 import {isMarketOpen} from '../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
@@ -127,18 +127,20 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
                 </Grid>
                 <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
-                <Grid item xs={1} style={{...horizontalBox, justifyContent: 'space-between'}}>
+                <Grid item xs={1} style={{...verticalBox, alignItems: 'center', justifyContent: 'center'}}>
                     <Tooltip title={iconConfig.status}>
                         <Icon style={{color: iconConfig.color, fontSize: '17px'}}>{iconConfig.type}</Icon>
                     </Tooltip>
                     {
                         marketOpen && iconConfig.status.toLowerCase() === 'active' &&
-                        <ActionIcon 
-                            type='power_settings_new' 
-                            size={18} 
-                            color='#f3211b'
-                            onClick={() => this.props.openDialog(_id)}
-                        />
+                        <Button 
+                                size='small' 
+                                color='secondary' 
+                                style={{fontSize: '10px', color: '#f54444'}}
+                                onClick={() => this.props.openDialog(_id)}
+                        >
+                            Stop
+                        </Button>
                     }
                 </Grid>
             </Container>
