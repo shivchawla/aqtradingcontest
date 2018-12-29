@@ -51,6 +51,8 @@ export default class RollingPerformance extends React.Component {
     }
 
     render() {
+        const {small =false} = this.props;
+
         return (
             <Container container>
                 <Grid 
@@ -70,6 +72,7 @@ export default class RollingPerformance extends React.Component {
                             width: '100%',
                             justifyContent: 'space-between'
                         }}
+                        small={small}
                     />
                 </Grid>
                 <Grid item xs={12} style={{marginTop: '5px'}}>

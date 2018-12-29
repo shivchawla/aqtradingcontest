@@ -125,7 +125,7 @@ export default class StockDetailBottomSheet extends React.Component {
                         background: 'linear-gradient(to right, rgb(84, 67, 240), rgb(51, 90, 240))',
                         position: 'absolute',
                         width: '100%',
-                        zIndex: 10,
+                        zIndex: 100,
                         padding: '5px 0',
                         paddingLeft: '10px',
                         boxSizing: 'border-box'
@@ -206,7 +206,7 @@ export default class StockDetailBottomSheet extends React.Component {
                     style={{padding: 0}}
             >
                 {this.renderDialogHeader()}
-                <Container style={{minWidth: '38vw', marginTop: '9%'}}>
+                <Container style={{minWidth: '38vw', marginTop: '50px'}}>
                     <Grid item xs={12}>
                         <StockDetail 
                             symbol={this.props.symbol}

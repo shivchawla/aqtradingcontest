@@ -148,7 +148,7 @@ class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '15px' : '10px',
+                                marginTop: isDesktop ? '5px' : '10px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -171,7 +171,7 @@ class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '15px' : '5px',
+                                marginTop: isDesktop ? '0px' : '5px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -194,7 +194,7 @@ class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '15px' : '0px',
+                                marginTop: isDesktop ? '0px' : '0px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -350,7 +350,7 @@ class StockCard extends React.Component {
                         }
                     </div>
                 </Grid>
-                {
+                {/* {
                     !editMode && !bottomSheet &&
                     <Grid 
                             item 
@@ -370,7 +370,7 @@ class StockCard extends React.Component {
                             EDIT
                         </Button>
                     </Grid>
-                }
+                } */}
                 <Grid 
                         item 
                         xs={12} 
@@ -394,8 +394,8 @@ class StockCard extends React.Component {
                         style={{
                             ...verticalBox,
                             // borderTop: '1px solid #E2E2E2',
-                            marginTop: isDesktop ? '20px' : '0px',
-                            paddingTop: isDesktop ? '15px' : '0px'
+                            marginTop: isDesktop ? '0px' : '0px',
+                            paddingTop: isDesktop ? '0px' : '0px'
                         }}
                 >
                     <QuestionText>
@@ -522,7 +522,7 @@ class StockCard extends React.Component {
             <Container 
                     container 
                     bottomSheet={bottomSheet}
-                    style={{marginTop: bottomSheet ? 0 : '8%'}}
+                    style={{marginTop: bottomSheet ? 0 : '40px'}}
             >
                 {this.props.loading && <Loader />}
                 {
