@@ -44,16 +44,22 @@ class Home extends React.Component {
                 return {type: 'list', data: homeData.howItWorksContents, header: 'How it works?'};
             case "prizes":
                 return {
-                    type: 'text', 
-                    data: this.state.prizeTabView === 0 ? homeData.prizeTextDaily : homeData.prizeTextWeekly, 
+                    type: 'section', 
+                    data: [
+                        {header: 'Daily', text: homeData.prizeTextDaily},
+                        {header: 'Weekly', text: homeData.prizeTextWeekly},
+                    ], 
                     header: 'Prizes'
                 };
             case "requirements":
                 return {type: 'list', data: homeData.requirements, header: 'Requirements'};
             case "scoring":
                 return {
-                    type: 'text', 
-                    data: this.state.scoringTabView === 0 ? homeData.scoringTextDaily : homeData.scoringTextWeekly, 
+                    type: 'section', 
+                    data: [
+                        {header: 'Daily', text: homeData.scoringTextDaily},
+                        {header: 'Weekly', text: homeData.scoringTextWeekly},
+                    ], 
                     header: 'Scoring'
                 };
             case "faq":
@@ -84,7 +90,7 @@ class Home extends React.Component {
                                 onClick={() => window.location =' /home'}
                             />
                             <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                                <PageHeader>Stock Prediction Contest</PageHeader>
+                                <PageHeader>Virtual Trading Contest</PageHeader>
                                 <PageSubHeader>Pick your stocks, set your predictions and win prizes everyday</PageSubHeader>
                             </div>
                         </div>
@@ -123,22 +129,16 @@ class Home extends React.Component {
                                 }}
                         >
                             <RightContainerHeader>{content.header}</RightContainerHeader>
-                            {
-                                (this.state.selected === "prizes" || this.state.selected === "scoring") &&
-                                <RadioGroup
-                                    items={['Daily', 'Weekly']}
-                                    defaultSelected={this.state.prizeTabView}
-                                    onChange={this.onPrizeTabChange}
-                                    CustomRadio={CustomRadio}
-                                    style={{marginTop: '20px'}}
-                                />
-                            }
                         </div>
-                        <ListComponent 
-                            list={content.type === 'list' ? content.data : []}
-                            type={content.type}
-                            text={content.type === 'text' ? content.data : ''}
-                        />
+                        {
+                            (this.state.selected === "prizes" || this.state.selected === "scoring") 
+                            ?   <SectionComponent data={content.data}/>
+                            :   <ListComponent 
+                                    list={content.type === 'list' ? content.data : []}
+                                    type={content.type}
+                                    text={content.type === 'text' ? content.data : ''}
+                                />
+                        }
                     </RightContainer>
                     <Grid item xs={12} style={{marginTop: '400px'}}>
                         <Footer />
@@ -150,6 +150,28 @@ class Home extends React.Component {
 }
 
 export default withStyles(desktopStyles)(Home);
+
+const SectionComponent  = ({data}) => {
+    return (
+        <div 
+                style={{
+                    ...verticalBox,
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    marginTop: '40px'
+                }}
+        >
+            {
+                data.map((item, key) => (
+                    <div style={{...verticalBox, alignItems: 'flex-start', marginTop: '20px'}} key={key}>
+                        <h3 style={{marginTop: '20px', color: '#00418c'}}>{item.header}</h3>
+                        <TextComponent text={item.text} style={{color: '#6E6E6E'}}/>
+                    </div>
+                ))
+            }
+        </div>
+    );
+}
 
 const ListComponent = ({type = 'list', list = [], text = ''}) => {
     return (
@@ -208,7 +230,7 @@ const ListItem = ({header, content}) => {
     );
 }
 
-const TextComponent = ({text}) => {
+const TextComponent = ({text, style={}}) => {
     return (
         <h3 
                 style={{
@@ -216,7 +238,8 @@ const TextComponent = ({text}) => {
                     color: '#00418C',
                     fontWeight: 400,
                     lineHeight: '28px',
-                    textAlign: 'start'
+                    textAlign: 'start',
+                    ...style
                 }}
         >
             {text}

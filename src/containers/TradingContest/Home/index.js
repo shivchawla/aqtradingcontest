@@ -253,12 +253,13 @@ export const HowItWorksCard = ({image, header, content, span=12}) => {
     );
 };
 
-const RequirementCard = ({header, content, span=12, height=80}) => {
+const RequirementCard = ({header, content, span=12, height=60}) => {
     const containerStyle = {
         padding: '0 10px',
         marginBottom: '10px',
         borderBottom: '1px solid #eaeaea',
-        height,
+        minHeight: '60px',
+        paddingBottom: '20px'
     };
 
     return (
@@ -284,7 +285,7 @@ const ScoringCard = ({header, content, metrics}) => {
     return (
         <Grid container style={{padding: '0 10px',marginBottom: '30px'}}>
             <Grid item xs={12} style={containerStyle}>
-                <h3 style={{...cardHeaderTextStyle, textAlign: 'center'}}>{header}</h3>
+                {/* <h3 style={{...cardHeaderTextStyle, textAlign: 'center'}}>{header}</h3> */}
                 <h5 style={{...cardContentTextStyle, textAlign: 'center', marginTop: '10px'}}>{content}</h5>
             </Grid>
         </Grid>
@@ -311,7 +312,8 @@ const FAQCard = ({header, content, span=12}) => {
 const cardHeaderTextStyle = {
     fontSize: '18px',
     color: '#6A6A6A',
-    fontWeight: 400
+    fontWeight: 400,
+    textAlign: 'start'
 };
 
 const cardContentTextStyle = {
