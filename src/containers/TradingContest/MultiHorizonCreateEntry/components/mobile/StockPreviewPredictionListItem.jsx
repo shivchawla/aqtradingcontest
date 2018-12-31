@@ -259,8 +259,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
 }
 
 const StopPredictionButton = ({onClick}) => {
-    const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
-    const color = '#fff';
+    // const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
+    const background = '#fff';
+    const color = '#FF6161';
     const fontSize = '12px';
     const padding = '4px 8px';
 
@@ -272,8 +273,8 @@ const StopPredictionButton = ({onClick}) => {
                     fontSize,
                     padding,
                     background,
-                    // boxShadow,
-                    marginLeft: '10px'
+                    marginLeft: '10px',
+                    border: '1px solid #FF6161'
                 }}
                 onClick={onClick}
         >
