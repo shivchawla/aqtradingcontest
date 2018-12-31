@@ -674,6 +674,7 @@ class CreateEntry extends React.Component {
     }
 
     captureEvent = payload => {
+        console.log('Payload', payload);
         this.fetchPredictionsAndStats(this.state.selectedDate);
     }
 

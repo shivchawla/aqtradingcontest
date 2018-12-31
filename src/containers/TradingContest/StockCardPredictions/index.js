@@ -260,22 +260,10 @@ class StockCardPredictions extends React.Component {
         const currentTradingDay = this.getCurrentTradingDay();
         this.setState({loading: true});
         this.initializeStateFromLocalStorage()
-        .then(() => {
-            return Promise.all([
-                getDailyContestPredictions(currentTradingDay, 'started', false, this.props.history, this.props.match.url, false),
-                getPortfolioStats(currentTradingDay, this.props.history, this.props.match.url, false),
-                !this.shouldShowListView() && this.updateNextStock()
-            ])
-        })
-        .then(([predictionsResponse, portfolioStats]) => {
+        .then(() => getPortfolioStats(currentTradingDay, this.props.history, this.props.match.url, false))
+        .then(portfolioStats => {
             const portfolioStatsData = portfolioStats.data;
-            const liquidCash = _.get(portfolioStatsData, 'liquidCash', 0);
-            const predictions = _.get(predictionsResponse, 'data', []);
-            this.setState({
-                stockCartCount: predictions.length, 
-                stockCart: this.groupPredictions(predictions),
-                predictionsAllowed: liquidCash > Math.abs(_.get(this.state, 'stockData.investment', 0) / 1000)
-            });
+            this.setState({portfolioStats: portfolioStatsData});
         })
         .catch(error => {
             console.log('Error', error);
@@ -300,43 +288,47 @@ class StockCardPredictions extends React.Component {
         const {defaultStockData} = this.state;
         const horizon = _.get(defaultStockData, 'horizon', 5);
         const target = _.get(defaultStockData, 'target', 5);
+        const investment = _.get(defaultStockData, 'investment', 10000);
+        const stopLoss = _.get(defaultStockData, 'stopLoss', 2);
         this.setState({
             stockData: {
                 ...this.state.stockData,
                 horizon,
-                target
+                target,
+                investment,
+                stopLoss
             }
         });
     }
 
-    createDailyContestPrediction = (type = 'buy') => {
-        if (!this.state.predictionsAllowed) {
-            const errorMessage = 'No Available Cash';
-            this.updateSnackbar(errorMessage);;
+    checkIfCashAvailable = () => {
+        const liquidCash = _.get(this.state, 'portfolioStats.liquidCash', 0);
+        const selectedInvestment = _.get(this.state, 'stockData.investment', 0) / 1000;
 
+        return selectedInvestment > liquidCash;
+    }
+
+    createDailyContestPrediction = (type = 'buy') => {
+        const currentTradingDay = this.getCurrentTradingDay();
+        if (this.checkIfCashAvailable()) {
+            this.updateSnackbar('No Available Cash');
             return;
         }
         const predictions = constructPrediction(this.state.stockData, type);
         this.setState({loadingCreatePredictions: true});
         createPredictions(predictions)
-        .then(() => {
-            this.addCurrentStockToCart();
-            return this.shouldShowListView() 
-                ? null 
-                : this.updateStocksToSkip();
-        })
-        .then(() => {
-            return this.shouldShowListView() 
-                ? null
-                : this.updateNextStock();
-        })
-        .then(() => {
+        .then(() => getPortfolioStats(currentTradingDay, this.props.history, this.props.match.url, false))
+        .then(portfolioStats => {
             this.showSuccess();
             this.updateStockDataToDefaultSettings();
-            this.props.eventEventeventEmitter && 
+            const portfolioStatsData = portfolioStats.data;
+            this.setState({portfolioStats: portfolioStatsData});
+            this.props.eventEmitter && 
             this.props.eventEmitter.emit(onPredictionCreated, 'Prediction Successfully Created');
+            console.log('Entered Here');
         })
         .catch(error => {
+            console.log('Error', error);
             let errorMessage = _.get(error, 'response.data.message', '');
             errorMessage = errorMessage.length === 0 
                 ? 'Error Occured while creating predictions'

@@ -108,7 +108,7 @@ class StockPreviewListItem extends React.Component {
                     />
                 </Grid>
                 <Grid item xs={2} style={{...horizontalBox, justifyContent: 'space-between'}}>
-                    <div style={{color: pnlColor, fontSize: '15px', display:'grid'}}>
+                    <div style={{color: pnlColor, fontSize: '15px', display:'grid', textAlign: 'start'}}>
                         ₹{totalPnl}
                         <span style={{fontSize:'12px'}}>{totalPnlPct}</span>
                     </div>
