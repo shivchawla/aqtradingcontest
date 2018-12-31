@@ -32,42 +32,55 @@ export default class StockListComponent extends React.Component {
                 }
                 {
                     stocks.map((stock, index) => (
-                        <React.Fragment key={index}>
-                            <Media 
-                                query={`(max-width: ${screenSize.mobile})`}
-                                render={() => (
-                                    <StockListItemMobile 
-                                        key={index} 
-                                        {...stock} 
-                                        showPredict={showPredict}
-                                        onClick={this.props.handleStockListItemClick} 
-                                        onAddIconClick={this.props.conditionallyAddItemToSelectedArray}
-                                        onPredictIconClicked={this.props.conditionallyAddToggleStock}
-                                        onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
-                                        isAlreadyAdded={this.isAlreadyAdded(stock)}
-                                        onInfoClicked={this.props.onInfoClicked}
-                                        watchlistPredict={watchlistPredict}
+                        this.props.mobile
+                            ?   <StockListItemMobile 
+                                    key={index} 
+                                    {...stock} 
+                                    showPredict={showPredict}
+                                    onClick={this.props.handleStockListItemClick} 
+                                    onAddIconClick={this.props.conditionallyAddItemToSelectedArray}
+                                    onPredictIconClicked={this.props.conditionallyAddToggleStock}
+                                    onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
+                                    isAlreadyAdded={this.isAlreadyAdded(stock)}
+                                    onInfoClicked={this.props.onInfoClicked}
+                                    watchlistPredict={watchlistPredict}
+                                />
+                            :   <React.Fragment key={index}>
+                                    <Media 
+                                        query={`(max-width: ${screenSize.mobile})`}
+                                        render={() => (
+                                            <StockListItemMobile 
+                                                key={index} 
+                                                {...stock} 
+                                                showPredict={showPredict}
+                                                onClick={this.props.handleStockListItemClick} 
+                                                onAddIconClick={this.props.conditionallyAddItemToSelectedArray}
+                                                onPredictIconClicked={this.props.conditionallyAddToggleStock}
+                                                onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
+                                                isAlreadyAdded={this.isAlreadyAdded(stock)}
+                                                onInfoClicked={this.props.onInfoClicked}
+                                                watchlistPredict={watchlistPredict}
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                            <Media 
-                                query={`(min-width: ${screenSize.desktop})`}
-                                render={() => (
-                                    <StockListItemDesktop 
-                                        key={index} 
-                                        {...stock} 
-                                        onClick={this.props.handleStockListItemClick} 
-                                        onAddIconClick={
-                                            this.props.toggleAdd
-                                            ? this.props.conditionallyAddToggleStock
-                                            : this.props.conditionallyAddItemToSelectedArray
-                                        }
-                                        onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
-                                        selected={stock.symbol === this.props.selectedStock}
+                                    <Media 
+                                        query={`(min-width: ${screenSize.desktop})`}
+                                        render={() => (
+                                            <StockListItemDesktop 
+                                                key={index} 
+                                                {...stock} 
+                                                onClick={this.props.handleStockListItemClick} 
+                                                onAddIconClick={
+                                                    this.props.toggleAdd
+                                                    ? this.props.conditionallyAddToggleStock
+                                                    : this.props.conditionallyAddItemToSelectedArray
+                                                }
+                                                onSellIconClick={this.props.conditionallyAddItemToSellSelectedArray}
+                                                selected={stock.symbol === this.props.selectedStock}
+                                            />
+                                        )}
                                     />
-                                )}
-                            />
-                        </React.Fragment>
+                                </React.Fragment>
                     ))
                 }
             </React.Fragment>

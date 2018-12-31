@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import windowSize from 'react-window-size';
 import Media from 'react-media';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid'
@@ -7,7 +8,7 @@ import StockPreviewListItemMobile from '../mobile/StockPreviewListItem';
 import StockPreviewListItemDesktop from '../desktop/StockPreviewListItem';
 import {primaryColor} from '../../../../../constants';
 
-export default class StockPreviewList extends React.Component {
+class StockPreviewList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -17,6 +18,7 @@ export default class StockPreviewList extends React.Component {
     }
 
     render() {
+        const isDesktop = this.props.windowWidth > 800;
         const {positions = [], type='buy'} = this.props;
         const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewListItemDesktop;
         const errorText = 'No predictions found';
@@ -26,10 +28,8 @@ export default class StockPreviewList extends React.Component {
                     className='stock-list' 
                     xs={12} 
                     style={{
-                        padding: '10px 10px 0 10px', 
+                        padding: isDesktop ? '10px 10px 0 10px' : 0, 
                         paddingBottom: '80px',
-                        //paddingLeft: '3%',
-                        //paddingRight: '3%'
                     }}
             >
             
@@ -43,6 +43,8 @@ export default class StockPreviewList extends React.Component {
                                 selectPosition={this.props.selectPosition}
                                 toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
                                 togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
+                                deletePrediction={this.props.deletePrediction}
+                                stopPredictionLoading={this.props.stopPredictionLoading}
                             />
                         );
                     })
@@ -51,6 +53,8 @@ export default class StockPreviewList extends React.Component {
         );
     }
 }
+
+export default windowSize(StockPreviewList);
 
 const EmptyPositionsText = styled.h3`
     font-size: 20px;

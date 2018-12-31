@@ -1,6 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 import axios from 'axios';
+import windowSize from 'react-window-size';
+import Media from 'react-media';
 import styled from 'styled-components';
 import {withRouter} from 'react-router-dom';
 import CreateWatchlist from './components/mobile/CreateWatchList';
@@ -9,10 +11,12 @@ import Grid from '@material-ui/core/Grid';
 import Icon from '@material-ui/core/Icon';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
+import SearchInput from '../TradingContest/SearchStocks/components/SearchInput';
 import StockSelection from '../TradingContest/StockCardPredictions/components/mobile/StockSelection';
 import RadioGroup from '../../components/selections/RadioGroup';
 import WatchlistCustomRadio from './components/mobile/WatchlistCustomRadio';
 import RoundedButton from '../../components/Buttons/RoundedButton';
+import ActionIcon from '../TradingContest/Misc/ActionIcons';
 import LoaderComponent from '../TradingContest/Misc/Loader';
 import DialogComponent from '../../components/Alerts/DialogComponent';
 import {fetchAjaxPromise, Utils} from '../../utils';
@@ -41,9 +45,19 @@ class WatchlistComponent extends React.Component {
             snackbar: {
                 open: false,
                 message: ''
-            }
+            },
+            watchlistSearchInput: '',
+            searchInputFocused: false
         };
     }
+
+    handleWatchlistSearchInput = e => {
+        this.setState({watchlistSearchInput: e.target.value});
+    }
+
+    updateSearchInput = value => new Promise((resolve, reject) => {
+        this.setState({watchlistSearchInput: value}, () => resolve(true));
+    })
 
     openSnackbar = (message = '') => {
         this.setState({snackbar: {
@@ -210,12 +224,10 @@ class WatchlistComponent extends React.Component {
                         targetSecurity.price = validCurrentPrice;
                         targetSecurity.current = validCurrentPrice;
                         targetSecurity.changePct = changePct;
-                        // console.log('Target Security', targetSecurity);
                         this.setState({watchlists});
                     }
                 }
             } catch(error) {
-                // console.log(error);
             }
         }
     }
@@ -325,6 +337,8 @@ class WatchlistComponent extends React.Component {
                 updateWatchlistLoading={this.state.updateWatchlistLoading}
                 deleteItem={this.deleteItem}
                 watchlistEditMode={this.state.watchlistEditMode}
+                predictionsAllowed={this.props.predictionsAllowed}
+                openSnackbar={this.openSnackbar}
             />
         );
     }
@@ -351,7 +365,20 @@ class WatchlistComponent extends React.Component {
         this.setState({watchlistEditMode: !this.state.watchlistEditMode});
     }
 
+    onSearchInputFocus = () => {
+        this.setState({searchInputFocused: true});
+    }
+
+    onSearchInputBlur = () => {
+        this.setState({searchInputFocused: false});
+    }
+
     renderContent() {
+        const selectedWatchlist = this.getSelectedWatchlist();
+        const nStockData = _.pick(this.props.stockData, 'sector');
+        const selectedWatchlistPositions = _.get(selectedWatchlist, 'positions', []);
+        const isDesktop = this.props.windowWidth > 800;
+
         return (
             <Grid container>
                 <CreateWatchlist 
@@ -387,59 +414,120 @@ class WatchlistComponent extends React.Component {
                             onClick={this.toggleCreateWatchlistDialog}
                         />
                     </FavouritesContainer>
+                    {
+                        !isDesktop &&
+                        <ActionIcon 
+                            type='settings' 
+                            size={18} 
+                            color='#707070'
+                            onClick={() => {
+                                this.props.toggleDefaultSettingsBottomSheet 
+                                && this.props.toggleDefaultSettingsBottomSheet()
+                            }}
+                        />
+                    }
                 </Grid>
-                <Grid item xs={12}>
-                    {this.renderWatchList()}
-                </Grid>
-                <Grid item xs={12}>
-                    <div 
+                    <Grid 
+                            item 
+                            xs={12} 
                             style={{
-                                ...fabContainerStyle,
-                                justifyContent: 'flex-end'
+                                ...horizontalBox, 
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                margin: isDesktop ? '0px' : '0 8px'
                             }}
                     >
+                        <SearchInput 
+                            style={{width: '100%'}}
+                            label="Search Stocks"
+                            type="search"
+                            margin="normal"
+                            variant="outlined"
+                            inputValue={this.state.watchlistSearchInput}
+                            onChange={this.handleWatchlistSearchInput}
+                            onTouchStartCapture={this.onSearchInputFocus}
+                            onTouchCancelCapture={this.onSearchInputBlur}
+                        />
                         {
-                            this.state.watchlistEditMode && !this.state.noWatchlistPresent &&
-                            <Button 
-                                    variant="fab" 
-                                    size="medium"
-                                    style={{
-                                        ...fabStyle,
-                                        marginRight: '30px',
-                                        backgroundColor: '#f65864'
-                                    }}
-                                    onClick={this.toggleWatchlistDeleteDialog}
-                            >
-                                <Icon style={{color: '#fff'}}>delete</Icon>
-                            </Button>
-                        }
-                        <Button 
-                                variant="fab" 
-                                size="medium"
-                                style={{
-                                    ...fabStyle,
-                                    marginRight: '30px',
-                                    backgroundColor: '#7b72d1'
-                                }}
+                            this.state.watchlistSearchInput.length === 0 &&
+                            isDesktop &&
+                            <ActionIcon 
+                                type={this.state.watchlistEditMode ? 'done_outline' : 'edit'}
                                 onClick={this.toggleWatchListMode}
-                        >
-                            <Icon style={{color: '#fff'}}>
-                                {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
-                            </Icon>
-                        </Button>
-                        <Button 
-                                variant="fab" 
-                                size="medium"
-                                style={{
-                                    ...fabStyle,
-                                    backgroundColor: '#316dff'
-                                }}
-                                onClick={this.toggleStockSelectionDialog}
-                        >
-                            <Icon style={{color: '#fff'}}>zoom_in</Icon>
-                        </Button>
-                    </div>
-                </Grid>
+                                color='#7b72d1'
+                                style={{marginTop: '10px'}}
+                            />
+                        }
+                    </Grid>
+                    {
+                        this.state.watchlistSearchInput.length > 0
+                        ?   <Grid item xs={12} style={{paddingBottom: '30px'}}>
+                                <StockSelection 
+                                    list={true}
+                                    toggleSearchStocksDialog={this.toggleStockSelectionDialog}
+                                    stockData={nStockData}
+                                    addStock={this.addStockToWatchlist}
+                                    selectedPositions={selectedWatchlistPositions}
+                                    createPrediction={this.createPrediction}
+                                    watchlistPredict={true}
+                                    mobile={true}
+                                    updateSearchInput={this.updateSearchInput}
+                                    searchInput={this.state.watchlistSearchInput}
+                                    hideInput={true}
+                                    predictionsAllowed={this.props.predictionsAllowed}
+                                    openSnackbar={this.openSnackbar}
+                                />
+                            </Grid>
+                        :   <Grid item xs={12}>
+                                {this.renderWatchList()}
+                            </Grid>
+                    }
+                {
+                    <Media 
+                        query="(max-width: 800px)"
+                        render={() => (
+                            <React.Fragment>
+                                <Grid item xs={12}>
+                                    <div 
+                                            style={{
+                                                ...fabContainerStyle,
+                                                justifyContent: 'flex-end'
+                                            }}
+                                    >
+                                        {
+                                            this.state.watchlistEditMode && !this.state.noWatchlistPresent &&
+                                            <Button 
+                                                    variant="fab" 
+                                                    size="medium"
+                                                    style={{
+                                                        ...fabStyle,
+                                                        marginRight: '30px',
+                                                        backgroundColor: '#f65864'
+                                                    }}
+                                                    onClick={this.toggleWatchlistDeleteDialog}
+                                            >
+                                                <Icon style={{color: '#fff'}}>delete</Icon>
+                                            </Button>
+                                        }
+                                        <Button 
+                                                variant="fab" 
+                                                size="medium"
+                                                style={{
+                                                    ...fabStyle,
+                                                    backgroundColor: '#7b72d1'
+                                                }}
+                                                onClick={this.toggleWatchListMode}
+                                        >
+                                            <Icon style={{color: '#fff'}}>
+                                                {this.state.watchlistEditMode ? 'done_outline' : 'edit'}
+                                            </Icon>
+                                        </Button>
+                                    </div>
+                                </Grid>
+                            </React.Fragment>
+                        )}
+                    />
+                }
             </Grid>
         );
     }
@@ -693,24 +781,13 @@ class WatchlistComponent extends React.Component {
                         watchlist ?
                     </DialogText>
                 </DialogComponent>
-                <StockSelection 
-                    open={this.state.stockSelectionOpen}
-                    list={false}
-                    toggleSearchStocksDialog={this.toggleStockSelectionDialog}
-                    stockData={nStockData}
-                    addStock={this.addStockToWatchlist}
-                    selectedPositions={selectedWatchlistPositions}
-                    hideSelectedItems={true}
-                    createPrediction={this.createPrediction}
-                    watchlistPredict={true}
-                />
                 {this.state.loading ? <LoaderComponent /> : this.renderContent()}
             </React.Fragment>
         );
     }
 }
 
-export default withRouter(WatchlistComponent);
+export default withRouter(windowSize(WatchlistComponent));
 
 const fabStyle = {
     width: '45px',

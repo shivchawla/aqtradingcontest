@@ -1,5 +1,6 @@
 import * as React from 'react';
 import axios from 'axios';
+import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
@@ -10,7 +11,7 @@ import TranslucentLoader from '../../../../components/Loaders/TranslucentLoader'
 import {withRouter} from 'react-router';
 import StockListItemMobile from '../../../TradingContest/SearchStocks/components/StockListItemMobile';
 import {Utils} from '../../../../utils';
-import { verticalBox, horizontalBox, primaryColor, metricColor} from '../../../../constants';
+import {verticalBox} from '../../../../constants';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -134,9 +135,12 @@ class WatchList extends React.Component {
     }   
 
     render() {
+        const isDesktop = this.props.windowWidth > 800;
+
         return (
             <Grid container>
-                <StockDetailBottomSheet 
+                <StockDetailBottomSheet
+                    dialog={isDesktop} 
                     open={this.state.stockDetailBottomSheetOpen}
                     onClose={this.toggleStockDetailBottomSheetOpen}
                     selectStock={this.props.selectStock}
@@ -185,7 +189,7 @@ class WatchList extends React.Component {
     }
 }
 
-export default withRouter(WatchList);
+export default withRouter(windowSize(WatchList));
 
 const noStocksFoundContainer = {
     ...verticalBox,

@@ -1,25 +1,23 @@
 import React from 'react';
 import _ from 'lodash';
+import windowSize from 'react-window-size';
 import styled from 'styled-components';
-import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import DialogContent from '@material-ui/core/DialogContent';
-import Slide from '@material-ui/core/Slide';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import {withStyles} from '@material-ui/core/styles';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
+import DialogComponent from '../../../../../components/Alerts/DialogComponent';
+import DialogHeaderComponent from '../../../../../components/Alerts/DialogHeader';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget} from '../../utils';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
 import {Utils} from '../../../../../utils';
-import {targetKvp, horizonKvp} from '../../constants';
+import {targetKvp, horizonKvp, investmentKvp} from '../../constants';
 
 const styles = theme => ({
     dialogContentRoot: {
@@ -30,8 +28,6 @@ const styles = theme => ({
         }        
     }
 });
-
-const isDesktop = global.screen.width > 600 ? true : false;
 
 class DefaultSettings extends React.Component {
     constructor(props) {
@@ -90,6 +86,14 @@ class DefaultSettings extends React.Component {
         });
     }
 
+    handleInvestmentChange = (value) => {
+        const requiredInvestment = getInvestmentValue(value);
+        this.props.modifyDefaultStockData({
+            ...this.props.defaultStockData,
+            investment: requiredInvestment
+        });
+    }
+
     onEditModeChanged = (value) => {
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
@@ -134,20 +138,43 @@ class DefaultSettings extends React.Component {
     }
 
     render() {
-        const {classes} = this.props;
-        let {horizon = 2, target = 0, sector = '', editMode = false, listMode = false, stopLoss = 0} = this.props.defaultStockData;
+        let {
+            horizon = 2, 
+            target = 0, 
+            sector = '', 
+            editMode = false, 
+            listMode = false, 
+            stopLoss = 0, 
+            investment = 1
+        } = this.props.defaultStockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
+        const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
         ));
         const radioGroupStyle = {...verticalBox, alignItems: 'flex-start', minHeight: '80px', width: '90%'};
+        const Dialog = this.props.dialog ? DialogComponent : BottomSheet;
+        const isDesktop = this.props.windowWidth > 800;
+        const gridContainerStyle = isDesktop? {minWidth: '38vw'} : {};
 
         return (
-            <BottomSheet
+            <Dialog
                     open={this.props.open}
+                    onClose={this.props.onClose}
                     customHeader={this.renderHeader}
+                    style={{padding: 0}}
             >
-                <Grid container>
+                {
+                    this.props.dialog &&
+                    <DialogHeaderComponent title='Default Settings' onClose={this.props.onClose} />
+                }
+                <Grid 
+                        container 
+                        style={{
+                            ...gridContainerStyle,
+                            marginTop: this.props.dialog ? '8%' : 0
+                        }}
+                >
                     <Grid 
                             item xs={12} 
                             style={{
@@ -155,7 +182,7 @@ class DefaultSettings extends React.Component {
                                 alignItems: 'center'
                             }}
                     >
-                        <div 
+                        {/* <div 
                                 style={{
                                     ...horizontalBox, 
                                     justifyContent: isDesktop ? 'flex-start': 'space-between',
@@ -177,7 +204,7 @@ class DefaultSettings extends React.Component {
                                 onMenuItemClicked={this.onSectorMenuItemClicked}
                                 selectedSector={sector}
                             />
-                        </div>
+                        </div> */}
                         <div 
                                 style={{
                                     ...verticalBox, 
@@ -245,8 +272,28 @@ class DefaultSettings extends React.Component {
                                     label='%'
                                 />
                             </div>
+                            <div style={radioGroupStyle}>
+                                <MetricLabel 
+                                        style={{
+                                            marginBottom: '10px',
+                                            marginTop: '20px'
+                                        }}
+                                >
+                                    Investment
+                                </MetricLabel>
+                                <StockCardRadioGroup 
+                                    items={investmentItems}
+                                    onChange={this.handleInvestmentChange}
+                                    defaultSelected={investment}
+                                    hideLabel={true}
+                                    getIndex={getInvestment}
+                                    label='%'
+                                    hideSlider={true}
+                                    formatValue={Utils.formatInvestmentValueNormal}
+                                />
+                            </div>
                         </div>
-                        <div
+                        {/* <div
                                 style={{
                                     paddingLeft: '40px',
                                     width: '100%',
@@ -289,14 +336,14 @@ class DefaultSettings extends React.Component {
                                     disabled={listMode}
                                 />
                             </div>
-                        }
-                        {
+                        } */}
+                        {/* {
                             Utils.isAdmin() &&
                             <div 
                                     style={{
                                         ...horizontalBox, 
                                         justifyContent: 'flex-start',
-                                        width: '100%'
+                                        width: '100%',
                                     }}
                             >
                                 <Button 
@@ -310,18 +357,29 @@ class DefaultSettings extends React.Component {
                                     Reset Advisor
                                 </Button>
                             </div>
-                        }
+                        } */}
                         <div
                                 style={{
                                     ...horizontalBox,
                                     width: '90%',
-                                    justifyContent: this.props.skippedStocks.length > 0 
-                                        ? 'space-between'
-                                        : 'center',
+                                    // justifyContent: this.props.skippedStocks.length > 0 
+                                    //     ? 'space-between'
+                                    //     : 'center',
+                                    justifyContent: Utils.isAdmin() ? 'space-between' : 'center',
                                     marginTop: '30px'
                                 }}
                         >
                             {
+                                Utils.isAdmin() &&
+                                <Button 
+                                        variant="outlined"
+                                        onClick={this.resetAdvisor}
+                                        size='small'
+                                >
+                                    Reset Advisor
+                                </Button>
+                            }
+                            {/* {
                                 this.props.skippedStocks.length > 0 &&
                                 <Button 
                                         variant="outlined"
@@ -330,7 +388,7 @@ class DefaultSettings extends React.Component {
                                 >
                                     Undo Skips
                                 </Button>
-                            }
+                            } */}
                             <Button 
                                     variant="contained"
                                     style={applyButtonStyle}
@@ -344,13 +402,9 @@ class DefaultSettings extends React.Component {
                     </Grid>
                     <Grid item xs={12} style={{height: '100px'}}></Grid>
                 </Grid>
-            </BottomSheet>
+            </Dialog>
         );
     }
-}
-
-const Transition = (props) => {
-    return <Slide direction="up" {...props} />;
 }
 
 const SectorMenu = ({anchorEl, selectedSector = '', onClick , onClose, onMenuItemClicked}) => {    
@@ -395,20 +449,12 @@ const SectorMenu = ({anchorEl, selectedSector = '', onClick , onClose, onMenuIte
 }
 
 
-export default withStyles(styles)(DefaultSettings);
+export default withStyles(styles)(windowSize(DefaultSettings));
 
 const applyButtonStyle = {
     boxShadow: 'none',
     width: '115px'
 }
-
-const Header = styled.h3`
-    color: #0D0D0D;
-    font-weight: 500;
-    font-family: 'Lato', sans-serif;
-    font-size: 18px;
-    margin-left: 20px;
-`;
 
 const MetricLabel = styled.h3`
     font-size: 16px;

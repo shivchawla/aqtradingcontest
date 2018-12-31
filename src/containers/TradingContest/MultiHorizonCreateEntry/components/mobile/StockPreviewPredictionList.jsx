@@ -51,10 +51,10 @@ export default class StockEditPredictionList extends React.Component {
                             onOk={this.onDialogOkPressed}
                             onCancel={this.toggleDeletePredictionDialog}
                             action
-                            title='Stop Prediction'
+                            title='Exit Prediction'
                     >
                         <DialogText>
-                            Are you sure you want to stop this prediction?
+                            Are you sure you want to exit this prediction?
                         </DialogText>
                     </DialogComponent>
                     {
@@ -63,13 +63,12 @@ export default class StockEditPredictionList extends React.Component {
                                 <StockPreviewPredictionListItem 
                                     prediction={{...prediction, index: index+1}} 
                                     key={index}
-                                    modifyPrediction={this.props.modifyPrediction}
-                                    deletePrediction={this.props.deletePrediction}
                                     openDialog={this.openStopPredictionDialog}
                                 />
                             )
                         })
                     }
+                    <div style={{width: '100%', height: '40px'}}></div>
                 </Grid>
             </React.Fragment>
         );

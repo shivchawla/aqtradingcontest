@@ -2,23 +2,12 @@
 * @Author: Shiv Chawla
 * @Date:   2018-03-31 19:38:33
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-11-16 13:09:48
+* @Last Modified time: 2018-12-28 20:58:23
 */
 const moment = require('moment-timezone');
 const indiaTimeZone = "Asia/Kolkata";
 const localTimeZone = moment.tz.guess();
 
-const holidays = [
-	"2018-08-22",
-	"2018-09-13",
-	"2018-09-20",
-	"2018-10-02",
-	"2018-10-18",
-	"2018-11-07",
-	"2018-11-08",
-	"2018-11-23",
-	"2018-12-25"
-].map(item => moment.tz(item, indiaTimeZone));
 
 function _isBeforeMarketClose() {
 	return moment().isBefore(exports.getMarketClose());
@@ -41,17 +30,6 @@ module.exports.getMarketClose = function() {
 module.exports.getMarketOpenHour = function() {
 	return exports.getMarketOpen().get('hour');
 }
-
-module.exports.getTradingDays = function(startDate, endDate) {
-	var count = 0;
-	
-	while(exports.compareDates(startDate, endDate) < 0) {
-		count++;
-		startDate = exports.getNextNonHolidayWeekday(startDate);	
-	}
-
-	return count;
-};
 
 module.exports.getMarketOpenMinute = function(){
 	return exports.getMarketOpen().get('minute');
@@ -113,9 +91,9 @@ module.exports.getLocalDate = function(dateTime, offset) {
 	return _od;
 };
 
-//Return dateTime formatted to Current Date and Time as 00:00:00 IST
+//Return dateTime formatted to Current Date and Time as 05:30:00 IST
 module.exports.getDate = function(dateTime) {
-	return (dateTime ? moment(dateTime) : moment()).tz(indiaTimeZone).set({hour:0, minute:0, second:0, millisecond:0}).toDate();
+	return (dateTime ? moment(dateTime) : moment()).tz(indiaTimeZone).set({hour:5, minute:30, second:0, millisecond:0}).toDate();
 	//return exports.getLocalDate(dateTime, 0);
 };
 
@@ -245,7 +223,7 @@ module.exports.getPreviousNonHolidayWeekday = function(date, offset=1) {
 
 module.exports.getNextNonHolidayWeekday = function(date, offset = 1) {
 	var nextWeekday = offset == 0  ? module.exports.getDate(date) : module.exports.getNextWeekday(date);
-
+	
 	do {
 		let isHoliday = exports.isHoliday(nextWeekday);	
 		nextWeekday = isHoliday || offset > 1 ? exports.getNextNonHolidayWeekday(nextWeekday) : nextWeekday;
@@ -260,8 +238,8 @@ module.exports.getCurrentIndiaDateTime = function() {
 };
 
 module.exports.isHoliday = function(date) {
-	date = !date ? module.exports.getCurrentDate() : date;
-	return date.getDay() == 0 || date.getDay() == 6 || holidays.findIndex(item => {return item.isSame(moment(date));}) !== -1;
+	date = !date ? module.exports.getCurrentDate() : module.exports.getDate(date);
+	return date.getDay() == 0 || date.getDay() == 6 || holidays.findIndex(item => {return moment(item).isSame(moment(date));}) !== -1;
 };
 
 module.exports.getMarketCloseDateTime = function(date) {
@@ -271,13 +249,150 @@ module.exports.getMarketCloseDateTime = function(date) {
 
 module.exports.getMarketOpenDateTime = function(date) {
 	var d = moment.tz(date, indiaTimeZone).format("YYYY-MM-DD"); 
-	return moment.tz(d, indiaTimeZone).tz(localTimeZone).set({hour: exports.getMarketOpenHour(), minute: exports.getMarketOpenMinute(), second: 0, millisecond: 0});
+	return moment.tz(d, localTimeZone).set({hour: exports.getMarketOpenHour(), minute: exports.getMarketOpenMinute(), second: 0, millisecond: 0});
 };
 
 module.exports.isMarketTrading = function() {
 	if (!exports.isHoliday()) {
 		return _isAfterMarketOpen() && _isBeforeMarketClose();
 	}
-
-	return false;
 };
+
+module.exports.isMarketOpen = function() {
+	if (!exports.isHoliday()) {
+		return _isAfterMarketOpen();
+	}
+};
+
+module.exports.isMarketClose = function() {
+	if (!exports.isHoliday()) {
+		return _isBeforeMarketClose();
+	}
+};
+
+module.exports.getTradingDays = function(startDate, endDate) {
+	var count = 0;
+	
+	while(exports.compareDates(startDate, endDate) < 0) {
+		count++;
+		startDate = exports.getNextNonHolidayWeekday(startDate);	
+	}
+
+	return count;
+};
+
+module.exports.isEndOfMonth = function(date, offset = 0) {
+	date = exports.getDate(date);
+	
+	var previousNonHolidayWeekday = exports.getPreviousNonHolidayWeekday(date, offset)
+	var nextNonHolidayWeekday = exports.getNextNonHolidayWeekday(date);
+
+	return ((nextNonHolidayWeekday.getYear() > previousNonHolidayWeekday.getYear()) || (nextNonHolidayWeekday.getMonth() > previousNonHolidayWeekday.getMonth())) 
+		&& exports.compareDates(date, previousNonHolidayWeekday) == 0;
+};
+
+module.exports.getEndOfMonth = function(date) {
+	
+	date = exports.getDate(date);
+	date.setMonth(date.getMonth() + 1);
+	date.setDate(1)
+
+	return exports.getPreviousNonHolidayWeekday(date);
+};
+
+module.exports.getEndOfLastMonth = function(date) {
+	date = exports.getDate(date);
+	
+	//Set date as 1st
+	date.setDate(1);
+	return exports.getPreviousNonHolidayWeekday(date);
+}; 
+
+
+module.exports.isEndOfWeek = function(date, offset = 0) {
+	date = exports.getDate(date);
+	
+	var previousNonHolidayWeekday = exports.getPreviousNonHolidayWeekday(date, offset)
+	var nextNonHolidayWeekday = exports.getNextNonHolidayWeekday(date);
+
+	return (nextNonHolidayWeekday.getDay() < previousNonHolidayWeekday.getDay()) 
+		&& exports.compareDates(date, previousNonHolidayWeekday) == 0;
+	
+	//date - Thursday (4)
+	//pDate - Thursday()
+	//nDate - Friday (5)  - FALSE
+
+	//date - Friday(5)  (non-holiday)
+	//pDate - Friday(5)
+	//nDate - Monday(0)  - TRUE
+
+	//date - Friday(5)  (holiday)
+	//pDate - Thursday(4) (non-holiday)
+	//nDate - Monday(0) -- FALSE (dates don't match)
+
+	//date - Monday(1)  (holiday)
+	//pDate - Friday(4) (non-holiday)
+	//nDate - Tuesday(2) --  FALSE
+}; 
+
+module.exports.getEndOfWeek = function(date) {
+	while(!exports.isEndOfWeek(date)) {
+		date =	exports.getNextNonHolidayWeekday(date);
+	} 
+
+	return date;
+};
+
+module.exports.getNextEndOfWeek = function(date) {
+	date = exports.getDate(date);
+	const endOfWeekDate = exports.getEndOfWeek(date);
+	const difference = moment(exports.getCurrentDate()).diff(endOfWeekDate, 'days');
+	if (difference < 7) {
+		return exports.getEndOfWeek(date);
+	} else {
+		//Set 7 days forward
+		date.setDate(date.getDate() + 7);
+		return exports.getEndOfWeek(date);
+	}
+};
+
+module.exports.getEndOfLastWeek = function(date) {
+	date = exports.getDate(date);
+	
+	//Set 7 days backs
+	date.setDate(date.getDate() - 7);
+	return exports.getEndOfWeek(date);
+	
+}; 
+
+const holidays = [
+	"2018-08-22",
+	"2018-09-13",
+	"2018-09-20",
+	"2018-10-02",
+	"2018-10-18",
+	"2018-11-07",
+	"2018-11-08",
+	"2018-11-23",
+	"2018-12-25",
+	"2019-01-26",
+	"2019-03-04",
+	"2019-03-21",
+	"2019-04-13",
+	"2019-04-14",
+	"2019-04-17",
+	"2019-04-19",
+	"2019-05-01",
+	"2019-06-05",
+	"2019-08-12",
+	"2019-08-15",
+	"2019-09-02",
+	"2019-09-10",
+	"2019-10-02",
+	"2019-10-08",
+	"2019-10-27",
+	"2019-10-28",
+	"2019-11-12",
+	"2019-12-25"
+].map(item => exports.getDate(item));
+

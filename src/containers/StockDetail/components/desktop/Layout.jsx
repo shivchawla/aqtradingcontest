@@ -32,7 +32,7 @@ export default class LayoutMobile extends React.Component {
         const {rollingPerformance = {}} = this.props;
 
         return (
-            <RollingPerformance rollingPerformance={rollingPerformance} />
+            <RollingPerformance rollingPerformance={rollingPerformance} small={true} />
         );
     }
 
@@ -61,7 +61,7 @@ export default class LayoutMobile extends React.Component {
                         <HighStock 
                             series={[series]} 
                             intraDaySeries={intraDaySeries} 
-                            height={250}
+                            height={200}
                             getStockPriceHistory={this.props.getStockPriceHistory}
                         />
                     </Grid>

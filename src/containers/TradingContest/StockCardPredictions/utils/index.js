@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
-import {targetKvp, horizonKvp} from '../constants';
+import {targetKvp, horizonKvp, investmentKvp} from '../constants';
 import {getStockTicker} from '../../utils';
 import {sectors} from '../../../../constants';
 const dateFormat = 'YYYY-MM-DD';
@@ -12,7 +12,9 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultTarget = _.get(defaultStockData, 'target', 2);
     const defaultHorizon = _.get(defaultStockData, 'horizon', 1);
     const defaultBenchmark = _.get(defaultStockData, 'benchmark', 'NIFTY_50');
-    const defaultSector = _.get(defaultStockData, 'sector', '')
+    const defaultSector = _.get(defaultStockData, 'sector', '');
+    const defaultStopLoss = _.get(defaultStockData, 'stopLoss', 5);
+    const defaultInvestment = _.get(defaultStockData, 'investment', 50000);
     const name = _.get(stockData, 'detail.Nse_Name', '');
     const symbol = getStockTicker(stockData);
     // const symbol = _.get(stockData, 'ticker', '');
@@ -48,12 +50,14 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
             {new: true, locked: false}
         ], // adding predictions so that it get's checked in searchs stocks
         benchmark: defaultBenchmark,
-        sector: defaultSector
+        sector: defaultSector,
+        investment: defaultInvestment,
+        stopLoss: defaultStopLoss
     };
 }
 
 export const constructPrediction = (stockData, type = 'buy') => {
-    let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0} = stockData;
+    let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0, investment = 0} = stockData;
     const targetValue = getTargetFromLastPrice(lastPrice, target, type);
     const startDate = moment().format(dateFormat);
     const endDate = moment(DateHelper.getNextNonHolidayWeekday(startDate, horizon)).format(dateFormat);
@@ -68,7 +72,7 @@ export const constructPrediction = (stockData, type = 'buy') => {
                     country: "IN",
                     exchange: "NSE"
                 },
-                    investment: (type === 'buy' ? 1 : -1) * 100,
+                    investment: (type === 'buy' ? 1 : -1) * (investment / 1000),
                     quantity: 0,
                     avgPrice: 0
                 },
@@ -113,6 +117,16 @@ export const getHorizon = (horizonValue = 0) => {
     return horizonValue;
 }
 
+// Gives the investment index from the investment value
+export const getInvestment = (investmentValue = 0) => {
+    const investmentValueIndex = _.findIndex(investmentKvp, target => target.intergerValue === investmentValue);
+    if (investmentValueIndex > -1) {
+        return investmentKvp[investmentValueIndex].index;
+    }
+
+    return investmentValue;
+}
+
 // Checks if custom horizon
 export const checkIfCustomHorizon = (horizonValue = 0) => {
     const horizonValueIndex = _.findIndex(horizonKvp, target => target.value === horizonValue);
@@ -135,6 +149,16 @@ export const getHorizonValue = (value = 0) => {
     const horizonValueIndex = _.findIndex(horizonKvp, target => target.index === value);
     if (horizonValueIndex > -1) {
         return horizonKvp[horizonValueIndex].value;
+    }
+
+    return value;
+}
+
+// Gives the investment value from the investment index
+export const getInvestmentValue = (value = 0) => {
+    const investmentValueIndex = _.findIndex(investmentKvp, target => target.index === value);
+    if (investmentValueIndex > -1) {
+        return investmentKvp[investmentValueIndex].value;
     }
 
     return value;

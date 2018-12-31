@@ -8,7 +8,7 @@ import {Utils} from '../../../../utils';
 
 const neutralColor = '#717171';
 
-export default class ParticipantListItem extends React.Component {
+export default class ParticipantListItemWeekly extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -16,22 +16,21 @@ export default class ParticipantListItem extends React.Component {
 
         return false;
     }
-    
+
     render() {
         const {
             userName = '',
             advisorId = null,
-            cost = 0, 
+            cash = 0, 
             pnl = 0, 
-            rank = 0, 
+            rank = 1, 
             pnlPct = 0, 
-            profitFactor = 0,
-            listType='long'
+            netTotal = 0,
+            netTotalLastWeek='0'
         }  = this.props;
-        
         const medal = getRankMedal(rank);
         const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? neutralColor : metricColor.negative;
-        
+
         return (
             <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(userName, advisorId)}>
                 <Grid 
@@ -66,12 +65,12 @@ export default class ParticipantListItem extends React.Component {
                         {(pnlPct * 100).toFixed(2)}%
                     </SecondaryText>
                     <SecondaryText style={{marginLeft: '5px'}}>
-                        <p style={labelStyle}>Investment</p>
-                        {Utils.formatInvestmentValue(cost)}
+                        <p style={labelStyle}>Net Total</p>
+                        {Utils.formatInvestmentValue(netTotal)}
                     </SecondaryText>
                 </Grid>
             </SGrid>
-        ); 
+        );
     }
 }
 

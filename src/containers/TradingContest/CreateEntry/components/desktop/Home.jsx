@@ -6,6 +6,8 @@ import Icon from '@material-ui/core/Icon';
 import {withStyles} from '@material-ui/core/styles';
 import NavigationList from './HomeListComponent';
 import Footer from '../../../../Footer';
+import RadioGroup from '../../../../../components/selections/RadioGroup';
+import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import {verticalBox, horizontalBox} from '../../../../../constants';
 import * as homeData from '../../../constants/dailycontestconstants';
 import logo from '../../../../../assets/logo-advq-new.png';
@@ -17,12 +19,22 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selected: 'how'
+            selected: 'how',
+            prizeTabView: 0,
+            scoringTabView: 0
         };
     }
 
     onChange = type => {
         this.setState({selected: type});
+    }
+
+    onPrizeTabChange = selected => {
+        this.setState({prizeTabView: selected});
+    }
+
+    onScoringTabChange = selected => {
+        this.setState({scoringTabView: selected});
     }
 
     getConstants = () => {
@@ -31,11 +43,25 @@ class Home extends React.Component {
             case "how":
                 return {type: 'list', data: homeData.howItWorksContents, header: 'How it works?'};
             case "prizes":
-                return {type: 'text', data: homeData.prizeText, header: 'Prizes'};
+                return {
+                    type: 'section', 
+                    data: [
+                        {header: 'Daily', text: homeData.prizeTextDaily},
+                        {header: 'Weekly', text: homeData.prizeTextWeekly},
+                    ], 
+                    header: 'Prizes'
+                };
             case "requirements":
                 return {type: 'list', data: homeData.requirements, header: 'Requirements'};
             case "scoring":
-                return {type: 'text', data: homeData.scoringText, header: 'Scoring'};
+                return {
+                    type: 'section', 
+                    data: [
+                        {header: 'Daily', text: homeData.scoringTextDaily},
+                        {header: 'Weekly', text: homeData.scoringTextWeekly},
+                    ], 
+                    header: 'Scoring'
+                };
             case "faq":
                 return {type: 'list', data: homeData.faqs, header: 'FAQ'};
             default:
@@ -64,7 +90,7 @@ class Home extends React.Component {
                                 onClick={() => window.location =' /home'}
                             />
                             <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                                <PageHeader>Stock Prediction Contest</PageHeader>
+                                <PageHeader>Virtual Trading Contest</PageHeader>
                                 <PageSubHeader>Pick your stocks, set your predictions and win prizes everyday</PageSubHeader>
                             </div>
                         </div>
@@ -94,12 +120,25 @@ class Home extends React.Component {
                                 position: 'relative',
                             }}
                     >
-                        <RightContainerHeader>{content.header}</RightContainerHeader>
-                        <ListComponent 
-                            list={content.type === 'list' ? content.data : []}
-                            type={content.type}
-                            text={content.type === 'text' ? content.data : ''}
-                        />
+                        <div 
+                                style={{
+                                    ...verticalBox, 
+                                    alignItems: 'flex-start', 
+                                    width: '100%',
+                                    position: 'relative'
+                                }}
+                        >
+                            <RightContainerHeader>{content.header}</RightContainerHeader>
+                        </div>
+                        {
+                            (this.state.selected === "prizes" || this.state.selected === "scoring") 
+                            ?   <SectionComponent data={content.data}/>
+                            :   <ListComponent 
+                                    list={content.type === 'list' ? content.data : []}
+                                    type={content.type}
+                                    text={content.type === 'text' ? content.data : ''}
+                                />
+                        }
                     </RightContainer>
                     <Grid item xs={12} style={{marginTop: '400px'}}>
                         <Footer />
@@ -112,6 +151,28 @@ class Home extends React.Component {
 
 export default withStyles(desktopStyles)(Home);
 
+const SectionComponent  = ({data}) => {
+    return (
+        <div 
+                style={{
+                    ...verticalBox,
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    marginTop: '40px'
+                }}
+        >
+            {
+                data.map((item, key) => (
+                    <div style={{...verticalBox, alignItems: 'flex-start', marginTop: '20px'}} key={key}>
+                        <h3 style={{marginTop: '20px', color: '#00418c'}}>{item.header}</h3>
+                        <TextComponent text={item.text} style={{color: '#6E6E6E'}}/>
+                    </div>
+                ))
+            }
+        </div>
+    );
+}
+
 const ListComponent = ({type = 'list', list = [], text = ''}) => {
     return (
         <div 
@@ -119,8 +180,8 @@ const ListComponent = ({type = 'list', list = [], text = ''}) => {
                     ...verticalBox, 
                     alignItems: 'flex-start', 
                     justifyContent: 'flex-start',
-                    width: '80%',
-                    position: 'absolute',
+                    width: '100%',
+                    marginTop: '20px',
                     top: type === 'list' ? '120px' : '40%',
                 }}
         >
@@ -169,7 +230,7 @@ const ListItem = ({header, content}) => {
     );
 }
 
-const TextComponent = ({text}) => {
+const TextComponent = ({text, style={}}) => {
     return (
         <h3 
                 style={{
@@ -177,7 +238,8 @@ const TextComponent = ({text}) => {
                     color: '#00418C',
                     fontWeight: 400,
                     lineHeight: '28px',
-                    textAlign: 'start'
+                    textAlign: 'start',
+                    ...style
                 }}
         >
             {text}
@@ -286,6 +348,5 @@ const RightContainerHeader = styled.h3`
     font-weight: 500;
     text-align: start;
     margin-top: 20px;
-    position: absolute;
     left: 10%;
 `;
