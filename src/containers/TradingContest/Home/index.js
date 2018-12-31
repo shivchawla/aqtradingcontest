@@ -8,12 +8,13 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Carousel from 'nuka-carousel';
 import Footer from '../../Footer';
+import RadioGroup from '../../../components/selections/RadioGroup';
+import CustomRadio from '../../Watchlist/components/mobile/WatchlistCustomRadio';
 import {primaryColor, secondaryColor, verticalBox} from '../../../constants';
 import {DailyContestHomeMeta} from '../metas';
-import {howItWorksContents, prizeText, requirements, scoringText, faqs} from '../constants/dailycontestconstants';
+import {howItWorksContents, prizeTextDaily, requirements, scoringTextDaily, scoringTextWeekly, faqs, prizeTextWeekly} from '../constants/dailycontestconstants';
 import AqLayout from '../../../components/ui/AqLayout';
 import './home.css';
-import TradingContestBgImg from '../../../assets/trading-contest-bg-2.svg';
 
 export default class ContestHome extends React.Component {
     constructor(props) {
@@ -27,7 +28,9 @@ export default class ContestHome extends React.Component {
             userEntries: [], // advices of the user inside contest,
             selectedUserEntryPage: 0,
             contactUsModalVisible: false,
-            selectedTab: 0
+            selectedTab: 0,
+            prizeTabView: 0,
+            scoringTabView: 0
         }
     }
 
@@ -83,9 +86,25 @@ export default class ContestHome extends React.Component {
         );
     }
 
+    onPrizeTabChange = selected => {
+        this.setState({prizeTabView: selected});
+    }
+
+    onScoringTabChange = selected => {
+        this.setState({scoringTabView: selected});
+    }
+
     renderPrizeList = () => {
         return (
             <Grid container style={{padding: '0 10px'}}>
+                <Grid item xs={12} style={{marginTop: '20px'}}>
+                    <RadioGroup
+                        items={['Daily', 'Weekly']}
+                        defaultSelected={this.state.prizeTabView}
+                        onChange={this.onPrizeTabChange}
+                        CustomRadio={CustomRadio}
+                    />
+                </Grid>
                 <Grid item xs={12} style={{marginTop: '20px'}}>
                     <h3 
                             style={{
@@ -94,7 +113,11 @@ export default class ContestHome extends React.Component {
                                 fontWeight: 400,
                             }}
                     >
-                        {prizeText}
+                        {
+                            this.state.prizeTabView === 0
+                            ? prizeTextDaily
+                            : prizeTextWeekly
+                        }
                     </h3>
                 </Grid>
             </Grid>
@@ -121,11 +144,19 @@ export default class ContestHome extends React.Component {
     renderScoring = () => {
         const scoring = {
             header: 'Scoring Function', 
-            content: scoringText, 
+            content: this.state.scoringTabView === 0 ? scoringTextDaily : scoringTextWeekly, 
         };
 
         return (
             <Grid container>
+                <Grid item xs={12} style={{marginTop: '20px'}}>
+                    <RadioGroup
+                        items={['Daily', 'Weekly']}
+                        defaultSelected={this.state.scoringTabView}
+                        onChange={this.onScoringTabChange}
+                        CustomRadio={CustomRadio}
+                    />
+                </Grid>
                 <Grid item xs={12} style={{marginTop: '20px'}}>
                     <ScoringCard {...scoring} />
                 </Grid>
@@ -185,7 +216,7 @@ export default class ContestHome extends React.Component {
             <AqLayout
                 loading={this.state.loading}
                 theme='dark'
-                pageTitle='Stock Prediction Contest'
+                pageTitle='Virtual Trading Contest'
                 navbarStyle={{
                     backgroundColor: '#00b79c'
                 }}
@@ -248,13 +279,13 @@ const RequirementCard = ({header, content, span=12, height=80}) => {
 const ScoringCard = ({header, content, metrics}) => {
     const containerStyle = {
         ...verticalBox,
-        alignItems: 'flex-start'
+        alignItems: 'center'
     }
     return (
         <Grid container style={{padding: '0 10px',marginBottom: '30px'}}>
             <Grid item xs={12} style={containerStyle}>
-                <h3 style={cardHeaderTextStyle}>{header}</h3>
-                <h5 style={{...cardContentTextStyle, textAlign: 'start', marginTop: '10px'}}>{content}</h5>
+                <h3 style={{...cardHeaderTextStyle, textAlign: 'center'}}>{header}</h3>
+                <h5 style={{...cardContentTextStyle, textAlign: 'center', marginTop: '10px'}}>{content}</h5>
             </Grid>
         </Grid>
     );

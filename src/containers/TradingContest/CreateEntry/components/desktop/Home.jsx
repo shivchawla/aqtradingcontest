@@ -6,6 +6,8 @@ import Icon from '@material-ui/core/Icon';
 import {withStyles} from '@material-ui/core/styles';
 import NavigationList from './HomeListComponent';
 import Footer from '../../../../Footer';
+import RadioGroup from '../../../../../components/selections/RadioGroup';
+import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import {verticalBox, horizontalBox} from '../../../../../constants';
 import * as homeData from '../../../constants/dailycontestconstants';
 import logo from '../../../../../assets/logo-advq-new.png';
@@ -17,12 +19,22 @@ class Home extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selected: 'how'
+            selected: 'how',
+            prizeTabView: 0,
+            scoringTabView: 0
         };
     }
 
     onChange = type => {
         this.setState({selected: type});
+    }
+
+    onPrizeTabChange = selected => {
+        this.setState({prizeTabView: selected});
+    }
+
+    onScoringTabChange = selected => {
+        this.setState({scoringTabView: selected});
     }
 
     getConstants = () => {
@@ -31,11 +43,19 @@ class Home extends React.Component {
             case "how":
                 return {type: 'list', data: homeData.howItWorksContents, header: 'How it works?'};
             case "prizes":
-                return {type: 'text', data: homeData.prizeText, header: 'Prizes'};
+                return {
+                    type: 'text', 
+                    data: this.state.prizeTabView === 0 ? homeData.prizeTextDaily : homeData.prizeTextWeekly, 
+                    header: 'Prizes'
+                };
             case "requirements":
                 return {type: 'list', data: homeData.requirements, header: 'Requirements'};
             case "scoring":
-                return {type: 'text', data: homeData.scoringText, header: 'Scoring'};
+                return {
+                    type: 'text', 
+                    data: this.state.scoringTabView === 0 ? homeData.scoringTextDaily : homeData.scoringTextWeekly, 
+                    header: 'Scoring'
+                };
             case "faq":
                 return {type: 'list', data: homeData.faqs, header: 'FAQ'};
             default:
@@ -94,7 +114,26 @@ class Home extends React.Component {
                                 position: 'relative',
                             }}
                     >
-                        <RightContainerHeader>{content.header}</RightContainerHeader>
+                        <div 
+                                style={{
+                                    ...verticalBox, 
+                                    alignItems: 'flex-start', 
+                                    width: '100%',
+                                    position: 'relative'
+                                }}
+                        >
+                            <RightContainerHeader>{content.header}</RightContainerHeader>
+                            {
+                                (this.state.selected === "prizes" || this.state.selected === "scoring") &&
+                                <RadioGroup
+                                    items={['Daily', 'Weekly']}
+                                    defaultSelected={this.state.prizeTabView}
+                                    onChange={this.onPrizeTabChange}
+                                    CustomRadio={CustomRadio}
+                                    style={{marginTop: '20px'}}
+                                />
+                            }
+                        </div>
                         <ListComponent 
                             list={content.type === 'list' ? content.data : []}
                             type={content.type}
@@ -119,8 +158,8 @@ const ListComponent = ({type = 'list', list = [], text = ''}) => {
                     ...verticalBox, 
                     alignItems: 'flex-start', 
                     justifyContent: 'flex-start',
-                    width: '80%',
-                    position: 'absolute',
+                    width: '100%',
+                    marginTop: '20px',
                     top: type === 'list' ? '120px' : '40%',
                 }}
         >
@@ -286,6 +325,5 @@ const RightContainerHeader = styled.h3`
     font-weight: 500;
     text-align: start;
     margin-top: 20px;
-    position: absolute;
     left: 10%;
 `;

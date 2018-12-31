@@ -11,7 +11,8 @@ import createPortfolio from '../../../assets/CreatePortfolio.svg';
 import updateEntry from '../../../assets/UpdateEntry.svg';
 import winPrize from '../../../assets/WinPrizes.svg';
 
-export const scoringText = 'The theme of the Stock Prediction Contest is to award best stock pickers with most profitable ideas. For this purpose, our scoring function will only depend on net realized profit on anyday.';
+export const scoringTextDaily = 'The theme of the Stock Prediction Contest is to award best stock pickers with most profitable ideas. For this purpose, our scoring function will only depend on net realized profit on anyday.';
+export const scoringTextWeekly = 'The theme of the Stock Prediction Contest is to award best stock pickers with most profitable ideas. For this purpose, our scoring function will only depend on net realized profit on anyday.';
 
 
 export const faqs = [
@@ -69,7 +70,8 @@ export const howItWorksContents = [
     {image: winPrize, header: 'Win prizes daily', content: 'Highest realized profit win cash prizes everyday'}
 ];
 
-export const prizeText = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";
+export const prizeTextDaily = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";
+export const prizeTextWeekly = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";
 
 export const requirements = [
     {header: 'Profitability', content: 'Net Profit/Loss on each day must be positive to win prizes.'},

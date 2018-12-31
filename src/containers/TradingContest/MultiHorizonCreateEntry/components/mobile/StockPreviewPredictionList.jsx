@@ -51,10 +51,10 @@ export default class StockEditPredictionList extends React.Component {
                             onOk={this.onDialogOkPressed}
                             onCancel={this.toggleDeletePredictionDialog}
                             action
-                            title='Stop Prediction'
+                            title='Exit Prediction'
                     >
                         <DialogText>
-                            Are you sure you want to stop this prediction?
+                            Are you sure you want to exit this prediction?
                         </DialogText>
                     </DialogComponent>
                     {
