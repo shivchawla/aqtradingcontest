@@ -54,7 +54,7 @@ export default class StockEditPredictionList extends React.Component {
                         onOk={this.onDialogOkPressed}
                         onCancel={this.toggleDeletePredictionDialog}
                         // action={!stopPredictionLoading}
-                        title='Stop Prediction'
+                        title='Exit Prediction'
                         style={{
                             paddingBottom: 0,
                             height: '80px'
@@ -62,7 +62,7 @@ export default class StockEditPredictionList extends React.Component {
                 >
                     {stopPredictionLoading && <TranslucentLoader style={{top: 0, left: 0}}/>}
                     <DialogText>
-                        Are you sure you want to stop this prediction?
+                        Are you sure you want to exit this prediction?
                     </DialogText>
                     {
                         <div 
