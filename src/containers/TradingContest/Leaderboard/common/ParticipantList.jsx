@@ -2,8 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
-import ParticipantListItemMobile from '../mobile/ParticipantListItem';
+import ParticipantListItemMobileDaily from '../mobile/ParticipantListItem';
+import ParticipantListItemMobileWeekly from '../mobile/ParticipantListItemWeekly';
 import ParticipantListItemDesktop from '../desktop/ParticipantListItem';
+import ParticipantListItemDesktopWeekly from '../desktop/ParticipantListItemWeekly';
 
 export default class ParticipantList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -15,14 +17,21 @@ export default class ParticipantList extends React.Component {
     }
 
     renderWinners = () => {
-        const {winners = [], listType = 'long'} = this.props;
-        const ParticipantListItem = global.screen.width < 801 ? ParticipantListItemMobile : ParticipantListItemDesktop;
+        const {winners = [], type = 'daily', winnersWeekly = []} = this.props;
+        const requiredWinners = type === 'daily' ? winners : winnersWeekly;
+        const ParticipantListItem = global.screen.width < 801 
+            ? type === 'daily'
+                ? ParticipantListItemMobileDaily
+                : ParticipantListItemMobileWeekly 
+            : type === 'daily' 
+                ? ParticipantListItemDesktop
+                : ParticipantListItemDesktopWeekly
 
-        return winners.map((winner, index) => (
+        return requiredWinners.map((winner, index) => (
             <ParticipantListItem 
                 key={index} 
                 {...winner} 
-                listType={listType}
+                type={type}
                 toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
             />
         ));

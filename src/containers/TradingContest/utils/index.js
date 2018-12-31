@@ -197,18 +197,26 @@ export const processLeaderboardWinners = (leaders = []) => {
         const userName = _.get(leader, 'user.firstName', '') + ' ' + _.get(leader, 'user.lastName', '');
         const advisorId = _.get(leader, 'advisor', null);
         const pnl = _.get(leader, 'pnlStats.pnl', 0);
-
         const pnlPct = _.get(leader, 'pnlStats.pnlPct', 0);
-
         const cost = _.get(leader, 'pnlStats.cost', 0);
-
-        const netValue = _.get(leader, 'pnlStats.netValue', 0);
-
         const profitFactor = _.get(leader, 'pnlStats.profitFactor', 0);
+        const netTotal = _.get(leader, 'pnlStats.netTotal', 0);
+        const netTotalLastWeek = _.get(leader, 'pnlStats.netTotalLastWeek', 0);
+        const cash = _.get(leader, 'pnlStats.cash', 0);
+        const rank = _.get(leader, 'rank', 0);
 
-        const rank = _.get(leader, 'rank', 0)
-
-        return {userName, pnl, pnlPct, cost, netValue, profitFactor, rank, advisorId};
+        return {
+            userName, 
+            pnl, 
+            pnlPct, 
+            cost, 
+            profitFactor, 
+            rank, 
+            advisorId,
+            netTotal,
+            netTotalLastWeek,
+            cash
+        };
     })
 }
 

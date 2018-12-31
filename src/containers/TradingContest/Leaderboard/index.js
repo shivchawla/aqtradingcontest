@@ -15,7 +15,9 @@ class Participants extends React.Component {
         super(props);
         this.state = {
             selectedDate: props.selectedDate || moment(),
+            type: props.type || 'daily',
             winners: [],
+            winnersWeekly: [],
             loading: false,
             userProfileBottomSheetOpenStatus: false,
             selectedAdvisor: {
@@ -39,19 +41,23 @@ class Participants extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        this.setState({type: nextProps.type || 'daily'});
         if (this.props.selectedDate.format(dateFormat) !== nextProps.selectedDate.format(dateFormat)) {
             this.setState({
-                selectedDate: nextProps.selectedDate
-            }, this.fetchLeaderboard(nextProps.selectedDate));
+                selectedDate: nextProps.selectedDate,
+            }, this.fetchLeaderboard(nextProps.selectedDate, nextProps.type));
         }
     } 
 
-    fetchLeaderboard = (selectedDate = moment()) => {
+    fetchLeaderboard = (selectedDate = moment(), type = 'daily') => {
         this.setState({loading: true});
         getLeaderboard(selectedDate, this.props.history, this.props.match.params, false)
         .then(async response => {
-            const winners = await processLeaderboardWinners(_.get(response, 'data.winners', []));
-            this.setState({winners});
+            const winnerData = _.get(response, 'data.dailyWinners', [])
+            const winnerDataWeekly = _.get(response, 'data.weeklyWinners', []);
+            const winners = await processLeaderboardWinners(winnerData);
+            const winnersWeekly = await processLeaderboardWinners(winnerDataWeekly);
+            this.setState({winners, winnersWeekly});
         })
         .catch(err => {
             console.log(err);
@@ -78,9 +84,10 @@ class Participants extends React.Component {
     }
 
     render() {
-        const {winners = []} = this.state;
+        const {winners = [], winnersWeekly = []} = this.state;
         const props = {
             winners,
+            winnersWeekly,
             endDate: this.state.endDate,
             startDate: this.state.startDate,
             contestActive: this.state.contestActive,
@@ -91,7 +98,8 @@ class Participants extends React.Component {
             loading: this.state.loading,
             userProfileBottomSheetOpenStatus: this.state.userProfileBottomSheetOpenStatus,
             selectedAdvisor: this.state.selectedAdvisor,
-            toggleUserProfileBottomSheet: this.toggleUserProfileBottomSheet
+            toggleUserProfileBottomSheet: this.toggleUserProfileBottomSheet,
+            type: this.state.type
         };
 
         return (

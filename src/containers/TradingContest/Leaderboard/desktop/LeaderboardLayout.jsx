@@ -33,7 +33,7 @@ export default class TopPicksLayout extends React.Component {
     }
 
     renderContent() {
-        const winners = this.props.winners;
+        const {winners = [], winnersWeekly = []} = this.props;
 
         return (
             <SGrid container>
@@ -44,18 +44,6 @@ export default class TopPicksLayout extends React.Component {
                             alignItems: 'flex-start'
                         }}
                 >
-                    {/* <div 
-                            style={{
-                                ...horizontalBox, 
-                                width: '100%', 
-                                justifyContent: 'flex-end'
-                            }}
-                    >
-                        <RadioGroup 
-                            items={['TOTAL', 'LONG', 'SHORT']}
-                            onChange={this.onRadioChange}
-                        />
-                    </div> */}
                     <div 
                             style={{
                                 marginLeft: '3%', 
@@ -69,7 +57,8 @@ export default class TopPicksLayout extends React.Component {
                             ?   <NoDataFound /> 
                             :   <LeaderboardTable 
                                     winners={winners}
-                                    listType={this.state.listType}
+                                    winnersWeekly={winnersWeekly}
+                                    type={this.props.type}
                                 />
                         }
                     </div>

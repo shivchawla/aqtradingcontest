@@ -26,7 +26,10 @@ class DateComponent extends React.Component {
     }
 
     navigateToPreviousDate = () => {
-        const date = moment(DateHelper.getPreviousNonHolidayWeekday(this.state.selectedDate.toDate()));
+        const {type ='daily'} = this.props;
+        const date = type === 'daily' 
+            ? moment(DateHelper.getPreviousNonHolidayWeekday(this.state.selectedDate.toDate()))
+            : moment(DateHelper.getEndOfLastWeek(this.state.selectedDate.toDate()));
         window.history.pushState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
         this.props.history.push(this.constructUrlDate(date));
         this.setState({selectedDate: date}, () => this.onDateChange());
@@ -37,7 +40,10 @@ class DateComponent extends React.Component {
     }
 
     navigateToNextDate = () => {
-        const date = moment(DateHelper.getNextNonHolidayWeekday(this.state.selectedDate.toDate()));
+        const {type ='daily'} = this.props;
+        const date = type === 'daily' 
+            ? moment(DateHelper.getNextNonHolidayWeekday(this.state.selectedDate.toDate()))
+            : moment(DateHelper.getNextEndOfWeek(this.state.selectedDate.toDate()));
         if (!this.isFutureDate(date)) {
             window.history.pushState("", "AdviceQube: Daily Trading Contest", this.constructUrlDate(date));
             this.props.history.push(this.constructUrlDate(date));
@@ -80,8 +86,12 @@ class DateComponent extends React.Component {
         return DateHelper.isHoliday(date.toDate());
     }
 
+    disabledDateWeekly = date => {
+        return !DateHelper.isEndOfWeek(date.toDate());
+    }
+
     renderCompactView = () => {
-        const {color = '#fff'} = this.props;
+        const {color = '#fff', type ='daily'} = this.props;
         const { selectedDate } = this.state;
 
         return (
@@ -97,7 +107,11 @@ class DateComponent extends React.Component {
                     format='DD MMM'
                     value={selectedDate}
                     onChange={this.handleDateChange}
-                    shouldDisableDate={this.disabledDate}
+                    shouldDisableDate={
+                        date => type === 'daily'
+                            ? this.disabledDate(date)
+                            : this.disabledDateWeekly(date)
+                    }
                     style={{textAlign: 'center'}}
                     TextFieldComponent={DateFields}
                     color={color}
