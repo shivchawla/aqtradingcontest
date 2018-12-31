@@ -142,6 +142,7 @@ class AqDesktopLayout extends React.Component {
                                             selectedDate={this.props.selectedDate}
                                             color='#1763c6'
                                             onDateChange={this.props.handleDateChange}
+                                            type={this.props.dateType || 'daily'}
                                         />
                                     }
                                     <ActionIcon 

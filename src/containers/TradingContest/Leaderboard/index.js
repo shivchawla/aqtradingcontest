@@ -99,7 +99,9 @@ class Participants extends React.Component {
             userProfileBottomSheetOpenStatus: this.state.userProfileBottomSheetOpenStatus,
             selectedAdvisor: this.state.selectedAdvisor,
             toggleUserProfileBottomSheet: this.toggleUserProfileBottomSheet,
-            type: this.state.type
+            type: this.props.type,
+            handleLeaderboardTypeChange: this.props.handleLeaderboardTypeChange,
+            handleDateChange: this.props.handleDateChange
         };
 
         return (

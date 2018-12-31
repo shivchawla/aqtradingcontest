@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import LoaderComponent from '../../Misc/Loader';
 import LeaderboardTable from './LeaderboardTable';
 import RadioGroup from '../../../../components/selections/RadioGroup';
+import CustomRadio from '../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import {verticalBox, horizontalBox} from '../../../../constants';
 import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
@@ -11,32 +12,37 @@ export default class TopPicksLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listType: 'total'
+            listType: 'total',
         };
     }
 
-    onRadioChange = value => {
-        switch(value) {
-            case 0:
-                this.setState({listType: 'total'});
-                break;
-            case 1:
-                this.setState({listType: 'long'});
-                break;
-            case 2:
-                this.setState({listType: 'short'});
-                break;
-            default:
-                this.setState({listType: 'total'});
-                break;
-        }
+    handleLeaderboardTypeChange = value => {
+        this.setState({leaderTypeView: value});
     }
 
     renderContent() {
         const {winners = [], winnersWeekly = []} = this.props;
+        const type = this.props.type === 0 ? 'daily' : 'weekly';
 
         return (
             <SGrid container>
+                <Grid 
+                        item 
+                        xs={12}
+                        style={{
+                            ...horizontalBox,
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}
+                >
+                    <RadioGroup
+                        items={['Daily', 'Weekly']}
+                        defaultSelected={this.props.type}
+                        onChange={this.props.handleLeaderboardTypeChange}
+                        CustomRadio={CustomRadio}
+                        style={{marginLeft: '3%'}}
+                    />
+                </Grid>
                 <Grid 
                         item xs={12} 
                         style={{
@@ -58,7 +64,7 @@ export default class TopPicksLayout extends React.Component {
                             :   <LeaderboardTable 
                                     winners={winners}
                                     winnersWeekly={winnersWeekly}
-                                    type={this.props.type}
+                                    type={type}
                                 />
                         }
                     </div>

@@ -43,6 +43,7 @@ class TradingContest extends React.Component {
             selectedTab: 0,
             selectedDate: defaultDate,
             bottomSheetOpen: false,
+            leaderboardType: 0
         };
         this.eventEmitter = new Event();
     }
@@ -68,7 +69,7 @@ class TradingContest extends React.Component {
             selectedDate = defaultDate;
         }
         this.props.history.push(url);
-        this.setState({selectedTab, selectedDate});
+        this.setState({selectedTab, selectedDate, leaderboardType: 0});
     };
 
     handleChangeMobile = selectedTab => {
@@ -82,7 +83,7 @@ class TradingContest extends React.Component {
             selectedDate = defaultDate;
         }
         this.props.history.push(url);
-        this.setState({selectedTab, selectedDate});
+        this.setState({selectedTab, selectedDate, leaderboardType: 0});
     }
 
     getSelectedPage = (selectedTab = 1) => {
@@ -221,6 +222,10 @@ class TradingContest extends React.Component {
         return <Redirect push to='/login' />;
     }
 
+    handleLeaderboardTypeChange = value => {
+        this.setState({leaderboardType: value});
+    }
+
     renderMobile = () => {
         const {selectedTab} = this.state;
         const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
@@ -352,6 +357,7 @@ class TradingContest extends React.Component {
 
     renderDesktop = () => {
         const {classes} = this.props;
+        const leaderboardDateType = this.state.leaderboardType === 0 ? 'daily' : 'weekly';
 
         return (
             <div className={classes.root}>
@@ -365,6 +371,7 @@ class TradingContest extends React.Component {
                         rightContainer={this.renderStockCardPredictionsDesktop}
                         eventEmitter={this.eventEmitter}
                         onSettingsClicked={this.onDesktopSettingsClicked}
+                        dateType={leaderboardDateType}
                 >
                     <React.Suspense fallback={<Loader />}>
                         <Switch>
@@ -410,6 +417,8 @@ class TradingContest extends React.Component {
                                 render={() => Utils.isLoggedIn()
                                     ?   <Leaderboard 
                                             selectedDate={this.state.selectedDate}
+                                            type={this.state.leaderboardType}
+                                            handleLeaderboardTypeChange={this.handleLeaderboardTypeChange}
                                         />
                                     :   this.redirectToLogin(`${this.props.match.path}/leaderboard`)
                                 }
