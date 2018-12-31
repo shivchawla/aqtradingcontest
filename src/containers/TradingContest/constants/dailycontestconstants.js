@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-09-11 20:06:27
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-12-31 17:33:46
+* @Last Modified time: 2018-12-31 18:38:42
 */
 
 import React, {Fragment} from 'react'
@@ -11,8 +11,8 @@ import createPortfolio from '../../../assets/CreatePortfolio.svg';
 import updateEntry from '../../../assets/UpdateEntry.svg';
 import winPrize from '../../../assets/WinPrizes.svg';
 
-export const scoringTextDaily = 'The theme of the Stock Prediction Contest is to award best stock pickers with most profitable ideas. For this purpose, our scoring function will only depend on net realized profit on anyday.';
-export const scoringTextWeekly = 'The theme of the Stock Prediction Contest is to award best stock pickers with most profitable ideas. For this purpose, our scoring function will only depend on net realized profit on anyday.';
+export const scoringTextDaily = "At the end of each trading day, ONLY active predictions on that date are considered and participant's profit/loss (%) is used to select winners";
+export const scoringTextWeekly = "At the end of each trading week, percentage change in Net Value from last week's Net Value will determine the weekly winners";
 
 
 export const faqs = [
@@ -70,8 +70,9 @@ export const howItWorksContents = [
     {image: winPrize, header: 'Win prizes every day, week and month', content: 'Win cash prizes worth Rs. 30,000 every month.'}
 ];
 
-export const prizeTextDaily = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";
-export const prizeTextWeekly = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";
+export const prizeTextDaily = "The top 3 contest participants are awarded Rs 100 everyday.";
+export const prizeTextWeekly = "The top 3 contest participants are awarded Rs 500, Rs 300 and Rs 200 respectively.";
+export const prizeTextMonthly = "All participants will get 10% of the adjusted profits over the benchmark*";
 
 export const requirements = [
     {header: 'Stock Universe', content: 'You can only buy/sell stocks that are valid NIFTY 500 constituents.'},
