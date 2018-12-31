@@ -26,7 +26,7 @@ export default class ParticipantListItem extends React.Component {
             listType='long'
         }  = this.props;
         const medal = getRankMedal(rank);
-        const changeColor = pnl[listType] > 0 ? metricColor.positive : pnl[listType] === 0 ? metricColor.neutral : metricColor.negative;
+        const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? metricColor.neutral : metricColor.negative;
 
         return (
             <SGrid container>
@@ -38,21 +38,21 @@ export default class ParticipantListItem extends React.Component {
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={changeColor}>
-                        ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl[listType] * 1000)}
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl * 1000)}
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={changeColor}>
-                        {(pnlPct[listType] * 100).toFixed(2)}%
+                        {(pnlPct * 100).toFixed(2)}%
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={3}>
                     <SecondaryText color='#464646' fontWeight='500'>
-                        {(profitFactor[listType] || 0).toFixed(2)}
+                        {(profitFactor || 0).toFixed(2)}
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <SecondaryText color={primaryColor}>{Utils.formatInvestmentValue(cost[listType])}</SecondaryText>
+                    <SecondaryText color={primaryColor}>{Utils.formatInvestmentValue(cost)}</SecondaryText>
                 </Grid>
             </SGrid>
         ); 

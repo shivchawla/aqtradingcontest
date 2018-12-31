@@ -30,7 +30,7 @@ export default class ParticipantListItem extends React.Component {
         }  = this.props;
         
         const medal = getRankMedal(rank);
-        const changeColor = pnl[listType] > 0 ? metricColor.positive : pnl[listType] === 0 ? neutralColor : metricColor.negative;
+        const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? neutralColor : metricColor.negative;
         
         return (
             <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(userName, advisorId)}>
@@ -59,15 +59,15 @@ export default class ParticipantListItem extends React.Component {
                 >
                     <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
                         <p style={labelStyle}>PnL</p>
-                        ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl[listType] * 1000)}
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl * 1000)}
                     </SecondaryText>
                     <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
                         <p style={labelStyle}>PnL Pct</p>
-                        {(pnlPct[listType] * 100).toFixed(2)}%
+                        {(pnlPct * 100).toFixed(2)}%
                     </SecondaryText>
                     <SecondaryText style={{marginLeft: '5px'}}>
                         <p style={labelStyle}>Investment</p>
-                        {Utils.formatInvestmentValue(cost[listType])}
+                        {Utils.formatInvestmentValue(cost)}
                     </SecondaryText>
                 </Grid>
             </SGrid>
