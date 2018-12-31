@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-09-11 20:06:27
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-12-31 18:38:42
+* @Last Modified time: 2019-01-01 00:39:28
 */
 
 import React, {Fragment} from 'react'
@@ -70,7 +70,7 @@ export const howItWorksContents = [
     {image: winPrize, header: 'Win prizes every day, week and month', content: 'Win cash prizes worth Rs. 30,000 every month.'}
 ];
 
-export const prizeTextDaily = "The top 3 contest participants are awarded Rs 100 everyday.";
+export const prizeTextDaily = "The top 3 contest participants are awarded Rs 100, Rs 75 and Rs 50 respectively";
 export const prizeTextWeekly = "The top 3 contest participants are awarded Rs 500, Rs 300 and Rs 200 respectively.";
 export const prizeTextMonthly = "All participants will get 10% of the adjusted profits over the benchmark*";
 
