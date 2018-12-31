@@ -2,7 +2,7 @@
 * @Author: Shiv Chawla
 * @Date:   2018-09-11 20:06:27
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-12-31 17:13:46
+* @Last Modified time: 2018-12-31 17:33:46
 */
 
 import React, {Fragment} from 'react'
@@ -66,18 +66,18 @@ export const faqs = [
 
 export const howItWorksContents = [
     {image: createPortfolio, header: 'Pick your stocks', content: 'Select your favorite stocks to Buy or Sell'},
-    {image: updateEntry, header: 'Set your prediction', content: 'Choose price-target/horizon for each stock prediction.'},
-    {image: winPrize, header: 'Win prizes daily', content: 'Highest realized profit win cash prizes everyday'}
+    {image: updateEntry, header: 'Set your prediction', content: 'Choose price-target/horizon/stop-loss for each stock prediction.'},
+    {image: winPrize, header: 'Win prizes every day, week and month', content: 'Win cash prizes worth Rs. 30,000 every month.'}
 ];
 
 export const prizeTextDaily = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";
 export const prizeTextWeekly = "The top 5 contest participants are awarded Rs.100 everyday. The prizes are disbursed at the end of each week.";
 
 export const requirements = [
-    {header: 'Profitability', content: 'Net Profit/Loss on each day must be positive to win prizes.'},
-    {header: 'Stock Universe', content: 'You can only buy stocks that are valid NIFTY 500 constituents.'},
-    {header: 'Shortable Universe', content: 'You can only sell stocks that have valid futue contracts associated with it.'},
-    {header: 'Maximum Predictions', content: 'You can only give a maximum of 10 predictions each day'},
-    
+    {header: 'Stock Universe', content: 'You can only buy/sell stocks that are valid NIFTY 500 constituents.'},
+    {header: "Investment Amount", content: "Investment amount can only be a subset of 10K, 25K, 50K, 75K or 1Lac"},
+    {header: 'Profitability', content: 'Net Profit/Loss must be positive to win prizes.'},
+    {header: 'Maximum Predictions', content: 'You can make as many predictions given availability of virtual cash.'},
+    {header: 'Predictions Per Security', content: 'You can only give a maximum of 3 predictions per security. Only 1 prediction per security/horizon combination.'}
 ];
 
