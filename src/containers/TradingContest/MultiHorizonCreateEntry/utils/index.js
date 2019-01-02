@@ -110,7 +110,11 @@ export const getPortfolioStats = (date = moment(), history, currentUrl, handleEr
 }
 
 export const exitPrediction = predictionId => {
-    const url = `${requestUrl}/dailycontest/exitPrediction?predictionId=${predictionId}`;
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    let url = `${requestUrl}/dailycontest/exitPrediction?predictionId=${predictionId}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}&advisorId=${selectedAdvisorId}`;
+    }
 
     return axios({
         method: 'POST',

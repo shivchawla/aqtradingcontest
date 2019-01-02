@@ -146,16 +146,6 @@ class DisplayPredictions extends React.Component {
                                     </EmptyPositionsText>
 			                    :
 			                	<React.Fragment>
-		                            {
-		                                pnlFound &&
-                                        <div style={{width:'95%', margin: '0 auto'}}>
-    		                                <SelectionMetricsMini 
-    		                                    {..._.get(getRequiredMetrics(), 'cumulative.portfolio', {})}
-                                                onClick={toggleEntryDetailBottomSheet}
-                                                portfolioStats={portfolioStats}
-    		                                />
-                                        </div>
-                                    }
                                     {
                                         this.state.searchInputOpen &&
                                         <div style={{width: '100%'}}>
@@ -246,14 +236,29 @@ class DisplayPredictions extends React.Component {
     }
 
     renderContent() {
-        const {positions = [], activePredictions = []} = this.props;
+        const {
+            toggleEntryDetailBottomSheet,
+            getRequiredMetrics,
+            pnlFound = false,
+            portfolioStats = {}
+        } = this.props;
+        const statsExpanded = (this.props.previewPositions.length === 0 || this.props.noEntryFound);
         
         return (
-            (positions === 0 && activePredictions.length === 0)
-            ?   this.renderEmptySelections()
-            :   <Grid container justify="space-between">
-                    {this.renderPredictionList()}
-                </Grid>
+            <Grid container justify="space-between">
+                {
+                    pnlFound &&
+                    <div style={{width:'95%', margin: '0 auto'}}>
+                        <SelectionMetricsMini 
+                            {..._.get(getRequiredMetrics(), 'cumulative.portfolio', {})}
+                            onClick={toggleEntryDetailBottomSheet}
+                            portfolioStats={portfolioStats}
+                            statsExpanded={statsExpanded}
+                        />
+                    </div>
+                }
+                {this.renderPredictionList()}
+            </Grid>
         );
     }
 
