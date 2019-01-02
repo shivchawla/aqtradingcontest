@@ -224,7 +224,6 @@ const PredictButton = ({onClick}) => {
     const color = '#fff';
     const fontSize = '12px';
     const padding = '4px 8px';
-    // const boxShadow = '0 3px 7px #a3a3a3';
 
     return (
         <ButtonBase 

@@ -4,7 +4,8 @@ import _ from 'lodash';
 import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import ActionIcon from '../../../Misc/ActionIcons';
+import ButtonBase from '@material-ui/core/ButtonBase';
+import Tag from '../../../../../components/Display/Tag';
 import {isMarketOpen} from '../../../utils';
 import {Utils} from '../../../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
@@ -38,29 +39,34 @@ export default class StockPreviewPredictionListItem extends React.Component {
             if (active) {
                 return {
                     type: 'ACTIVE',
-                    color: metricColor.neutral
+                    color: '#a38b22',
+                    backgroundColor: '#fff1bc'
                 };
             } else {
                 return {
                     type: 'MISS',
-                    color: '#FE6662'
+                    color: '#fb50a6',
+                    backgroundColor: '#ffd5f4'
                 }
             }
         } else {
             if (manualExit) {
                 return {
                     type: 'EXITED',
-                    color: '#009688'
+                    color: '#622267',
+                    backgroundColor: '#f0f0ff'
                 }
             } else if (stopLoss) {
                 return {
                     type: 'STOPPED',
-                    color: '#009688'
+                    color: '#622267',
+                    backgroundColor: '#f0f0ff'
                 }
             } else {
                 return {
                     type: 'HIT',
-                    color: '#3EF79B'
+                    color: '#005a8d',
+                    backgroundColor: '#c0e8ff'
                 };
             }
         }
@@ -103,14 +109,17 @@ export default class StockPreviewPredictionListItem extends React.Component {
             lastPrice = 0,
             index = 0,
             priceInterval = {},
-            _id = null
+            _id = null,
+            stopLoss = 0
         } = this.props.prediction;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
         
         const highPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'highPrice', 0));
         const lowPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'lowPrice', 0));
-        const typeColor = type === 'buy' ? 'green' : '#FE6662';
+        const typeColor = type === 'buy' ? '#b2ffd1' : '#ffdada';
+        const typeTextColor = type === 'buy' ? '#039452' : '#ff4343';
+        const typeIconColor = type === 'buy' ? 'green' : '#FE6662';
         const typeText = type === 'buy' ? 'HIGHER' : 'LOWER';
         const iconConfig = this.getIconConfig(status);
         const iconType = type === 'buy' ? 'trending_up' : 'trending_down';
@@ -132,21 +141,37 @@ export default class StockPreviewPredictionListItem extends React.Component {
         return (
 
             <Container container alignItems="flex-end" style={{position: 'relative'}}>
-                <Grid item xs={12} style={{...verticalBox, alignItems: 'center', marginTop: '13px'}}>
-                    {
-                        marketOpen &&
-                        <ActionIcon 
-                            type='power_settings_new' 
-                            size={18} 
-                            color='#737373'
+                <Grid item xs={12} style={{...verticalBox, alignItems: 'center'}}>
+                    <div 
                             style={{
-                                position: 'absolute', 
-                                top: '-5px', 
-                                right: '-5px'
+                                ...horizontalBox, 
+                                justifyContent: 'space-between',
+                                width: '100%',
+                                marginBottom: '8px'
                             }}
-                            onClick={() => this.props.openDialog(_id)}
-                        />
-                    }
+                    >
+                        <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                            <Tag 
+                                label={typeText} 
+                                color={typeTextColor} 
+                                backgroundColor={typeColor} 
+                            />
+                            <Tag 
+                                label={iconConfig.type} 
+                                style={{marginLeft: '10px'}}
+                                color={iconConfig.color} 
+                                backgroundColor={iconConfig.backgroundColor} 
+                            />
+                        </div>
+                        {
+                            marketOpen && iconConfig.type.toLowerCase() === 'active' &&
+                            <StopPredictionButton 
+                                    onClick={() => this.props.openDialog(_id)}
+                            >
+                                EXIT
+                            </StopPredictionButton>
+                        }
+                    </div>
                     <div style={{...horizontalBox, width: '100%', justifyContent: 'space-between'}}>
                         <PriceComponent 
                             label='Call Price'
@@ -155,8 +180,23 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         />
                         <div style={verticalBox}>
                             <ArrowHeaderText>{duration} Days</ArrowHeaderText>
-                            <Icon style={{color: typeColor}}>{iconType}</Icon>
-                            <ArrowHeaderText style={{color: typeColor}}>{typeText}</ArrowHeaderText>
+                            <Icon style={{color: typeIconColor}}>{iconType}</Icon>
+                            <ArrowHeaderText>
+                                SL: 
+                                <span 
+                                        style={{
+                                            color: '#222',
+                                            marginLeft: '4px',
+                                            fontSize: '13px'
+                                        }}
+                                >
+                                    {
+                                        stopLoss === 0
+                                        ? '-'
+                                        : Utils.formatMoneyValueMaxTwoDecimals(stopLoss)
+                                    }
+                                </span>
+                            </ArrowHeaderText>
                         </div>
                         <PriceComponent 
                             label='Target Price'
@@ -200,17 +240,59 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 }
                             </div>
                         </div>
-                        <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                        {/* <div style={{...verticalBox, alignItems: 'flex-start'}}>
                             <MetricLabel>Status</MetricLabel>
                             <div style={{...horizontalBox, minHeight: '22px'}}>
-                                <MetricText color={iconConfig.color}>{iconConfig.type}</MetricText>
+                                <MetricText 
+                                        color={iconConfig.color} 
+                                        style={{fontWeight: 700}}
+                                >
+                                    {iconConfig.type}
+                                </MetricText>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </Grid>
             </Container>
         );
     }
+}
+
+const StopPredictionButton = ({onClick}) => {
+    // const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
+    const background = '#fff';
+    const color = '#FF6161';
+    const fontSize = '12px';
+    const padding = '4px 8px';
+
+    return (
+        <ButtonBase 
+                style={{
+                    ...stopPredictionButtonStyle, 
+                    color,
+                    fontSize,
+                    padding,
+                    background,
+                    marginLeft: '10px',
+                    border: '1px solid #FF6161'
+                }}
+                onClick={onClick}
+        >
+            <span style={{whiteSpace: 'nowrap'}}>EXIT</span>
+        </ButtonBase>
+    );
+} 
+
+const stopPredictionButtonStyle = {
+    padding: '6px 12px',
+    fontSize: '15px',
+    transition: 'all 0.4s ease-in-out',
+    margin: '0 3px',
+    borderRadius: '2px',
+    cursor: 'pointer',
+    color: '#fff',
+    fontFamily: 'Lato, sans-serif',
+    fontWeight: 500
 }
 
 const PriceComponent = ({label, price, date}) => (

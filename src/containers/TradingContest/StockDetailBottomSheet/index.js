@@ -3,6 +3,7 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import BottomSheet from '../../../components/Alerts/BottomSheet';
+import DialogComponent from '../../../components/Alerts/DialogComponent';
 import StockDetail from '../../StockDetail';
 import {Utils} from '../../../utils';
 import ActionIcon from '../Misc/ActionIcons';
@@ -102,6 +103,70 @@ export default class StockDetailBottomSheet extends React.Component {
         );
     }
 
+    renderDialogHeader = () => {
+        const positiveColor = '#32FFD8';
+        const negativeColor = '#FF7B7B';
+        const neutralCOlor = '#DFDFDF';
+        let {
+            name = '',
+            symbol = '',
+            lastPrice=0, 
+            chg=0,
+            chgPct=0
+        } = this.state.stockData;
+        chgPct = Number((chgPct * 100).toFixed(2));
+        const changeColor = chg > 0 ? positiveColor : chg === 0 ? neutralCOlor : negativeColor;
+
+        return (
+            <div 
+                    style={{
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        background: 'linear-gradient(to right, rgb(84, 67, 240), rgb(51, 90, 240))',
+                        position: 'absolute',
+                        width: '100%',
+                        zIndex: 100,
+                        padding: '5px 0',
+                        paddingLeft: '10px',
+                        boxSizing: 'border-box'
+                    }}
+            >
+                <div 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'space-between',
+                            width: '100%'
+                        }}
+                >
+                    <div 
+                            style={{
+                                ...verticalBox, 
+                                alignItems: 'flex-start',
+                            }}
+                    >
+                        <Symbol>{symbol}</Symbol>
+                        <h3 style={nameStyle}>{name}</h3>
+                    </div>
+                    <div 
+                        style={{
+                            ...verticalBox, 
+                            alignItems: 'flex-end',
+                            marginRight: '10px'
+                        }}
+                    >
+                        <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
+                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(chg)} ({chgPct.toFixed(2)}%)</Change>
+                    </div>
+                </div>
+                <ActionIcon 
+                    onClick={this.props.onClose} 
+                    color='#fff'
+                    type="close"
+                />
+            </div>
+        );
+    }
+
     updateStockData = (stockData) => {
         this.setState({stockData: {
             ...this.state.stockData,
@@ -109,7 +174,7 @@ export default class StockDetailBottomSheet extends React.Component {
         }});
     }
 
-    render() {
+    renderBottomsheet = () => {
         return (
             <BottomSheet 
                     open={this.props.open}
@@ -131,6 +196,36 @@ export default class StockDetailBottomSheet extends React.Component {
                 </Container>
             </BottomSheet>
         );
+    }
+
+    renderDialogMode = () => {
+        return (
+            <DialogComponent
+                    open={this.props.open}
+                    onClose={this.props.onClose}
+                    style={{padding: 0}}
+            >
+                {this.renderDialogHeader()}
+                <Container style={{minWidth: '38vw', marginTop: '50px'}}>
+                    <Grid item xs={12}>
+                        <StockDetail 
+                            symbol={this.props.symbol}
+                            updateStockData={this.updateStockData}
+                            selectStock={this.props.selectStock}
+                            toggleStockCardBottomSheet={this.props.toggleStockCardBottomSheet}
+                            toggleStockDetailBottomSheetOpen={this.props.toggleStockDetailBottomSheetOpen}
+                            stockData={this.props.stockData}
+                        />
+                    </Grid>
+                </Container>
+            </DialogComponent>
+        );
+    }
+
+    render() {
+        const {dialog = false} = this.props;
+
+        return dialog ? this.renderDialogMode() : this.renderBottomsheet();
     }
 }
 
@@ -168,4 +263,12 @@ const Change = styled.h3`
     font-family: 'Lato', sans-serif;
     font-weight: 500;
     font-size: 15px;
+`;
+
+const DialogHeader = styled.h3`
+    color: #fff;
+    font-weight: 400;
+    font-family: 'Lato', sans-serif;
+    font-size: 16px;
+    margin-left: 20px;
 `;

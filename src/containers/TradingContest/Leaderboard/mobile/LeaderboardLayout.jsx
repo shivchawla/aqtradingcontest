@@ -3,19 +3,11 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ParticipantList from '../common/ParticipantList';
 import LoaderComponent from '../../Misc/Loader';
-import RadioGroup from '../../../../components/selections/RadioGroup';
 import UserProfileBottomSheet from '../../UserProfile';
 import {verticalBox, horizontalBox} from '../../../../constants';
 import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
 export default class LeaderboardLayout extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            listType: 'total',
-        };
-    }
-
     onRadioChange = value => {
         switch(value) {
             case 0:
@@ -34,7 +26,7 @@ export default class LeaderboardLayout extends React.Component {
     }
 
     renderContent() {
-        const winners = this.props.winners;
+        const {winners = [], winnersWeekly = []} = this.props;
 
         return(
             <SGrid container>
@@ -44,24 +36,13 @@ export default class LeaderboardLayout extends React.Component {
                     advisor={this.props.selectedAdvisor}
                 />
                 <Grid item xs={12} style={listContainer}>
-                    {/* <div 
-                            style={{
-                                ...horizontalBox, 
-                                width: '100%', 
-                                justifyContent: 'flex-end'
-                            }}
-                    >
-                        <RadioGroup 
-                            items={['TOTAL', 'LONG', 'SHORT']}
-                            onChange={this.onRadioChange}
-                        />
-                    </div> */}
                     {
                         winners.length == 0 
                         ?   <NoDataFound /> 
                         :   <ParticipantList 
                                 winners={winners}
-                                listType={this.state.listType}
+                                winnersWeekly={winnersWeekly}
+                                type={this.props.type}
                                 toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
                             />
                     }

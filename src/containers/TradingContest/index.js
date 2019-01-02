@@ -18,11 +18,12 @@ import Icon from '@material-ui/core/Icon';
 import HowItWorksBottomSheet from './HowItWorks/BottomSheet';
 import AqLayoutDesktop from '../../components/ui/AqDesktopLayout';
 import Header from '../Header';
-import {primaryColor, verticalBox, metricColor, horizontalBox} from '../../constants';
-import {isMarketOpen}  from './utils';
+import {primaryColor, horizontalBox} from '../../constants';
 import {Utils} from '../../utils';
-const DateHelper = require('../../utils/date');
+import {Event} from '../../utils/events';
+import {onSettingsClicked, onPredictionCreated} from './constants/events';
 
+const DateHelper = require('../../utils/date');
 const TopPicks = React.lazy(() => import('./TopPicks'));
 const Leaderboard = React.lazy(() => import('./Leaderboard'));
 const CreateEntry = React.lazy(() => import('./MultiHorizonCreateEntry'));
@@ -32,7 +33,7 @@ const StockPredictions = React.lazy(() => import('./StockCardPredictions'));
 const URLSearchParamsPoly = require('url-search-params');
 const dateFormat = 'YYYY-MM-DD';
 const defaultDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate()));
-const tabsWithDate = [1, 2, 3]; // mypicks, toppicks, leaderboard
+const tabsWithDate = [0, 1, 2]; // mypicks, toppicks, leaderboard
 
 class TradingContest extends React.Component {
     params = {}
@@ -42,14 +43,16 @@ class TradingContest extends React.Component {
             selectedTab: 0,
             selectedDate: defaultDate,
             bottomSheetOpen: false,
+            leaderboardType: 0
         };
+        this.eventEmitter = new Event();
     }
 
     getListViewType = (type) => {
-        const allowedTypes = ['active', 'started', 'ended'];
+        const allowedTypes = ['active', 'started', 'ended', 'all'];
         const allowedTypeIndex = allowedTypes.indexOf(type)
         if (allowedTypeIndex === -1) {
-            return 'active';
+            return 'all';
         }
 
         return allowedTypes[allowedTypeIndex];
@@ -66,7 +69,7 @@ class TradingContest extends React.Component {
             selectedDate = defaultDate;
         }
         this.props.history.push(url);
-        this.setState({selectedTab, selectedDate});
+        this.setState({selectedTab, selectedDate, leaderboardType: 0});
     };
 
     handleChangeMobile = selectedTab => {
@@ -80,21 +83,17 @@ class TradingContest extends React.Component {
             selectedDate = defaultDate;
         }
         this.props.history.push(url);
-        this.setState({selectedTab, selectedDate});
+        this.setState({selectedTab, selectedDate, leaderboardType: 0});
     }
 
     getSelectedPage = (selectedTab = 1) => {
         switch(selectedTab) {
             case 0:
-                return 'stockpredictions'
-            case 1:
                 return 'mypicks';
-            case 2:
+            case 1:
                 return 'toppicks';
-            case 3:
+            case 2:
                 return 'leaderboard';
-            case 4:
-                return 'metrics';
             default:
                 return 'mypicks';
         }
@@ -115,16 +114,14 @@ class TradingContest extends React.Component {
 
     getSelectedTab = url => {
         switch(url) {
-            case "/dailycontest/stockpredictions":
-                return 0;
             case "/dailycontest/mypicks":
-                return 1;
+                return 0;
             case "/dailycontest/toppicks":
-                return 2;
+                return 1;
             case "/dailycontest/leaderboard":
-                return 3;
+                return 2;
             case "/dailycontest/metrics":
-                return 4;
+                return 3;
             default:
                 return 0;
         }
@@ -181,6 +178,11 @@ class TradingContest extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        this.eventEmitter.removeEventListener(onPredictionCreated, () => {});
+        this.eventEmitter.removeEventListener(onSettingsClicked, () => {});
+    }
+
     getListViewTypeFromUrl = (props) => {
         const params = new URLSearchParamsPoly(_.get(props, 'location.search', ''));
         if (params) {
@@ -188,11 +190,11 @@ class TradingContest extends React.Component {
             if (listViewType !== null) {
                 return this.getListViewType(listViewType);
             } else {
-                return "active";
+                return "all";
             }
         }
 
-        return "active";
+        return "all";
     }
 
     componentWillMount() {
@@ -218,6 +220,10 @@ class TradingContest extends React.Component {
         Utils.localStorageSave('redirectToUrlFromLogin', redirectUrl);
 
         return <Redirect push to='/login' />;
+    }
+
+    handleLeaderboardTypeChange = value => {
+        this.setState({leaderboardType: value});
     }
 
     renderMobile = () => {
@@ -334,8 +340,24 @@ class TradingContest extends React.Component {
         };
     }
 
+    renderStockCardPredictionsDesktop = () => {
+        return (
+            <StockPredictions 
+                mobile={true}
+                eventEmitter={this.eventEmitter}
+            />
+        );
+    }
+
+    onDesktopSettingsClicked = () => {
+        try {
+            this.eventEmitter.emit(onSettingsClicked, 'Settings Clicked');
+        } catch(err) {}
+    }
+
     renderDesktop = () => {
         const {classes} = this.props;
+        const leaderboardDateType = this.state.leaderboardType === 0 ? 'daily' : 'weekly';
 
         return (
             <div className={classes.root}>
@@ -346,6 +368,10 @@ class TradingContest extends React.Component {
                         handleTabChange={this.handleChange}
                         header={this.getDesktopHeader()}
                         defaultSelected={this.state.selectedTab}
+                        rightContainer={this.renderStockCardPredictionsDesktop}
+                        eventEmitter={this.eventEmitter}
+                        onSettingsClicked={this.onDesktopSettingsClicked}
+                        dateType={leaderboardDateType}
                 >
                     <React.Suspense fallback={<Loader />}>
                         <Switch>
@@ -357,6 +383,7 @@ class TradingContest extends React.Component {
                                             selectedDate={this.state.selectedDate}
                                             componentType='preview'
                                             listViewType={this.getListViewTypeFromUrl(this.props)}
+                                            eventEmitter={this.eventEmitter}
                                         />
                                     :   this.redirectToLogin(`${this.props.match.path}`)
                                 }
@@ -369,6 +396,7 @@ class TradingContest extends React.Component {
                                             selectedDate={this.state.selectedDate}
                                             componentType='preview'
                                             listViewType={this.getListViewTypeFromUrl(this.props)}
+                                            eventEmitter={this.eventEmitter}
                                         />
                                     :   this.redirectToLogin(`${this.props.match.path}/mypicks`)
                                 }
@@ -389,6 +417,8 @@ class TradingContest extends React.Component {
                                 render={() => Utils.isLoggedIn()
                                     ?   <Leaderboard 
                                             selectedDate={this.state.selectedDate}
+                                            type={this.state.leaderboardType}
+                                            handleLeaderboardTypeChange={this.handleLeaderboardTypeChange}
                                         />
                                     :   this.redirectToLogin(`${this.props.match.path}/leaderboard`)
                                 }
@@ -397,8 +427,11 @@ class TradingContest extends React.Component {
                                 exact
                                 path={`${this.props.match.path}/stockpredictions`}
                                 render={() => Utils.isLoggedIn()
-                                    ?   <StockPredictions 
+                                    ?   <CreateEntry 
                                             selectedDate={this.state.selectedDate}
+                                            componentType='preview'
+                                            listViewType={this.getListViewTypeFromUrl(this.props)}
+                                            eventEmitter={this.eventEmitter}
                                         />
                                     :   this.redirectToLogin(`${this.props.match.path}/stockpredictions`)
                                 }

@@ -1,12 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
+import windowSize from 'react-window-size';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import {primaryColor} from '../../../../constants';
 
 const inactiveColor = '#9C9C9C';
 const activeColor = '#DDA91A';
 
-export default class TimelineCustomRadio extends React.Component {
+class TimelineCustomRadio extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -17,6 +18,7 @@ export default class TimelineCustomRadio extends React.Component {
 
     render() {
         const {checked = false, label='-', small = false} = this.props;
+        const isDesktop = this.props.windowWidth > 800;
         const borderColor = checked ? activeColor : 'transparent';
         const color = checked ? activeColor : inactiveColor;
         const minWidth = small ? '38px' : '52px';
@@ -40,6 +42,8 @@ export default class TimelineCustomRadio extends React.Component {
         );
     }
 }
+
+export default windowSize(TimelineCustomRadio);
 
 const buttonStyle = {
     padding: '6px 12px',

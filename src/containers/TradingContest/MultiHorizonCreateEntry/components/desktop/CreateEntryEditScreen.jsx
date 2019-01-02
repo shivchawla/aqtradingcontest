@@ -25,7 +25,7 @@ class CreateEntryEditScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            listView: this.props.listViewType || 'active',
+            listView: this.props.listViewType || 'all',
             anchorEl: null
         };
     }
@@ -214,6 +214,7 @@ class CreateEntryEditScreen extends React.Component {
             getRequiredMetrics,
             pnlFound = false
         } = this.props;
+        const statsExpanded = (this.props.previewPositions.length === 0 || this.props.noEntryFound);
 
         return (
             <Grid item xs={12}>
@@ -240,17 +241,23 @@ class CreateEntryEditScreen extends React.Component {
                                 />
                             </div>
                             {
-                                pnlFound && positions.length > 0 &&
+                                pnlFound &&
                                 <div style={{padding:'0 10px 20px 10px'}}>
                                     <SelectionMetricsMini 
-                                        {..._.get(getRequiredMetrics(), 'cumulative.all', {})}
+                                        {..._.get(getRequiredMetrics(), 'cumulative.portfolio', {})}
                                         onClick={toggleEntryDetailBottomSheet}
+                                        portfolioStats={this.props.portfolioStats}
+                                        statsExpanded={statsExpanded}
                                     />
                                 </div>
                             }
                             {
                                 positions.length > 0 &&
-                                    <StockPreviewList positions={positions} />
+                                    <StockPreviewList 
+                                        positions={positions} 
+                                        deletePrediction={this.props.stopPrediction}
+                                        stopPredictionLoading={this.props.stopPredictionLoading}
+                                    />
                             }
                             {
                                 this.props.positions.length > 0 && positions.length === 0 &&
@@ -263,24 +270,7 @@ class CreateEntryEditScreen extends React.Component {
                             {
                                 isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
                                 this.props.positions.length === 0 && positions.length === 0 &&
-                                <div style={{...verticalBox, marginTop: '20%'}}>
-                                    <Button 
-                                            style={{
-                                                ...fabButtonStyle, 
-                                                ...addStocksStyle,
-                                                width: 'inherit',
-                                                fontSize: '16px',
-                                                height: '50px'
-                                            }} 
-                                            size='small' 
-                                            variant="contained" 
-                                            aria-label="Delete" 
-                                            onClick={() => this.props.history.push('/dailycontest/stockpredictions')}
-                                    >
-                                        <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                        ADD PREDICTION
-                                    </Button>
-                                </div>
+                                <NoDataFound />
                             }
                             {
                                 !isSelectedDateSameAsCurrentDate(this.props.selectedDate) &&
@@ -319,7 +309,7 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
         case "started":
             buttonText = "Started Today";
             break;
-        case "active":
+        case "all":
             buttonText = "Active Today";
             break;
         case "ended":
@@ -356,8 +346,8 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
                     Started Today
                 </MenuItem>
                 <MenuItem 
-                        onClick={e => onMenuItemClicked(e, 'active')}
-                        selected={type === 'active'}
+                        onClick={e => onMenuItemClicked(e, 'all')}
+                        selected={type === 'all'}
                 >
                     Active
                 </MenuItem>
@@ -377,7 +367,7 @@ const NoDataFound = () => {
         <Grid container>
             <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
                 <img src={notFoundLogo} />
-                <NoDataText style={{marginTop: '20px'}}>No Data Found</NoDataText>
+                <NoDataText style={{marginTop: '20px'}}>No Predictions Found</NoDataText>
             </Grid>
         </Grid>
     );

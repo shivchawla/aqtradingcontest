@@ -7,7 +7,7 @@ import SwipeableBottomSheet from 'react-swipeable-bottom-sheet';
 import Grid from '@material-ui/core/Grid';
 import Snackbar from '@material-ui/core/Snackbar';
 import {withRouter} from 'react-router';
-import {SearchStocks} from '../SearchStocks';
+import SearchStocks from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
 import CreateEntryEditMobile from './components/mobile/CreateEntryEditScreen';
 import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
@@ -27,16 +27,19 @@ import {
     convertPredictionsToPositions, 
     processPredictions, 
     getPnlStats, 
+    getPortfolioStats,
     getDefaultPrediction,
     checkForUntouchedPredictionsInPositions,
     getPositionsWithNewPredictions,
     exitPrediction,
     stopPredictionInPositions
 } from './utils';
+import {onPredictionCreated} from '../constants/events';
 
 const dateFormat = 'YYYY-MM-DD';
 const pnlCancelledMessage = 'pnlCancelled';
 const predictionsCancelledMessage = 'predictionsCancelled';
+const portfolioStatsCancelledMessage = 'portfolioStatsCancelled';
 
 class CreateEntry extends React.Component {
     constructor(props) {
@@ -44,9 +47,11 @@ class CreateEntry extends React.Component {
         this.searchStockComponent = null;
         this.cancelFetchPredictionsRequest = undefined;
         this.cancelFetchPnLRequest = undefined;
+        this.cancelFetchPortfolioStatsRequest = undefined;
         this.state = {
             bottomSheetOpenStatus: false,
             pnlStats: {}, // Daily PnL stats for the selected entry obtained due to date change
+            portfolioStats: {}, // Daily Portfolio Stats for selected obtained due to date change
             weeklyPnlStats: {}, // Weekly PnL stats
             staticPositions: [], // This is used to compare the modified positions and the positions obtained from B.E this should be set only once
             positions: [], // Positions to buy
@@ -78,10 +83,11 @@ class CreateEntry extends React.Component {
             positionsWithDuplicateHorizons: [],
             duplicateHorizonDialogOpenStaus: false,
             pnlFound: false,
+            portfolioStatsFound: false,
             todayDataLoaded: false,
             previewPositions: [], // used to store the data for previewing,
             loadingPreview: false,
-            selectedView: this.getListViewType(props.listViewType) || 'active',
+            selectedView: this.getListViewType(props.listViewType) || 'all',
             predictionBottomSheetOpen: false,
             selectedPositionIndex: 0,
             stockDetailBottomSheetOpen: false,
@@ -91,10 +97,10 @@ class CreateEntry extends React.Component {
     }
 
     getListViewType = (type) => {
-        const allowedTypes = ['active', 'started', 'ended'];
+        const allowedTypes = ['active', 'started', 'ended', 'all'];
         const allowedTypeIndex = allowedTypes.indexOf(type)
         if (allowedTypeIndex === -1) {
-            return 'active';
+            return 'all';
         }
 
         return allowedTypes[allowedTypeIndex];
@@ -276,11 +282,15 @@ class CreateEntry extends React.Component {
         });
     })
 
-    stopPrediction = predictionId => {
+    stopPrediction = (predictionId, symbol =null) => {
         this.setState({stopPredictionLoading: true});
+
         return exitPrediction(predictionId)
         .then(() => {
-            const requiredPreviewPositions = stopPredictionInPositions(predictionId, this.state.previewPositions, this.state.selectedPositionIndex);
+            const positonIndex = symbol !== null 
+                ? this.getToBeStoppedPositionIndex(symbol) 
+                : this.state.selectedPositionIndex;
+            const requiredPreviewPositions = stopPredictionInPositions(predictionId, this.state.previewPositions, positonIndex);
             this.setState({
                 previewPositions: requiredPreviewPositions,
                 snackbarOpenStatus: true, 
@@ -297,6 +307,10 @@ class CreateEntry extends React.Component {
         .finally(() => {
             this.setState({stopPredictionLoading: false})
         })
+    }
+
+    getToBeStoppedPositionIndex = (symbol) => {
+        return _.findIndex(this.state.previewPositions, position => position.symbol === symbol);
     }
 
     updateDailyPredictions = async (predictions = []) => {
@@ -320,6 +334,13 @@ class CreateEntry extends React.Component {
         this.setState({
             pnlStats: pnlStats,
             pnlFound: true
+        });
+    }
+
+    updatePortfolioStats = portfolioStats => {
+        this.setState({
+            portfolioStatsFound: true,
+            portfolioStats
         });
     }
 
@@ -350,14 +371,14 @@ class CreateEntry extends React.Component {
         })
     }
 
-    getDailyPnlStats = (selectedDate = moment(), type='active') => {
+    getDailyPnlStats = (selectedDate = moment(), type='all') => {
         try {
             this.cancelFetchPnLRequest(pnlCancelledMessage);
         } catch (err){}
         return getPnlStats(
             selectedDate, 
             type, 
-            this.props, 
+            this.props.history, 
             this.props.match.url, 
             false,
             c => {
@@ -367,12 +388,43 @@ class CreateEntry extends React.Component {
         .then(response => {
             const pnlStats = response.data;
             this.updateDailyPnLStats(pnlStats);
+
             return 'requestCompleted';
         })
         .catch(err => {
             this.setState({pnlFound: false});
             return err.message === pnlCancelledMessage ? 'requestPending' : 'requestCompleted';
         }) 
+    }
+
+    getDailyPortfolioStats = (selectedDate = moment()) => {
+        if (this.state.portfolioStatsFound) {
+            return 'requestCompleted';
+        }
+
+        try {
+            this.cancelFetchPortfolioStatsRequest(portfolioStatsCancelledMessage);
+        } catch (err) {}
+        
+        return getPortfolioStats(
+            selectedDate,
+            this.props.history,
+            this.props.match.url,
+            false,
+            c => {
+                this.cancelFetchPortfolioStatsRequest = c
+            }
+        )
+        .then(response => {
+            const portfolioStats = response.data;
+            this.updatePortfolioStats(portfolioStats);
+
+            return 'requestCompleted';
+        })
+        .catch(err => {
+            this.setState({portfolioStatsFound: false});
+            return err.message === portfolioStatsCancelledMessage ? 'requestPending' : 'requestCompleted';
+        })
     }
 
     setUpSocketConnection = () => {
@@ -460,19 +512,20 @@ class CreateEntry extends React.Component {
 
     handlePreviewListMenuItemChange = (type = 'started') => {
         this.setState({selectedView: type}, () => {
-            this.fetchPredictionsAndPnl(this.state.selectedDate);
+            this.fetchPredictionsAndStats(this.state.selectedDate);
             this.takeSubscriptionAction(type);
         })
     }
 
-    fetchPredictionsAndPnl = (selectedDate = moment()) => {
+    fetchPredictionsAndStats = (selectedDate = moment()) => {
         this.setState({loading: true});
         Promise.all([
             this.getDailyPredictionsOnDateChange(selectedDate, this.state.selectedView),
-            this.getDailyPnlStats(selectedDate, this.state.selectedView)
+            this.getDailyPnlStats(selectedDate, this.state.selectedView),
+            this.getDailyPortfolioStats(selectedDate, this.state.selectedView)
         ])
         .then((response) => {
-            if (response.filter(responseItem => responseItem === 'requestCompleted').length === 2) {
+            if (response.filter(responseItem => responseItem === 'requestCompleted').length === 3) {
                 this.setState({loading: false});
             } else {
                 this.setState({loading: true});
@@ -616,12 +669,20 @@ class CreateEntry extends React.Component {
     }
 
     componentWillMount = () => {
-        this.fetchPredictionsAndPnl(this.state.selectedDate);
+        this.fetchPredictionsAndStats(this.state.selectedDate);
         this.setUpSocketConnection();
     }
 
+    captureEvent = payload => {
+        console.log('Payload', payload);
+        this.fetchPredictionsAndStats(this.state.selectedDate);
+    }
+
     componentDidMount() {
-        this.mounted = true;
+        try {
+            this.props.eventEmitter.on(onPredictionCreated, this.captureEvent);
+            this.mounted = true;
+        } catch(err) {}
     }
 
     componentWillUnmount() {
@@ -643,7 +704,7 @@ class CreateEntry extends React.Component {
                 this.unSubscribeToPredictions();
             }
             this.setState({selectedDate: nextProps.selectedDate}, () => {
-                this.fetchPredictionsAndPnl(nextProps.selectedDate)
+                this.fetchPredictionsAndStats(nextProps.selectedDate)
             });
         }
     } 
@@ -718,22 +779,29 @@ class CreateEntry extends React.Component {
             listViewType: this.props.listViewType,
             toggleStockDetailBottomSheet: this.toggleStockDetailBottomSheet,
             updateDate: this.props.updateDate,
-            stopPrediction: this.stopPrediction
+            stopPrediction: this.stopPrediction,
+            portfolioStats: this.state.portfolioStats,
+            stopPredictionLoading: this.state.stopPredictionLoading
         };
+        const {mobile = false} = this.props;
 
-        return (
-            <React.Fragment>
-                <Media 
-                    query="(max-width: 800px)"
-                    render={() => this.renderMobileLayout(props)}
-                />
-
-                <Media 
-                    query="(min-width: 801px)"
-                    render={() => this.renderDesktopLayout(props)}
-                />
-            </React.Fragment>
-        );
+        if (mobile) {
+            return this.renderMobileLayout(props);
+        } else {
+            return (
+                <React.Fragment>
+                    <Media 
+                        query="(max-width: 800px)"
+                        render={() => this.renderMobileLayout(props)}
+                    />
+    
+                    <Media 
+                        query="(min-width: 801px)"
+                        render={() => this.renderDesktopLayout(props)}
+                    />
+                </React.Fragment>
+            );
+        }
     }
 
     toggleDuplicateHorizonDialog = () => {

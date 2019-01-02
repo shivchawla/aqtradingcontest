@@ -1,11 +1,12 @@
 import React from 'react';
 import _ from 'lodash';
+import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import {verticalBox} from '../../../../constants';
 
 const valueColor = '#222';
 
-export default class Metric extends React.Component {
+class Metric extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -24,6 +25,7 @@ export default class Metric extends React.Component {
         } = this.props;
         value = money ? `₹${value}` : value;
         value = percentage ? `${value}%` : value;
+        const isDesktop = this.props.windowWidth > 800;
 
         return (
             <div 
@@ -32,23 +34,25 @@ export default class Metric extends React.Component {
                         alignItems: 'center'
                     }}
             >
-                <Value color={color}>{value}</Value>
-                <Label>{label}</Label>
+                <Value color={color} isDesktop={isDesktop}>{value}</Value>
+                <Label isDesktop={isDesktop}>{label}</Label>
             </div>
         );
     }
 }
 
+export default windowSize(Metric);
+
 const Value = styled.h3`
     color: ${props => props.color || valueColor};
     font-weight: 500;
     font-family: 'Lato', sans-serif;
-    font-size: 16px;
+    font-size: ${props => props.isDesktop ? '14px' : '16px'};
 `;
 
 const Label = styled.h3`
     color: #A8A8A8;
-    font-size: 14px;
+    font-size: ${props => props.isDesktop ? '12px' : '14px'};
     font-family: 'Lato', sans-serif;
     font-weight: 400;
     margin-top: 3px;

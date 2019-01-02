@@ -37,7 +37,7 @@ class AqLayout extends React.Component {
 
     renderDarkMode() {
         const {
-            pageTitle = 'Stock Prediction Contest', 
+            pageTitle = 'Virtual Trading Contest', 
             classes
         } = this.props;
 

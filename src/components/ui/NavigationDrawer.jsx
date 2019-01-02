@@ -264,6 +264,9 @@ const menuCategories = [
     },
     {
         name: "Leaderboard", url:'/dailycontest/leaderboard', icon:'multiline_chart'
+    },
+    {
+        name: "Rules", url:'/dailycontest/rules', icon:'format_align_justify'
     }
 ];
 

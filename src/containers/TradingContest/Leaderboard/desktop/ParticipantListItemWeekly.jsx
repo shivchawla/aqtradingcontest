@@ -6,7 +6,7 @@ import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../..
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
 
-export default class ParticipantListItem extends React.Component {
+export default class ParticipantListItemWeekly extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -17,13 +17,14 @@ export default class ParticipantListItem extends React.Component {
     
     render() {
         const {
-            userName = 'Saurav Biswas', 
-            cost = {}, 
-            pnl = {}, 
-            rank = {}, 
-            pnlPct = {}, 
-            profitFactor = {},
-            listType='long'
+            userName = '',
+            advisorId = null,
+            cash = 0, 
+            pnl = 0, 
+            rank = 1, 
+            pnlPct = 0, 
+            netTotal = 0,
+            netTotalLastWeek='0'
         }  = this.props;
         const medal = getRankMedal(rank);
         const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? metricColor.neutral : metricColor.negative;
@@ -48,11 +49,11 @@ export default class ParticipantListItem extends React.Component {
                 </Grid>
                 <Grid item xs={3}>
                     <SecondaryText color='#464646' fontWeight='500'>
-                        {(profitFactor || 0).toFixed(2)}
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(netTotal * 1000)}
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <SecondaryText color={primaryColor}>{Utils.formatInvestmentValue(cost)}</SecondaryText>
+                    ₹{Utils.formatMoneyValueMaxTwoDecimals(cash * 1000)}
                 </Grid>
             </SGrid>
         ); 

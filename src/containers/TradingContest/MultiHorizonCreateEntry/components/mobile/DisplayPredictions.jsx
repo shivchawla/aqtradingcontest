@@ -11,6 +11,7 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import {withRouter} from 'react-router-dom';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
+import EnclosedContainer from '../../../../../components/Display/EnclosedContainer';
 import WatchlistCustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
@@ -21,7 +22,7 @@ import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
 import {searchPositions} from '../../utils';
 
 const DateHelper = require('../../../../../utils/date');
-const predictionTypes = ['Active', 'Ended', 'Started'];
+const predictionTypes = ['All', 'Ended', 'Started'];
 
 class DisplayPredictions extends React.Component {
     constructor(props) {
@@ -37,7 +38,7 @@ class DisplayPredictions extends React.Component {
     getListViewFromUrl = (listViewType) => {
         let listView = 0;
         switch(listViewType) {
-            case "active":
+            case "all":
                 listView = 0;
                 break;
             case "ended":
@@ -127,7 +128,8 @@ class DisplayPredictions extends React.Component {
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
-            pnlFound = false
+            pnlFound = false,
+            portfolioStats = {}
         } = this.props;
         const marketOpen = isMarketOpen();
 
@@ -144,15 +146,6 @@ class DisplayPredictions extends React.Component {
                                     </EmptyPositionsText>
 			                    :
 			                	<React.Fragment>
-		                            {
-		                                pnlFound &&
-                                        <div style={{width:'95%', margin: '0 auto'}}>
-    		                                <SelectionMetricsMini 
-    		                                    {..._.get(getRequiredMetrics(), 'cumulative.all', {})}
-    		                                    onClick={toggleEntryDetailBottomSheet}
-    		                                />
-                                        </div>
-                                    }
                                     {
                                         this.state.searchInputOpen &&
                                         <div style={{width: '100%'}}>
@@ -163,12 +156,38 @@ class DisplayPredictions extends React.Component {
                                             />
                                         </div>
                                     }
-                                    <StockPreviewList  
-                                        positions={positions} 
-                                        selectPosition={this.props.selectPosition}
-                                        toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
-                                        togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
-                                    />
+                                    <Grid 
+                                            item 
+                                            xs={12}
+                                            style={{
+                                                padding: '0 10px',
+                                                marginTop: '20px'
+                                            }}
+                                    >
+                                        <EnclosedContainer label='Predictions'>
+                                            <Grid item xs={12}>
+                                                <Grid container>
+                                                    <Grid item xs={5}>
+                                                        <ListHeader style={{marginLeft: '10px'}}>
+                                                            Stock
+                                                        </ListHeader>
+                                                    </Grid>
+                                                    <Grid item xs={4}>
+                                                        <ListHeader>Price</ListHeader>
+                                                    </Grid>
+                                                    <Grid item xs={2}>
+                                                        <ListHeader>PnL</ListHeader>
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                            <StockPreviewList  
+                                                positions={positions} 
+                                                selectPosition={this.props.selectPosition}
+                                                toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
+                                                togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
+                                            />
+                                        </EnclosedContainer>
+                                    </Grid>
 	                        	</React.Fragment>
                             }
                             <div 
@@ -217,14 +236,29 @@ class DisplayPredictions extends React.Component {
     }
 
     renderContent() {
-        const {positions = [], activePredictions = []} = this.props;
+        const {
+            toggleEntryDetailBottomSheet,
+            getRequiredMetrics,
+            pnlFound = false,
+            portfolioStats = {}
+        } = this.props;
+        const statsExpanded = (this.props.previewPositions.length === 0 || this.props.noEntryFound);
         
         return (
-            (positions === 0 && activePredictions.length === 0)
-            ?   this.renderEmptySelections()
-            :   <Grid container justify="space-between">
-                    {this.renderPredictionList()}
-                </Grid>
+            <Grid container justify="space-between">
+                {
+                    pnlFound &&
+                    <div style={{width:'95%', margin: '0 auto'}}>
+                        <SelectionMetricsMini 
+                            {..._.get(getRequiredMetrics(), 'cumulative.portfolio', {})}
+                            onClick={toggleEntryDetailBottomSheet}
+                            portfolioStats={portfolioStats}
+                            statsExpanded={statsExpanded}
+                        />
+                    </div>
+                }
+                {this.renderPredictionList()}
+            </Grid>
         );
     }
 
@@ -368,6 +402,14 @@ const Closed = styled.h3`
     color: #444;
     margin-top: -10px;
     color: #f34545;
+`;
+
+const ListHeader = styled.h3`
+    font-size: 12px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 700;
+    color: #8f8f8f;
+    text-align: start;
 `;
 
 const fabStyle = {

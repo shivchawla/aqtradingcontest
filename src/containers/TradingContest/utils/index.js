@@ -196,39 +196,27 @@ export const processLeaderboardWinners = (leaders = []) => {
     return Promise.map(leaders, leader => {
         const userName = _.get(leader, 'user.firstName', '') + ' ' + _.get(leader, 'user.lastName', '');
         const advisorId = _.get(leader, 'advisor', null);
-        const pnl = {
-            long: _.get(leader, 'pnlStats.long.pnl', 0),
-            short: _.get(leader, 'pnlStats.short.pnl', 0),
-            total: _.get(leader, 'pnlStats.total.pnl', 0)
+        const pnl = _.get(leader, 'pnlStats.pnl', 0);
+        const pnlPct = _.get(leader, 'pnlStats.pnlPct', 0);
+        const cost = _.get(leader, 'pnlStats.cost', 0);
+        const profitFactor = _.get(leader, 'pnlStats.profitFactor', 0);
+        const netTotal = _.get(leader, 'pnlStats.netTotal', 0);
+        const netTotalLastWeek = _.get(leader, 'pnlStats.netTotalLastWeek', 0);
+        const cash = _.get(leader, 'pnlStats.cash', 0);
+        const rank = _.get(leader, 'rank', 0);
+
+        return {
+            userName, 
+            pnl, 
+            pnlPct, 
+            cost, 
+            profitFactor, 
+            rank, 
+            advisorId,
+            netTotal,
+            netTotalLastWeek,
+            cash
         };
-
-        const pnlPct = {
-            long: _.get(leader, 'pnlStats.long.pnlPct', 0),
-            short: _.get(leader, 'pnlStats.short.pnlPct', 0),
-            total: _.get(leader, 'pnlStats.total.pnlPct', 0)
-        };
-
-        const cost = {
-            long: _.get(leader, 'pnlStats.long.cost', 0),
-            short: _.get(leader, 'pnlStats.short.cost', 0),
-            total: _.get(leader, 'pnlStats.total.cost', 0)
-        };
-
-        const netValue = {
-            long: _.get(leader, 'pnlStats.long.netValue', 0),
-            short: _.get(leader, 'pnlStats.short.netValue', 0),
-            total: _.get(leader, 'pnlStats.total.netValue', 0)
-        };
-
-        const profitFactor = {
-            long: _.get(leader, 'pnlStats.long.profitFactor', 0),
-            short: _.get(leader, 'pnlStats.short.profitFactor', 0),
-            total: _.get(leader, 'pnlStats.total.profitFactor', 0)
-        };
-
-        const rank = _.get(leader, 'rank', 0)
-
-        return {userName, pnl, pnlPct, cost, netValue, profitFactor, rank, advisorId};
     })
 }
 

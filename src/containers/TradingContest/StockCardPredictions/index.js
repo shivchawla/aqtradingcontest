@@ -4,9 +4,6 @@ import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
-import Badge from '@material-ui/core/Badge';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
 import {withRouter} from 'react-router-dom';
 import StockCard from './components/common/StockCard';
 import WatchlistComponent from '../../Watchlist';
@@ -16,8 +13,9 @@ import Snackbar from '../../../components/Alerts/SnackbarComponent';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
-import {getDailyContestPredictions} from '../MultiHorizonCreateEntry/utils';
-import {horizontalBox, primaryColor, verticalBox} from '../../../constants';
+import {getDailyContestPredictions, getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
+import {horizontalBox, primaryColor} from '../../../constants';
+import {onPredictionCreated, onSettingsClicked} from '../constants/events';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -48,6 +46,7 @@ class StockCardPredictions extends React.Component {
             showSuccess: false,
             stockCardBottomSheetOpen: false,
             listMode: false,
+            predictionsAllowed: false
         };
     }
     
@@ -75,7 +74,8 @@ class StockCardPredictions extends React.Component {
                 editMode: _.get(defaultStockData, 'editMode', false),
                 sector: _.get(defaultStockData, 'sector', ''),
                 listMode: _.get(defaultStockData, 'listMode', true),
-                stopLoss: _.get(defaultStockData, 'stopLoss', 5)
+                stopLoss: _.get(defaultStockData, 'stopLoss', 5),
+                investment: _.get(defaultStockData, 'investment', 50000)
             });
         } catch (err) {
             reject(err);
@@ -89,6 +89,7 @@ class StockCardPredictions extends React.Component {
                 this.initializeDefaultStockData(),
             ])
             .then(([skippedStocks, defaultStockData]) => {
+                console.log(defaultStockData);
                 this.setState({
                     skippedStocks,
                     defaultStockData,
@@ -249,23 +250,20 @@ class StockCardPredictions extends React.Component {
         return goupedPredictions;
     }
 
+    componentDidMount() {
+        try {
+            this.props.eventEmitter.on(onSettingsClicked, this.toggleDefaultSettingsBottomSheet);
+        } catch(err) {}
+    }
+
     componentWillMount() {
         const currentTradingDay = this.getCurrentTradingDay();
         this.setState({loading: true});
         this.initializeStateFromLocalStorage()
-        .then(() => {
-            return Promise.all([
-                getDailyContestPredictions(currentTradingDay, 'started', false, this.props.history, this.props.match.url, false),
-                !this.shouldShowListView() && this.updateNextStock()
-            ])
-        })
-        .then(([predictionsResponse]) => {
-            const predictions = _.get(predictionsResponse, 'data', []);
-            const stocks = predictions.map(prediction => {
-                const symbol = _.get(prediction, 'position.security.detail.NSE_ID', '');
-                return symbol;
-            });
-            this.setState({stockCartCount: predictions.length, stockCart: this.groupPredictions(predictions)});
+        .then(() => getPortfolioStats(currentTradingDay, this.props.history, this.props.match.url, false))
+        .then(portfolioStats => {
+            const portfolioStatsData = portfolioStats.data;
+            this.setState({portfolioStats: portfolioStatsData});
         })
         .catch(error => {
             console.log('Error', error);
@@ -290,36 +288,48 @@ class StockCardPredictions extends React.Component {
         const {defaultStockData} = this.state;
         const horizon = _.get(defaultStockData, 'horizon', 5);
         const target = _.get(defaultStockData, 'target', 5);
+        const investment = _.get(defaultStockData, 'investment', 10000);
+        const stopLoss = _.get(defaultStockData, 'stopLoss', 2);
         this.setState({
             stockData: {
                 ...this.state.stockData,
                 horizon,
-                target
+                target,
+                investment,
+                stopLoss
             }
         });
     }
 
+    checkIfCashAvailable = () => {
+        const liquidCash = _.get(this.state, 'portfolioStats.liquidCash', 0);
+        const selectedInvestment = _.get(this.state, 'stockData.investment', 0) / 1000;
+
+        return selectedInvestment > liquidCash;
+    }
+
     createDailyContestPrediction = (type = 'buy') => {
+        const currentTradingDay = this.getCurrentTradingDay();
+        if (this.checkIfCashAvailable()) {
+            this.updateSnackbar('No Available Cash');
+            return;
+        }
         const predictions = constructPrediction(this.state.stockData, type);
         this.setState({loadingCreatePredictions: true});
         createPredictions(predictions)
-        .then(() => {
-            this.addCurrentStockToCart();
-            return this.shouldShowListView() 
-                ? null 
-                : this.updateStocksToSkip();
-        })
-        .then(() => {
-            return this.shouldShowListView() 
-                ? null
-                : this.updateNextStock();
-        })
-        .then(() => {
+        .then(() => getPortfolioStats(currentTradingDay, this.props.history, this.props.match.url, false))
+        .then(portfolioStats => {
             this.showSuccess();
             this.updateStockDataToDefaultSettings();
+            const portfolioStatsData = portfolioStats.data;
+            this.setState({portfolioStats: portfolioStatsData});
+            this.props.eventEmitter && 
+            this.props.eventEmitter.emit(onPredictionCreated, 'Prediction Successfully Created');
+            console.log('Entered Here');
         })
         .catch(error => {
-            let errorMessage = _.get(error, 'response.data.msg', '');
+            console.log('Error', error);
+            let errorMessage = _.get(error, 'response.data.message', '');
             errorMessage = errorMessage.length === 0 
                 ? 'Error Occured while creating predictions'
                 : `Error: ${errorMessage}`
@@ -369,9 +379,10 @@ class StockCardPredictions extends React.Component {
     }
 
     shouldShowListView = () => {
-        const isDesktop = this.props.windowWidth > 800;
+        // const isDesktop = this.props.windowWidth > 800;
         
-        return !isDesktop && this.state.listMode;
+        // return (!isDesktop || this.props.mobile) && this.state.listMode;
+        return true;
     }
 
     toggleStockCardBottomSheet = () => {
@@ -385,6 +396,7 @@ class StockCardPredictions extends React.Component {
     renderStockCard = (bottomSheet = false) => {
         return (
             <StockCard 
+                mobile={this.props.mobile}
                 stockData={this.state.stockData}
                 skipStock={this.skipStock}
                 loading={this.state.loadingStockData}
@@ -407,6 +419,8 @@ class StockCardPredictions extends React.Component {
     }
 
     renderContent = () => {
+        const isDesktop = this.props.windowWidth > 800;
+
         return (
             <Container container alignItems='flex-start'>
                 <Snackbar 
@@ -426,52 +440,21 @@ class StockCardPredictions extends React.Component {
                     updateListMode={this.updateListMode}
                     skipStock={this.skipStock}
                     fetchStocks={this.fetchStocks}
+                    dialog={isDesktop}
                 />
-                <Grid item xs={12} style={{...horizontalBox, justifyContent: 'space-between'}}>
-                    {/* <Tooltip title="Started Today" placement="bottom"> */}
-                        <IconButton 
-                                onClick={() => {
-                                    this.props.history.push(`/dailycontest/mypicks?&date=${this.getCurrentTradingDay().format(dateFormat)}&type=started`)
-                                }}
-                        >
-                            <Badge 
-                                    badgeContent={this.state.stockCartCount} 
-                                    style={{color: primaryColor, fontSize: '14px'}}
-                            >
-                                <Icon style={{color: '#707070'}}>shopping_cart</Icon>
-                            </Badge>
-                        </IconButton>
-                    {/* </Tooltip> */}
-                    <div 
-                            style={{
-                                ...horizontalBox, 
-                                justifyContent: 'flex-end'
-                            }}
-                    >
-                        
-                        {/* <Tooltip title="Default Settings" placement="bottom"> */}
-                            <IconButton 
-                                    onClick={this.toggleDefaultSettingsBottomSheet}
-                            >
-                                <Icon style={{color: '#707070'}}>settings</Icon>
-                            </IconButton>
-                        {/* </Tooltip> */}
-                    </div>
+                <Grid item xs={12}>
+                    <WatchlistComponent 
+                        stockSelectionOpen={this.state.searchStockOpen}
+                        toggleStockSelection={this.toggleSearchStocksBottomSheet}
+                        selectStock={this.modifyStockData}
+                        stockData={this.state.stockData}
+                        toggleStockCardBottomSheet={this.toggleStockCardBottomSheet}
+                        toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
+                        predictionsAllowed={this.state.predictionsAllowed}
+                    />
                 </Grid>
                 <Grid item xs={12}>
-                    {
-                        this.shouldShowListView() &&
-                        <WatchlistComponent 
-                            stockSelectionOpen={this.state.searchStockOpen}
-                            toggleStockSelection={this.toggleSearchStocksBottomSheet}
-                            selectStock={this.modifyStockData}
-                            stockData={this.state.stockData}
-                            toggleStockCardBottomSheet={this.toggleStockCardBottomSheet}
-                        />
-                    }
-                </Grid>
-                <Grid item xs={12}>
-                    {this.renderStockCard(this.shouldShowListView())}
+                    {this.renderStockCard(!isDesktop)}
                 </Grid>
             </Container>
         );
@@ -504,5 +487,4 @@ const Container = styled(Grid)`
     width: 100%;
     align-items: ${props => props.alignItems || 'flex-start'};
     position: relative;
-    margin-top: ${global.screen.width > 800 ? '-3%' : 0}
 `;

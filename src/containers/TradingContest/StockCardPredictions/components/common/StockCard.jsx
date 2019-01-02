@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import windowSize from 'react-window-size';
 import moment from 'moment';
 import Media from 'react-media';
 import styled from 'styled-components';
@@ -16,10 +17,12 @@ import {
     metricColor
 } from '../../../../../constants';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
+import DialogComponent from '../../../../../components/Alerts/DialogComponent';
+import DialogHeaderComponent from '../../../../../components/Alerts/DialogHeader';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget} from '../../utils';
-import {targetKvp, horizonKvp} from '../../constants';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
+import {targetKvp, horizonKvp, investmentKvp} from '../../constants';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from '../mobile/SubmitButton';
@@ -27,7 +30,7 @@ import SubmitButton from '../mobile/SubmitButton';
 const readableDateFormat = 'Do MMM';
 const isDesktop = global.screen.width > 800 ? true : false;
 
-export default class StockCard extends React.Component {
+class StockCard extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -62,6 +65,14 @@ export default class StockCard extends React.Component {
         });
     }
 
+    handleInvestmentChange = (value) => {
+        const requiredInvestment = getInvestmentValue(value);
+        this.props.modifyStockData({
+            ...this.props.stockData,
+            investment: requiredInvestment
+        });
+    }
+
     renderViewMode = () => {
         const {horizon = 1, target = 2, stopLoss = 2} = this.props.stockData;
 
@@ -86,8 +97,9 @@ export default class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
-        const {horizon = 2, target = 2, stopLoss = 2} = this.props.stockData;
+        const {horizon = 2, target = 2, stopLoss = 2, investment = 50000} = this.props.stockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
+        const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
@@ -95,9 +107,10 @@ export default class StockCard extends React.Component {
             ...verticalBox, 
             justifyContent: 'flex-start', 
             alignItems: 'flex-start', 
-            minHeight: '80px', 
+            minHeight: isDesktop ? '60px' : '80px', 
             width: '100%'
         };
+        const isDesktop = this.props.windowWidth > 800;
 
         return (
             <div 
@@ -124,6 +137,7 @@ export default class StockCard extends React.Component {
                         onChange={this.handleHorizonChange}
                         defaultSelected={horizon}
                         getIndex={getHorizon}
+                        getValue={getHorizonValue}
                         showSlider
                         checkIfCustom={checkIfCustomHorizon}
                         label='Days'
@@ -134,7 +148,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '30px' : '10px',
+                                marginTop: isDesktop ? '5px' : '10px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -146,6 +160,7 @@ export default class StockCard extends React.Component {
                         onChange={this.handleTargetChange}
                         defaultSelected={target}
                         getIndex={getTarget}
+                        getValue={getTargetValue}
                         checkIfCustom={checkIfCustomTarget}
                         showSlider
                         hideLabel={true}
@@ -156,7 +171,7 @@ export default class StockCard extends React.Component {
                     <MetricLabel 
                             style={{
                                 marginBottom: '10px',
-                                marginTop: isDesktop ? '30px' : '10px',
+                                marginTop: isDesktop ? '0px' : '5px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -169,9 +184,34 @@ export default class StockCard extends React.Component {
                         defaultSelected={stopLoss}
                         getIndex={getTarget}
                         checkIfCustom={checkIfCustomTarget}
+                        getValue={getTargetValue}
                         showSlider
                         hideLabel={true}
                         label='%'
+                    />
+                </div>
+                <div style={radioGroupStyle}>
+                    <MetricLabel 
+                            style={{
+                                marginBottom: '10px',
+                                marginTop: isDesktop ? '0px' : '0px',
+                                fontSize: '12px',
+                                color: '#222'
+                            }}
+                    >
+                        Investment
+                    </MetricLabel>
+                    <StockCardRadioGroup 
+                        items={investmentItems}
+                        onChange={this.handleInvestmentChange}
+                        defaultSelected={investment}
+                        getIndex={getInvestment}
+                        getValue={getInvestmentValue}
+                        showSlider
+                        hideLabel={true}
+                        label='%'
+                        hideSlider={true}
+                        formatValue={Utils.formatInvestmentValueNormal}
                     />
                 </div>
             </div>
@@ -255,39 +295,18 @@ export default class StockCard extends React.Component {
             name = '', 
             symbol = '', 
             lastPrice = 0, 
-            changePct = 0,
-            change = 0,
             target = 2,
-            loading = false,
             horizon = 1,
-            shortable = true
         } = this.props.stockData;
-        const changeColor = change > 0 
-            ? metricColor.positive 
-            : change === 0 
-                ? metricColor.neutral 
-                : metricColor.negative;
         const editMode = isDesktop || this.props.editMode;
         const {bottomSheet = false} = this.props;
-        // const actionButtonContainerStyle = shortable 
-        //     ?   {
-        //             ...horizontalBox, 
-        //             justifyContent: 'space-around',
-        //             width: isDesktop ? '70%' : '100%',
-        //             marginTop: editMode ? '10px' : '15px'
-        //         }
-        //     :   {
-        //         ...verticalBox,
-        //         justifyContent: 'center',
-        //         width: isDesktop ? '70%' : '100%',
-        //         marginTop: editMode ? '10px' : '15px'
-        //     };
         const actionButtonContainerStyle = {
             ...horizontalBox, 
             justifyContent: 'space-around',
             width: isDesktop ? '70%' : '100%',
-            marginTop: editMode ? '10px' : '15px'
+            marginTop: '5px'
         };
+        const isDesktop = this.props.windowWidth > 800;
 
         return (
             <Grid container>
@@ -295,7 +314,7 @@ export default class StockCard extends React.Component {
                         item 
                         xs={12}
                         style={{
-                            padding: bottomSheet ? '0 10px' : '0'
+                            padding: '0 10px'
                         }}
                 >
                     <div 
@@ -312,31 +331,26 @@ export default class StockCard extends React.Component {
                                     }}
                             >
                                 <MainText>{symbol}</MainText>
-                                {/* {
-                                    editMode && !bottomSheet &&
-                                    <ActionIcon
-                                        type="search"
-                                        onClick={this.props.toggleSearchStocksDialog}
-                                        style={{
-                                            padding: 0,
-                                            marginLeft: '5px'
-                                        }}
-                                    />
-                                } */}
                             </div>
                             <h3 style={nameStyle}>{name}</h3>
                         </div>
-                        <Media 
-                            query="(max-width: 800px)"
-                            render={() => this.renderPriceMetricsMobile()}
-                        />
-                        <Media 
-                            query="(min-width: 801px)"
-                            render={() => this.renderPriceMetricsDesktop()}
-                        />
+                        {
+                            this.props.mobile
+                                ?   this.renderPriceMetricsMobile()
+                                :   <React.Fragment>
+                                        <Media 
+                                            query="(max-width: 800px)"
+                                            render={() => this.renderPriceMetricsMobile()}
+                                        />
+                                        <Media 
+                                            query="(min-width: 801px)"
+                                            render={() => this.renderPriceMetricsDesktop()}
+                                        />
+                                    </React.Fragment>
+                        }
                     </div>
                 </Grid>
-                {
+                {/* {
                     !editMode && !bottomSheet &&
                     <Grid 
                             item 
@@ -345,7 +359,7 @@ export default class StockCard extends React.Component {
                                 ...horizontalBox, 
                                 justifyContent: 'flex-start',
                                 margin: '10px 0',
-                                padding: bottomSheet ? '0 10px' : '0'
+                                padding: '0 10px'
                             }}
                     >
                         <Button 
@@ -356,7 +370,7 @@ export default class StockCard extends React.Component {
                             EDIT
                         </Button>
                     </Grid>
-                }
+                } */}
                 <Grid 
                         item 
                         xs={12} 
@@ -364,13 +378,14 @@ export default class StockCard extends React.Component {
                             ...horizontalBox, 
                             justifyContent: 'flex-start',
                             marginTop: '10px',
-                            padding: bottomSheet ? '0 10px' : '0',
+                            padding: '0 10px',
                         }}
                 >
                     {
-                        (editMode || bottomSheet)
-                        ? this.renderEditMode()
-                        : this.renderViewMode()
+                        // (editMode || bottomSheet)
+                        // ? this.renderEditMode()
+                        // : this.renderViewMode()
+                        this.renderEditMode()
                     }
                 </Grid>
                 <Grid 
@@ -379,8 +394,8 @@ export default class StockCard extends React.Component {
                         style={{
                             ...verticalBox,
                             // borderTop: '1px solid #E2E2E2',
-                            marginTop: isDesktop ? '20px' : '0px',
-                            paddingTop: isDesktop ? '15px' : '20px'
+                            marginTop: isDesktop ? '0px' : '0px',
+                            paddingTop: isDesktop ? '0px' : '0px'
                         }}
                 >
                     <QuestionText>
@@ -414,7 +429,7 @@ export default class StockCard extends React.Component {
                         }
                         {
                             // !bottomSheet && shortable &&
-                            !bottomSheet &&
+                            !bottomSheet && !isDesktop &&
                             <Button 
                                     style={skipButtonStyle} 
                                     variant="outlined"
@@ -429,16 +444,6 @@ export default class StockCard extends React.Component {
                             lastPrice={lastPrice}
                             type="buy"
                         />
-                        {/* {
-                            !bottomSheet && !shortable &&
-                            <Button 
-                                    style={{...skipButtonStyle, marginTop: '10px'}} 
-                                    variant="outlined"
-                                    onClick={this.skipStock}
-                            >
-                                SKIP
-                            </Button>
-                        } */}
                     </div>
                     {
                         bottomSheet &&
@@ -517,6 +522,7 @@ export default class StockCard extends React.Component {
             <Container 
                     container 
                     bottomSheet={bottomSheet}
+                    style={{marginTop: bottomSheet ? 0 : '40px'}}
             >
                 {this.props.loading && <Loader />}
                 {
@@ -571,12 +577,25 @@ export default class StockCard extends React.Component {
         );
     }
 
+    renderStockCardDialog = () => {
+        return <DialogComponent
+                        open={this.props.open}
+                        onClose={this.props.onClose}
+                        style={{padding: 0}}
+                >
+                    <DialogHeaderComponent title='Predict' onClose={this.props.onClose} />
+                    {this.renderStockCard()}
+                </DialogComponent>
+    }
+
     render() {
         const {bottomSheet = false} = this.props;
 
-        return bottomSheet ? this.renderStockCardBottomSheet() : this.renderStockCard();
+        return bottomSheet ? this.renderStockCardBottomSheet() : this.renderStockCardDialog();
     }
 }
+
+export default windowSize(StockCard);
 
 const Loader = ({text = null, success= false}) => {
     return (
@@ -625,7 +644,7 @@ const nameStyle = {
     color: '#525252',
     fontFamily: 'Lato, sans-serif',
     fontWeight: 500,
-    fontSize: isDesktop ? '16px' : '12xp'
+    fontSize: isDesktop ? '16px' : '14px'
 };
 
 const skipButtonStyle = {

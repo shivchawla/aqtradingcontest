@@ -151,7 +151,7 @@ export const getDailyContestStatsBySymbol = (symbol = '', history, currentUrl, h
     const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
     let url = `${requestUrl}/dailycontest/stats?symbol=${symbol}`;
     if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
-        url = `${url}?advisor=${selectedAdvisorId}`;
+        url = `${url}&advisor=${selectedAdvisorId}`;
     }
 
     return fetchAjaxPromise(url, history, currentUrl, handleError);
