@@ -28,69 +28,6 @@ class SelectionMetricsMini extends React.Component {
         this.setState({selected: value});
     }
 
-    renderDesktopView = () => {
-        const {
-            netValue = 0, 
-            pnlNegative = 0, 
-            pnlPositive = 0, 
-            profitFactor = 0, 
-            pnl = 0, 
-            pnlPct = 0, 
-            cost = 0
-        } = _.get(this.props, 'net', {});
-        const isDesktop = this.props.windowWidth > 800;
-        const {title = 'Profit/Loss'} = this.props;
-        
-        return (
-            <SGrid container justify="center" alignItems="center" style={{border:'1px solid #dff0ff'}}>
-
-                <Grid item xs={12} style={{marginTop:'-22px', alignItems:'start'}}>
-                    <div style={{width: '80px', backgroundColor: '#fff', color:'#1763c6'}}>
-                        <h5>{title}</h5>
-                    </div>
-                </Grid>
-
-                <Grid item xs={10}>
-                    <Grid container spacing={8}>
-                        {
-                            isDesktop &&
-                            <MetricItem 
-                                string 
-                                label='Investment' 
-                                value={Utils.formatInvestmentValue(cost)} 
-                                isDesktop={isDesktop}
-                            />
-                        }
-                        <MetricItem 
-                            label='Profit Factor' 
-                            value={(profitFactor || 0).toFixed(2)} 
-                            isDesktop={isDesktop}
-                        />
-                        <MetricItem 
-                            money 
-                            coloured 
-                            label='Profit/Loss' 
-                            value={((pnl || 0) * 1000)} 
-                            isDesktop={isDesktop}
-                        />
-                        <MetricItem 
-                            percentage 
-                            coloured 
-                            label='Profit/Loss %' 
-                            value={((pnlPct || 0) * 100).toFixed(2)} 
-                            isDesktop={isDesktop}
-                        />
-                    </Grid>
-                </Grid>
-                <Grid item xs={2}>
-                    <IconButton onClick={() => this.props.onClick && this.props.onClick()}>
-                        <Icon style={{color: primaryColor}}>fullscreen</Icon>
-                    </IconButton>
-                </Grid>
-            </SGrid>
-        );
-    }
-
     renderMobileView = () => {
         const {
             netValue = 0, 
@@ -184,11 +121,92 @@ class SelectionMetricsMini extends React.Component {
             </Grid>
         );
     }
+
+    renderStatsExpandedView = () => {
+        const {
+            netValue = 0, 
+            pnlNegative = 0, 
+            pnlPositive = 0, 
+            profitFactor = 0, 
+            pnl = 0, 
+            pnlPct = 0, 
+            cost = 0
+        } = _.get(this.props, 'net', {});
+        let {
+            netEquity = 0,
+            cash = 0,
+            grossEquity = 0,
+            netTotal = 0,
+            liquidCash = 0,
+            investment = 0,
+        } = _.get(this.props, 'portfolioStats', {});
+        liquidCash = Utils.formatInvestmentValue(liquidCash);
+        netTotal = Utils.formatInvestmentValue(netTotal);
+        netEquity = Utils.formatInvestmentValue(netEquity);
+        investment = Utils.formatInvestmentValue(investment);
+        cash = Utils.formatInvestmentValue(cash);
+        grossEquity = Utils.formatInvestmentValue(grossEquity);
+        const metricItemMobileStyle = {padding: '0 4px', boxSizing: 'border-box'};
+
+        return (
+            <EnclosedContainer label='Portfolio Stats' containerStyle={{height: '94px'}}>
+                <Grid item xs={12} style={{marginTop: '8px'}}>
+                    <Grid container spacing={8}>
+                        <Grid item xs={6}>
+                            <Grid container>
+                                <MetricItemMobile 
+                                    label='Net Eqty.' 
+                                    value={`₹${netEquity}`} 
+                                    string
+                                    style={metricItemMobileStyle}
+                                />
+                                <MetricItemMobile 
+                                    label='Avl. Cash' 
+                                    value={`₹${liquidCash}`} 
+                                    string
+                                    style={metricItemMobileStyle}
+                                />
+                                <MetricItemMobile 
+                                    label='Net Total' 
+                                    value={`₹${netTotal}`}
+                                    string
+                                    style={metricItemMobileStyle}
+                                />
+                            </Grid> 
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Grid container>
+                                <MetricItemMobile 
+                                    label='Cash' 
+                                    value={`₹${cash}`} 
+                                    string
+                                    style={metricItemMobileStyle}
+                                />
+                                <MetricItemMobile 
+                                    label='Gross Eqty.' 
+                                    value={`₹${grossEquity}`} 
+                                    string
+                                    style={metricItemMobileStyle}
+                                />
+                                <MetricItemMobile 
+                                    label='Investment' 
+                                    value={`₹${investment}`}
+                                    string
+                                    style={metricItemMobileStyle}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </EnclosedContainer>
+        );
+    }
     
     render() {
         const isDesktop = this.props.windowWidth > 800;
+        const {statsExpanded = false} = this.props;
         
-        return isDesktop ? this.renderMobileView() : this.renderMobileView();
+        return statsExpanded ? this.renderStatsExpandedView() : this.renderMobileView();
     }
 }
 
@@ -224,14 +242,14 @@ const MetricItem = ({label, value, percentage = false, coloured = false, money =
     );
 }
 
-const MetricItemMobile = ({label, value, percentage = false, coloured = false, money = false, string = false, isDesktop = false, vertical = false}) => {
+const MetricItemMobile = ({label, value, percentage = false, coloured = false, money = false, string = false, isDesktop = false, vertical = false, xs=12, style={}}) => {
     let nValue = string ? value : Number(value);
     const color = coloured ? nValue < 0 ? metricColor.negative : nValue === 0 ? metricColor.neutral : metricColor.positive : '#4B4B4B';
     nValue = money ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(nValue)}` : nValue;
     nValue = percentage ? `${nValue} %` : nValue;
 
     return (
-        <PaperGrid item xs={12} style={{padding: 0}}>
+        <PaperGrid item xs={xs} style={{padding: 0, ...style}}>
             <Grid container alignItems='center'>
                 {
                     vertical

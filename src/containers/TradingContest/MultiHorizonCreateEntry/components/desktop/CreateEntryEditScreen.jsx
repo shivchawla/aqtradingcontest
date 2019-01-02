@@ -214,6 +214,7 @@ class CreateEntryEditScreen extends React.Component {
             getRequiredMetrics,
             pnlFound = false
         } = this.props;
+        const statsExpanded = (this.props.previewPositions.length === 0 || this.props.noEntryFound);
 
         return (
             <Grid item xs={12}>
@@ -240,12 +241,13 @@ class CreateEntryEditScreen extends React.Component {
                                 />
                             </div>
                             {
-                                pnlFound && positions.length > 0 &&
+                                pnlFound &&
                                 <div style={{padding:'0 10px 20px 10px'}}>
                                     <SelectionMetricsMini 
                                         {..._.get(getRequiredMetrics(), 'cumulative.portfolio', {})}
                                         onClick={toggleEntryDetailBottomSheet}
                                         portfolioStats={this.props.portfolioStats}
+                                        statsExpanded={statsExpanded}
                                     />
                                 </div>
                             }
@@ -365,7 +367,7 @@ const NoDataFound = () => {
         <Grid container>
             <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
                 <img src={notFoundLogo} />
-                <NoDataText style={{marginTop: '20px'}}>No Data Found</NoDataText>
+                <NoDataText style={{marginTop: '20px'}}>No Predictions Found</NoDataText>
             </Grid>
         </Grid>
     );
