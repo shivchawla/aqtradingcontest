@@ -4,7 +4,7 @@ import {BrowserRouter as Router} from 'react-router-dom';
 import './index.css';
 import 'react-loading-bar/dist/index.css'
 import App from './App';
-import register, {unregister} from './registerServiceWorker';
+import {register, unregister} from './registerServiceWorker';
 
 global.Promise = require('bluebird');
 
