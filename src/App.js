@@ -15,6 +15,7 @@ import {Utils} from './utils';
 import './App.css';
 
 const {gaTrackingId = null} = require('./localConfig');
+const AppHome = React.lazy(() => import('./containers/HomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
 const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
@@ -175,6 +176,7 @@ class App extends React.Component {
                                                 }
                                             }
                                         /> 
+                                        <Route path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
@@ -254,6 +256,7 @@ class App extends React.Component {
                                                     : this.redirectToLogin('/dailycontest')
                                             }
                                         /> 
+                                        <Route path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
