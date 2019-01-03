@@ -136,7 +136,7 @@ class WatchlistComponent extends React.Component {
         const sector = _.get(stockData, 'sector', '');
         const benchmark = _.get(stockData, 'benchmark', '');
         const url = `${requestUrl}/stock?universe=${benchmark}&sector=${sector}&skip=0&limit=5&populate=true`;
-        const indicesUrl = `${requestUrl}/stock?search=nifty&populate=true&skip=0&limit=5`;
+        const indicesUrl = `${requestUrl}/stock?search=nifty&populate=true&skip=0&limit=10`;
 
         Promise.all([
             fetchAjaxPromise(url, this.props.history, this.props.match.url, false),
@@ -347,8 +347,15 @@ class WatchlistComponent extends React.Component {
         return this.getDefaultWatchlist()
         .then(defaultWatchlistData => { // defaultWatchlistData: array (defaultStocks, defaultIndices)
             if (defaultWatchlistData !== null) {
+                let indexData = _.get(defaultWatchlistData, '[1].data', []);
+                const allowedSymbols = ['NIFTY_50', 'NIFTY_IT', 'NIFTY_MIDCAP_50'];
+                indexData = indexData.filter(index => {
+                    const symbol = _.get(index, 'ticker', '');
+                    return allowedSymbols.indexOf(symbol) > -1
+                });
+
                 let defaultStockData = _.get(defaultWatchlistData, '[0].data', []);
-                let defaultIndicesData = _.get(defaultWatchlistData, '[1].data', []);
+                let defaultIndicesData = indexData;
                 defaultStockData = this.processDefaultStockData(defaultStockData);
                 defaultIndicesData = this.processDefaultStockData(defaultIndicesData);
                 const watchlists = [

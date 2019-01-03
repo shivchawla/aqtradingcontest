@@ -12,8 +12,8 @@ class NotLoggedIn extends React.Component {
         return (
             <Grid container>
                 <Grid item xs={12} style={{...verticalBox, height: 'calc(100vh - 220px)'}}>
+                    <Text style={{marginTop: '20px'}}>Please login to continue</Text>
                     <LoginButton onClick={() => this.props.history.push('/login')}/>
-                    <Text style={{marginTop: '20px'}}>Please Login</Text>
                 </Grid>
             </Grid>
         );
@@ -25,7 +25,7 @@ export default withRouter(NotLoggedIn);
 const LoginButton = ({onClick}) => {
     const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
     const color = '#fff';
-    const fontSize = '12px';
+    const fontSize = '16px';
     const padding = '4px 8px';
 
     return (
@@ -36,7 +36,10 @@ const LoginButton = ({onClick}) => {
                     fontSize,
                     padding,
                     background,
-                    marginLeft: '10px'
+                    marginLeft: '10px',
+                    height: '40px',
+                    width: '120px',
+                    marginTop: '20px'
                 }}
                 onClick={onClick}
         >
