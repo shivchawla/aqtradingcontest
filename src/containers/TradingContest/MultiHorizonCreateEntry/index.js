@@ -398,9 +398,9 @@ class CreateEntry extends React.Component {
     }
 
     getDailyPortfolioStats = (selectedDate = moment()) => {
-        if (this.state.portfolioStatsFound) {
-            return 'requestCompleted';
-        }
+        // if (this.state.portfolioStatsFound) {
+        //     return 'requestCompleted';
+        // }
 
         try {
             this.cancelFetchPortfolioStatsRequest(portfolioStatsCancelledMessage);
@@ -674,7 +674,6 @@ class CreateEntry extends React.Component {
     }
 
     captureEvent = payload => {
-        console.log('Payload', payload);
         this.fetchPredictionsAndStats(this.state.selectedDate);
     }
 
