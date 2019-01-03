@@ -501,7 +501,7 @@ class CreateEntry extends React.Component {
             try {
                 const realtimeData = JSON.parse(msg.data);
                 const predictons = _.get(realtimeData, 'predictions', {});
-                const pnl = _.get(realtimeData, 'pnl', []);
+                const pnl = _.get(realtimeData, 'pnlStats', []);
                 this.updateDailyPredictions(predictons);
                 this.updateDailyPnLStats(pnl);
             } catch(error) {
@@ -680,8 +680,8 @@ class CreateEntry extends React.Component {
 
     componentDidMount() {
         try {
-            this.props.eventEmitter.on(onPredictionCreated, this.captureEvent);
             this.mounted = true;
+            this.props.eventEmitter && this.props.eventEmitter.on(onPredictionCreated, this.captureEvent);
         } catch(err) {}
     }
 
