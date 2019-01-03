@@ -11,6 +11,7 @@ import Footer from '../../Footer';
 import RadioGroup from '../../../components/selections/RadioGroup';
 import CustomRadio from '../../Watchlist/components/mobile/WatchlistCustomRadio';
 import {primaryColor, secondaryColor, verticalBox} from '../../../constants';
+import {Utils} from '../../../utils';
 import {DailyContestHomeMeta} from '../metas';
 import {howItWorksContents, prizeTextDaily, requirements, scoringTextDaily, scoringTextWeekly, faqs, prizeTextWeekly} from '../constants/dailycontestconstants';
 import AqLayout from '../../../components/ui/AqLayout';
@@ -58,7 +59,12 @@ export default class ContestHome extends React.Component {
                         </h3>
   
                         <SButton 
-                                onClick={() => this.props.history.push('/dailycontest/stockpredictions')}
+                                onClick={() => {
+                                    const url = Utils.isLoggedIn()
+                                            ? '/dailycontest/stockpredictions'
+                                            : '/dailycontest/stockpredictions?loggedIn=false'
+                                    this.props.history.push(url);
+                                }}
                                 variant="extendedFab"
                                 style={{marginTop: '20px', backgroundColor: secondaryColor, borderRadius:'5px', color: '#fff'}}
                         >
