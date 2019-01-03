@@ -19,7 +19,12 @@ export default class LoginBottomSheet extends React.Component {
             >
                 <Container>
                     <Grid item xs={12}>
-                        <Login noHeader={true} isBottomSheet={true} onClose={this.props.onClose} />
+                        <Login 
+                            noHeader={true} 
+                            isBottomSheet={true} 
+                            onClose={this.props.onClose} 
+                            eventEmitter={this.props.eventEmitter}
+                        />
                     </Grid>
                 </Container>
             </BottomSheet>

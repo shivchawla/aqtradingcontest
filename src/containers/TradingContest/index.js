@@ -299,6 +299,7 @@ class TradingContest extends React.Component {
                                     <StockPredictions 
                                         selectedDate={this.state.selectedDate}
                                         updateDate={this.updateDate}
+                                        eventEmitter={this.eventEmitter}
                                     />
                                 )}
                             />

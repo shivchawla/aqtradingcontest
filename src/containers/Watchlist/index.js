@@ -22,6 +22,7 @@ import DialogComponent from '../../components/Alerts/DialogComponent';
 import {fetchAjaxPromise, Utils} from '../../utils';
 import {processPositions, createUserWatchlist} from './utils';
 import {primaryColor, horizontalBox, metricColor} from '../../constants';
+import {onUserLoggedIn} from '../TradingContest/constants/events';
 
 const {requestUrl} = require('../../localConfig');
 
@@ -387,10 +388,15 @@ class WatchlistComponent extends React.Component {
             })
         }
     }
+    
+    captureLogin = payload => {
+        this.getWatchlists();
+    }
 
     componentDidMount() {
         this.mounted = true;
         this.setUpSocketConnection();
+        this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureLogin);
     }
 
     componentWillUnmount() {

@@ -16,7 +16,7 @@ import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
 import {getDailyContestPredictions, getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
 import {horizontalBox, primaryColor} from '../../../constants';
-import {onPredictionCreated, onSettingsClicked} from '../constants/events';
+import {onPredictionCreated, onSettingsClicked, onUserLoggedIn} from '../constants/events';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -482,6 +482,7 @@ class StockCardPredictions extends React.Component {
                         toggleStockCardBottomSheet={this.toggleStockCardBottomSheet}
                         toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
                         predictionsAllowed={this.state.predictionsAllowed}
+                        eventEmitter={this.props.eventEmitter}
                     />
                 </Grid>
                 <Grid item xs={12}>
