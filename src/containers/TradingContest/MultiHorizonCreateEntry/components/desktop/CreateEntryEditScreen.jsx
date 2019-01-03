@@ -13,9 +13,11 @@ import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
 import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
+import NotLoggedIn from '../../../Misc/NotLoggedIn';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
+import {Utils} from '../../../../../utils';
 import {getPositionsWithNewPredictions} from '../../utils';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
 
@@ -283,16 +285,15 @@ class CreateEntryEditScreen extends React.Component {
         );
     }
 
-    renderContent() {
-        const {positions = [], activePredictions = []} = this.props;
-        
+    renderContent() {        
         return (
-            (positions === 0 && activePredictions.length === 0)
-            ?   this.renderEmptySelections()
-            :   <Grid container justify="space-between" style={{backgroundColor:'#fff'}}>
-                    {/* {this.renderPredictedTodayStockList()} */}
-                    {this.renderOtherStocksList()}
-                </Grid>
+            <Grid container justify="space-between" style={{backgroundColor:'#fff'}}>
+                {
+                    Utils.isLoggedIn()
+                    ? this.renderOtherStocksList()
+                    : <NotLoggedIn />
+                }
+            </Grid>
         );
     }
 

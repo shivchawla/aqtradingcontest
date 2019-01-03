@@ -9,6 +9,7 @@ import TopPicksLayoutMobile from './mobile/TopPicksLayout';
 import TopPicksLayoutDesktop from './desktop/TopPicksLayout';
 import {verticalBox} from '../../../constants';
 import TimerComponent from '../Misc/TimerComponent';
+import {onUserLoggedIn} from '../constants/events';
 import {DailyContestCreateMeta} from '../metas';
 import {getContestSummary, getTopStocks} from '../utils';
 
@@ -60,6 +61,14 @@ class Winners extends React.Component {
 
     componentWillMount() {
         this.fetchTopStocks(this.state.selectedDate);
+    }
+
+    captureEvent = payload => {
+        this.fetchTopStocks(this.state.selectedDate);
+    }
+
+    componentDidMount() {
+        this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureEvent);
     }
 
     shouldComponentUpdate(nextProps, nextState) {

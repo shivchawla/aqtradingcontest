@@ -343,8 +343,42 @@ class WatchlistComponent extends React.Component {
         );
     }
 
+    updateDefaultWatchlist = () => {
+        return this.getDefaultWatchlist()
+        .then(defaultWatchlistData => { // defaultWatchlistData: array (defaultStocks, defaultIndices)
+            if (defaultWatchlistData !== null) {
+                let defaultStockData = _.get(defaultWatchlistData, '[0].data', []);
+                let defaultIndicesData = _.get(defaultWatchlistData, '[1].data', []);
+                defaultStockData = this.processDefaultStockData(defaultStockData);
+                defaultIndicesData = this.processDefaultStockData(defaultIndicesData);
+                const watchlists = [
+                    {
+                        name: 'Default',
+                        positions: defaultStockData
+                    },
+                    {
+                        name: 'Index',
+                        positions: defaultIndicesData
+                    }
+                ];
+                this.setState({watchlists});
+            }
+        })
+    }
+
     componentWillMount() {
-        this.getWatchlists();
+        if (Utils.isLoggedIn()) {
+            this.getWatchlists();
+        } else {
+            this.setState({noWatchlistPresent: true, loading: true});
+            this.updateDefaultWatchlist()
+            .catch(err => {
+                this.openSnackbar('Error Occurred while fetching Watchlist');
+            })
+            .finally(() => {
+                this.setState({loading: false});
+            })
+        }
     }
 
     componentDidMount() {

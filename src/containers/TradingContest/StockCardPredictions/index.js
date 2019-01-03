@@ -10,6 +10,7 @@ import WatchlistComponent from '../../Watchlist';
 import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
 import Snackbar from '../../../components/Alerts/SnackbarComponent';
+import LoginBottomSheet from '../LoginBottomSheet';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction} from './utils';
@@ -46,7 +47,8 @@ class StockCardPredictions extends React.Component {
             showSuccess: false,
             stockCardBottomSheetOpen: false,
             listMode: false,
-            predictionsAllowed: false
+            predictionsAllowed: false,
+            loginOpen: false
         };
     }
     
@@ -256,15 +258,25 @@ class StockCardPredictions extends React.Component {
         } catch(err) {}
     }
 
-    componentWillMount() {
+    updatePortfolioStats = () => {
         const currentTradingDay = this.getCurrentTradingDay();
-        this.setState({loading: true});
-        this.initializeStateFromLocalStorage()
-        .then(() => getPortfolioStats(currentTradingDay, this.props.history, this.props.match.url, false))
+        return getPortfolioStats(currentTradingDay, this.props.history, this.props.match.url, false)
         .then(portfolioStats => {
             const portfolioStatsData = portfolioStats.data;
             this.setState({portfolioStats: portfolioStatsData});
+            
+            return portfolioStatsData;
         })
+    }
+
+    componentWillMount() {
+        this.setState({loading: true});
+        this.initializeStateFromLocalStorage()
+        // .then(() => {
+        //     return Utils.isLoggedIn() 
+        //         ? this.updatePortfolioStats()
+        //         : null
+        // })
         .catch(error => {
             console.log('Error', error);
         })
@@ -301,31 +313,35 @@ class StockCardPredictions extends React.Component {
         });
     }
 
-    checkIfCashAvailable = () => {
-        const liquidCash = _.get(this.state, 'portfolioStats.liquidCash', 0);
+    checkIfCashAvailable = (liquidCash = _.get(this.state, 'portfolioStats.liquidCash', 0)) => {
         const selectedInvestment = _.get(this.state, 'stockData.investment', 0) / 1000;
 
-        return selectedInvestment > liquidCash;
+        return selectedInvestment <= liquidCash;
     }
 
     createDailyContestPrediction = (type = 'buy') => {
-        const currentTradingDay = this.getCurrentTradingDay();
-        if (this.checkIfCashAvailable()) {
-            this.updateSnackbar('No Available Cash');
+        if (!Utils.isLoggedIn()) {
+            this.toggleLoginBottomSheet();
             return;
         }
         const predictions = constructPrediction(this.state.stockData, type);
         this.setState({loadingCreatePredictions: true});
-        createPredictions(predictions)
-        .then(() => getPortfolioStats(currentTradingDay, this.props.history, this.props.match.url, false))
+        this.updatePortfolioStats()
         .then(portfolioStats => {
-            this.showSuccess();
-            this.updateStockDataToDefaultSettings();
-            const portfolioStatsData = portfolioStats.data;
-            this.setState({portfolioStats: portfolioStatsData});
-            this.props.eventEmitter && 
-            this.props.eventEmitter.emit(onPredictionCreated, 'Prediction Successfully Created');
-            console.log('Entered Here');
+            if (this.checkIfCashAvailable(_.get(portfolioStats, 'liquidCash', 0))) {
+                return createPredictions(predictions);
+            } else {
+                this.updateSnackbar('No Available Cash');
+                return null;
+            }
+        })
+        .then(data => {
+            if (data !== null) {
+                this.showSuccess();
+                this.updateStockDataToDefaultSettings();
+                this.props.eventEmitter && 
+                this.props.eventEmitter.emit(onPredictionCreated, 'Prediction Successfully Created');                
+            }
         })
         .catch(error => {
             console.log('Error', error);
@@ -393,6 +409,14 @@ class StockCardPredictions extends React.Component {
         this.setState({stockCardBottomSheetOpen: false});
     }
 
+    toggleLoginBottomSheet = () => {
+        this.setState({loginOpen: !this.state.loginOpen});
+    }
+
+    closeLoginBottomSheet = () => {
+        this.setState({loginOpen: false});
+    }
+
     renderStockCard = (bottomSheet = false) => {
         return (
             <StockCard 
@@ -414,6 +438,7 @@ class StockCardPredictions extends React.Component {
                 open={this.state.stockCardBottomSheetOpen}
                 onClose={this.toggleStockCardBottomSheet}
                 bottomSheet={bottomSheet}
+                toggleLoginBottomSheet={this.toggleLoginBottomSheet}
             />
         );
     }
@@ -428,6 +453,12 @@ class StockCardPredictions extends React.Component {
                     message={this.state.snackbar.message}
                     handleClose={() => this.setState({snackbar: {...this.state.snackbar, open: false}})}
                     position='top'
+                />
+                <LoginBottomSheet 
+                    open={this.state.loginOpen} 
+                    onClose={this.toggleLoginBottomSheet}
+                    dialog={this.props.windowWidth > 800}
+                    eventEmitter={this.props.eventEmitter}
                 />
                 <DefaultSettings 
                     open={this.state.defaultSettingsOpen}

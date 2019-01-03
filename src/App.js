@@ -166,15 +166,7 @@ class App extends React.Component {
                                                     : this.redirectToLogin('/contest')
                                             }}
                                         />
-                                        <Route 
-                                            path='/dailycontest' 
-                                            render={() => {
-                                                return Utils.isLoggedIn() 
-                                                    ? <TradingContest /> 
-                                                    : this.redirectToLogin('/dailycontest')
-                                                }
-                                            }
-                                        /> 
+                                        <Route path='/dailycontest' component={TradingContest} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
@@ -191,13 +183,6 @@ class App extends React.Component {
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
                                         <Route path='/stockresearch' component={StockResearch}/> 
-                                        {/* <Route 
-                                            path='/stockresearch' 
-                                            render={(props) => Utils.isLoggedIn()
-                                                    ? <StockResearch {...props} />
-                                                    : this.redirectToLogin('/stockresearch')
-                                            }
-                                        />  */}
                                         <Route path='/policies/tnc' component={TnC}/> 
                                         <Route path='/policies/privacy' component={Policy}/> 
                                         <Route path='/aboutus' component={AboutUs}/> 
@@ -247,13 +232,7 @@ class App extends React.Component {
                                             }}
                                         />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
-                                        <Route 
-                                            path='/dailycontest' 
-                                            render={() => Utils.isLoggedIn() 
-                                                    ? <TradingContest /> 
-                                                    : this.redirectToLogin('/dailycontest')
-                                            }
-                                        /> 
+                                        <Route path='/dailycontest' component={TradingContest} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
