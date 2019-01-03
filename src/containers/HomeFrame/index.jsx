@@ -2,7 +2,7 @@ import React from 'react';
 
 export default class HomeFrame extends React.Component {
     iframe = () => {
-        const iframe = '<iframe src="http://localhost:8000/" style="width: 100vw; height: 100vh; border: none"></iframe>';
+        const iframe = '<iframe src="https://develop.adviceqube.com/_home" style="width: 100vw; height: 100vh; border: none"></iframe>';
         return {
             __html: iframe
           }
