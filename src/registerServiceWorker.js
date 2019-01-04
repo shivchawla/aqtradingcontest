@@ -34,13 +34,6 @@ export default function register(event) {
       return;
     }
 
-    window.addEventListener('fetch', function(event) {
-      console.log('Data Fetched');
-      if (window.location.pathname === home || window.location.pathname === '/_home') {
-        console.log('Entered Home');
-      }
-    });
-
     window.addEventListener('load', () => {
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
