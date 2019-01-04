@@ -48,7 +48,7 @@ class NavigationDrawerImpl extends React.Component {
                     style={{...horizontalBox, height:'56px', padding:'0 16px'}}>
                     <img src={logo} style={{height: '25px'}}/>
                     <div style={{cursor: 'pointer', marginLeft: '10px', marginTop:'2px'}}>
-                        <span style={{...biggerFont, color: titleColor}}>B</span>
+                        <span style={{...biggerFont, color: titleColor}}>A</span>
                         <span style={{color: titleColor}}>DVICE</span>
                         <span style={{...biggerFont, color: '#e06666'}}>Q</span>
                         <span style={{color: '#e06666'}}>UBE</span>
