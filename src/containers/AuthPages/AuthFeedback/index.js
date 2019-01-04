@@ -33,7 +33,7 @@ export default class AuthFeedback extends React.Component {
             return (
                 <React.Fragment>
                     <Header style={{'fontSize': '24px', 'color': 'teal'}}>
-                        You are just one step away from finding great investment ideas!!
+                        You are just one step away from creating predictions!!
                     </Header>
                     <p style={{'fontSize': '18px', 'marginTop': '20px', color: '#000000a6'}}>We've sent an email to
                         <span style={{'fontWeight': '700'}}> {this.params.get('email')}</span>.
