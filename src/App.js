@@ -92,7 +92,7 @@ class App extends React.Component {
                     color="secondary" 
                     size="small" 
                     onClick={
-                        () => window.location.reload()
+                        () => window.location.reload(true)
                     }
             >
               Reload
