@@ -59,6 +59,10 @@ export default class StockListItemMobile extends React.Component {
             iconColor = '#13CC88';
         }
 
+        if (!Utils.isLoggedIn()) {
+            return null;
+        }
+
         if (hideActions) {
             return (
                 <ActionIcon 
