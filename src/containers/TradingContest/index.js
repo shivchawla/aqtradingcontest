@@ -251,7 +251,7 @@ class TradingContest extends React.Component {
                                 scrollable
                                 scrollButtons="auto"
                         >
-                            <STab label="PREDICT"/>
+                            {/* <STab label="PREDICT"/> */}
                             <STab label="MY PICKS" />
                             <STab label="Metrics"/>
                         </STabs>
