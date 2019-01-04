@@ -27,7 +27,7 @@ export default function register(event) {
     console.log('Home Url', home);
     console.log('Equals', (window.location.pathname === home || window.location.pathname === '/_home'));
     if (publicUrl.origin !== window.location.origin 
-      && (window.location.pathname === home || window.location.pathname === '/_home')
+      || (window.location.pathname === home || window.location.pathname === '/_home')
     ) {
       // Our service worker won't work if PUBLIC_URL is on a different origin
       // from what our page is served on. This might happen if a CDN is used to
