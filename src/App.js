@@ -5,11 +5,13 @@ import Route from 'react-router/Route';
 import Redirect from 'react-router/Redirect';
 import Notifications from 'react-notify-toast';
 import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider'
+import Button from '@material-ui/core/Button';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
 import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
+import Snackbar from './components/Alerts/SnackbarComponent';
 import DummyLogin from './containers/DummyLogin';
 import {Utils} from './utils';
 import './App.css';
@@ -41,6 +43,9 @@ const Policy = React.lazy(() => import('./containers/Policy'));
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            newContentToast: false
+        }
         ReactGA.initialize(gaTrackingId); //Unique Google Analytics tracking number
     }
 
@@ -54,7 +59,20 @@ class App extends React.Component {
         }
     }
 
+    captureSWEvent = payload => {
+        this.toggleNewContentToast();
+    }
+
+    toggleNewContentToast = () => {
+        this.setState({newContentToast: !this.state.newContentToast});
+    }
+
+    onSnackbarClose = () => {
+        this.setState({newContentToast: false});
+    }
+
     componentDidMount() {
+        this.props.event && this.props.event.on('SW_NEW_CONTENT', this.captureSWEvent);
         this.fireTracking();
     }
 
@@ -68,10 +86,30 @@ class App extends React.Component {
         return <Redirect push to='/dailycontest/home' />;
     }
 
+    renderSnackbarAction = () => {
+        return (
+            <Button 
+                    color="secondary" 
+                    size="small" 
+                    onClick={
+                        () => window.location.reload()
+                    }
+            >
+              Reload
+            </Button>
+        );
+    }
+
     render() {
         return (
             <MuiPickersUtilsProvider utils={MomentUtils}>
                 <div className="App">
+                    <Snackbar 
+                        openStatus={this.state.newContentToast}
+                        // handleClose={this.onSnackbarClose}
+                        message='New update available plese reload!!'
+                        renderAction={this.renderSnackbarAction}
+                    />
                     <Notifications style={{zIndex: 3000}}/>
                     <Media 
                         query="(max-width: 800px)"

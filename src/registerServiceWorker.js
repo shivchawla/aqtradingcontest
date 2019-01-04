@@ -18,7 +18,7 @@ const isLocalhost = Boolean(
     )
 );
 
-export default function register() {
+export default function register(event) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location);
@@ -48,14 +48,13 @@ export default function register() {
         });
       } else {
         // Is not local host. Just register service worker
-        registerValidSW(swUrl);
+        registerValidSW(swUrl, event);
       }
     });
   }
 }
 
-function registerValidSW(swUrl) {
-  console.log('Registering Valid Service Worker');
+function registerValidSW(swUrl, event) {
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
@@ -69,6 +68,7 @@ function registerValidSW(swUrl) {
               // It's the perfect time to display a "New content is
               // available; please refresh." message in your web app.
               console.log('New content is available; please refresh.');
+              event.emit('SW_NEW_CONTENT', 'Service Worker Registered');
             } else {
               // At this point, everything has been precached.
               // It's the perfect time to display a

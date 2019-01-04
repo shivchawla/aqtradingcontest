@@ -4,10 +4,13 @@ import {BrowserRouter as Router} from 'react-router-dom';
 import './index.css';
 import 'react-loading-bar/dist/index.css'
 import App from './App';
+import {Event} from './utils/events';
 import registerServiceWorker from './registerServiceWorker';
 
 global.Promise = require('bluebird');
 
-ReactDOM.render(<Router><App /></Router>, document.getElementById('root'));
+const event = new Event();
+
+ReactDOM.render(<Router><App event={event}/></Router>, document.getElementById('root'));
 // unregister();
-registerServiceWorker();
+registerServiceWorker(event);
