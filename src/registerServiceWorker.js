@@ -31,6 +31,7 @@ export default function register() {
     }
 
     window.addEventListener('load', () => {
+      console.log('Window Loaded');
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
       if (isLocalhost) {
@@ -54,6 +55,7 @@ export default function register() {
 }
 
 function registerValidSW(swUrl) {
+  console.log('Registering Valid Service Worker');
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
