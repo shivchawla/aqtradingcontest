@@ -15,7 +15,7 @@ import {Utils} from './utils';
 import './App.css';
 
 const {gaTrackingId = null} = require('./localConfig');
-const AppHome = React.lazy(() => import('./containers/HomeFrame'));
+// const AppHome = React.lazy(() => import('./containers/HomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
 const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
@@ -168,7 +168,7 @@ class App extends React.Component {
                                             }}
                                         />
                                         <Route path='/dailycontest' component={TradingContest} />
-                                        <Route path='/' component={AppHome} />
+                                        {/* <Route path='/' component={AppHome} /> */}
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
@@ -235,7 +235,7 @@ class App extends React.Component {
                                         />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route path='/dailycontest' component={TradingContest} />
-                                        <Route path='/' component={AppHome} />
+                                        {/* <Route path='/' component={AppHome} /> */}
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
