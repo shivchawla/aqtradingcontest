@@ -214,7 +214,7 @@ class App extends React.Component {
                                                 }
                                             }
                                         /> 
-                                        {/* <Route path='/' component={AppHome} /> */}
+                                        <Route path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
@@ -294,7 +294,7 @@ class App extends React.Component {
                                                     : this.redirectToLogin('/dailycontest')
                                             }
                                         /> 
-                                        {/* <Route path='/' component={AppHome} /> */}
+                                        <Route path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
