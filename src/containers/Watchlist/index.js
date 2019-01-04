@@ -136,7 +136,7 @@ class WatchlistComponent extends React.Component {
         const {stockData = {}} = this.props;
         const sector = _.get(stockData, 'sector', '');
         const benchmark = _.get(stockData, 'benchmark', '');
-        const url = `${requestUrl}/stock?universe=${benchmark}&sector=${sector}&skip=0&limit=5&populate=true`;
+        const url = `${requestUrl}/stock?universe=NIFTY_500&skip=0&limit=5&populate=true`;
         const indicesUrl = `${requestUrl}/stock?search=nifty&populate=true&skip=0&limit=10`;
 
         Promise.all([
