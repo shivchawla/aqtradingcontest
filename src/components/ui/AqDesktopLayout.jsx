@@ -10,6 +10,8 @@ import DateComponent from '../../containers/TradingContest/Misc/DateComponent';
 import {metricColor, horizontalBox} from '../../constants';
 import {isMarketOpen} from '../../containers/TradingContest/utils';
 import {isHoliday} from '../../utils';
+import {Utils} from '../../utils';
+
 class AqDesktopLayout extends React.Component {
     constructor(props) {
         super(props);
@@ -164,6 +166,7 @@ class AqDesktopLayout extends React.Component {
                             }}
                     >
                         {
+                            Utils.isLoggedIn() &&
                             this.state.activeSegment === 1 &&
                             <MartketOpenTag 
                                     color={marketOpen

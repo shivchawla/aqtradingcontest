@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import {withRouter} from 'react-router-dom';
 import styled from 'styled-components';
 import Media from 'react-media';
 import GoogleLogin from 'react-google-login';
@@ -18,6 +19,7 @@ import {getFormProps} from '../../../utils/form';
 import {Utils} from '../../../utils';
 import AuthHeader from '../common/AuthHeader';
 import {loginValidationSchema, loginUser, googleLogin} from './utils';
+import {onUserLoggedIn} from '../../TradingContest/constants/events';
 import googleLogo from '../../../assets/google-logo.svg';
 import advicequbeLogo from '../../../assets/logo-advq-new.png';
 
@@ -44,14 +46,21 @@ class Login extends React.Component {
     }
 
     processLogin = response => {
+        const {isBottomSheet = false} = this.props;
+
         if (response.data.token) {
             Utils.localStorageSaveObject(Utils.userInfoString, response.data);
             Utils.setLoggedInUserInfo(response.data);
-            const redirectUrl = Utils.getRedirectAfterLoginUrl();
-            if (redirectUrl) {
-                this.props.history.push(redirectUrl);
-            } else{
-                this.props.history.push('/dailycontest/stockpredictions');
+            if (isBottomSheet) {
+                this.props.eventEmitter && this.props.eventEmitter.emit(onUserLoggedIn, 'User Logged In');
+                this.props.onClose && this.props.onClose();
+            } else {
+                const redirectUrl = Utils.getRedirectAfterLoginUrl();
+                if (redirectUrl) {
+                    this.props.history.push(redirectUrl);
+                } else{
+                    this.props.history.push('/dailycontest/stockpredictions');
+                }
             }
         } else {
             this.setState({
@@ -222,8 +231,10 @@ class Login extends React.Component {
     }
 
     renderMobile = () => {
+        const {noHeader = false} = this.props;
+
         return (
-            <AqLayoutMobile pageTitle='Login' lightMode={true}>
+            <AqLayoutMobile pageTitle='Login' lightMode={true} noHeader={noHeader}>
                 <Container container>
                     <Grid 
                             item xs={12} 
@@ -278,8 +289,9 @@ class Login extends React.Component {
     }
 
     render() {
-        return (
-            <React.Fragment>
+        return this.props.dialog
+        ?   this.renderMobile()
+        :   <React.Fragment>
                 <Media 
                     query="(max-width: 800px)"
                     render={() => this.renderMobile()}
@@ -288,12 +300,11 @@ class Login extends React.Component {
                     query="(min-width: 801px)"
                     render={() => this.renderDesktop()}
                 />
-            </React.Fragment>
-        );
+            </React.Fragment>;
     }
 }
 
-export default withStyles(styles)(Login);
+export default withStyles(styles)(withRouter(Login));
 
 const companyNameStyle = {
     'fontSize': '30px', 

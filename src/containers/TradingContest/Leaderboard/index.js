@@ -6,6 +6,7 @@ import {withRouter} from 'react-router';
 import LeaderboardLayoutMobile from './mobile/LeaderboardLayout';
 import LeaderboardLayoutDesktop from './desktop/LeaderboardLayout';
 import {DailyContestLeaderboardMeta} from '../metas';
+import {onUserLoggedIn} from '../constants/events';
 import {getContestSummary, processParticipants, getLeaderboard, processLeaderboardWinners} from '../utils';
 
 const dateFormat = 'YYYY-MM-DD';
@@ -69,6 +70,14 @@ class Participants extends React.Component {
 
     componentWillMount() {
         this.fetchLeaderboard(this.state.selectedDate);
+    }
+
+    captureEvent = (payload) => {
+        this.fetchLeaderboard(this.state.selectedDate);
+    }
+
+    componentDidMount() {
+        this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureEvent);
     }
 
     shouldComponentUpdate(nextProps, nextState) {

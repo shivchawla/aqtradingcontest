@@ -14,6 +14,7 @@ import logo from '../../../../../assets/logo-advq-new.png';
 import stockBackImage from '../../../../../assets/trading-contest-bg.jpg';
 import blurredCircle from '../../../../../assets/blurred-circle.svg';
 import TradingContestBgImg from '../../../../../assets/trading-contest-bg.jpg';
+import { Utils } from '../../../../../utils';
 
 class Home extends React.Component {
     constructor(props) {
@@ -105,7 +106,12 @@ class Home extends React.Component {
                                         color: '#fff', 
                                         width: '180px',
                                     }}
-                                    onClick={() => this.props.history.push('/dailycontest/stockpredictions')}
+                                    onClick={() => {
+                                        const url = Utils.isLoggedIn()
+                                            ? '/dailycontest/stockpredictions'
+                                            : '/dailycontest/stockpredictions?loggedIn=false'
+                                        this.props.history.push(url);
+                                    }}
                             >
                                 Enter Contest
                                 <Icon style={{color: '#fff'}}>chevron_right</Icon>

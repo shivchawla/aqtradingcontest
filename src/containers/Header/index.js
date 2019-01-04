@@ -30,7 +30,7 @@ class Header extends React.Component {
     }
 
     render() {
-        const {classes, activeIndex = 0} = this.props;
+        const {classes, activeIndex = 0, isLoggedIn = null} = this.props;
 
         return (
             <AppBar 
@@ -61,6 +61,7 @@ class Header extends React.Component {
                             <HeaderLinks 
                                 activeIndex={activeIndex}
                                 history={this.props.history}
+                                isLoggedIn={isLoggedIn}
                             />
                         </Grid>
                     </Grid>
@@ -72,7 +73,7 @@ class Header extends React.Component {
 
 export default withStyles(styles)(withRouter(Header));
 
-const HeaderLinks = ({activeIndex = 0, history}) => {
+const HeaderLinks = ({activeIndex = 0, history, isLoggedIn = null}) => {
     const urls = [
         {name: 'Contest', url: '/dailycontest/home'},
         {name: 'Stock Research', url: '/stockresearch'},
@@ -90,7 +91,7 @@ const HeaderLinks = ({activeIndex = 0, history}) => {
                 ))
             }
             {
-                Utils.isLoggedIn()
+                (isLoggedIn || Utils.isLoggedIn())
                 ?   <NavLink
                         onClick={() => {
                             Utils.logoutUser();

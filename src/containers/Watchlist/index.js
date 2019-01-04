@@ -22,6 +22,7 @@ import DialogComponent from '../../components/Alerts/DialogComponent';
 import {fetchAjaxPromise, Utils} from '../../utils';
 import {processPositions, createUserWatchlist} from './utils';
 import {primaryColor, horizontalBox, metricColor} from '../../constants';
+import {onUserLoggedIn} from '../TradingContest/constants/events';
 
 const {requestUrl} = require('../../localConfig');
 
@@ -136,7 +137,7 @@ class WatchlistComponent extends React.Component {
         const sector = _.get(stockData, 'sector', '');
         const benchmark = _.get(stockData, 'benchmark', '');
         const url = `${requestUrl}/stock?universe=${benchmark}&sector=${sector}&skip=0&limit=5&populate=true`;
-        const indicesUrl = `${requestUrl}/stock?search=nifty&populate=true&skip=0&limit=5`;
+        const indicesUrl = `${requestUrl}/stock?search=nifty&populate=true&skip=0&limit=10`;
 
         Promise.all([
             fetchAjaxPromise(url, this.props.history, this.props.match.url, false),
@@ -343,13 +344,59 @@ class WatchlistComponent extends React.Component {
         );
     }
 
+    updateDefaultWatchlist = () => {
+        return this.getDefaultWatchlist()
+        .then(defaultWatchlistData => { // defaultWatchlistData: array (defaultStocks, defaultIndices)
+            if (defaultWatchlistData !== null) {
+                let indexData = _.get(defaultWatchlistData, '[1].data', []);
+                const allowedSymbols = ['NIFTY_50', 'NIFTY_IT', 'NIFTY_MIDCAP_50'];
+                indexData = indexData.filter(index => {
+                    const symbol = _.get(index, 'ticker', '');
+                    return allowedSymbols.indexOf(symbol) > -1
+                });
+
+                let defaultStockData = _.get(defaultWatchlistData, '[0].data', []);
+                let defaultIndicesData = indexData;
+                defaultStockData = this.processDefaultStockData(defaultStockData);
+                defaultIndicesData = this.processDefaultStockData(defaultIndicesData);
+                const watchlists = [
+                    {
+                        name: 'Default',
+                        positions: defaultStockData
+                    },
+                    {
+                        name: 'Index',
+                        positions: defaultIndicesData
+                    }
+                ];
+                this.setState({watchlists});
+            }
+        })
+    }
+
     componentWillMount() {
+        if (Utils.isLoggedIn()) {
+            this.getWatchlists();
+        } else {
+            this.setState({noWatchlistPresent: true, loading: true});
+            this.updateDefaultWatchlist()
+            .catch(err => {
+                this.openSnackbar('Error Occurred while fetching Watchlist');
+            })
+            .finally(() => {
+                this.setState({loading: false});
+            })
+        }
+    }
+    
+    captureLogin = payload => {
         this.getWatchlists();
     }
 
     componentDidMount() {
         this.mounted = true;
         this.setUpSocketConnection();
+        this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureLogin);
     }
 
     componentWillUnmount() {

@@ -72,7 +72,8 @@ class AqLayout extends React.Component {
     renderLightMode = () => {
         const {
             pageTitle = 'AdviceQube', 
-            classes
+            classes,
+            noHeader=false
         } = this.props;
 
         return (
@@ -81,30 +82,32 @@ class AqLayout extends React.Component {
                     open={this.state.navigationDrawerOpenStatus} 
                     onToggle={this.toggleNavigationDrawer}
                 />
-                <AppBar 
-                        position="relative" 
-                        className={classes.root} 
-                        style={{backgroundColor: '#fff', borderBottom: '1px solid #eaeaea'}}
-                >
-                    <Toolbar>
-                        <IconButton 
-                                style={{color: tealColor}}
-                                className={classes.icon}
-                                aria-label="Menu"
-                                onClick={this.toggleNavigationDrawer}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <div style={{...headerColor, cursor: 'pointer', marginLeft: '10px'}}>
-                            <span style={{...biggerFont, color: tealColor}}>A</span>
-                            <span style={{color: tealColor}}>DVICE</span>
-                            <span style={{...biggerFont, color: '#e06666'}}>Q</span>
-                            <span style={{color: '#e06666'}}>UBE</span>
-                        </div>
-                        {this.props.extraAction}
-                    </Toolbar>
-                </AppBar>
-                
+                {
+                    !noHeader &&
+                    <AppBar 
+                            position="relative" 
+                            className={classes.root} 
+                            style={{backgroundColor: '#fff', borderBottom: '1px solid #eaeaea'}}
+                    >
+                        <Toolbar>
+                            <IconButton 
+                                    style={{color: tealColor}}
+                                    className={classes.icon}
+                                    aria-label="Menu"
+                                    onClick={this.toggleNavigationDrawer}
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                            <div style={{...headerColor, cursor: 'pointer', marginLeft: '10px'}}>
+                                <span style={{...biggerFont, color: tealColor}}>A</span>
+                                <span style={{color: tealColor}}>DVICE</span>
+                                <span style={{...biggerFont, color: '#e06666'}}>Q</span>
+                                <span style={{color: '#e06666'}}>UBE</span>
+                            </div>
+                            {this.props.extraAction}
+                        </Toolbar>
+                    </AppBar>
+                }                
                 {this.props.children}
             </div>
         );

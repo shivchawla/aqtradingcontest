@@ -427,17 +427,6 @@ class StockCard extends React.Component {
                                 type="sell"
                             />
                         }
-                        {
-                            // !bottomSheet && shortable &&
-                            !bottomSheet && !isDesktop &&
-                            <Button 
-                                    style={skipButtonStyle} 
-                                    variant="outlined"
-                                    onClick={this.skipStock}
-                            >
-                                SKIP
-                            </Button>
-                        }
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('buy')}
                             target={target}

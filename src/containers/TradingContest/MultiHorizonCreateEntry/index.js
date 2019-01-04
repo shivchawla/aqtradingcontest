@@ -34,7 +34,7 @@ import {
     exitPrediction,
     stopPredictionInPositions
 } from './utils';
-import {onPredictionCreated} from '../constants/events';
+import {onPredictionCreated, onUserLoggedIn} from '../constants/events';
 
 const dateFormat = 'YYYY-MM-DD';
 const pnlCancelledMessage = 'pnlCancelled';
@@ -681,6 +681,7 @@ class CreateEntry extends React.Component {
         try {
             this.mounted = true;
             this.props.eventEmitter && this.props.eventEmitter.on(onPredictionCreated, this.captureEvent);
+            this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureEvent);
         } catch(err) {}
     }
 
