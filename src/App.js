@@ -76,7 +76,8 @@ class App extends React.Component {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
             // Stash the event so it can be triggered later.
-            console.log('Should add to homescreen');          
+            console.log('Should add to homescreen');
+            alert('Should add to homescreen');          
         });
         this.props.event && this.props.event.on('SW_NEW_CONTENT', this.captureSWEvent);
         this.fireTracking();
