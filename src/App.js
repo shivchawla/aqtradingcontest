@@ -49,7 +49,8 @@ class App extends React.Component {
         this.state = {
             newContentToast: false,
             addToHomescreenToast: false,
-            responseSnackbar: false
+            responseSnackbar: false,
+            responseSnackbarMessage: ''
         }
         ReactGA.initialize(gaTrackingId); //Unique Google Analytics tracking number
     }
@@ -76,8 +77,8 @@ class App extends React.Component {
         this.setState({addToHomescreenToast: !this.state.addToHomescreenToast});
     }
 
-    toggleResponseSnacbar = () => {
-        this.setState({responseSnackbar: !this.state.responseSnackbar});
+    toggleResponseSnacbar = (message) => {
+        this.setState({responseSnackbar: !this.state.responseSnackbar, responseSnackbarMessage: message});
     }
 
     onResponseSnackbarClose = () => {
@@ -95,8 +96,6 @@ class App extends React.Component {
             e.preventDefault();
             // Stash the event so it can be triggered later.
             self.deferredA2HSEvent = e;
-            console.log('Event', e);
-            console.log('Deferred Event', this.deferredA2HSEvent);
             self.toggleA2HSSnackbar();   
         });
         this.props.event && this.props.event.on('SW_NEW_CONTENT', this.captureSWEvent);
@@ -141,9 +140,10 @@ class App extends React.Component {
                                 this.deferredA2HSEvent.prompt();
                                 this.deferredA2HSEvent.userChoice.then((choiceResult) => {
                                     if (choiceResult.outcome === 'accepted') {
-                                        this.toggleResponseSnacbar();
+                                        this.setState({addToHomescreenToast: false});
+                                        this.toggleResponseSnacbar('Successfully added to homecreen');
                                     } else {
-                                        this.toggleResponseSnacbar();
+                                        this.setState({addToHomescreenToast: false});
                                     }
                                     this.deferredA2HSEvent.deferredPrompt = null;
                                 });
