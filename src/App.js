@@ -87,12 +87,13 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        var self = this;
         window.addEventListener('beforeinstallprompt', function (e) {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
             // Stash the event so it can be triggered later.
             this.deferredA2HSEvent = e;
-            this.toggleA2HSSnackbar();      
+            self.toggleA2HSSnackbar();   
         });
         this.props.event && this.props.event.on('SW_NEW_CONTENT', this.captureSWEvent);
         this.fireTracking();
