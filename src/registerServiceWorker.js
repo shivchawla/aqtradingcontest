@@ -18,19 +18,14 @@ const isLocalhost = Boolean(
     )
 );
 
-export default function register(event) {
+export default function register() {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location);
-    const home = "/home";
-    console.log('Window Path Name', window.location.pathname);
-    console.log('Home Url', home);
-    console.log('Equals', (window.location.pathname === home || window.location.pathname === '/_home'));
-    if (publicUrl.origin !== window.location.origin || window.location.pathname === home || window.location.pathname === '/_home') {
+    if (publicUrl.origin !== window.location.origin) {
       // Our service worker won't work if PUBLIC_URL is on a different origin
       // from what our page is served on. This might happen if a CDN is used to
       // serve assets; see https://github.com/facebookincubator/create-react-app/issues/2374
-      console.log('Origin Different');
       return;
     }
 
