@@ -92,8 +92,7 @@ class App extends React.Component {
             e.preventDefault();
             // Stash the event so it can be triggered later.
             this.deferredA2HSEvent = e;
-            console.log('Should add to homescreen');
-            alert('Should add to homescreen');          
+            this.toggleA2HSSnackbar();      
         });
         this.props.event && this.props.event.on('SW_NEW_CONTENT', this.captureSWEvent);
         this.fireTracking();
