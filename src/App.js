@@ -130,6 +130,7 @@ class App extends React.Component {
                     size="small" 
                     onClick={() => {
                         try {
+                            console.log('Event', this.deferredA2HSEvent);
                             this.deferredA2HSEvent.prompt();
                             this.deferredA2HSEvent.userChoice.then((choiceResult) => {
                                 if (choiceResult.outcome === 'accepted') {
