@@ -13,6 +13,7 @@ import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import Snackbar from './components/Alerts/SnackbarComponent';
 import DummyLogin from './containers/DummyLogin';
+import {horizontalBox} from './constants';
 import {Utils} from './utils';
 import './App.css';
 
@@ -127,29 +128,32 @@ class App extends React.Component {
 
     renderA2HSSnackbarAction = () => {
         return (
-            <Button 
-                    color="secondary" 
-                    size="small" 
-                    onClick={() => {
-                        try {
-                            console.log('Event', this.deferredA2HSEvent);
-                            this.deferredA2HSEvent.prompt();
-                            this.deferredA2HSEvent.userChoice.then((choiceResult) => {
-                                if (choiceResult.outcome === 'accepted') {
-                                    this.toggleResponseSnacbar();
-                                } else {
-                                    this.toggleResponseSnacbar();
-                                }
-                                this.deferredA2HSEvent.deferredPrompt = null;
-                            });
-                        } catch(err) {
-                            console.log('Error', err);
-                        }
-                        console.log('Add Clicked');
-                    }}
-            >
-              ADD
-            </Button>
+            <div style={{...horizontalBox, justifyContent: 'space-between'}}>
+                <Button onClick={this.toggleA2HSSnackbar} color="inherit">CANCEL</Button>
+                <Button 
+                        color="secondary" 
+                        size="small" 
+                        onClick={() => {
+                            try {
+                                console.log('Event', this.deferredA2HSEvent);
+                                this.deferredA2HSEvent.prompt();
+                                this.deferredA2HSEvent.userChoice.then((choiceResult) => {
+                                    if (choiceResult.outcome === 'accepted') {
+                                        this.toggleResponseSnacbar();
+                                    } else {
+                                        this.toggleResponseSnacbar();
+                                    }
+                                    this.deferredA2HSEvent.deferredPrompt = null;
+                                });
+                            } catch(err) {
+                                console.log('Error', err);
+                            }
+                            console.log('Add Clicked');
+                        }}
+                >
+                ADD
+                </Button>
+            </div>
         );
     }
 
