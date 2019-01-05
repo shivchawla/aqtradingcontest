@@ -129,15 +129,20 @@ class App extends React.Component {
                     color="secondary" 
                     size="small" 
                     onClick={() => {
-                        this.deferredA2HSEvent && this.deferredA2HSEvent.prompt();
-                        this.deferredA2HSEvent && this.deferredA2HSEvent.userChoice.then((choiceResult) => {
-                            if (choiceResult.outcome === 'accepted') {
-                                this.toggleResponseSnacbar();
-                            } else {
-                                this.toggleResponseSnacbar();
-                            }
-                            this.deferredA2HSEvent.deferredPrompt = null;
-                        });
+                        try {
+                            this.deferredA2HSEvent.prompt();
+                            this.deferredA2HSEvent.userChoice.then((choiceResult) => {
+                                if (choiceResult.outcome === 'accepted') {
+                                    this.toggleResponseSnacbar();
+                                } else {
+                                    this.toggleResponseSnacbar();
+                                }
+                                this.deferredA2HSEvent.deferredPrompt = null;
+                            });
+                        } catch(err) {
+                            console.log('Error', err);
+                        }
+                        console.log('Add Clicked');
                     }}
             >
               ADD
