@@ -43,8 +43,11 @@ const Policy = React.lazy(() => import('./containers/Policy'));
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.deferredA2HSEvent = null;
         this.state = {
-            newContentToast: false
+            newContentToast: false,
+            addToHomescreenToast: false,
+            responseSnackbar: false
         }
         ReactGA.initialize(gaTrackingId); //Unique Google Analytics tracking number
     }
@@ -67,6 +70,18 @@ class App extends React.Component {
         this.setState({newContentToast: !this.state.newContentToast});
     }
 
+    toggleA2HSSnackbar = () => {
+        this.setState({addToHomescreenToast: !this.state.addToHomescreenToast});
+    }
+
+    toggleResponseSnacbar = () => {
+        this.setState({responseSnackbar: !this.state.responseSnackbar});
+    }
+
+    onResponseSnackbarClose = () => {
+        this.setState({responseSnackbar: false});
+    }
+
     onSnackbarClose = () => {
         this.setState({newContentToast: false});
     }
@@ -76,6 +91,7 @@ class App extends React.Component {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
             // Stash the event so it can be triggered later.
+            this.deferredA2HSEvent = e;
             console.log('Should add to homescreen');
             alert('Should add to homescreen');          
         });
@@ -107,6 +123,28 @@ class App extends React.Component {
         );
     }
 
+    renderA2HSSnackbarAction = () => {
+        return (
+            <Button 
+                    color="secondary" 
+                    size="small" 
+                    onClick={() => {
+                        this.deferredA2HSEvent && this.deferredA2HSEvent.prompt();
+                        this.deferredA2HSEvent && this.deferredA2HSEvent.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') {
+                                this.toggleResponseSnacbar();
+                            } else {
+                                this.toggleResponseSnacbar();
+                            }
+                            this.deferredA2HSEvent.deferredPrompt = null;
+                        });
+                    }}
+            >
+              ADD
+            </Button>
+        );
+    }
+
     render() {
         return (
             <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -116,6 +154,17 @@ class App extends React.Component {
                         // handleClose={this.onSnackbarClose}
                         message='New update available plese reload!!'
                         renderAction={this.renderSnackbarAction}
+                    />
+                    <Snackbar 
+                        openStatus={this.state.addToHomescreenToast}
+                        // handleClose={this.onSnackbarClose}
+                        message='Please add AdviceQube to homescreen'
+                        renderAction={this.renderA2HSSnackbarAction}
+                    />
+                    <Snackbar 
+                        openStatus={this.state.responseSnackbar}
+                        handleClose={this.onResponseSnackbarClose}
+                        message='Successfully added Adviceqube to homescreen'
                     />
                     <Notifications style={{zIndex: 3000}}/>
                     <Media 
