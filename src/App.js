@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
+import yellow from '@material-ui/core/colors/yellow';
 import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import Snackbar from './components/Alerts/SnackbarComponent';
@@ -129,13 +130,14 @@ class App extends React.Component {
     renderA2HSSnackbarAction = () => {
         return (
             <div style={{...horizontalBox, justifyContent: 'space-between'}}>
-                <Button onClick={this.toggleA2HSSnackbar} color="inherit">CANCEL</Button>
+                <Button onClick={this.toggleA2HSSnackbar} color="secondary">CANCEL</Button>
                 <Button 
-                        color="secondary" 
+                        style={{
+                            color: '#fbc02d'
+                        }} 
                         size="small" 
                         onClick={() => {
                             try {
-                                console.log('Event', this.deferredA2HSEvent);
                                 this.deferredA2HSEvent.prompt();
                                 this.deferredA2HSEvent.userChoice.then((choiceResult) => {
                                     if (choiceResult.outcome === 'accepted') {
