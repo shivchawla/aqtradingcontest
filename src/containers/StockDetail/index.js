@@ -5,6 +5,7 @@ import LayoutMobile from './components/mobile/Layout';
 import LayoutDesktop from './components/desktop/Layout';
 import {fetchStockData, checkIfSymbolSelected} from './utils';
 import {getStockPerformance, Utils} from '../../utils';
+import WS from '../../utils/websocket';
 
 export default class StockDetail extends React.Component {
     constructor(props) {
@@ -19,6 +20,7 @@ export default class StockDetail extends React.Component {
             loadingPriceHistory: false
         };
         this.mounted = false;
+        this.webSocket = new WS();
     }
 
     getStockData = stock => {
@@ -89,30 +91,14 @@ export default class StockDetail extends React.Component {
     }
 
     setUpSocketConnection = () => {
-        if (Utils.webSocket && Utils.webSocket.readyState == WebSocket.OPEN) {
-            Utils.webSocket.onopen = () => {
-                Utils.webSocket.onmessage = this.processRealtimeMessage;
-                this.takeAction();
-            }
-
-            Utils.webSocket.onclose = () => {
-                this.setUpSocketConnection();
-            }
-       
-            Utils.webSocket.onmessage = this.processRealtimeMessage;
-            this.takeAction();
-        } else {
-            setTimeout(function() {
-                this.setUpSocketConnection()
-            }.bind(this), 5000);
-        }
+        this.webSocket.createConnection(this.takeAction, this.processRealtimeMessage);
     }
 
     processRealtimeMessage = msg => {
         try {
             const realtimeResponse = JSON.parse(msg.data);
             if (realtimeResponse.type === 'stock' && realtimeResponse.ticker === this.props.symbol) {
-                
+                console.log('Stock Detail Message', realtimeResponse);
                 var validCurrentPrice = _.get(realtimeResponse, 'output.current', 0);
                 const change = _.get(realtimeResponse, 'output.change', 0);
                 const changePct = _.get(realtimeResponse, 'output.changePct', 0);
@@ -151,7 +137,7 @@ export default class StockDetail extends React.Component {
             'type': 'stock',
             'ticker': ticker
         };
-        Utils.sendWSMessage(msg);
+        this.webSocket.sendWSMessage(msg);
     }
 
     unSubscribeToStock = ticker => {
@@ -162,7 +148,7 @@ export default class StockDetail extends React.Component {
             'type': 'stock',
             'ticker': ticker
         };
-        Utils.sendWSMessage(msg);
+        this.webSocket.sendWSMessage(msg);
     }
 
     render() {

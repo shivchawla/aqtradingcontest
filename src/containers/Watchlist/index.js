@@ -20,6 +20,7 @@ import ActionIcon from '../TradingContest/Misc/ActionIcons';
 import LoaderComponent from '../TradingContest/Misc/Loader';
 import DialogComponent from '../../components/Alerts/DialogComponent';
 import {fetchAjaxPromise, Utils} from '../../utils';
+import WS from '../../utils/websocket';
 import {processPositions, createUserWatchlist} from './utils';
 import {primaryColor, horizontalBox, metricColor} from '../../constants';
 import {onUserLoggedIn} from '../TradingContest/constants/events';
@@ -50,6 +51,7 @@ class WatchlistComponent extends React.Component {
             watchlistSearchInput: '',
             searchInputFocused: false
         };
+        this.webSocket = new WS();
     }
 
     handleWatchlistSearchInput = e => {
@@ -187,30 +189,15 @@ class WatchlistComponent extends React.Component {
     }
 
     setUpSocketConnection = () => {
-        if (Utils.webSocket && Utils.webSocket.readyState == WebSocket.OPEN) {
-            Utils.webSocket.onopen = () => {
-                Utils.webSocket.onmessage = this.processRealtimeMessage;
-                this.takeAction();
-            }
-
-            Utils.webSocket.onclose = () => {
-                this.setUpSocketConnection();
-            }
-       
-            Utils.webSocket.onmessage = this.processRealtimeMessage;
-            this.takeAction();
-        } else {
-            setTimeout(function() {
-                this.setUpSocketConnection()
-            }.bind(this), 5000);
-        }
+        this.webSocket.createConnection(this.takeAction, this.processRealtimeMessage);
     }
 
     processRealtimeMessage = msg => {
+        console.log('Realtime Message Received', msg);
         if (this.mounted) {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
-                // console.log(realtimeResponse);
+                console.log(realtimeResponse);
                 const watchlists = [...this.state.watchlists];
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
@@ -240,7 +227,8 @@ class WatchlistComponent extends React.Component {
             'type': 'watchlist',
             'watchlistId': watchListId
         };
-        Utils.sendWSMessage(msg); 
+        this.webSocket.sendWSMessage(msg); 
+        console.log('Subscribed', msg);
     }
 
     unsubscribeToWatchlist = watchListId => {
@@ -250,10 +238,11 @@ class WatchlistComponent extends React.Component {
             'type': 'watchlist',
             'watchlistId': watchListId
         };
-        Utils.sendWSMessage(msg);
+        this.webSocket.sendWSMessage(msg);
     }
 
     takeAction = () => {
+        console.log('this.takeAction called');
         if (this.mounted) {
             this.subscribeToWatchList(this.state.selectedWatchlistTab);
         } else {
@@ -395,7 +384,7 @@ class WatchlistComponent extends React.Component {
 
     componentDidMount() {
         this.mounted = true;
-        this.setUpSocketConnection();
+        this.setUpSocketConnection(this.webSocket);
         this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureLogin);
     }
 

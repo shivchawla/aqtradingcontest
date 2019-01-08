@@ -222,7 +222,8 @@ export class Utils{
 			const errorCode = _.get(error, 'response.data.code', '');
 			const statusCode = _.get(error, 'response.data.statusCode', 0);
 			if (errorCode === 'server_error' && statusCode === 403) {
-				Utils.goToLoginPage(history, fromUrl);
+				// Utils.goToLoginPage(history, fromUrl);
+				history.push('/server_error');
 				reject(false);
 			} else {
 				console.log('No status error');
@@ -473,7 +474,7 @@ export class Utils{
 			}
 
 			this.webSocket.onclose = () => {
-				// console.log('Connection Closed');
+				// console.log('ORginal Connection Closed');
 				this.numAttempts++;
 				var timeOut = Math.min(2 * Utils.numAttempts * 1000, 20000);
 				setTimeout(() => {
@@ -497,6 +498,7 @@ export class Utils{
 
 	static sendWSMessage(msg) {
 		if (this.webSocket && this.webSocket.readyState == 1) {
+			console.log('Message Sent', msg);
 			this.webSocket.send(JSON.stringify(msg));
 		}
 	}
@@ -715,8 +717,8 @@ export const sendErrorToBackend = (errorToSend = '', email = '', subject = 'Logi
 	})
 }
 
-Utils.openSocketConnection();
-setInterval(function(){Utils.openSocketConnection();}, 10000);
+// Utils.openSocketConnection();
+// setInterval(function(){Utils.openSocketConnection();}, 10000);
 
 export * from './requests';
 export * from './portfolio';

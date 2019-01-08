@@ -91,7 +91,6 @@ class StockCardPredictions extends React.Component {
                 this.initializeDefaultStockData(),
             ])
             .then(([skippedStocks, defaultStockData]) => {
-                console.log(defaultStockData);
                 this.setState({
                     skippedStocks,
                     defaultStockData,

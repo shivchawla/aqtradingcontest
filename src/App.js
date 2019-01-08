@@ -19,6 +19,7 @@ import {Utils} from './utils';
 import './App.css';
 
 const {gaTrackingId = null} = require('./localConfig');
+const ServerError = React.lazy(() => import('./containers/ErrorPages/ServerError'));
 const AppHome = React.lazy(() => import('./containers/HomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
@@ -201,6 +202,7 @@ class App extends React.Component {
                                             }
                                         />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/>
+                                        <Route path='/server_error' component={ServerError}/>
                                         <Route 
                                             exact={true}
                                             path='/login'
@@ -293,6 +295,7 @@ class App extends React.Component {
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
                                         <Route path='/stockresearch' component={StockResearch}/> 
+                                        <Route path='/server_error' component={ServerError}/>
                                         <Route path='/policies/tnc' component={TnC}/> 
                                         <Route path='/policies/privacy' component={Policy}/> 
                                         <Route path='/aboutus' component={AboutUs}/> 
