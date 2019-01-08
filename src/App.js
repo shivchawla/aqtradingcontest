@@ -19,6 +19,7 @@ import {Utils} from './utils';
 import './App.css';
 
 const {gaTrackingId = null} = require('./localConfig');
+const ApiDoc = React.lazy(() => import('./containers/ReDoc'));
 const AppHome = React.lazy(() => import('./containers/HomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
@@ -189,6 +190,7 @@ class App extends React.Component {
                                     <Switch>
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
+                                        <Route exact={true} path='/api/docs' component={ApiDoc}/> 
                                         <Route 
                                             exact={true} 
                                             path='/advisors'
@@ -296,6 +298,7 @@ class App extends React.Component {
                                         <Route path='/policies/tnc' component={TnC}/> 
                                         <Route path='/policies/privacy' component={Policy}/> 
                                         <Route path='/aboutus' component={AboutUs}/> 
+                                        <Route exact={true} path='/api/docs' component={ApiDoc}/> 
                                         <Route 
                                             exact={true}
                                             path='/login'
