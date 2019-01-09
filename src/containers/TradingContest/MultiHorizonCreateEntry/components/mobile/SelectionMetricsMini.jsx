@@ -155,28 +155,6 @@ class SelectionMetricsMini extends React.Component {
                         <Grid item xs={6}>
                             <Grid container>
                                 <MetricItemMobile 
-                                    label='Net Eqty.' 
-                                    value={`₹${netEquity}`} 
-                                    string
-                                    style={metricItemMobileStyle}
-                                />
-                                <MetricItemMobile 
-                                    label='Avl. Cash' 
-                                    value={`₹${liquidCash}`} 
-                                    string
-                                    style={metricItemMobileStyle}
-                                />
-                                <MetricItemMobile 
-                                    label='Net Total' 
-                                    value={`₹${netTotal}`}
-                                    string
-                                    style={metricItemMobileStyle}
-                                />
-                            </Grid> 
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Grid container>
-                                <MetricItemMobile 
                                     label='Cash' 
                                     value={`₹${cash}`} 
                                     string
@@ -195,6 +173,28 @@ class SelectionMetricsMini extends React.Component {
                                     style={metricItemMobileStyle}
                                 />
                             </Grid>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Grid container>
+                                <MetricItemMobile 
+                                    label='Net Eqty.' 
+                                    value={`₹${netEquity}`} 
+                                    string
+                                    style={metricItemMobileStyle}
+                                />
+                                <MetricItemMobile 
+                                    label='Avl. Cash' 
+                                    value={`₹${liquidCash}`} 
+                                    string
+                                    style={metricItemMobileStyle}
+                                />
+                                <MetricItemMobile 
+                                    label='Net Total' 
+                                    value={`₹${netTotal}`}
+                                    string
+                                    style={metricItemMobileStyle}
+                                />
+                            </Grid> 
                         </Grid>
                     </Grid>
                 </Grid>

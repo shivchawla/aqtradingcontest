@@ -193,11 +193,9 @@ class WatchlistComponent extends React.Component {
     }
 
     processRealtimeMessage = msg => {
-        console.log('Realtime Message Received', msg);
         if (this.mounted) {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
-                console.log(realtimeResponse);
                 const watchlists = [...this.state.watchlists];
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
@@ -228,7 +226,6 @@ class WatchlistComponent extends React.Component {
             'watchlistId': watchListId
         };
         this.webSocket.sendWSMessage(msg); 
-        console.log('Subscribed', msg);
     }
 
     unsubscribeToWatchlist = watchListId => {
@@ -242,7 +239,6 @@ class WatchlistComponent extends React.Component {
     }
 
     takeAction = () => {
-        console.log('this.takeAction called');
         if (this.mounted) {
             this.subscribeToWatchList(this.state.selectedWatchlistTab);
         } else {

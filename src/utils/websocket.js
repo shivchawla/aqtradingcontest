@@ -17,16 +17,12 @@ export default class WSocket {
     openSocketConnection = () => {
         const self = this;
         if (!this.connection || this.connection.readyState != WebSocket.OPEN) {
-            console.log('Connection Not Open, connecting');
-            console.log(this.connection && this.connection.readyState);
 			if (this.connection && (this.connection.readyState != WebSocket.CLOSED && this.connection.readyState != WebSocket.CLOSING)) {
 				try {
-                    console.log('Connection will be closed');
 					this.connection.close();
 				} catch(err){}
 			}
             
-            console.log('Creating new websocket instance');
 			this.connection = new WebSocket(webSocketUrl);
 			
 			if (this.connection && this.connection.readyState == WebSocket.CLOSED) {
@@ -38,11 +34,9 @@ export default class WSocket {
 			}
 
 			this.connection.onclose = () => {
-                console.log('Class, Websocket closed');
 				this.numAttempts++;
 				var timeOut = Math.min(2 * self.numAttempts * 1000, 20000);
 				setTimeout(() => {
-                    console.log('TimeOut, connecting after timeout');
 					self.openSocketConnection()
                 }, timeOut);
             }
@@ -52,7 +46,6 @@ export default class WSocket {
             }
 
 			this.connection.onopen = () => {
-                console.log('WS opened from class');
                 this.numAttempts = 0;
                 this.takeAction && this.takeAction();
 			}

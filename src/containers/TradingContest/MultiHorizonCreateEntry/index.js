@@ -451,7 +451,6 @@ class CreateEntry extends React.Component {
             "action": "subscribe-prediction",
             "category": type
         };
-        console.log('Subscribed to predictions');
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
                 ...msg,
@@ -459,11 +458,9 @@ class CreateEntry extends React.Component {
             };
         }
         this.webSocket.sendWSMessage(msg);
-        console.log('Message sent', msg);
     }
 
     unSubscribeToPredictions = (type = this.state.selectedView) => {
-        console.log('Unsubscribed to predictions');
         const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
         let msg = {
             'aimsquant-token': Utils.getAuthToken(),
@@ -480,13 +477,11 @@ class CreateEntry extends React.Component {
     }
 
     processRealtimeMessage = msg => {
-        console.log('Message Received');
         const currentDate = moment().format(dateFormat);
         const selectedDate = this.state.selectedDate.format(dateFormat);
         if (this.mounted && _.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
-                console.log('Realtime Message ', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const pnl = _.get(realtimeData, 'pnlStats', []);
                 this.updateDailyPredictions(predictons);

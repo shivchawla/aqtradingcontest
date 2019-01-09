@@ -98,7 +98,6 @@ export default class StockDetail extends React.Component {
         try {
             const realtimeResponse = JSON.parse(msg.data);
             if (realtimeResponse.type === 'stock' && realtimeResponse.ticker === this.props.symbol) {
-                console.log('Stock Detail Message', realtimeResponse);
                 var validCurrentPrice = _.get(realtimeResponse, 'output.current', 0);
                 const change = _.get(realtimeResponse, 'output.change', 0);
                 const changePct = _.get(realtimeResponse, 'output.changePct', 0);
