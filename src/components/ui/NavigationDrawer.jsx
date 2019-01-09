@@ -45,8 +45,7 @@ class NavigationDrawerImpl extends React.Component {
             >
                 
                 {/* <div onClick={() => {window.location.href='/home'}}  */}
-                <div onClick={() => {this.props.history.push('/home')}} 
-                    style={{...horizontalBox, height:'56px', padding:'0 16px'}}>
+                <div style={{...horizontalBox, height:'56px', padding:'0 16px'}}>
                     <img src={logo} style={{height: '25px'}}/>
                     <div style={{cursor: 'pointer', marginLeft: '10px', marginTop:'2px'}}>
                         <span style={{...biggerFont, color: titleColor}}>A</span>
