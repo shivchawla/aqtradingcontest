@@ -219,23 +219,40 @@ class WatchlistComponent extends React.Component {
     }
 
     subscribeToWatchList = watchListId => {
-        const msg = {
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        let msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
             'type': 'watchlist',
             'watchlistId': watchListId
         };
+        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+            msg = {
+                ...msg,
+                advisorId: selectedAdvisorId
+            }
+        }
+        
         this.webSocket.sendWSMessage(msg); 
+        console.log('Subscribed to watchlist ', watchListId);
     }
 
     unsubscribeToWatchlist = watchListId => {
-        const msg = {
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        let msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
             'type': 'watchlist',
             'watchlistId': watchListId
         };
+        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+            msg = {
+                ...msg,
+                advisorId: selectedAdvisorId
+            }
+        }
         this.webSocket.sendWSMessage(msg);
+        console.log('Un Subscribed to watchlist ', watchListId);
     }
 
     takeAction = () => {
@@ -281,11 +298,25 @@ class WatchlistComponent extends React.Component {
     }
 
     handleWatchListTabChange = (event, tabIndex) => {
-        this.setState({selectedWatchlistTabIndex: tabIndex});
+        const oldSelectedWatchlist = this.getSelectedWatchlist();
+        const oldWatchlistId = _.get(oldSelectedWatchlist, 'id', null);
+        this.unsubscribeToWatchlist(oldWatchlistId);
+        this.setState({selectedWatchlistTabIndex: tabIndex}, () => {
+            const selectedWatchlist = this.getSelectedWatchlist();
+            const watchlistId = _.get(selectedWatchlist, 'id', null);
+            this.subscribeToWatchList(watchlistId);
+        });
     }
 
     handleFavouritesChange = selectedIndex => {
-        this.setState({selectedWatchlistTabIndex: selectedIndex});
+        const oldSelectedWatchlist = this.getSelectedWatchlist();
+        const oldWatchlistId = _.get(oldSelectedWatchlist, 'id', null);
+        this.unsubscribeToWatchlist(oldWatchlistId);
+        this.setState({selectedWatchlistTabIndex: selectedIndex}, () => {
+            const selectedWatchlist = this.getSelectedWatchlist();
+            const watchlistId = _.get(selectedWatchlist, 'id', null);
+            this.subscribeToWatchList(watchlistId);
+        });
     }
 
     renderFavourites = () => {
