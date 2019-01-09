@@ -278,7 +278,7 @@ class App extends React.Component {
                                             }}
                                         />
                                         <Route path='/dailycontest' component={TradingContest} />
-                                        <Route path='/' component={AppHome} />
+                                        <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
@@ -346,7 +346,7 @@ class App extends React.Component {
                                         />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route path='/dailycontest' component={TradingContest} />
-                                        <Route path='/' component={AppHome} />
+                                        <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
