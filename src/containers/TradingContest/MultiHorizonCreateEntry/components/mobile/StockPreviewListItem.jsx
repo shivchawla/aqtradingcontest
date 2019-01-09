@@ -35,7 +35,6 @@ class StockPreviewListItem extends React.Component {
     }
 
     handlePositionClick = (symbol) => {
-        console.log('handlePositionClick');
         this.props.selectPosition(symbol);
         this.props.togglePredictionsBottomSheet();
     }

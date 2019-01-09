@@ -199,7 +199,6 @@ class TradingContest extends React.Component {
     }
 
     componentWillMount() {
-        console.log('Trading Contest Mounted');
         const selectedTab = global.screen.width > 800 
             ? this.getSelectedTab(this.props.location.pathname)
             : this.getSelectedTabMobile(this.props.location.pathname);
