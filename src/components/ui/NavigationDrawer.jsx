@@ -28,7 +28,7 @@ class NavigationDrawerImpl extends React.Component {
     }
 
     routeUrl = (url, href) => {
-        href ? window.location.href = url : this.props.history.push(url);
+        this.props.history.push(url);
     }
 
     render() {
