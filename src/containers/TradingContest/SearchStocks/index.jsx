@@ -247,10 +247,6 @@ class SearchStocks extends React.Component {
         this.setState({selectedPage: 0}, () => this.fetchStocks('', false).then(() => resolve(true)));
     })
 
-    updateStockData = (stockData) => {
-        console.log('Hello');
-    }
-
     resetFilterFromParent = (sector, industry) => {
         this.setState({filter: {
             sector,
@@ -874,7 +870,6 @@ class SearchStocks extends React.Component {
                                 >
                                     <StockDetail 
                                         symbol={_.get(this.state, 'selectedStock.symbol', null)}
-                                        updateStockData={this.updateStockData}
                                     />
                                 </Grid>
                             </React.Fragment>

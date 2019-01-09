@@ -3,7 +3,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 
-export default ({openStatus = true, message = 'Snackbar Data', handleClose = () => {}, position = 'bottom'}) => {
+export default ({openStatus = true, message = 'Snackbar Data', handleClose = () => {}, position = 'bottom', autoHideDuration = 1500, renderAction = null}) => {
     return (
         <Snackbar
             anchorOrigin={{
@@ -11,22 +11,26 @@ export default ({openStatus = true, message = 'Snackbar Data', handleClose = () 
                 horizontal: 'center',
             }}
             open={openStatus}
-            autoHideDuration={1500}
+            autoHideDuration={autoHideDuration}
             ContentProps={{
                 'aria-describedby': 'message-id'
             }}
             onClose={handleClose}
             message={<span id="message-id">{message}</span>} 
-            action={[
-                <IconButton
-                  key="close"
-                  aria-label="Close"
-                  color="inherit"
-                  onClick={() => handleClose && handleClose()}
-                >
-                  <CloseIcon />
-                </IconButton>,
-              ]}             
+            action={
+                renderAction !== null
+                    ?   renderAction()
+                    :   [
+                            <IconButton
+                            key="close"
+                            aria-label="Close"
+                            color="inherit"
+                            onClick={() => handleClose && handleClose()}
+                            >
+                            <CloseIcon />
+                            </IconButton>,
+                        ]
+            }             
         />
     );
 }

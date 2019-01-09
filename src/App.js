@@ -5,17 +5,22 @@ import Route from 'react-router/Route';
 import Redirect from 'react-router/Redirect';
 import Notifications from 'react-notify-toast';
 import MuiPickersUtilsProvider from 'material-ui-pickers/MuiPickersUtilsProvider'
+import Button from '@material-ui/core/Button';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
+import yellow from '@material-ui/core/colors/yellow';
 import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
+import Snackbar from './components/Alerts/SnackbarComponent';
 import DummyLogin from './containers/DummyLogin';
+import {horizontalBox} from './constants';
 import {Utils} from './utils';
 import './App.css';
 
 const {gaTrackingId = null} = require('./localConfig');
-// const AppHome = React.lazy(() => import('./containers/HomeFrame'));
+const ServerError = React.lazy(() => import('./containers/ErrorPages/ServerError'));
+const AppHome = React.lazy(() => import('./containers/HomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
 const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
@@ -41,6 +46,13 @@ const Policy = React.lazy(() => import('./containers/Policy'));
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.deferredA2HSEvent = null;
+        this.state = {
+            newContentToast: false,
+            addToHomescreenToast: false,
+            responseSnackbar: false,
+            responseSnackbarMessage: ''
+        }
         ReactGA.initialize(gaTrackingId); //Unique Google Analytics tracking number
     }
 
@@ -54,7 +66,40 @@ class App extends React.Component {
         }
     }
 
+    captureSWEvent = payload => {
+        this.toggleNewContentToast();
+    }
+
+    toggleNewContentToast = () => {
+        this.setState({newContentToast: !this.state.newContentToast});
+    }
+
+    toggleA2HSSnackbar = () => {
+        this.setState({addToHomescreenToast: !this.state.addToHomescreenToast});
+    }
+
+    toggleResponseSnacbar = (message) => {
+        this.setState({responseSnackbar: !this.state.responseSnackbar, responseSnackbarMessage: message});
+    }
+
+    onResponseSnackbarClose = () => {
+        this.setState({responseSnackbar: false});
+    }
+
+    onSnackbarClose = () => {
+        this.setState({newContentToast: false});
+    }
+
     componentDidMount() {
+        var self = this;
+        window.addEventListener('beforeinstallprompt', function (e) {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            self.deferredA2HSEvent = e;
+            self.toggleA2HSSnackbar();   
+        });
+        this.props.event && this.props.event.on('SW_NEW_CONTENT', this.captureSWEvent);
         this.fireTracking();
     }
 
@@ -68,10 +113,74 @@ class App extends React.Component {
         return <Redirect push to='/dailycontest/home' />;
     }
 
+    renderSnackbarAction = () => {
+        return (
+            <Button 
+                    color="secondary" 
+                    size="small" 
+                    onClick={
+                        () => window.location.reload(true)
+                    }
+            >
+              Reload
+            </Button>
+        );
+    }
+
+    renderA2HSSnackbarAction = () => {
+        return (
+            <div style={{...horizontalBox, justifyContent: 'space-between'}}>
+                <Button onClick={this.toggleA2HSSnackbar} color="secondary">CANCEL</Button>
+                <Button 
+                        style={{
+                            color: '#fbc02d'
+                        }} 
+                        size="small" 
+                        onClick={() => {
+                            try {
+                                this.deferredA2HSEvent.prompt();
+                                this.deferredA2HSEvent.userChoice.then((choiceResult) => {
+                                    if (choiceResult.outcome === 'accepted') {
+                                        this.setState({addToHomescreenToast: false});
+                                        this.toggleResponseSnacbar('Successfully added to homecreen');
+                                    } else {
+                                        this.setState({addToHomescreenToast: false});
+                                    }
+                                    this.deferredA2HSEvent.deferredPrompt = null;
+                                });
+                            } catch(err) {
+                                console.log('Error', err);
+                            }
+                            console.log('Add Clicked');
+                        }}
+                >
+                ADD
+                </Button>
+            </div>
+        );
+    }
+
     render() {
         return (
             <MuiPickersUtilsProvider utils={MomentUtils}>
                 <div className="App">
+                    <Snackbar 
+                        openStatus={this.state.newContentToast}
+                        // handleClose={this.onSnackbarClose}
+                        message='New update available plese reload!!'
+                        renderAction={this.renderSnackbarAction}
+                    />
+                    <Snackbar 
+                        openStatus={this.state.addToHomescreenToast}
+                        // handleClose={this.onSnackbarClose}
+                        message='Please add AdviceQube to homescreen'
+                        renderAction={this.renderA2HSSnackbarAction}
+                    />
+                    <Snackbar 
+                        openStatus={this.state.responseSnackbar}
+                        handleClose={this.onResponseSnackbarClose}
+                        message='Successfully added Adviceqube to homescreen'
+                    />
                     <Notifications style={{zIndex: 3000}}/>
                     <Media 
                         query="(max-width: 800px)"
@@ -93,6 +202,7 @@ class App extends React.Component {
                                             }
                                         />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/>
+                                        <Route path='/server_error' component={ServerError}/>
                                         <Route 
                                             exact={true}
                                             path='/login'
@@ -168,7 +278,7 @@ class App extends React.Component {
                                             }}
                                         />
                                         <Route path='/dailycontest' component={TradingContest} />
-                                        {/* <Route path='/' component={AppHome} /> */}
+                                        <Route path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>
@@ -185,6 +295,7 @@ class App extends React.Component {
                                         <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
                                         <Route path='/stockresearch' component={StockResearch}/> 
+                                        <Route path='/server_error' component={ServerError}/>
                                         <Route path='/policies/tnc' component={TnC}/> 
                                         <Route path='/policies/privacy' component={Policy}/> 
                                         <Route path='/aboutus' component={AboutUs}/> 
@@ -235,7 +346,7 @@ class App extends React.Component {
                                         />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route path='/dailycontest' component={TradingContest} />
-                                        {/* <Route path='/' component={AppHome} /> */}
+                                        <Route path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
                                 </React.Suspense>

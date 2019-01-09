@@ -14,6 +14,7 @@ import {getStockData, Utils, getStockPerformance} from '../../utils';
 import './css/stockResearch.css';
 import AppLayout from './components/desktop/AppLayout';
 import Footer from '../Footer';
+import WS from '../../utils/websocket';
 
 const {requestUrl} = require('../../localConfig');
 
@@ -60,6 +61,7 @@ class StockResearchImpl extends React.Component {
             isDeleteModalVisible: false,
             aimsquantRedirectModalVisible: false
         }; 
+        this.webSocket = new WS();
     }
 
     addItem = (tickerName = this.state.tickerName) => {
@@ -246,24 +248,8 @@ class StockResearchImpl extends React.Component {
         return this.renderRollingPerformanceData(selectedScreen.toLowerCase());
     }
 
-   setUpSocketConnection = () => {
-        if (Utils.webSocket && Utils.webSocket.readyState == WebSocket.OPEN) {
-            Utils.webSocket.onopen = () => {
-                Utils.webSocket.onmessage = this.processRealtimeMessage;
-                this.takeAction();
-            }
-
-            Utils.webSocket.onclose = () => {
-                this.setUpSocketConnection();
-            }
-       
-            Utils.webSocket.onmessage = this.processRealtimeMessage;
-            this.takeAction();
-        } else {
-            setTimeout(function() {
-                this.setUpSocketConnection()
-            }.bind(this), 5000);
-        }
+    setUpSocketConnection = () => {
+        this.webSocket.createConnection(this.takeAction, this.processRealtimeMessage);
     }
 
     takeAction = () => {
@@ -329,7 +315,7 @@ class StockResearchImpl extends React.Component {
             'type': 'stock',
             'ticker': ticker
         };
-        Utils.sendWSMessage(msg);
+        this.webSocket.sendWSMessage(msg);
     }
 
     unSubscribeToStock = ticker => {
@@ -339,7 +325,7 @@ class StockResearchImpl extends React.Component {
             'type': 'stock',
             'ticker': ticker
         };
-        Utils.sendWSMessage(msg);
+        this.webSocket.sendWSMessage(msg);
     }
 
     subscribeToWatchList = watchListId => {
@@ -349,7 +335,8 @@ class StockResearchImpl extends React.Component {
             'type': 'watchlist',
             'watchlistId': watchListId
         };
-        Utils.sendWSMessage(msg); 
+        console.log('Stock Research', msg);
+        this.webSocket.sendWSMessage(msg); 
     }
 
     unsubscribeToWatchlist = watchListId => {
@@ -359,7 +346,7 @@ class StockResearchImpl extends React.Component {
             'type': 'watchlist',
             'watchlistId': watchListId
         };
-        Utils.sendWSMessage(msg);
+        this.webSocket.sendWSMessage(msg);
     }
  
     renderPageContent = () => {
