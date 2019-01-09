@@ -1,4 +1,5 @@
 import React from 'react';
+import windowWidth from 'react-window-size';
 import moment from 'moment';
 import styled from 'styled-components';
 import _ from 'lodash';
@@ -7,6 +8,7 @@ import Slider from '@material-ui/lab/Slider';
 import {withStyles} from '@material-ui/core/styles';
 import ActionIcon from '../../../Misc/ActionIcons';
 import CustomRadio from '../../../../../components/selections/CustomRadio';
+import TextField from '@material-ui/core/TextField';
 import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
 
@@ -56,6 +58,18 @@ class StockCardRadioGroup extends React.Component {
         }, 300);
     }
 
+    handleTextChange = (e) => {
+        const value = e.target.value;
+        console.log('value', typeof value, value);
+        if (Number(value) <= 30 || value.length === 0) {
+            this.setState({sliderValue: value});
+            clearTimeout(sliderInputTimeout);
+            sliderInputTimeout = setTimeout(() => {
+                this.props.onChange && this.props.onChange(value, false);
+            }, 300);
+        }
+    }
+
     getReadableDateForHorizon = horizon => {
         const currentDate = moment().format('YYYY-MM-DD');
         return moment(getNextNonHolidayWeekday(currentDate, horizon)).format(readableDateFormat)
@@ -63,6 +77,7 @@ class StockCardRadioGroup extends React.Component {
 
     render() {
         const {items = ['One', 'Two'], showSlider = false, classes, hideSlider = false} = this.props;
+        const isDesktop = this.props.windowWidth > 800;
 
         return (
             <Grid container style={{...verticalBox, alignItems: 'flex-start'}}>
@@ -155,16 +170,32 @@ class StockCardRadioGroup extends React.Component {
                                         width: '100%'
                                     }}
                             >
-                                <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
-                                    {this.state.sliderValue} 
-                                    {this.props.label}
-                                    {
-                                        this.props.date &&
-                                        <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
-                                            ({this.getReadableDateForHorizon(this.state.sliderValue)})
-                                        </span> 
-                                    }
-                                </CustomText>
+                                <div 
+                                        style={{
+                                            ...horizontalBox, 
+                                            justifyContent: 'space-between',
+                                            width: '100%'
+                                        }}
+                                >
+                                    <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
+                                        {this.state.sliderValue} 
+                                        {this.props.label}
+                                        {
+                                            this.props.date &&
+                                            <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
+                                                ({this.getReadableDateForHorizon(this.state.sliderValue)})
+                                            </span> 
+                                        }
+                                    </CustomText>
+                                    <TextField
+                                        id="standard-name"
+                                        label="Name"
+                                        margin="normal"
+                                        type="number"
+                                        value={this.state.sliderValue}
+                                        onChange={this.handleTextChange}
+                                    />
+                                </div>
                                 <Slider
                                     style={{marginTop: '12px'}}
                                     max={30}
@@ -192,7 +223,7 @@ class StockCardRadioGroup extends React.Component {
     }
 }
 
-export default withStyles(styles)(StockCardRadioGroup);
+export default withStyles(styles)(windowWidth(StockCardRadioGroup));
 
 const ValueContainer = styled.div`
     width: 35px;
