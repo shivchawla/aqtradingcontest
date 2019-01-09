@@ -77,7 +77,7 @@ class WatchlistComponent extends React.Component {
         this.setState({createWatchlistDialogOpen: !this.state.createWatchlistDialogOpen});
     }
 
-    getWatchlists = () => {
+    getWatchlists = (selectedWatchlistId = null) => {
         const selectedUserId = Utils.getFromLocalStorage('selectedUserId');
         let url = `${requestUrl}/watchlist`;
         if (Utils.isAdmin() && Utils.isLocalStorageItemPresent(selectedUserId)) {
@@ -89,10 +89,17 @@ class WatchlistComponent extends React.Component {
             const unformattedWatchlist = response.data;
             if (unformattedWatchlist.length > 0) {
                 const watchlists = this.processWatchlistData(response.data);
+                let selectedWatchlistTab = watchlists[0].id;
+                let selectedWatchlistTabIndex = 0;
+                if (selectedWatchlistId !== null) {
+                    const requiredWatchlistIndex = _.findIndex(watchlists, watchlist => watchlist.id === selectedWatchlistId);
+                    selectedWatchlistTabIndex = requiredWatchlistIndex;
+                    selectedWatchlistTab = watchlists[requiredWatchlistIndex].id;
+                }
                 this.setState({
                     watchlists, 
-                    selectedWatchlistTab: watchlists[0].id,
-                    selectedWatchlistTabIndex: 0
+                    selectedWatchlistTab: selectedWatchlistTab,
+                    selectedWatchlistTabIndex: selectedWatchlistTabIndex
                 });
 
                 //Launch WS request to subscrie watchlist
@@ -219,22 +226,37 @@ class WatchlistComponent extends React.Component {
     }
 
     subscribeToWatchList = watchListId => {
-        const msg = {
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        let msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
             'type': 'watchlist',
             'watchlistId': watchListId
         };
+        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+            msg = {
+                ...msg,
+                advisorId: selectedAdvisorId
+            }
+        }
+        
         this.webSocket.sendWSMessage(msg); 
     }
 
     unsubscribeToWatchlist = watchListId => {
-        const msg = {
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        let msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
             'type': 'watchlist',
             'watchlistId': watchListId
         };
+        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+            msg = {
+                ...msg,
+                advisorId: selectedAdvisorId
+            }
+        }
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -281,11 +303,25 @@ class WatchlistComponent extends React.Component {
     }
 
     handleWatchListTabChange = (event, tabIndex) => {
-        this.setState({selectedWatchlistTabIndex: tabIndex});
+        const oldSelectedWatchlist = this.getSelectedWatchlist();
+        const oldWatchlistId = _.get(oldSelectedWatchlist, 'id', null);
+        this.unsubscribeToWatchlist(oldWatchlistId);
+        this.setState({selectedWatchlistTabIndex: tabIndex}, () => {
+            const selectedWatchlist = this.getSelectedWatchlist();
+            const watchlistId = _.get(selectedWatchlist, 'id', null);
+            this.subscribeToWatchList(watchlistId);
+        });
     }
 
     handleFavouritesChange = selectedIndex => {
-        this.setState({selectedWatchlistTabIndex: selectedIndex});
+        const oldSelectedWatchlist = this.getSelectedWatchlist();
+        const oldWatchlistId = _.get(oldSelectedWatchlist, 'id', null);
+        this.unsubscribeToWatchlist(oldWatchlistId);
+        this.setState({selectedWatchlistTabIndex: selectedIndex}, () => {
+            const selectedWatchlist = this.getSelectedWatchlist();
+            const watchlistId = _.get(selectedWatchlist, 'id', null);
+            this.subscribeToWatchList(watchlistId);
+        });
     }
 
     renderFavourites = () => {
@@ -296,7 +332,7 @@ class WatchlistComponent extends React.Component {
             <RadioGroup 
                 CustomRadio={WatchlistCustomRadio}
                 items={watchlistNames}
-                defaultSelected={0}
+                defaultSelected={this.state.selectedWatchlistTabIndex}
                 onChange={this.handleFavouritesChange}
                 style={{
                     justifyContent: 'space-between',

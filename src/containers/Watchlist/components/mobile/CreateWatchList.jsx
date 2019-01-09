@@ -28,8 +28,9 @@ class CreateWatchListImpl extends React.Component {
         if (name.length > 0) {
             this.props.createWatchlist(name, this.processWatchListItem(this.state.watchlists))
             .then(response => {
+                const watchlistId = _.get(response, 'data._id', null);
                 this.setState({error: null});
-                return this.props.getWatchlists();
+                return this.props.getWatchlists(watchlistId);
             })
             .then(() => {
                 this.props.toggleModal();
