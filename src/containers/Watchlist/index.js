@@ -77,7 +77,7 @@ class WatchlistComponent extends React.Component {
         this.setState({createWatchlistDialogOpen: !this.state.createWatchlistDialogOpen});
     }
 
-    getWatchlists = () => {
+    getWatchlists = (selectedWatchlistId = null) => {
         const selectedUserId = Utils.getFromLocalStorage('selectedUserId');
         let url = `${requestUrl}/watchlist`;
         if (Utils.isAdmin() && Utils.isLocalStorageItemPresent(selectedUserId)) {
@@ -89,10 +89,17 @@ class WatchlistComponent extends React.Component {
             const unformattedWatchlist = response.data;
             if (unformattedWatchlist.length > 0) {
                 const watchlists = this.processWatchlistData(response.data);
+                let selectedWatchlistTab = watchlists[0].id;
+                let selectedWatchlistTabIndex = 0;
+                if (selectedWatchlistId !== null) {
+                    const requiredWatchlistIndex = _.findIndex(watchlists, watchlist => watchlist.id === selectedWatchlistId);
+                    selectedWatchlistTabIndex = requiredWatchlistIndex;
+                    selectedWatchlistTab = watchlists[requiredWatchlistIndex].id;
+                }
                 this.setState({
                     watchlists, 
-                    selectedWatchlistTab: watchlists[0].id,
-                    selectedWatchlistTabIndex: 0
+                    selectedWatchlistTab: selectedWatchlistTab,
+                    selectedWatchlistTabIndex: selectedWatchlistTabIndex
                 });
 
                 //Launch WS request to subscrie watchlist
@@ -234,7 +241,6 @@ class WatchlistComponent extends React.Component {
         }
         
         this.webSocket.sendWSMessage(msg); 
-        console.log('Subscribed to watchlist ', watchListId);
     }
 
     unsubscribeToWatchlist = watchListId => {
@@ -252,7 +258,6 @@ class WatchlistComponent extends React.Component {
             }
         }
         this.webSocket.sendWSMessage(msg);
-        console.log('Un Subscribed to watchlist ', watchListId);
     }
 
     takeAction = () => {
@@ -327,7 +332,7 @@ class WatchlistComponent extends React.Component {
             <RadioGroup 
                 CustomRadio={WatchlistCustomRadio}
                 items={watchlistNames}
-                defaultSelected={0}
+                defaultSelected={this.state.selectedWatchlistTabIndex}
                 onChange={this.handleFavouritesChange}
                 style={{
                     justifyContent: 'space-between',
