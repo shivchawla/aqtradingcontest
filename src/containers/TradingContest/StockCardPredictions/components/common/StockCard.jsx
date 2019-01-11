@@ -39,38 +39,46 @@ class StockCard extends React.Component {
         return false;
     }
 
-    handleHorizonChange = (value, format = true) => {
-        let horizon = format ? getHorizonValue(value) : value;
-        this.props.modifyStockData({
-            ...this.props.stockData,
-            horizon
-        });
+    handleHorizonChange = (value = null, format = true) => {
+        if (value !== null) {
+            let horizon = format ? getHorizonValue(value) : value;
+            this.props.modifyStockData({
+                ...this.props.stockData,
+                horizon
+            });
+        }
     }
 
-    handleTargetChange = (targetIndex, format = true) => {
-        let stockData = this.props.stockData;
-        let target = format ? getTargetValue(targetIndex) : targetIndex;
-        stockData = {
-            ...stockData,
-            target,
-        };
-        this.props.modifyStockData(stockData);
+    handleTargetChange = (targetIndex = null, format = true) => {
+        if (targetIndex !== null) {
+            let stockData = this.props.stockData;
+            let target = format ? getTargetValue(targetIndex) : targetIndex;
+            stockData = {
+                ...stockData,
+                target,
+            };
+            this.props.modifyStockData(stockData);
+        }
     }
 
-    handleStopLossChange = (value, format = true) => {
-        const requiredStopLoss = format ? getTargetValue(value) : value;
-        this.props.modifyStockData({
-            ...this.props.stockData,
-            stopLoss: requiredStopLoss
-        });
+    handleStopLossChange = (value = null, format = true) => {
+        if (value !== null) {
+            const requiredStopLoss = format ? getTargetValue(value) : value;
+            this.props.modifyStockData({
+                ...this.props.stockData,
+                stopLoss: requiredStopLoss
+            });
+        }
     }
 
-    handleInvestmentChange = (value) => {
-        const requiredInvestment = getInvestmentValue(value);
-        this.props.modifyStockData({
-            ...this.props.stockData,
-            investment: requiredInvestment
-        });
+    handleInvestmentChange = (value = null) => {
+        if (value !== null) {
+            const requiredInvestment = getInvestmentValue(value);
+            this.props.modifyStockData({
+                ...this.props.stockData,
+                investment: requiredInvestment
+            });
+        }
     }
 
     renderViewMode = () => {

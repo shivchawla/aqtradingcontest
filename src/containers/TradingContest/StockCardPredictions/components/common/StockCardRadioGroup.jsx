@@ -28,7 +28,7 @@ class StockCardRadioGroup extends React.Component {
         this.state = {
             selected: props.defaultSelected || 0,
             sliderValue: props.defaultSelected || 0,
-            showSlider: false
+            showSlider: false,
         };
     }
 
@@ -43,6 +43,14 @@ class StockCardRadioGroup extends React.Component {
                 sliderValue: nextProps.defaultSelected || 0
             })
         }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
+            return true;
+        }
+
+        return false;
     }
 
     handleChange = value => {
@@ -60,14 +68,14 @@ class StockCardRadioGroup extends React.Component {
 
     handleTextChange = (e) => {
         const value = e.target.value;
-        console.log('value', typeof value, value);
-        if (Number(value) <= 30 || value.length === 0) {
+        if (Number(value) >=0 && Number(value) <= 30) {
             this.setState({sliderValue: value});
+            const requiredValue = value.length === 0 ? null : Number(value);
             clearTimeout(sliderInputTimeout);
             sliderInputTimeout = setTimeout(() => {
-                this.props.onChange && this.props.onChange(value, false);
+                this.props.onChange && this.props.onChange(requiredValue, false);
             }, 300);
-        }
+        } else {}
     }
 
     getReadableDateForHorizon = horizon => {
@@ -78,6 +86,9 @@ class StockCardRadioGroup extends React.Component {
     render() {
         const {items = ['One', 'Two'], showSlider = false, classes, hideSlider = false} = this.props;
         const isDesktop = this.props.windowWidth > 800;
+        const textFieldLabel = this.props.date 
+                ? this.getReadableDateForHorizon(this.state.sliderValue) 
+                : this.state.sliderValue;
 
         return (
             <Grid container style={{...verticalBox, alignItems: 'flex-start'}}>
@@ -170,44 +181,52 @@ class StockCardRadioGroup extends React.Component {
                                         width: '100%'
                                     }}
                             >
-                                <div 
-                                        style={{
-                                            ...horizontalBox, 
-                                            justifyContent: 'space-between',
-                                            width: '100%'
+                                {
+                                    !isDesktop &&
+                                    <div 
+                                            style={{
+                                                ...horizontalBox, 
+                                                justifyContent: 'space-between',
+                                                width: '100%'
+                                            }}
+                                    >
+                                        <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
+                                            {this.state.sliderValue} 
+                                            {this.props.label}
+                                            {
+                                                this.props.date &&
+                                                <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
+                                                    ({this.getReadableDateForHorizon(this.state.sliderValue)})
+                                                </span> 
+                                            }
+                                        </CustomText>
+                                    </div>
+                                }
+                                {
+                                        isDesktop &&
+                                        <TextField
+                                            id="standard-name"
+                                            label={`Value (${textFieldLabel})`}
+                                            value={this.state.sliderValue}
+                                            onChange={this.handleTextChange}
+                                            type="number"
+                                        />
+                                    }
+                                {
+                                    !isDesktop &&
+                                    <Slider
+                                        style={{marginTop: '12px'}}
+                                        max={30}
+                                        value={Number(this.state.sliderValue)}
+                                        min={1}
+                                        onChange={this.handleSliderChange}
+                                        step={1}
+                                        thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color={primaryColor}/>}
+                                        classes={{
+                                            trackBefore: classes.trackBefore
                                         }}
-                                >
-                                    <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
-                                        {this.state.sliderValue} 
-                                        {this.props.label}
-                                        {
-                                            this.props.date &&
-                                            <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
-                                                ({this.getReadableDateForHorizon(this.state.sliderValue)})
-                                            </span> 
-                                        }
-                                    </CustomText>
-                                    <TextField
-                                        id="standard-name"
-                                        label="Name"
-                                        margin="normal"
-                                        type="number"
-                                        value={this.state.sliderValue}
-                                        onChange={this.handleTextChange}
                                     />
-                                </div>
-                                <Slider
-                                    style={{marginTop: '12px'}}
-                                    max={30}
-                                    value={this.state.sliderValue}
-                                    min={1}
-                                    onChange={this.handleSliderChange}
-                                    step={1}
-                                    thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color={primaryColor}/>}
-                                    classes={{
-                                        trackBefore: classes.trackBefore
-                                    }}
-                                />
+                                }
                             </div>
                             <ActionIcon 
                                 type="check_circle" 
