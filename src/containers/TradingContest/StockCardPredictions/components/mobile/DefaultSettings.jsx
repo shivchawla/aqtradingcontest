@@ -62,36 +62,44 @@ class DefaultSettings extends React.Component {
         });
     }
 
-    handleHorizonChange = (value, format = true) => {
-        const requiredHorizon = format ? getHorizonValue(value) : value;
-        this.props.modifyDefaultStockData({
-            ...this.props.defaultStockData,
-            horizon: requiredHorizon
-        });
+    handleHorizonChange = (value = null, format = true) => {
+        if (value !== null) {
+            const requiredHorizon = format ? getHorizonValue(value) : value;
+            this.props.modifyDefaultStockData({
+                ...this.props.defaultStockData,
+                horizon: requiredHorizon
+            });
+        }
     }
 
-    handleTargetChange = (value, format = true) => {
-        const requiredTarget = format ? getTargetValue(value) : value;
-        this.props.modifyDefaultStockData({
-            ...this.props.defaultStockData,
-            target: requiredTarget
-        });
+    handleTargetChange = (value = null, format = true) => {
+        if (value !== null) {
+            const requiredTarget = format ? getTargetValue(value) : value;
+            this.props.modifyDefaultStockData({
+                ...this.props.defaultStockData,
+                target: requiredTarget
+            });
+        }
     }
 
-    handleStopLossChange = (value, format = true) => {
-        const requiredStopLoss = format ? getTargetValue(value) : value;
-        this.props.modifyDefaultStockData({
-            ...this.props.defaultStockData,
-            stopLoss: requiredStopLoss
-        });
+    handleStopLossChange = (value = null, format = true) => {
+        if (value !== null) {
+            const requiredStopLoss = format ? getTargetValue(value) : value;
+            this.props.modifyDefaultStockData({
+                ...this.props.defaultStockData,
+                stopLoss: requiredStopLoss
+            });
+        }
     }
 
-    handleInvestmentChange = (value) => {
-        const requiredInvestment = getInvestmentValue(value);
-        this.props.modifyDefaultStockData({
-            ...this.props.defaultStockData,
-            investment: requiredInvestment
-        });
+    handleInvestmentChange = (value = null) => {
+        if (value !== null) {
+            const requiredInvestment = getInvestmentValue(value);
+            this.props.modifyDefaultStockData({
+                ...this.props.defaultStockData,
+                investment: requiredInvestment
+            });
+        }
     }
 
     onEditModeChanged = (value) => {
@@ -230,6 +238,7 @@ class DefaultSettings extends React.Component {
                                     checkIfCustom={checkIfCustomHorizon}
                                     showSlider
                                     label='Days'
+                                    date={true}
                                 />
                             </div>
                             <div style={radioGroupStyle}>
