@@ -128,8 +128,10 @@ export default class StockDetail extends React.Component {
         }
     }
 
-    subscribeToStock = ticker => {
-        // console.log('Subscribed to ' + ticker);
+    subscribeToStock = (ticker = null) => {
+        if (ticker === null || ticker === undefined || ticker.length === 0) {
+            return;
+        }
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
@@ -139,8 +141,10 @@ export default class StockDetail extends React.Component {
         this.webSocket.sendWSMessage(msg);
     }
 
-    unSubscribeToStock = ticker => {
-        // console.log('Un Subscribed to ' + ticker);
+    unSubscribeToStock = (ticker = null) => {
+        if (ticker === null || ticker === undefined || ticker.length === 0) {
+            return;
+        }
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',

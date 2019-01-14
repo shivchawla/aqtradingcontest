@@ -225,8 +225,11 @@ class WatchlistComponent extends React.Component {
         }
     }
 
-    subscribeToWatchList = watchListId => {
+    subscribeToWatchList = (watchListId = null) => {
         const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        if (watchListId === null || watchListId === undefined || watchListId.length === 0) {
+            return;
+        }
         let msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
@@ -243,8 +246,11 @@ class WatchlistComponent extends React.Component {
         this.webSocket.sendWSMessage(msg); 
     }
 
-    unsubscribeToWatchlist = watchListId => {
+    unsubscribeToWatchlist = (watchListId = 'blah') => {
         const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        if (watchListId === null || watchListId === undefined || watchListId.length === 0) {
+            return;
+        }
         let msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',

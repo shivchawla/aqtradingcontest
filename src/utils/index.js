@@ -201,7 +201,7 @@ export class Utils{
 		return new Promise((resolve, reject) => {
 			if (error && error.response && error.response.data){
 				if(error.response.data.name==='TokenExpiredError' ||
-					error.response.data.message==='jwt expired'){
+					error.response.data.message==='jwt expired') {
 					if (this.loggedInUserinfo.recentTokenUpdateTime
 						&& (moment().valueOf() < ((60*1000) + this.loggedInUserinfo.recentTokenUpdateTime)) ){
 						return;
@@ -211,7 +211,10 @@ export class Utils{
 						history.push(`/tokenUpdate?redirectUrl=${encodeURIComponent(fromUrl)}`);
 						reject(false);
 					}
-				}else{
+				} else if(error.response.data.message==='Invalid User') {
+                    Utils.goToLoginPage(history, fromUrl);
+                    reject(false);
+                } else {
 					resolve(true);
 					// if (fromUrl && history){
 					// 	history.push(fromUrl);
