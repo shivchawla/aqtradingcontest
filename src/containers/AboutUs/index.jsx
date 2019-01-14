@@ -127,26 +127,39 @@ class AboutUs extends React.Component {
     const isDesktop = this.props.windowWidth > 800;
     const imageStyle = isDesktop 
         ?   {width: 150, height: 150}
-        :   {width: 100, height: 100}
+        :   {width: 100, height: 100};
+    const desktopStyle = {
+        ...horizontalBox, 
+        justifyContent: 'flex-start',
+        width: '90vw',
+        overflow: 'hidden',
+        overflowX: 'scroll'
+    };
+    const mobileStyle = {
+        ...verticalBox,
+        width: '100%'
+    };
 
     return (
         <Grid container style={{margin: '50px 0', marginBottom: 0}}>
             <Grid 
                     item 
                     xs={12} 
-                    style={{
-                        ...horizontalBox, 
-                        justifyContent: 'flex-start',
-                        width: '90vw',
-                        overflow: 'hidden',
-                        overflowX: 'scroll'
-                    }}
+                    style={isDesktop ? desktopStyle : mobileStyle}
             >
                 {
                     teamMembers.map((teamMember, index) => {
                         return (
                             <div 
-                                    style={{...verticalBox, marginRight: '60px', cursor: 'pointer'}}
+                                    style={{
+                                        ...verticalBox, 
+                                        marginRight: !isDesktop ? 0 : '60px', 
+                                        cursor: 'pointer',
+                                        alignItems: isDesktop
+                                            ? 'flex-start'
+                                            : 'center',
+                                        marginBottom: isDesktop ? 0: '20px'  
+                                    }}
                                     onClick={() => {
                                         window.location.href = teamMember.linkedInUrl;
                                     }}
@@ -158,7 +171,13 @@ class AboutUs extends React.Component {
                                 />
                                 <TeamMemberText>{teamMember.name}</TeamMemberText>
                                 <DesignationText>{teamMember.designation}</DesignationText>
-                                <TeamMemberDetailText>
+                                <ShortIntroText>{teamMember.shortIntro}</ShortIntroText>
+                                <TeamMemberDetailText 
+                                        style={{
+                                            textAlign: isDesktop ? 'start' : 'center',
+                                            minHeight: isDesktop ? '70px' : 'inherit'
+                                        }}
+                                >
                                     {teamMember.detail}
                                 </TeamMemberDetailText>
                             </div>
@@ -198,7 +217,7 @@ class AboutUs extends React.Component {
                 extraItem={this.renderExtraItem}
                 readMoreClick={() => this.handleScrollToElement('careers')}
                 style={{
-                    marginBottom: '40%'
+                    marginBottom: '10%'
                 }}
             />
             <AboutUsItem
@@ -285,7 +304,7 @@ const DesignationText = styled.h3`
     color: #b3b3b3;
     font-weight: 500;
     font-family: 'Lato', sans-serif;
-    margin-top: 5px;
+    margin-top: 10px;
 `;
 
 const TeamMemberDetailText = styled.h3`
@@ -295,4 +314,13 @@ const TeamMemberDetailText = styled.h3`
     font-family: 'Lato', sans-serif;
     max-width: 250px;
     margin-top: 5px;
+`;
+
+const ShortIntroText = styled.h3`
+    font-size: 15px;
+    font-weight: 700;
+    color: #8d8f9f;
+    font-family: 'Lato', sans-serif;
+    margin-top: 10px;
+    margin-bottom: 5px;
 `;

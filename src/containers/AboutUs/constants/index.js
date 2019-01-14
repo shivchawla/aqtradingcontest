@@ -3,16 +3,18 @@ import sauravBiswasProfileImg from '../../../assets/person_4.jpg';
 export const teamMembers = [
     {
         name: 'Shiv Chawla',
-        designation: 'CEO/CO-FOUNDER',
+        designation: 'FOUNDER',
         imageUrl: shivChawaProfileImg,
-        detail: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae aut minima nihil sit distinctio recusandae doloribus ut fugit officia voluptate soluta.',
-        linkedInUrl: 'https://www.linkedin.com/in/shivchawla/'
+        detail: 'With experience of over 8 years in financial industry, Shiv loves to solve problems and build products around investment technology.',
+        linkedInUrl: 'https://www.linkedin.com/in/shivchawla/',
+        shortIntro: 'Democratizing investment management'
     },
     {
         name: 'Saurav Biswas',
         designation: 'ASSOCIATE',
         imageUrl: sauravBiswasProfileImg,
-        detail: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae aut minima nihil sit distinctio recusandae doloribus ut fugit officia voluptate soluta.',
-        linkedInUrl: 'https://www.linkedin.com/in/saurav-biswas-521a1b12b/'
+        detail: 'With deep interest in technology, Saurav helps the organization in solving never ending technological challenges.',
+        linkedInUrl: 'https://www.linkedin.com/in/saurav-biswas-521a1b12b/',
+        shortIntro: 'Building great products'
     }
 ]
