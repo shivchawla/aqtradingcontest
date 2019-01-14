@@ -106,7 +106,7 @@ export const aboutUsText = {
 
     whoWeAre: {
 		header: "Who We Are",
-    	tagline: 'They call us "Quants',
+    	tagline: 'They call us "Quants"',
     	main: "We are bunch of Quants and Technologists who enjoy financial markets \
 		 	and making efficient technology. We aim to democratize investment arena where \
 		 	everyone's investment idea is important"
