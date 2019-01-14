@@ -1,4 +1,5 @@
 import React from 'react';
+import windowWidth from 'react-window-size';
 import moment from 'moment';
 import styled from 'styled-components';
 import _ from 'lodash';
@@ -7,6 +8,7 @@ import Slider from '@material-ui/lab/Slider';
 import {withStyles} from '@material-ui/core/styles';
 import ActionIcon from '../../../Misc/ActionIcons';
 import CustomRadio from '../../../../../components/selections/CustomRadio';
+import TextField from '@material-ui/core/TextField';
 import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
 
@@ -26,7 +28,7 @@ class StockCardRadioGroup extends React.Component {
         this.state = {
             selected: props.defaultSelected || 0,
             sliderValue: props.defaultSelected || 0,
-            showSlider: false
+            showSlider: false,
         };
     }
 
@@ -43,6 +45,14 @@ class StockCardRadioGroup extends React.Component {
         }
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
+            return true;
+        }
+
+        return false;
+    }
+
     handleChange = value => {
         this.setState({selected: this.props.getValue ? this.props.getValue(value) : value})
         this.props.onChange && this.props.onChange(value);
@@ -56,6 +66,18 @@ class StockCardRadioGroup extends React.Component {
         }, 300);
     }
 
+    handleTextChange = (e) => {
+        const value = e.target.value;
+        if (Number(value) >=0 && Number(value) <= 30) {
+            this.setState({sliderValue: value});
+            const requiredValue = value.length === 0 ? null : Number(value);
+            clearTimeout(sliderInputTimeout);
+            sliderInputTimeout = setTimeout(() => {
+                this.props.onChange && this.props.onChange(requiredValue, false);
+            }, 300);
+        } else {}
+    }
+
     getReadableDateForHorizon = horizon => {
         const currentDate = moment().format('YYYY-MM-DD');
         return moment(getNextNonHolidayWeekday(currentDate, horizon)).format(readableDateFormat)
@@ -63,6 +85,10 @@ class StockCardRadioGroup extends React.Component {
 
     render() {
         const {items = ['One', 'Two'], showSlider = false, classes, hideSlider = false} = this.props;
+        const isDesktop = this.props.windowWidth > 800;
+        const textFieldLabel = this.props.date 
+                ? this.getReadableDateForHorizon(this.state.sliderValue) 
+                : this.state.sliderValue;
 
         return (
             <Grid container style={{...verticalBox, alignItems: 'flex-start'}}>
@@ -155,28 +181,52 @@ class StockCardRadioGroup extends React.Component {
                                         width: '100%'
                                     }}
                             >
-                                <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
-                                    {this.state.sliderValue} 
-                                    {this.props.label}
-                                    {
-                                        this.props.date &&
-                                        <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
-                                            ({this.getReadableDateForHorizon(this.state.sliderValue)})
-                                        </span> 
+                                {
+                                    !isDesktop &&
+                                    <div 
+                                            style={{
+                                                ...horizontalBox, 
+                                                justifyContent: 'space-between',
+                                                width: '100%'
+                                            }}
+                                    >
+                                        <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
+                                            {this.state.sliderValue} 
+                                            {this.props.label}
+                                            {
+                                                this.props.date &&
+                                                <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
+                                                    ({this.getReadableDateForHorizon(this.state.sliderValue)})
+                                                </span> 
+                                            }
+                                        </CustomText>
+                                    </div>
+                                }
+                                {
+                                        isDesktop &&
+                                        <TextField
+                                            id="standard-name"
+                                            label={`Value (${textFieldLabel})`}
+                                            value={this.state.sliderValue}
+                                            onChange={this.handleTextChange}
+                                            type="number"
+                                        />
                                     }
-                                </CustomText>
-                                <Slider
-                                    style={{marginTop: '12px'}}
-                                    max={30}
-                                    value={this.state.sliderValue}
-                                    min={1}
-                                    onChange={this.handleSliderChange}
-                                    step={1}
-                                    thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color={primaryColor}/>}
-                                    classes={{
-                                        trackBefore: classes.trackBefore
-                                    }}
-                                />
+                                {
+                                    !isDesktop &&
+                                    <Slider
+                                        style={{marginTop: '12px'}}
+                                        max={30}
+                                        value={Number(this.state.sliderValue)}
+                                        min={1}
+                                        onChange={this.handleSliderChange}
+                                        step={1}
+                                        thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color={primaryColor}/>}
+                                        classes={{
+                                            trackBefore: classes.trackBefore
+                                        }}
+                                    />
+                                }
                             </div>
                             <ActionIcon 
                                 type="check_circle" 
@@ -192,7 +242,7 @@ class StockCardRadioGroup extends React.Component {
     }
 }
 
-export default withStyles(styles)(StockCardRadioGroup);
+export default withStyles(styles)(windowWidth(StockCardRadioGroup));
 
 const ValueContainer = styled.div`
     width: 35px;
