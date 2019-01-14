@@ -45,6 +45,14 @@ export default class StockDetailBottomSheet extends React.Component {
         }
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
+            return true;
+        }
+
+        return false;
+    }
+
     renderHeader = () => {
         const positiveColor = '#32FFD8';
         const negativeColor = '#FF7B7B';

@@ -46,7 +46,7 @@ class Header extends React.Component {
                                 style={imageStyle}
                             />
                             <h1 
-                                    onClick={() => {window.location.href = '/home'}} 
+                                    onClick={() => this.props.history.push('/')} 
                                     style={{...headerTextStyle, cursor: 'pointer', marginLeft: '10px'}}
                             >
                                 <span style={{...biggerFont, color: '#03a7ad'}}>A</span>

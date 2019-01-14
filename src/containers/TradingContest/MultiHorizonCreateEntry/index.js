@@ -92,7 +92,8 @@ class CreateEntry extends React.Component {
             predictionBottomSheetOpen: false,
             selectedPositionIndex: 0,
             stockDetailBottomSheetOpen: false,
-            stopPredictionLoading: false
+            stopPredictionLoading: false,
+            selectedPosition: {}
         };
         this.mounted = false;
         this.webSocket = new WS();
@@ -122,7 +123,10 @@ class CreateEntry extends React.Component {
 
     selectPosition = symbol => {
         const positonIndex = _.findIndex(this.state.previewPositions, position => position.symbol === symbol);
-        this.setState({selectedPositionIndex: positonIndex});
+        this.setState({
+            selectedPositionIndex: positonIndex,
+            selectedPosition: this.state.previewPositions[positonIndex]
+        });
     }
 
     conditionallyAddPosition = async (selectedPositions, cb = null) => {
@@ -298,7 +302,7 @@ class CreateEntry extends React.Component {
                 snackbarOpenStatus: true, 
                 snackbarMessage: 'Prediction successfully stopped'
             });
-            
+            return this.getDailyPortfolioStats();
         })
         .catch(error => {
             console.log('Error', error);
@@ -426,7 +430,7 @@ class CreateEntry extends React.Component {
         .catch(err => {
             this.setState({portfolioStatsFound: false});
             return err.message === portfolioStatsCancelledMessage ? 'requestPending' : 'requestCompleted';
-        })
+        });
     }
 
     setUpSocketConnection = () => {
@@ -795,8 +799,6 @@ class CreateEntry extends React.Component {
     }
 
     render() {
-        const selectedStock = _.get(this.state, `previewPositions[${this.state.selectedPositionIndex}]`, {});
-
         return (
             <React.Fragment>
                 <DailyContestmyPicksMeta />
@@ -821,7 +823,7 @@ class CreateEntry extends React.Component {
                     <StockDetailBottomSheet 
                         open={this.state.stockDetailBottomSheetOpen}
                         onClose={this.toggleStockDetailBottomSheet}
-                        {...selectedStock}
+                        {...this.state.selectedPosition}
                     />
                     <SnackbarComponent 
                         openStatus={this.state.snackbarOpenStatus} 

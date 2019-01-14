@@ -55,7 +55,14 @@ export const getStockPerformance = (tickerName, detailType='detail', field='pric
 }
 
 export const getIntraDayStockPerformance = (tickerName, detailType='detail') => {
-	const requiredDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days'))).format('YYYY-MM-DD');
+	let requiredDate = null;
+	requiredDate = DateHelper.getLatestTradingDay().format('YYYY-MM-DD');
+	if (DateHelper.isMarketOpen()) {
+		requiredDate = DateHelper.getLatestTradingDay().format('YYYY-MM-DD');
+	} else {
+		const previousTradingDay = DateHelper.getPreviousNonHolidayWeekday(moment());
+		requiredDate = DateHelper.getLatestTradingDay(moment(previousTradingDay)).format('YYYY-MM-DD');
+	}
 
 	return new Promise((resolve, reject) => {
         getStockData(tickerName, 'intraDay', detailType, requiredDate)
@@ -194,7 +201,7 @@ export class Utils{
 		return new Promise((resolve, reject) => {
 			if (error && error.response && error.response.data){
 				if(error.response.data.name==='TokenExpiredError' ||
-					error.response.data.message==='jwt expired'){
+					error.response.data.message==='jwt expired') {
 					if (this.loggedInUserinfo.recentTokenUpdateTime
 						&& (moment().valueOf() < ((60*1000) + this.loggedInUserinfo.recentTokenUpdateTime)) ){
 						return;
@@ -204,7 +211,10 @@ export class Utils{
 						history.push(`/tokenUpdate?redirectUrl=${encodeURIComponent(fromUrl)}`);
 						reject(false);
 					}
-				}else{
+				} else if(error.response.data.message==='Invalid User') {
+                    Utils.goToLoginPage(history, fromUrl);
+                    reject(false);
+                } else {
 					resolve(true);
 					// if (fromUrl && history){
 					// 	history.push(fromUrl);
