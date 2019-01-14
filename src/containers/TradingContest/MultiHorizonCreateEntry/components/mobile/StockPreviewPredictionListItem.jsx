@@ -164,7 +164,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             />
                         </div>
                         {
-                            // marketOpen && iconConfig.type.toLowerCase() === 'active' &&
+                            marketOpen && iconConfig.type.toLowerCase() === 'active' &&
                             <StopPredictionButton 
                                     onClick={() => this.props.openDialog(_id)}
                             >
