@@ -29,6 +29,7 @@
     "re-carousel": "^2.1.0",
     "react": "16.7.0",
     "react-app-rewired": "^1.6.2",
+    "react-aria-menubutton": "^6.1.0",
     "react-copy-to-clipboard": "^5.0.1",
     "react-countdown-now": "^1.3.0",
     "react-dom": "16.7.0",

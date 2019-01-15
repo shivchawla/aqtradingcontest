@@ -7,19 +7,40 @@ import { horizontalBox } from '../../constants';
 class Footer extends React.Component {
     render() {
         return (
-            <SGrid container>
-                <ColGrid item xs={4}>
+            <SGrid container spacing={24}>
+                <ColGrid item xs={2}>
                     <ListHeader>Company</ListHeader>
                     <ListItem history={this.props.history} url='/aboutus'>About Us</ListItem>
                     <ListItem history={this.props.history} url='/aboutus/people'>People</ListItem>
                     <ListItem history={this.props.history} url='/aboutus/careers'>Careers</ListItem>
                     <ListItem history={this.props.history} url='/aboutus/connect'>Connect</ListItem>
                 </ColGrid>
-                <ColGrid item xs={4}>
+                <ColGrid item xs={2}>
                     <ListHeader>Policies</ListHeader>
                     <ListItem history={this.props.history} url='/policies/tnc'>Terms of Use</ListItem>
                     <ListItem history={this.props.history} url='/policies/privacy'>Privacy Policy</ListItem>
                     <ListItem history={this.props.history} url='/dailycontest/rules'>Contest Rules</ListItem>
+                </ColGrid>
+                <ColGrid item xs={2}>
+                    <ListHeader>Products</ListHeader>
+                    <ListItem history={this.props.history} url='/policies/tnc'>Stock Prediction</ListItem>
+                    <ListItem 
+                            history={this.props.history} 
+                            url='/quantresearch'
+                            href={true}
+                    >
+                        Research Platform
+                    </ListItem>
+                </ColGrid>
+                <ColGrid item xs={2}>
+                    <ListHeader>Help</ListHeader>
+                    <ListItem 
+                            history={this.props.history} 
+                            url='/quantresearch/help'
+                            href={true}
+                    >
+                        Help
+                    </ListItem>
                 </ColGrid>
                 <Grid 
                         item 
@@ -40,9 +61,17 @@ class Footer extends React.Component {
 
 export default withRouter(Footer);
 
-const ListItem = ({url, children, history}) => {
+const ListItem = ({url, children, history, href = false}) => {
     return (
-        <ListItemText onClick={() => {history.push(url)}}>{children}</ListItemText>
+        <ListItemText 
+                onClick={() => {
+                    href 
+                        ? window.location.href = url
+                        : history.push(url)
+                }}
+        >
+            {children}
+        </ListItemText>
     );
 }
 

@@ -2,6 +2,8 @@ import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Grid from '@material-ui/core/Grid';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import {withRouter} from 'react-router-dom';
 import {withStyles} from '@material-ui/core/styles';
 import {NavLink} from './components/NavLink';
@@ -21,12 +23,35 @@ class Header extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            contestMenuOpen: false
+            contestMenuOpen: false,
+            anchorEl: null,
         }
     }
 
-    toggleContestMenu = () => {
-        this.setState({contestMenuOpen: !this.state.contestMenuOpen});
+    handleMenuClick = event => {
+        this.setState({ anchorEl: event.currentTarget });
+    };
+    
+    handleMenuClose = (url) => {
+        this.setState({ anchorEl: null });
+        window.location.href = url;
+    };
+
+    renderQuantResearchMenu = () => {
+        const { anchorEl } = this.state;
+
+        return (
+            <Menu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={this.handleMenuClose}
+            >
+                <MenuItem onClick={() => this.handleMenuClose('/quantresearch')}>Research</MenuItem>
+                <MenuItem onClick={() => this.handleMenuClose('/quantresearch/community')}>Community</MenuItem>
+                <MenuItem onClick={() => this.handleMenuClose('/quantresearch/help')}>Help</MenuItem>
+            </Menu>
+        );
     }
 
     render() {
@@ -56,12 +81,15 @@ class Header extends React.Component {
 
                             </h1>
                         </Grid>
-                        <Grid item xs={7}></Grid>
-                        <Grid item xs={4} style={navLinkContainer}>
+                        <Grid item xs={5}></Grid>
+                        <Grid item xs={6} style={navLinkContainer}>
                             <HeaderLinks 
                                 activeIndex={activeIndex}
                                 history={this.props.history}
                                 isLoggedIn={isLoggedIn}
+                                renderQuantResearchMenu={this.renderQuantResearchMenu}
+                                handleMenuClick={this.handleMenuClick}
+                                handleMenuClose={this.handleMenuClose}
                             />
                         </Grid>
                     </Grid>
@@ -73,10 +101,10 @@ class Header extends React.Component {
 
 export default withStyles(styles)(withRouter(Header));
 
-const HeaderLinks = ({activeIndex = 0, history, isLoggedIn = null}) => {
+const HeaderLinks = ({activeIndex = 0, history, isLoggedIn = null, renderQuantResearchMenu, handleMenuClick, handleMenuClose}) => {
     const urls = [
-        {name: 'Contest', url: '/dailycontest/home'},
-        {name: 'Stock Research', url: '/stockresearch'},
+        {name: 'Contest', url: '/dailycontest/home', href: false},
+        {name: 'Stock Research', url: '/stockresearch', href: false},
     ];
     return (
         <React.Fragment>
@@ -84,12 +112,22 @@ const HeaderLinks = ({activeIndex = 0, history, isLoggedIn = null}) => {
                 urls.map((item, index) => (
                     <NavLink
                         active={index === activeIndex}
-                        onClick={() => history.push(item.url)}
+                        onClick={() => {
+                            if (item.href) {
+                                window.location.href = item.url
+                            } else {
+                                history.push(item.url)
+                            }
+                        }}
                     >
                         {item.name}
                     </NavLink>
                 ))
             }
+            {renderQuantResearchMenu()}
+            <NavLink onClick={handleMenuClick}>
+                Quant Research
+            </NavLink>
             {
                 (isLoggedIn || Utils.isLoggedIn())
                 ?   <NavLink
