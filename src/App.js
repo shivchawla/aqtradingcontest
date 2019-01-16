@@ -352,7 +352,7 @@ class App extends React.Component {
                                         <Route 
                                             path='/quantresearch' 
                                             render={(props) => {
-                                                window.location.href='/quantresearch';
+                                                window.location.href=window.location.pathname;
                                                 return <h3>Redirecting</h3>
                                             }} 
                                         />
