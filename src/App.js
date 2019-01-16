@@ -350,7 +350,7 @@ class App extends React.Component {
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route path='/dailycontest' component={TradingContest} />
                                         <Route 
-                                            path='/quantresearch/' 
+                                            path='/quantresearch' 
                                             render={(props) => {
                                                 console.log(window.location.pathname);
                                                 window.location.href=window.location.pathname;
