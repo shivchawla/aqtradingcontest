@@ -48,9 +48,9 @@ class Header extends React.Component {
                     open={Boolean(anchorEl)}
                     onClose={this.handleMenuClose}
             >
-                <MenuItem onClick={() => this.handleMenuClose('/quantresearch')}>Research</MenuItem>
-                <MenuItem onClick={() => this.handleMenuClose('/quantresearch/community')}>Community</MenuItem>
-                <MenuItem onClick={() => this.handleMenuClose('/quantresearch/help')}>Help</MenuItem>
+                <MenuItem onClick={() => this.handleMenuClose('')}>Research</MenuItem>
+                <MenuItem onClick={() => this.handleMenuClose('/community')}>Community</MenuItem>
+                <MenuItem onClick={() => this.handleMenuClose('/help')}>Help</MenuItem>
             </Menu>
         );
     }
