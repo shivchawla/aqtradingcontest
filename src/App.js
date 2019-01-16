@@ -349,6 +349,13 @@ class App extends React.Component {
                                         />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route path='/dailycontest' component={TradingContest} />
+                                        <Route 
+                                            path='/quantresearch' 
+                                            render={(props) => {
+                                                window.location.href='/quantresearch';
+                                                return <h3>Redirecting</h3>
+                                            }} 
+                                        />
                                         <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
