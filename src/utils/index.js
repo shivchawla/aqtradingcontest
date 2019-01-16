@@ -6,6 +6,8 @@ import {reactLocalStorage} from 'reactjs-localstorage';
 import {graphColors, metricColor} from '../constants';
 import {getStockData} from './requests';
 
+const {researchDomain} = require('../localConfig');
+
 const {requestUrl, webSocketUrl} = require('../localConfig');
 const bowser = require('bowser/es5');
 var MobileDetect = require('mobile-detect'),
@@ -153,6 +155,10 @@ export class Utils{
 
 	static setLoggedInUserInfo(object){
 		this.loggedInUserinfo = object;
+	}
+
+	static goToResearchPage = url => {
+		window.location.href = `${researchDomain}${url}`;
 	}
 
 	static setShouldUpdateToken(status){

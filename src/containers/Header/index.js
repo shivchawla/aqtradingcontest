@@ -10,6 +10,7 @@ import {NavLink} from './components/NavLink';
 import {Utils} from '../../utils';
 import {horizontalBox} from '../../constants';
 import logo from '../../assets/logo-advq-new.png';
+const {researchDomain} = require('../../localConfig');
 
 const styles = {
     appbar: {
@@ -34,7 +35,7 @@ class Header extends React.Component {
     
     handleMenuClose = (url) => {
         this.setState({ anchorEl: null });
-        window.location.href = url;
+        Utils.goToResearchPage(url);
     };
 
     renderQuantResearchMenu = () => {

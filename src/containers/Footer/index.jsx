@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as Icons from "@fortawesome/free-brands-svg-icons";
 import advicequbeLogo from '../../assets/logo-advq-new.png';
 
+const {researchDomain} = require('../../localConfig');
+
 class NewFooter extends React.Component {
     render() {
         const isDesktop = this.props.windowWidth > 600;
@@ -29,7 +31,7 @@ class NewFooter extends React.Component {
                             <ListItem history={this.props.history} url='/dailycontest/home'>Stock Prediction</ListItem>
                             <ListItem 
                                     history={this.props.history} 
-                                    url='/quantresearch'
+                                    url={`${researchDomain}`}
                                     href={true}
                             >
                                 Research Platform
@@ -89,6 +91,7 @@ const ListItem = ({url, children, history, href = false}) => {
     return (
         <ListItemText 
                 onClick={() => {
+                    console.log(url);
                     href 
                         ? window.location.href = url
                         : history.push(url)
