@@ -2,11 +2,12 @@ import moment from 'moment';
 import _ from 'lodash';
 import axios from 'axios';
 import Impression from 'impression.js';
+import cookie from 'react-cookies';
 import {reactLocalStorage} from 'reactjs-localstorage';
 import {graphColors, metricColor} from '../constants';
 import {getStockData} from './requests';
 
-const {researchDomain} = require('../localConfig');
+const {researchDomain, env = ''} = require('../localConfig');
 
 const {requestUrl, webSocketUrl} = require('../localConfig');
 const bowser = require('bowser/es5');
@@ -147,9 +148,8 @@ export const getMetricColor = metricValue => {
 };
 
 export class Utils{
-
-	static loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
-	static userInfoString = "USERINFO";
+	static userInfoString = `${env}USERINFO`;
+	static loggedInUserinfo = cookie.load(this.userInfoString);
 	static webSocket;
 	static numAttempts = 0;
 
@@ -158,6 +158,7 @@ export class Utils{
 	}
 
 	static goToResearchPage = url => {
+		console.log(`${researchDomain}${url}`);
 		window.location.href = `${researchDomain}${url}`;
 	}
 
@@ -259,7 +260,8 @@ export class Utils{
 	}
 
 	static logoutUser(){
-		this.localStorageSaveObject('USERINFO', {});
+		this.localStorageSaveObject(this.userInfoString, {});
+		cookie.save(this.userInfoString, {}, {path: '/'});
 		this.localStorageSaveObject('adviceFilter', {});
 		this.localStorageSave('selectedPage', 1);
 		this.localStorageSave('selectedTab', 'all');
@@ -282,6 +284,10 @@ export class Utils{
 		reactLocalStorage.setObject(key, value);
 	}
 
+	static cookieStorageSave(key, value) {
+		cookie.save(key, value, { path: '/' });
+	}
+
 	static getObjectFromLocalStorage(key){
 		return reactLocalStorage.getObject(key);
 	}	
@@ -291,6 +297,7 @@ export class Utils{
 	}
 
 	static isLoggedIn() {
+		this.loggedInUserinfo = cookie.load(this.userInfoString);
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']) {
 			return true;
 		} else{
@@ -299,7 +306,7 @@ export class Utils{
 	}
 
 	static getAuthToken(){
-		this.loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
+		this.loggedInUserinfo = cookie.load(this.userInfoString);
 		if (this.loggedInUserinfo && this.loggedInUserinfo['token']){
 			return this.loggedInUserinfo['token'];
 		}else{
@@ -320,7 +327,7 @@ export class Utils{
 	}
 
 	static getUserId(){
-		this.loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
+		this.loggedInUserinfo = cookie.load(this.userInfoString);
 		if (this.loggedInUserinfo && this.loggedInUserinfo['_id']){
 			return this.loggedInUserinfo['_id'];
 		}else{
@@ -329,7 +336,7 @@ export class Utils{
 	}
 
 	static getUserInfo(){
-		this.loggedInUserinfo = reactLocalStorage.getObject('USERINFO');
+		this.loggedInUserinfo = cookie.load(this.userInfoString);
 		if (this.loggedInUserinfo){
 			return this.loggedInUserinfo;
 		}else{
@@ -340,7 +347,7 @@ export class Utils{
 	static updateUserToken(newToken){
 		this.loggedInUserinfo['token'] = newToken;
 		this.loggedInUserinfo['recentTokenUpdateTime'] = moment().valueOf();
-		this.localStorageSaveObject('USERINFO', this.loggedInUserinfo);
+		this.localStorageSaveObject(this.userInfoString, this.loggedInUserinfo);
 	}
 
 	static getLoggedInUserName(){

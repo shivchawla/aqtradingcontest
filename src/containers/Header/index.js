@@ -35,6 +35,7 @@ class Header extends React.Component {
     
     handleMenuClose = (url) => {
         this.setState({ anchorEl: null });
+        console.log(url);
         Utils.goToResearchPage(url);
     };
 

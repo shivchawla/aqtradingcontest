@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
-import yellow from '@material-ui/core/colors/yellow';
+import cookie from 'react-cookies';
 import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import Snackbar from './components/Alerts/SnackbarComponent';
@@ -93,6 +93,7 @@ class App extends React.Component {
 
     componentDidMount() {
         var self = this;
+        // cookie.save('userId', 'saru.sreyo@gmail.com', { path: '/' });
         window.addEventListener('beforeinstallprompt', function (e) {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
