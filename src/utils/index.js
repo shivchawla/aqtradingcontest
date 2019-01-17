@@ -261,8 +261,11 @@ export class Utils{
 
 	static logoutUser(){
 		this.localStorageSaveObject(this.userInfoString, {});
-		// cookie.save(this.userInfoString, {}, {path: '/'});
-		cookie.save(this.userInfoString, {}, {path: '/', domain: '.adviceqube.com'});
+		if (env === 'localhost') {
+			cookie.save(this.userInfoString, {}, {path: '/'});
+		} else {
+			cookie.save(this.userInfoString, {}, {path: '/', domain: '.adviceqube.com'});
+		}
 		this.localStorageSaveObject('adviceFilter', {});
 		this.localStorageSave('selectedPage', 1);
 		this.localStorageSave('selectedTab', 'all');
