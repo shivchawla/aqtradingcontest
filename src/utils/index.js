@@ -261,7 +261,8 @@ export class Utils{
 
 	static logoutUser(){
 		this.localStorageSaveObject(this.userInfoString, {});
-		cookie.save(this.userInfoString, {}, {path: '/'});
+		// cookie.save(this.userInfoString, {}, {path: '/'});
+		cookie.save(this.userInfoString, {}, {path: '/', domain: '.adviceqube.com'});
 		this.localStorageSaveObject('adviceFilter', {});
 		this.localStorageSave('selectedPage', 1);
 		this.localStorageSave('selectedTab', 'all');
@@ -285,7 +286,7 @@ export class Utils{
 	}
 
 	static cookieStorageSave(key, value) {
-		cookie.save(key, value, { path: '/' });
+		cookie.save(key, value, { path: '/', domain: '.adviceqube.com'});
 	}
 
 	static getObjectFromLocalStorage(key){
