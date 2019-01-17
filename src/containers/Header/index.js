@@ -33,10 +33,9 @@ class Header extends React.Component {
         this.setState({ anchorEl: event.currentTarget });
     };
     
-    handleMenuClose = (url) => {
+    handleMenuClose = (url = null) => {
         this.setState({ anchorEl: null });
-        console.log(url);
-        Utils.goToResearchPage(url);
+        url !== null && Utils.goToResearchPage(url);
     };
 
     renderQuantResearchMenu = () => {
@@ -47,7 +46,7 @@ class Header extends React.Component {
                     id="simple-menu"
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
-                    onClose={this.handleMenuClose}
+                    onClose={() => this.handleMenuClose(null)}
             >
                 <MenuItem onClick={() => this.handleMenuClose('')}>Research</MenuItem>
                 <MenuItem onClick={() => this.handleMenuClose('/community')}>Community</MenuItem>
