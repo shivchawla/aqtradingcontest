@@ -107,6 +107,7 @@ class App extends React.Component {
 
     redirectToLogin = (redirectUrl) => {
         Utils.localStorageSave('redirectToUrlFromLogin', window.location.pathname);
+        Utils.cookieStorageSave('redirectToUrlFromLogin', window.location.href);
 
         return <Redirect push to='/login' />;
     }

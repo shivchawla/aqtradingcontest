@@ -197,6 +197,7 @@ export class Utils{
 	static goToLoginPage(history, fromUrl, redirect=false){
 		if (fromUrl){
 			this.localStorageSave('redirectToUrlFromLogin', fromUrl);
+			this.cookieStorageSave('redirectToUrlFromLogin', fromUrl);
 		}
 		if (history){
 			!redirect && Utils.logoutUser();
@@ -250,8 +251,9 @@ export class Utils{
 	}
 
 	static getRedirectAfterLoginUrl(){
-		const url = this.getFromLocalStorage('redirectToUrlFromLogin');
-		this.localStorageSave('redirectToUrlFromLogin', '');
+		// const url = this.getFromLocalStorage('redirectToUrlFromLogin');
+		const url = this.getFromCookieStorage('redirectToUrlFromLogin');
+		this.cookieStorageSave('redirectToUrlFromLogin', '');
 		if (url && url.trim().length > 0){
 			return url.trim();
 		}else{
@@ -289,7 +291,15 @@ export class Utils{
 	}
 
 	static cookieStorageSave(key, value) {
-		cookie.save(key, value, { path: '/', domain: '.adviceqube.com'});
+		if (env === 'localhost') {
+			cookie.save(key, value, {path: '/'});
+		} else {
+			cookie.save(key, value, {path: '/', domain: '.adviceqube.com'});
+		}
+	}
+
+	static getFromCookieStorage(key) {
+		return cookie.load(key);
 	}
 
 	static getObjectFromLocalStorage(key){
@@ -662,6 +672,16 @@ export class Utils{
 
 	static isLocalStorageItemPresent = (item) => {
 		return item !== undefined && item !== 'null' && item !== null;
+	}
+
+	static getHostName(url) {
+		var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+		if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+		return match[2];
+		}
+		else {
+			return null;
+		}
 	}
 }
 
