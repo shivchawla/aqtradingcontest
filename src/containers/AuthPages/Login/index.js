@@ -50,6 +50,7 @@ class Login extends React.Component {
 
         if (response.data.token) {
             Utils.localStorageSaveObject(Utils.userInfoString, response.data);
+            Utils.cookieStorageSave(Utils.userInfoString, response.data);
             Utils.setLoggedInUserInfo(response.data);
             if (isBottomSheet) {
                 this.props.eventEmitter && this.props.eventEmitter.emit(onUserLoggedIn, 'User Logged In');
@@ -57,9 +58,11 @@ class Login extends React.Component {
             } else {
                 const redirectUrl = Utils.getRedirectAfterLoginUrl();
                 if (redirectUrl) {
-                    this.props.history.push(redirectUrl);
+                    // this.props.history.push(redirectUrl);
+                    window.location.href = redirectUrl;
                 } else{
-                    this.props.history.push('/dailycontest/stockpredictions');
+                    // this.props.history.push('/dailycontest/stockpredictions');
+                    window.location.href = '/dailycontest/stockpredictions';
                 }
             }
         } else {

@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
-import yellow from '@material-ui/core/colors/yellow';
+import cookie from 'react-cookies';
 import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import Snackbar from './components/Alerts/SnackbarComponent';
@@ -93,6 +93,7 @@ class App extends React.Component {
 
     componentDidMount() {
         var self = this;
+        // cookie.save('userId', 'saru.sreyo@gmail.com', { path: '/' });
         window.addEventListener('beforeinstallprompt', function (e) {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
@@ -106,6 +107,7 @@ class App extends React.Component {
 
     redirectToLogin = (redirectUrl) => {
         Utils.localStorageSave('redirectToUrlFromLogin', window.location.pathname);
+        Utils.cookieStorageSave('redirectToUrlFromLogin', window.location.href);
 
         return <Redirect push to='/login' />;
     }
@@ -349,6 +351,14 @@ class App extends React.Component {
                                         />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route path='/dailycontest' component={TradingContest} />
+                                        <Route 
+                                            path='/quantresearch' 
+                                            render={(props) => {
+                                                console.log(window.location.pathname);
+                                                window.location.href=window.location.pathname;
+                                                return <h3>Redirecting</h3>
+                                            }} 
+                                        />
                                         <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>

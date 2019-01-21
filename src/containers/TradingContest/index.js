@@ -222,6 +222,7 @@ class TradingContest extends React.Component {
 
     redirectToLogin = (redirectUrl) => {
         Utils.localStorageSave('redirectToUrlFromLogin', redirectUrl);
+        Utils.cookieStorageSave('redirectToUrlFromLogin', redirectUrl);
 
         return <Redirect push to='/login' />;
     }
