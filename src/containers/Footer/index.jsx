@@ -28,7 +28,7 @@ class NewFooter extends React.Component {
                         </ColGrid>
                         <ColGrid item sm={3} xs={12}>
                             <LinkHeader>Products</LinkHeader>
-                            <ListItem history={this.props.history} url='/dailycontest/home'>Stock Prediction</ListItem>
+                            <ListItem history={this.props.history} url='/dailycontest/home'>Stock Prediction Contest</ListItem>
                             <ListItem 
                                     history={this.props.history} 
                                     url={`${researchDomain}`}
