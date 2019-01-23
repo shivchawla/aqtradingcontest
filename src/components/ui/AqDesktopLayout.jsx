@@ -5,11 +5,13 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
+import {withStyles} from '@material-ui/core/styles';
 import ActionIcon from '../../containers/TradingContest/Misc/ActionIcons';
 import DateComponent from '../../containers/TradingContest/Misc/DateComponent';
 import {metricColor, horizontalBox} from '../../constants';
 import {isMarketOpen} from '../../containers/TradingContest/utils';
 import {isHoliday} from '../../utils';
+import tabStyles from './styles/tabStyles';
 import {Utils} from '../../utils';
 
 class AqDesktopLayout extends React.Component {
@@ -56,6 +58,7 @@ class AqDesktopLayout extends React.Component {
         const {activeSegment = 0} = this.state;
         const selectedColor = '#1763c6';
         const notSelectedColor = '#fff';
+        const {classes} = this.props;
 
         return (
             <Tab 
@@ -71,12 +74,13 @@ class AqDesktopLayout extends React.Component {
                     height: '20px'
                 }}
                 size='small'
+                classes={{root: classes.tabRoot, selected: classes.tabSelected}}
             />
         );
     }
 
     render() {
-        const {loading, onSettingsClicked = () => {}} = this.props;
+        const {loading, onSettingsClicked = () => {}, classes} = this.props;
         const isMarketTrading = !isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
 
@@ -130,11 +134,15 @@ class AqDesktopLayout extends React.Component {
                                             value={this.state.activeSegment} 
                                             onChange={this.handleTabChange}
                                             indicatorColor="primary"
+                                            classes={{
+                                                root: classes.tabRoot,
+                                                indicator: classes.tabsIndicator
+                                            }}
                                     >
-                                        {/* {this.renderTab('Predict', 0)} */}
                                         {this.renderTab('My Picks', 0)}
                                         {this.renderTab('Top Picks', 1)}
                                         {this.renderTab('Leaderboard', 2)}
+                                        {this.renderTab('Metrics', 3)}
                                     </Tabs>
                                 </div>
                                 <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
@@ -189,7 +197,7 @@ class AqDesktopLayout extends React.Component {
     }
 }
 
-export default withRouter(AqDesktopLayout);
+export default withStyles(tabStyles)(withRouter(AqDesktopLayout));
 
 const ContainerGrid = styled(Grid)`
     height: 100%;

@@ -26,7 +26,9 @@ export default class TopCard extends React.Component {
             barColor = primaryColor, 
             money = false, 
             percentage = false,
-            number = false
+            number = false,
+            colouredBorder = false,
+            small=false
         } = this.props;
         const valueProps = {money, percentage, number};
         const netColor = getValueColor(total, number);
@@ -38,26 +40,29 @@ export default class TopCard extends React.Component {
                         item xs={12} 
                         style={{
                             ...verticalBox,
-                            alignItems: 'flex-start'
+                            alignItems: 'flex-start',
+                            border: colouredBorder ? `1px solid ${barColor}` : 'none'
                         }}
                 >
-                    <Header>{header}</Header>
-                    <NetText style={{color: netColor}}>{total}</NetText>
+                    <Header small={small}>{header}</Header>
+                    <NetText style={{color: netColor}} small={small}>{total}</NetText>
                     <Metric 
                         label='Long' 
                         value={long} 
                         marginTop={5} 
                         {...valueProps} 
+                        small={small}
                     />
                     <Metric 
                         label='Short' 
                         value={short} 
-                        marginTop={15} 
+                        marginTop={small ? 5 : 15} 
                         {...valueProps} 
+                        small={small}
                     />
                     <Bar 
                         barColor={barColor} 
-                        style={{marginTop: '10px'}} 
+                        style={{marginTop: small ? '5px' : '10px'}} 
                     />
                 </Grid>
             </Container>
@@ -65,7 +70,7 @@ export default class TopCard extends React.Component {
     }
 }
 
-const Metric = ({label, value, marginTop = '0px', money = false, percentage = false, number = false}) => {
+const Metric = ({label, value, marginTop = '0px', money = false, percentage = false, number = false, small = false}) => {
     const valueColor = getValueColor(value, number);
     const formattedValue = getFormattedValue(value, money, percentage);
 
@@ -78,8 +83,8 @@ const Metric = ({label, value, marginTop = '0px', money = false, percentage = fa
                     marginTop
                 }}
         >
-            <MetricLabel style={{marginLeft: '10px'}}>{label}</MetricLabel>
-            <MetricValue style={{marginRight: '10px', fontWeight: 700}} color={valueColor}>{formattedValue}</MetricValue>
+            <MetricLabel style={{marginLeft: '10px'}} small={small}>{label}</MetricLabel>
+            <MetricValue style={{marginRight: '10px', fontWeight: 700}} color={valueColor} small={small}>{formattedValue}</MetricValue>
         </div>
     );
 }
@@ -95,12 +100,12 @@ const Container = styled(Grid)`
 `;
 
 const NetText = styled.h3`
-    font-size: 20px;
+    font-size: ${props => props.small ? '16px' : '20px'};
     font-weight: 700;
     font-family: 'Lato', sans-serif;
     color: ${props => props.color || valueColor};
     margin-left: 10px;
-    margin-top: 10px;
+    margin-top: ${props => props.small ? '5px' : '10px'};
 `;
 
 const Bar = styled.div`

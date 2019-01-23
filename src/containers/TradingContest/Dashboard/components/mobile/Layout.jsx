@@ -2,7 +2,6 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import TopCard from './TopCard';
@@ -12,7 +11,6 @@ import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import AutoComplete from '../../../../../components/input/AutoComplete';
-import TopSheet from '../../../../../components/Alerts/TopSheet';
 import {horizontalBox, verticalBox} from '../../../../../constants';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
 

@@ -95,6 +95,8 @@ class TradingContest extends React.Component {
                 return 'toppicks';
             case 2:
                 return 'leaderboard';
+            case 3:
+                return 'metrics';
             default:
                 return 'mypicks';
         }
@@ -391,15 +393,6 @@ class TradingContest extends React.Component {
                                         eventEmitter={this.eventEmitter}
                                     />
                                 }
-                                // render={() => Utils.isLoggedIn()
-                                //     ?   <CreateEntry 
-                                //             selectedDate={this.state.selectedDate}
-                                //             componentType='preview'
-                                //             listViewType={this.getListViewTypeFromUrl(this.props)}
-                                //             eventEmitter={this.eventEmitter}
-                                //         />
-                                //     :   this.redirectToLogin(`${this.props.match.path}`)
-                                // }
                             />
                             <Route 
                                 exact
@@ -412,15 +405,6 @@ class TradingContest extends React.Component {
                                         eventEmitter={this.eventEmitter}
                                     />
                                 }
-                                // render={() => Utils.isLoggedIn()
-                                //     ?   <CreateEntry 
-                                //             selectedDate={this.state.selectedDate}
-                                //             componentType='preview'
-                                //             listViewType={this.getListViewTypeFromUrl(this.props)}
-                                //             eventEmitter={this.eventEmitter}
-                                //         />
-                                //     :   this.redirectToLogin(`${this.props.match.path}/mypicks`)
-                                // }
                             />
                             <Route 
                                 exact
@@ -431,12 +415,6 @@ class TradingContest extends React.Component {
                                         eventEmitter={this.eventEmitter}
                                     />
                                 }
-                                // render={() => Utils.isLoggedIn()
-                                //     ?   <TopPicks 
-                                //             selectedDate={this.state.selectedDate}
-                                //         />
-                                //     :   this.redirectToLogin(`${this.props.match.path}/toppicks`)
-                                // }
                             />
                             <Route 
                                 exact
@@ -449,14 +427,6 @@ class TradingContest extends React.Component {
                                         eventEmitter={this.eventEmitter}
                                     />
                                 }
-                                // render={() => Utils.isLoggedIn()
-                                //     ?   <Leaderboard 
-                                //             selectedDate={this.state.selectedDate}
-                                //             type={this.state.leaderboardType}
-                                //             handleLeaderboardTypeChange={this.handleLeaderboardTypeChange}
-                                //         />
-                                //     :   this.redirectToLogin(`${this.props.match.path}/leaderboard`)
-                                // }
                             />
                             <Route 
                                 exact
@@ -469,17 +439,12 @@ class TradingContest extends React.Component {
                                         eventEmitter={this.eventEmitter}
                                     />
                                 }
-                                // render={() => Utils.isLoggedIn()
-                                //     ?   <CreateEntry 
-                                //             selectedDate={this.state.selectedDate}
-                                //             componentType='preview'
-                                //             listViewType={this.getListViewTypeFromUrl(this.props)}
-                                //             eventEmitter={this.eventEmitter}
-                                //         />
-                                //     :   this.redirectToLogin(`${this.props.match.path}/stockpredictions`)
-                                // }
                             />
-                            {/* <Redirect to='/404'/> */}
+                            <Route 
+                                exact
+                                path={`${this.props.match.path}/metrics`}
+                                render={() => <Dashboard />}
+                            />
                             <Redirect push to='/404' />
                         </Switch>
                     </React.Suspense>
