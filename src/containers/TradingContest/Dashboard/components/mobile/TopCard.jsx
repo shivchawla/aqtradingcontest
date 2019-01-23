@@ -35,13 +35,17 @@ export default class TopCard extends React.Component {
         total = getFormattedValue(total, money, percentage);
 
         return (
-            <Container container>
+            <Container 
+                    container
+                    style={{
+                        border: colouredBorder ? `1px solid ${barColor}` : 'none',
+                    }}
+            >
                 <Grid 
                         item xs={12} 
                         style={{
                             ...verticalBox,
                             alignItems: 'flex-start',
-                            border: colouredBorder ? `1px solid ${barColor}` : 'none'
                         }}
                 >
                     <Header small={small}>{header}</Header>
@@ -90,7 +94,7 @@ const Metric = ({label, value, marginTop = '0px', money = false, percentage = fa
 }
 
 const Container = styled(Grid)`
-    border-radius: 4px;
+    border-radius: 2px;
     box-shadow: 0 4px 10px #D4D4D4;
     overflow: hidden;
     border: 1px solid #F3F3F3;
