@@ -30,7 +30,11 @@ export default class ParticipantListItem extends React.Component {
         const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? metricColor.neutral : metricColor.negative;
 
         return (
-            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(userName, advisorId)}>
+            <SGrid 
+                    container 
+                    onClick={() => this.props.toggleUserProfileBottomSheet(userName, advisorId)}
+                    style={{cursor: 'pointer'}}
+            >
                 <Grid item xs={1} style={{textAlign: 'start'}}>
                     <img src={medal} width={26}/>
                 </Grid>
