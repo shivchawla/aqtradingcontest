@@ -29,7 +29,6 @@ class Participants extends React.Component {
     }
 
     toggleUserProfileBottomSheet = (userName = null, advisorId = null) => {
-        
         this.setState({
             userProfileBottomSheetOpenStatus: !this.state.userProfileBottomSheetOpenStatus,
             selectedAdvisor: {

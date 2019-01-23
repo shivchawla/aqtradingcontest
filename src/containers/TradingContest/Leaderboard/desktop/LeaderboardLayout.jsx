@@ -6,6 +6,7 @@ import LeaderboardTable from './LeaderboardTable';
 import RadioGroup from '../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import NotLoggedIn from '../../Misc/NotLoggedIn';
+import UserProfileDialog from '../../UserProfile';
 import {Utils} from '../../../../utils';
 import {verticalBox, horizontalBox} from '../../../../constants';
 import notFoundLogo from '../../../../assets/NoDataFound.svg';
@@ -28,6 +29,11 @@ export default class TopPicksLayout extends React.Component {
 
         return (
             <SGrid container>
+                <UserProfileDialog 
+                    open={this.props.userProfileBottomSheetOpenStatus}
+                    onClose={this.props.toggleUserProfileBottomSheet}
+                    advisor={this.props.selectedAdvisor}
+                />
                 {
                     !Utils.isLoggedIn()
                         ?   <NotLoggedIn />
@@ -71,6 +77,7 @@ export default class TopPicksLayout extends React.Component {
                                                     winners={winners}
                                                     winnersWeekly={winnersWeekly}
                                                     type={type}
+                                                    toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
                                                 />
                                         }
                                     </div>

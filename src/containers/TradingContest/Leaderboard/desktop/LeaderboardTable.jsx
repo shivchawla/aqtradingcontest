@@ -28,6 +28,7 @@ export default class LeaderboardTable extends React.Component {
                     winners={winners}
                     winnersWeekly={winnersWeekly}
                     type={this.props.type}
+                    toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
                 />
             </Grid>
         );
