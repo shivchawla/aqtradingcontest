@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import {metricColor, primaryColor} from '../../../../constants';
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
-import {convertNameToTitleCase} from '../utils';
+import {convertNameToTitleCase, getNetValueColor} from '../utils';
 
 export default class ParticipantListItemOverall extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -22,11 +22,14 @@ export default class ParticipantListItemOverall extends React.Component {
         return color;
     }
     
+
+
     render() {
         const {
             name = '',
             advisorId = null,
             avgPnl = 0, 
+            avgPnlPct = 0,
             netValue = 0, 
             totalEarnings = 1, 
             totalReturn = 0, 
@@ -47,22 +50,24 @@ export default class ParticipantListItemOverall extends React.Component {
                     <Name>{convertNameToTitleCase(name)}</Name>
                 </Grid>
                 <Grid item xs={2}>
-                    <SecondaryText color={this.getColor(avgPnl)}>
-                        ₹{Utils.formatMoneyValueMaxTwoDecimals(avgPnl * 1000)}
+                    <SecondaryText color={this.getColor(avgPnlPct)}>
+                        {(avgPnl * 100).toFixed(2)} %
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2}>
-                    <SecondaryText color={this.getColor(netValue)}>
+                    <SecondaryText color={getNetValueColor(netValue)}>
                         ₹{Utils.formatMoneyValueMaxTwoDecimals(netValue * 1000)}
                     </SecondaryText>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={3} style={{textAlign: 'start'}}>
+                    <SecondaryText fontWeight='500'>
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(totalEarnings)}
+                    </SecondaryText>
+                </Grid>
+                <Grid item xs={2}>
                     <SecondaryText fontWeight='500' color={this.getColor(totalReturn)}>
                         {totalReturn.toFixed(2)} %
                     </SecondaryText>
-                </Grid>
-                <Grid item xs={2} style={{textAlign: 'start'}}>
-                    ₹{Utils.formatMoneyValueMaxTwoDecimals(totalEarnings)}
                 </Grid>
             </SGrid>
         ); 

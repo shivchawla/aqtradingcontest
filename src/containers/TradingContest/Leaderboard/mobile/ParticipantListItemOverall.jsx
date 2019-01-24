@@ -29,6 +29,7 @@ export default class ParticipantListItemOverall extends React.Component {
             name = '',
             advisorId = null,
             avgPnl = 0, 
+            avgPnlPct = 0, 
             netValue = 0, 
             totalEarnings = 1, 
             totalReturn = 0, 
@@ -62,7 +63,7 @@ export default class ParticipantListItemOverall extends React.Component {
                 >
                     <SecondaryText style={{marginLeft: '5px'}} color={this.getColor(avgPnl)}>
                         <p style={labelStyle}>Avg. PnL</p>
-                        ₹{Utils.formatMoneyValueMaxTwoDecimals(avgPnl * 1000)}
+                        {(avgPnl * 100).toFixed(2)} %
                     </SecondaryText>
                     <SecondaryText style={{marginLeft: '5px'}} color={this.getColor(totalReturn)}>
                         <p style={labelStyle}>Total Return</p>

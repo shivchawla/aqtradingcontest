@@ -19,10 +19,10 @@ export default class TableHeaderOverall extends React.Component {
                     <TableHeaderText>Net Value</TableHeaderText>
                 </Grid>
                 <Grid item xs={3}>
-                    <TableHeaderText>Total Return</TableHeaderText>
+                    <TableHeaderText>Earnings</TableHeaderText>
                 </Grid>
                 <Grid item xs={2}>
-                    <TableHeaderText>Earnings</TableHeaderText>
+                    <TableHeaderText>Total Return</TableHeaderText>
                 </Grid>
             </Grid>
         );
