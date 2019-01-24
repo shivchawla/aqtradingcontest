@@ -18,13 +18,20 @@ export default class ParticipantList extends React.Component {
         return false;
     }
 
-    renderWinners = () => {
-        const {winners = [], type = 'daily', winnersWeekly = [], winnersOverall = []} = this.props;
+    getRequiredWinners = (type = 'daily') => {
+        const {winners = [], winnersWeekly = [], winnersOverall = []} = this.props;
         const requiredWinners = type === 'daily' 
             ? winners 
             : type === 'weekly'
                 ? winnersWeekly
                 : winnersOverall;
+        
+        return requiredWinners;
+    }
+
+    renderWinners = () => {
+        const {type = 'daily'} = this.props;
+        const requiredWinners = this.getRequiredWinners(type);
         const ParticipantListItem = global.screen.width < 801 
             ? type === 'daily'
                 ? ParticipantListItemMobileDaily
@@ -49,13 +56,14 @@ export default class ParticipantList extends React.Component {
     }
     
     render() {
-        const {winners = []} = this.props;
+        const {type = 'daily'} = this.props;
+        const requiredWinners = this.getRequiredWinners(type);
 
         return (
             <Grid container>
                 <Grid item xs={12}>
                     {
-                        winners.length === 0
+                        requiredWinners.length === 0
                         ? <Error>No Data Found</Error>
                         : this.renderWinners()
                     }

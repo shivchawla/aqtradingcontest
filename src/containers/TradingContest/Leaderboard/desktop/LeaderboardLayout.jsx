@@ -29,6 +29,11 @@ export default class TopPicksLayout extends React.Component {
     renderContent() {
         const {winners = [], winnersWeekly = [], winnersOverall = []} = this.props;
         const type = getLeadeboardType(this.props.type);
+        const requiredWinners = type === 'daily'
+            ? winners
+            : type === 'weekly'
+                ? winnersWeekly
+                : winnersOverall;
 
         return (
             <SGrid container>
@@ -57,6 +62,7 @@ export default class TopPicksLayout extends React.Component {
                                         CustomRadio={CustomRadio}
                                         style={{marginLeft: '3%'}}
                                         disabled={this.props.overallPageLoading}
+                                        small
                                     />
                                 </Grid>
                                 <Grid 
@@ -75,7 +81,7 @@ export default class TopPicksLayout extends React.Component {
                                             }}
                                     >
                                         {
-                                            winners.length == 0 
+                                            requiredWinners.length == 0 
                                             ?   <NoDataFound /> 
                                             :   <LeaderboardTable 
                                                     winners={winners}

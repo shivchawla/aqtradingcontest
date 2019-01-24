@@ -71,6 +71,7 @@ class Participants extends React.Component {
             this.setState({winners, winnersWeekly});
         })
         .catch(err => {
+            this.setState({winners: [], winnersWeekly: []});
             console.log(err);
         }) 
         .finally(() => {

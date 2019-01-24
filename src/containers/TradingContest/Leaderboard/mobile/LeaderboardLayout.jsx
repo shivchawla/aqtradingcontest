@@ -31,6 +31,11 @@ export default class LeaderboardLayout extends React.Component {
     renderContent() {
         const {winners = [], winnersWeekly = [], winnersOverall = []} = this.props;
         const type = getLeadeboardType(this.props.type);
+        const requiredWinners = type === 'daily'
+            ? winners
+            : type === 'weekly'
+                ? winnersWeekly
+                : winnersOverall;
 
         return(
             <SGrid container>
@@ -41,7 +46,7 @@ export default class LeaderboardLayout extends React.Component {
                 />
                 <Grid item xs={12} style={listContainer}>
                     {
-                        winners.length == 0 
+                        requiredWinners.length == 0 
                         ?   <NoDataFound /> 
                         :   <ParticipantList 
                                 winners={winners}
