@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../../constants';
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
+import {convertNameToTitleCase} from '../utils';
 
 const neutralColor = '#717171';
 
@@ -33,7 +34,7 @@ export default class ParticipantListItem extends React.Component {
         const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? neutralColor : metricColor.negative;
         
         return (
-            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(userName, advisorId)}>
+            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(userName), advisorId)}>
                 <Grid 
                         item 
                         xs={12}
@@ -43,7 +44,7 @@ export default class ParticipantListItem extends React.Component {
                             alignItems: 'center'
                         }}
                 >
-                    <Name>{userName}</Name>
+                    <Name>{convertNameToTitleCase(userName)}</Name>
                     <img src={medal} width={24}/>
                 </Grid>
                 <Grid 

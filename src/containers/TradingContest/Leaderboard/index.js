@@ -7,7 +7,8 @@ import LeaderboardLayoutMobile from './mobile/LeaderboardLayout';
 import LeaderboardLayoutDesktop from './desktop/LeaderboardLayout';
 import {DailyContestLeaderboardMeta} from '../metas';
 import {onUserLoggedIn} from '../constants/events';
-import {getContestSummary, processParticipants, getLeaderboard, processLeaderboardWinners} from '../utils';
+import {getLeaderboard, processLeaderboardWinners, getOverallLeaderboard} from '../utils';
+import {processOverallLeaderboardData} from './utils';
 
 const dateFormat = 'YYYY-MM-DD';
 
@@ -16,15 +17,18 @@ class Participants extends React.Component {
         super(props);
         this.state = {
             selectedDate: props.selectedDate || moment(),
-            type: props.type || 'daily',
+            type: props.type || 0,
             winners: [],
             winnersWeekly: [],
+            winnersOverall: [],
             loading: false,
+            overallPageLoading: false,
             userProfileBottomSheetOpenStatus: false,
             selectedAdvisor: {
                 userName: '',
                 advisorId: null
-            } 
+            },
+            skip: 0
         };
     }
 
@@ -41,15 +45,22 @@ class Participants extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({type: nextProps.type || 'daily'});
-        if (this.props.selectedDate.format(dateFormat) !== nextProps.selectedDate.format(dateFormat)) {
-            this.setState({
-                selectedDate: nextProps.selectedDate,
-            }, this.fetchLeaderboard(nextProps.selectedDate, nextProps.type));
+        const type = nextProps.type;
+        this.setState({type});
+        if (type === 2) {
+            if (type !== this.props.type) {
+                this.fetchOverallLeaderboard();
+            }
+        } else {
+            if (this.props.selectedDate.format(dateFormat) !== nextProps.selectedDate.format(dateFormat)) {
+                this.setState({
+                    selectedDate: nextProps.selectedDate,
+                }, this.fetchLeaderboard(nextProps.selectedDate, nextProps.type));
+            }
         }
     } 
 
-    fetchLeaderboard = (selectedDate = moment(), type = 'daily') => {
+    fetchLeaderboard = (selectedDate = moment()) => {
         this.setState({loading: true});
         getLeaderboard(selectedDate, this.props.history, this.props.match.params, false)
         .then(async response => {
@@ -64,6 +75,40 @@ class Participants extends React.Component {
         }) 
         .finally(() => {
             this.setState({loading: false});
+        })
+    }
+
+    fetchOverallLeaderboard = (shouldConcatenate = false) => {
+        let {winnersOverall = [], skip = 0} = this.state;
+        if (winnersOverall.length > 0 && !shouldConcatenate) {
+            return;
+        }
+        const limit = 10;
+        skip = shouldConcatenate ? skip + 10 : 0;
+
+        this.setState({[shouldConcatenate ? 'overallPageLoading' : 'loading']: true}); 
+        this.props.updateOverallLoading && this.props.updateOverallLoading(true);
+        getOverallLeaderboard(skip, limit, this.props.history, this.props.match.params, false)
+        .then(async response => {
+            let winnersData = _.get(response, 'data', []);
+            winnersData = await processOverallLeaderboardData(winnersData);
+            let requiredData = [];
+            if (shouldConcatenate) {
+                requiredData = [...winnersOverall, ...winnersData]
+            } else {
+                requiredData = winnersData;
+            }
+            this.setState({
+                winnersOverall: requiredData,
+                skip
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        })
+        .finally(() => {
+            this.setState({[shouldConcatenate ? 'overallPageLoading' : 'loading']: false}); 
+            this.props.updateOverallLoading && this.props.updateOverallLoading(false);
         })
     }
 
@@ -92,10 +137,11 @@ class Participants extends React.Component {
     }
 
     render() {
-        const {winners = [], winnersWeekly = []} = this.state;
+        const {winners = [], winnersWeekly = [], winnersOverall = []} = this.state;
         const props = {
             winners,
             winnersWeekly,
+            winnersOverall,
             endDate: this.state.endDate,
             startDate: this.state.startDate,
             contestActive: this.state.contestActive,
@@ -109,7 +155,9 @@ class Participants extends React.Component {
             toggleUserProfileBottomSheet: this.toggleUserProfileBottomSheet,
             type: this.props.type,
             handleLeaderboardTypeChange: this.props.handleLeaderboardTypeChange,
-            handleDateChange: this.props.handleDateChange
+            handleDateChange: this.props.handleDateChange,
+            fetchOverallLeaderboard: this.fetchOverallLeaderboard,
+            overallPageLoading: this.state.overallPageLoading
         };
 
         return (

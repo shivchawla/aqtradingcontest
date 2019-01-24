@@ -1,10 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import ParticipantList from '../common/ParticipantList';
 import LoaderComponent from '../../Misc/Loader';
 import UserProfileBottomSheet from '../../UserProfile';
 import {verticalBox, horizontalBox} from '../../../../constants';
+import {getLeadeboardType} from '../utils';
 import notFoundLogo from '../../../../assets/NoDataFound.svg';
 
 export default class LeaderboardLayout extends React.Component {
@@ -26,7 +29,8 @@ export default class LeaderboardLayout extends React.Component {
     }
 
     renderContent() {
-        const {winners = [], winnersWeekly = []} = this.props;
+        const {winners = [], winnersWeekly = [], winnersOverall = []} = this.props;
+        const type = getLeadeboardType(this.props.type);
 
         return(
             <SGrid container>
@@ -42,11 +46,31 @@ export default class LeaderboardLayout extends React.Component {
                         :   <ParticipantList 
                                 winners={winners}
                                 winnersWeekly={winnersWeekly}
-                                type={this.props.type}
+                                winnersOverall={winnersOverall}
+                                type={type}
                                 toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
                             />
                     }
                 </Grid>
+                {
+                    type === 'overall' &&
+                    <Grid item xs={12} style={{...horizontalBox, justifyContent: 'center', marginBottom: '20px'}}>
+                        <Button 
+                                onClick={() => this.props.fetchOverallLeaderboard(true)}
+                                disabled={this.props.overallPageLoading}
+                                variant='contained'
+                                style={{
+                                    boxShadow: 'none'
+                                }}
+                        >
+                            More
+                            {
+                                this.props.overallPageLoading
+                                && <CircularProgress size={20} style={{marginLeft: '10px'}}/>
+                            }
+                        </Button>
+                    </Grid>
+                }
             </SGrid>
         );
     }

@@ -2,9 +2,10 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../../constants';
+import {metricColor, primaryColor} from '../../../../constants';
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
+import {convertNameToTitleCase} from '../utils';
 
 export default class ParticipantListItemWeekly extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -32,14 +33,14 @@ export default class ParticipantListItemWeekly extends React.Component {
         return (
             <SGrid 
                     container 
-                    onClick={() => this.props.toggleUserProfileBottomSheet(userName, advisorId)}
+                    onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(userName), advisorId)}
                     style={{cursor: 'pointer'}}
             >
                 <Grid item xs={1} style={{textAlign: 'start'}}>
                     <img src={medal} width={26}/>
                 </Grid>
                 <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <Name>{userName}</Name>
+                    <Name>{convertNameToTitleCase(userName)}</Name>
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={changeColor}>
@@ -82,13 +83,13 @@ const SGrid = styled(Grid)`
 `;
 
 const Name = styled.h3`
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     color: #464646;
 `;
 
 const SecondaryText = styled.h3`
-    font-size: 16px;
+    font-size: 14px;
     font-weight: ${props => props.fontWeight || 400};
     color: ${props => props.color || '#717171'};
     text-align: start;

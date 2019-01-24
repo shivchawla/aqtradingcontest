@@ -4,8 +4,10 @@ import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import ParticipantListItemMobileDaily from '../mobile/ParticipantListItem';
 import ParticipantListItemMobileWeekly from '../mobile/ParticipantListItemWeekly';
+import ParticipantListItemMobileOverall from '../mobile/ParticipantListItemOverall';
 import ParticipantListItemDesktop from '../desktop/ParticipantListItem';
 import ParticipantListItemDesktopWeekly from '../desktop/ParticipantListItemWeekly';
+import ParticipantListItemDesktopOverall from '../desktop/ParticipantListItemOverall';
 
 export default class ParticipantList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -17,19 +19,28 @@ export default class ParticipantList extends React.Component {
     }
 
     renderWinners = () => {
-        const {winners = [], type = 'daily', winnersWeekly = []} = this.props;
-        const requiredWinners = type === 'daily' ? winners : winnersWeekly;
+        const {winners = [], type = 'daily', winnersWeekly = [], winnersOverall = []} = this.props;
+        const requiredWinners = type === 'daily' 
+            ? winners 
+            : type === 'weekly'
+                ? winnersWeekly
+                : winnersOverall;
         const ParticipantListItem = global.screen.width < 801 
             ? type === 'daily'
                 ? ParticipantListItemMobileDaily
-                : ParticipantListItemMobileWeekly 
+                : type === 'weekly' 
+                    ?   ParticipantListItemMobileWeekly 
+                    :   ParticipantListItemMobileOverall
             : type === 'daily' 
                 ? ParticipantListItemDesktop
-                : ParticipantListItemDesktopWeekly
+                : type === 'weekly' 
+                    ?   ParticipantListItemDesktopWeekly
+                    :   ParticipantListItemDesktopOverall
 
         return requiredWinners.map((winner, index) => (
             <ParticipantListItem 
                 key={index} 
+                index={index}
                 {...winner} 
                 type={type}
                 toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
