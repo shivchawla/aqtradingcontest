@@ -364,7 +364,11 @@ class TradingContest extends React.Component {
 
     renderDesktop = () => {
         const {classes} = this.props;
-        const leaderboardDateType = this.state.leaderboardType === 0 ? 'daily' : 'weekly';
+        const leaderboardDateType = this.state.leaderboardType === 0 
+            ? 'daily' 
+            : this.state.leaderboardType === 1 
+                ? 'weekly'
+                : 'overall';
 
         return (
             <div className={classes.root}>
