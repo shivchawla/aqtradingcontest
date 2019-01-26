@@ -127,6 +127,7 @@ class DateComponent extends React.Component {
     renderNormalView = () => {
         const {color = '#fff'} = this.props;
         const { selectedDate } = this.state;
+        const disabled = _.get(this.props, 'type', 'daily') === 'overall' ? true : false;
 
         return (
             <Grid container style={{backgroundColor: '#fff', width: '100%', width: '100%', ...this.props.style, padding: '0 30px'}}>
