@@ -9,7 +9,6 @@ import Button from '@material-ui/core/Button';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
-import cookie from 'react-cookies';
 import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import Snackbar from './components/Alerts/SnackbarComponent';
@@ -17,7 +16,6 @@ import DummyLogin from './containers/DummyLogin';
 import {horizontalBox} from './constants';
 import {Utils} from './utils';
 import './App.css';
-import DailyContestHomeFrame from './containers/DailyContestHomeFrame';
 
 const {gaTrackingId = null} = require('./localConfig');
 const ServerError = React.lazy(() => import('./containers/ErrorPages/ServerError'));
@@ -27,8 +25,6 @@ const DailyContestHome = React.lazy(() => import('./containers/DailyContestHomeF
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
 const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
-const TradingContestHomeMobile = React.lazy(() => import('./containers/TradingContest/Home'));
-const TradingContestHomeDesktop = React.lazy(() => import('./containers/TradingContest/CreateEntry/components/desktop/Home'));
 const TradingContestLeaderboard = React.lazy(() => import('./containers/TradingContestLeaderboard'));
 const TradingContestTopPicks = React.lazy(() => import('./containers/TradingContestTopPicks'));
 const Login = React.lazy(() => import('./containers/AuthPages/Login'));
