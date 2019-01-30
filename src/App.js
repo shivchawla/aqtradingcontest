@@ -17,11 +17,13 @@ import DummyLogin from './containers/DummyLogin';
 import {horizontalBox} from './constants';
 import {Utils} from './utils';
 import './App.css';
+import DailyContestHomeFrame from './containers/DailyContestHomeFrame';
 
 const {gaTrackingId = null} = require('./localConfig');
 const ServerError = React.lazy(() => import('./containers/ErrorPages/ServerError'));
 const ApiDoc = React.lazy(() => import('./containers/ReDoc'));
 const AppHome = React.lazy(() => import('./containers/HomeFrame'));
+const DailyContestHome = React.lazy(() => import('./containers/DailyContestHomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
 const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
@@ -191,7 +193,7 @@ class App extends React.Component {
                             return (
                                 <React.Suspense fallback={<Loader />}>
                                     <Switch>
-                                        <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
+                                        <Route exact={true} path='/dailycontest/home' component={DailyContestHome} /> 
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                         <Route exact={true} path='/api/docs' component={ApiDoc}/> 
                                         <Route 
@@ -296,7 +298,7 @@ class App extends React.Component {
                                 <React.Suspense fallback={<Loader />}>
                                     <Switch>
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
-                                        <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
+                                        <Route exact={true} path='/dailycontest/home' component={DailyContestHome} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
                                         <Route path='/stockresearch' component={StockResearch}/> 
                                         <Route path='/server_error' component={ServerError}/>

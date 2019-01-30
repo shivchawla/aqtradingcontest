@@ -51,6 +51,7 @@ class Header extends React.Component {
                 <MenuItem onClick={() => this.handleMenuClose('/research')}>Backtest</MenuItem>
                 <MenuItem onClick={() => this.handleMenuClose('/community')}>Community</MenuItem>
                 <MenuItem onClick={() => this.handleMenuClose('/help')}>Help</MenuItem>
+                <MenuItem onClick={() => this.handleMenuClose('/tutorial')}>Tutorial</MenuItem>
             </Menu>
         );
     }
