@@ -9,7 +9,6 @@ import Button from '@material-ui/core/Button';
 import MomentUtils from 'material-ui-pickers/utils/moment-utils';
 import withRouter from 'react-router-dom/withRouter';
 import Switch from 'react-router-dom/Switch';
-import cookie from 'react-cookies';
 import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import Snackbar from './components/Alerts/SnackbarComponent';
@@ -22,11 +21,10 @@ const {gaTrackingId = null} = require('./localConfig');
 const ServerError = React.lazy(() => import('./containers/ErrorPages/ServerError'));
 const ApiDoc = React.lazy(() => import('./containers/ReDoc'));
 const AppHome = React.lazy(() => import('./containers/HomeFrame'));
+const DailyContestHome = React.lazy(() => import('./containers/DailyContestHomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
 const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
-const TradingContestHomeMobile = React.lazy(() => import('./containers/TradingContest/Home'));
-const TradingContestHomeDesktop = React.lazy(() => import('./containers/TradingContest/CreateEntry/components/desktop/Home'));
 const TradingContestLeaderboard = React.lazy(() => import('./containers/TradingContestLeaderboard'));
 const TradingContestTopPicks = React.lazy(() => import('./containers/TradingContestTopPicks'));
 const Login = React.lazy(() => import('./containers/AuthPages/Login'));
@@ -191,7 +189,7 @@ class App extends React.Component {
                             return (
                                 <React.Suspense fallback={<Loader />}>
                                     <Switch>
-                                        <Route exact={true} path='/dailycontest/home' component={TradingContestHomeMobile} /> 
+                                        <Route exact={true} path='/dailycontest/home' component={DailyContestHome} /> 
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                         <Route exact={true} path='/api/docs' component={ApiDoc}/> 
                                         <Route 
@@ -296,7 +294,7 @@ class App extends React.Component {
                                 <React.Suspense fallback={<Loader />}>
                                     <Switch>
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
-                                        <Route exact={true} path='/dailycontest/home' component={TradingContestHomeDesktop} />
+                                        <Route exact={true} path='/dailycontest/home' component={DailyContestHome} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
                                         <Route path='/stockresearch' component={StockResearch}/> 
                                         <Route path='/server_error' component={ServerError}/>

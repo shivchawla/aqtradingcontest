@@ -192,6 +192,12 @@ export const getLeaderboard = (selectedDate = moment(), history, currentUrl, han
     return fetchAjaxPromise(url, history, currentUrl, handleError);
 }
 
+export const getOverallLeaderboard = (skip, limit, history, currentUrl, handleError = false) => {
+    const url = `${requestUrl}/dailycontest/overallWinners?skip=${skip}&limit=${limit}`;
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError);
+}
+
 export const processLeaderboardWinners = (leaders = []) => {
     return Promise.map(leaders, leader => {
         const userName = _.get(leader, 'user.firstName', '') + ' ' + _.get(leader, 'user.lastName', '');

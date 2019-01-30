@@ -125,7 +125,7 @@ class Dashboard extends React.Component {
                 />
                 <Media 
                     query="(min-width: 801px)"
-                    render={() => <DashboardLayoutDesktop />}
+                    render={() => <DashboardLayoutDesktop {...props} />}
                 />
             </React.Fragment>
         );

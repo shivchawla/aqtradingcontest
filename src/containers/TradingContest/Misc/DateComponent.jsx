@@ -93,6 +93,7 @@ class DateComponent extends React.Component {
     renderCompactView = () => {
         const {color = '#fff', type ='daily'} = this.props;
         const { selectedDate } = this.state;
+        const disabled = _.get(this.props, 'type', 'daily') === 'overall' ? true : false;
 
         return (
             <div 
@@ -102,7 +103,7 @@ class DateComponent extends React.Component {
                         alignItems: 'center'
                     }}
             >
-                <ActionIcon size={22} color={color} type='chevron_left' onClick={this.navigateToPreviousDate} />
+                <ActionIcon disabled={disabled} size={22} color={color} type='chevron_left' onClick={this.navigateToPreviousDate} />
                 <DatePicker
                     format='DD MMM'
                     value={selectedDate}
@@ -116,8 +117,9 @@ class DateComponent extends React.Component {
                     TextFieldComponent={DateFields}
                     color={color}
                     disableFuture={true}
+                    disabled={disabled}
                 />
-                <ActionIcon size={22} color={color} type='chevron_right' onClick={this.navigateToNextDate} />
+                <ActionIcon disabled={disabled} size={22} color={color} type='chevron_right' onClick={this.navigateToNextDate} />
             </div>
         );
     }
@@ -125,11 +127,12 @@ class DateComponent extends React.Component {
     renderNormalView = () => {
         const {color = '#fff'} = this.props;
         const { selectedDate } = this.state;
+        const disabled = _.get(this.props, 'type', 'daily') === 'overall' ? true : false;
 
         return (
             <Grid container style={{backgroundColor: '#fff', width: '100%', width: '100%', ...this.props.style, padding: '0 30px'}}>
-                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}} onClick={this.navigateToPreviousDate}>
-                    <ActionIcon size={30} color={color} type='chevron_left' />
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                    <ActionIcon size={30} color={color} type='chevron_left' disabled={disabled} onClick={this.navigateToPreviousDate}/>
                 </Grid>
                 <Grid item xs={8} style={{...horizontalBox, justifyContent: 'center'}}>
                     <DatePicker
@@ -140,13 +143,16 @@ class DateComponent extends React.Component {
                         TextFieldComponent={DateFields}
                         color={color}
                         disableFuture={true}
+                        disabled={disabled}
                     />
                 </Grid>
-                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}} onClick={this.navigateToNextDate}> 
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-end'}}> 
                     <ActionIcon 
                         size={30} 
                         color={color} 
                         type='chevron_right' 
+                        disabled={disabled}
+                        onClick={this.navigateToNextDate}
                     />
                 </Grid>
                 {

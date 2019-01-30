@@ -13,7 +13,7 @@ import {verticalBox, horizontalBox, primaryColor, nameEllipsisStyle} from '../..
 
 export default class VerticalCard extends React.Component {
     render() {
-        const {header='Header', trade={}} = this.props;
+        const {header='Header', trade={}, small = false} = this.props;
         const long = {
             symbol: getStockTicker(_.get(trade, 'long.security', 'N/A')),
             // symbol: _.get(trade, 'long.security.ticker', 'N/A'),
@@ -42,7 +42,7 @@ export default class VerticalCard extends React.Component {
                             alignItems: 'flex-start'
                         }}
                 >
-                    <Header>{header}</Header>
+                    <Header small={small}>{header}</Header>
                     <Grid 
                             container
                             style={{
@@ -53,14 +53,17 @@ export default class VerticalCard extends React.Component {
                         <Metric 
                             type="Total" 
                             {...total}
+                            small={small}
                         />
                         <Metric 
                             type="Long" 
                             {...long}
+                            small={small}
                         />
                         <Metric 
                             type="Short" 
                             {...short}
+                            small={small}
                         />
                     </Grid>
                 </Grid>
@@ -69,7 +72,7 @@ export default class VerticalCard extends React.Component {
     }
 }
 
-const Metric = ({symbol, name, type='total', pnl={}}) => {
+const Metric = ({symbol, name, type='total', pnl={}, small = false}) => {
     const tagColor = type.toLowerCase() === 'long' 
             ? metricColor.positive 
             : type.toLowerCase() === 'total' 
@@ -94,11 +97,11 @@ const Metric = ({symbol, name, type='total', pnl={}}) => {
         >
             <Grid container alignItems="center">
                 <Grid item xs={5} style={{...verticalBox, alignItems: 'flex-start'}}>
-                    <MetricValue>{symbol}</MetricValue>
+                    <MetricValue small={small}>{symbol}</MetricValue>
                     <h3 style={nameStyle}>{name}</h3>
                 </Grid>
                 <Grid item xs={2}>
-                    <Tag color={tagColor}>{type}</Tag>
+                    <Tag color={tagColor} small={small}>{type}</Tag>
                 </Grid>
                 <Grid 
                         item 
@@ -108,7 +111,7 @@ const Metric = ({symbol, name, type='total', pnl={}}) => {
                             justifyContent: 'flex-end'
                         }}
                 >
-                    <MetricValue style={{color: valueTextColor}}>{pnlValue}</MetricValue>
+                    <MetricValue style={{color: valueTextColor}} small={small}>{pnlValue}</MetricValue>
                 </Grid>
             </Grid>
         </Grid>
@@ -140,10 +143,10 @@ const Tag = styled.div`
     border: 1px solid ${props => props.color || primaryColor};
     color: ${props => props.color || primaryColor};
     height: 17px;
-    width: 37px;
+    width: ${props => props.small ? '30px' : '37px'};
     padding: 3px;
     border-radius: 2px;
-    font-size: 12px;
+    font-size: ${props => props.small ? '12px' : '10px'};
     font-weight: 500;
     font-family: 'Lato', sans-serif;
 `;
