@@ -10,7 +10,7 @@ export default {
         minWidth: 52,
         minHeight: '40px',
         fontWeight: 500,
-        fontSize: '12px',
+        fontSize: '15px',
         backgroundColor: '#fff',
         color: '#1763c6',
     }
