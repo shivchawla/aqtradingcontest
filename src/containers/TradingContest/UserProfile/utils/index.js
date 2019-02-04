@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {fetchAjaxPromise} from '../../../../utils';
 
 const {requestUrl} = require('../../../../localConfig');
@@ -30,4 +31,16 @@ export const getDailyContestStats = (advisorId = '', history, currentUrl, handle
     const url = `${requestUrl}/dailycontest/stats?advisor=${advisorId}`;
 
     return fetchAjaxPromise(url, history, currentUrl, handleError);
+}
+
+export const getInitials = (metrics = {}) => {
+    let {userName = ''} = metrics;
+    userName = userName.split(' ').filter(item => item.length !== 0);
+    if (userName.length >= 2) {
+        const firstNameIntiail = _.get(userName, '[0][0]', '').toUpperCase();
+        const lastNameInitial = _.get(userName, '[1][0]', '').toUpperCase();
+        return `${firstNameIntiail}${lastNameInitial}`;
+    }
+
+    return '-'
 }

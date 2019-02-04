@@ -2,12 +2,12 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../../constants';
+import {metricColor, primaryColor} from '../../../../constants';
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
-import {convertNameToTitleCase} from '../utils';
+import {convertNameToTitleCase, getNetValueColor} from '../utils';
 
-export default class ParticipantListItem extends React.Component {
+export default class ParticipantListItemOverall extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -15,50 +15,59 @@ export default class ParticipantListItem extends React.Component {
 
         return false;
     }
+
+    getColor = (value = 0) => {
+        const color = value > 0 ? metricColor.positive : value === 0 ? metricColor.neutral : metricColor.negative;
+
+        return color;
+    }
     
+
+
     render() {
         const {
-            userName = 'Saurav Biswas', 
+            name = '',
             advisorId = null,
-            cost = {}, 
-            pnl = {}, 
-            rank = {}, 
-            pnlPct = {}, 
-            profitFactor = {},
-            listType='long'
+            avgPnl = 0, 
+            avgPnlPct = 0,
+            netValue = 0, 
+            totalEarnings = 1, 
+            totalReturn = 0, 
+            index = 0
         }  = this.props;
-        const medal = getRankMedal(rank);
-        const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? metricColor.neutral : metricColor.negative;
-
+        const medal = getRankMedal(1);
+        
         return (
             <SGrid 
                     container 
-                    onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(userName), advisorId)}
+                    onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(name), advisorId)}
                     style={{cursor: 'pointer'}}
             >
                 <Grid item xs={1} style={{textAlign: 'start'}}>
-                    <img src={medal} width={26}/>
+                    <Rank>{index + 1}</Rank>
                 </Grid>
                 <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <Name>{convertNameToTitleCase(userName)}</Name>
+                    <Name>{convertNameToTitleCase(name)}</Name>
                 </Grid>
                 <Grid item xs={2}>
-                    <SecondaryText color={changeColor}>
-                        ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl * 1000)}
+                    <SecondaryText color={this.getColor(avgPnlPct)}>
+                        {(avgPnl * 100).toFixed(2)} %
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2}>
-                    <SecondaryText color={changeColor}>
-                        {(pnlPct * 100).toFixed(2)}%
+                    <SecondaryText color={getNetValueColor(netValue)}>
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(netValue * 1000)}
                     </SecondaryText>
                 </Grid>
-                <Grid item xs={3}>
-                    <SecondaryText color='#464646' fontWeight='500'>
-                        {(profitFactor || 0).toFixed(2)}
+                <Grid item xs={3} style={{textAlign: 'start'}}>
+                    <SecondaryText fontWeight='500'>
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(totalEarnings)}
                     </SecondaryText>
                 </Grid>
-                <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <SecondaryText color={primaryColor}>{Utils.formatInvestmentValue(cost)}</SecondaryText>
+                <Grid item xs={2}>
+                    <SecondaryText fontWeight='500' color={this.getColor(totalReturn)}>
+                        {totalReturn.toFixed(2)} %
+                    </SecondaryText>
                 </Grid>
             </SGrid>
         ); 
@@ -88,22 +97,17 @@ const Name = styled.h3`
     color: #464646;
 `;
 
+const Rank = styled.h3`
+    font-size: 18px;
+    font-weight: 700;
+    color: #888888;
+    margin-left: 5px;
+    font-family: 'Lato', sans-serif;
+`;
+
 const SecondaryText = styled.h3`
     font-size: 14px;
     font-weight: ${props => props.fontWeight || 400};
     color: ${props => props.color || '#717171'};
     text-align: start;
 `;
-
-const Score = styled.h3`
-    font-size: 20px;
-    font-weight: 500;
-    color: #717171;
-    color: ${primaryColor}
-`;
-
-const labelStyle = {
-    fontSize:'12px',
-    marginTop:'-2px',
-    color: '#444'
-};

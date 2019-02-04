@@ -64,7 +64,7 @@ class UserProfile extends React.Component {
                 />
                 <Media 
                     query="(min-width: 801px)"
-                    render={() => <UserProfileLayoutDesktop />}
+                    render={() => <UserProfileLayoutDesktop {...props}/>}
                 />
             </React.Fragment>
         );

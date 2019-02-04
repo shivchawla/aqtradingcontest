@@ -3,6 +3,7 @@ import _ from 'lodash';
 import ParticipantList from '../common/ParticipantList';
 import TableHeader from './TableHeader';
 import TableHeaderWeekly from './TableHeaderWeekly';
+import TableHeaderOverall from './TableHeaderOverall';
 import Grid from '@material-ui/core/Grid';
 
 export default class LeaderboardTable extends React.Component {
@@ -14,10 +15,27 @@ export default class LeaderboardTable extends React.Component {
         return false;
     }
 
+    getTableHeader = (type = 'daily') => {
+        switch(type) {
+            case "daily":
+                return TableHeader;
+            case "weekly":
+                return TableHeaderWeekly;
+            case "overall":
+                return TableHeaderOverall;
+            default:
+                return TableHeader;
+        }
+    }
+
     render() {
-        const {winners = [], winnersWeekly = [], type = 'daily'} = this.props;
-        const requiredWinners = type === 'daily' ? winners : winnersWeekly;
-        const RequiredTableHeader = type === 'daily' ? TableHeader : TableHeaderWeekly;
+        const {winners = [], winnersWeekly = [], type = 'daily', winnersOverall = []} = this.props;
+        const requiredWinners = type === 'daily' 
+            ? winners 
+            : type === 'weekly' 
+                ? winnersWeekly 
+                : winnersOverall;
+        const RequiredTableHeader = this.getTableHeader(type);
 
         return (
             <Grid item xs={12} style={{padding: '10px', marginTop: '60px'}}>
@@ -27,7 +45,9 @@ export default class LeaderboardTable extends React.Component {
                 <ParticipantList 
                     winners={winners}
                     winnersWeekly={winnersWeekly}
+                    winnersOverall={winnersOverall}
                     type={this.props.type}
+                    toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
                 />
             </Grid>
         );

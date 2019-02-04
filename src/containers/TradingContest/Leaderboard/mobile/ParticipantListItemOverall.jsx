@@ -9,7 +9,7 @@ import {convertNameToTitleCase} from '../utils';
 
 const neutralColor = '#717171';
 
-export default class ParticipantListItemWeekly extends React.Component {
+export default class ParticipantListItemOverall extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -18,22 +18,26 @@ export default class ParticipantListItemWeekly extends React.Component {
         return false;
     }
 
+    getColor = (value = 0) => {
+        const color = value > 0 ? metricColor.positive : value === 0 ? metricColor.neutral : metricColor.negative;
+
+        return color;
+    }
+
     render() {
         const {
-            userName = '',
+            name = '',
             advisorId = null,
-            cash = 0, 
-            pnl = 0, 
-            rank = 1, 
-            pnlPct = 0, 
-            netTotal = 0,
-            netTotalLastWeek='0'
+            avgPnl = 0, 
+            avgPnlPct = 0, 
+            netValue = 0, 
+            totalEarnings = 1, 
+            totalReturn = 0, 
         }  = this.props;
-        const medal = getRankMedal(rank);
-        const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? neutralColor : metricColor.negative;
+        const medal = getRankMedal(1);
 
         return (
-            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(userName), advisorId)}>
+            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(name), advisorId)}>
                 <Grid 
                         item 
                         xs={12}
@@ -43,8 +47,8 @@ export default class ParticipantListItemWeekly extends React.Component {
                             alignItems: 'center'
                         }}
                 >
-                    <Name>{convertNameToTitleCase(userName)}</Name>
-                    <img src={medal} width={24}/>
+                    <Name>{convertNameToTitleCase(name)}</Name>
+                    {/* <img src={medal} width={24}/> */}
                 </Grid>
                 <Grid 
                         item xs={12} 
@@ -57,17 +61,17 @@ export default class ParticipantListItemWeekly extends React.Component {
                             marginTop: '15px'
                         }}
                 >
-                    <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
-                        <p style={labelStyle}>PnL</p>
-                        ₹{Utils.formatMoneyValueMaxTwoDecimals(pnl * 1000)}
+                    <SecondaryText style={{marginLeft: '5px'}} color={this.getColor(avgPnl)}>
+                        <p style={labelStyle}>Avg. PnL</p>
+                        {(avgPnl * 100).toFixed(2)} %
                     </SecondaryText>
-                    <SecondaryText color={changeColor} style={{marginLeft: '5px'}}>
-                        <p style={labelStyle}>PnL Pct</p>
-                        {(pnlPct * 100).toFixed(2)}%
+                    <SecondaryText style={{marginLeft: '5px'}} color={this.getColor(totalReturn)}>
+                        <p style={labelStyle}>Total Return</p>
+                        {totalReturn.toFixed(2)} %
                     </SecondaryText>
                     <SecondaryText style={{marginLeft: '5px'}}>
-                        <p style={labelStyle}>Net Total</p>
-                        {Utils.formatInvestmentValue(netTotal)}
+                        <p style={labelStyle}>Total Earnings</p>
+                        ₹{Utils.formatMoneyValueMaxTwoDecimals(totalEarnings)}
                     </SecondaryText>
                 </Grid>
             </SGrid>
