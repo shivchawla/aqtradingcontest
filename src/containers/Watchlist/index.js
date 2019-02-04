@@ -344,6 +344,7 @@ class WatchlistComponent extends React.Component {
                     justifyContent: 'space-between',
                     padding: '10px',
                 }}
+                small
             />
         );
     }

@@ -26,6 +26,7 @@ export class TradingContestLeaderboardMobile extends React.Component {
             selectedTab: 0,
             selectedDate: defaultDate,
             bottomSheetOpen: false,
+            overallLoading: false
         };
     }
 
@@ -35,6 +36,10 @@ export class TradingContestLeaderboardMobile extends React.Component {
 
     onRadioChange = value => {
         this.setState({selectedTab: value});
+    }
+
+    updateOverallLoading = (status = false) => {
+        this.setState({overallLoading: status});
     }
 
     renderMobile = () => {  
@@ -60,10 +65,11 @@ export class TradingContestLeaderboardMobile extends React.Component {
                             }}
                     >
                         <RadioGroup
-                            items={['Daily', 'Weekly']}
+                            items={['Daily', 'Weekly', 'Overall']}
                             defaultSelected={this.state.selectedTab}
                             onChange={this.onRadioChange}
                             CustomRadio={CustomRadio}
+                            disabled={this.state.overallLoading}
                         />
                         <DateComponent 
                             selectedDate={this.state.selectedDate}
@@ -75,7 +81,8 @@ export class TradingContestLeaderboardMobile extends React.Component {
                     </Grid>
                     <Leaderboard 
                         selectedDate={this.state.selectedDate}
-                        type={type}
+                        type={this.state.selectedTab}
+                        updateOverallLoading={this.updateOverallLoading}
                     />
                 </Grid>
             </AqLayout>
