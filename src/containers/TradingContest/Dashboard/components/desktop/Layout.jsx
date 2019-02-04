@@ -108,7 +108,7 @@ export default class Layout extends React.Component {
                                     xs={4}
                             >
                                 <TopCard 
-                                    header='Avg. Holding Period'
+                                    header='Avg. Holding Period (Days)'
                                     barColor='#4CC2E6'
                                     number
                                     {...avgHoldingPeriod}
