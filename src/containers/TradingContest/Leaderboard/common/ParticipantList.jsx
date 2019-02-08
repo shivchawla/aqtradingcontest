@@ -38,13 +38,14 @@ export default class ParticipantList extends React.Component {
     }
     
     render() {
-        const {winners = []} = this.props;
+        const {winners = [], winnersWeekly = [], type = 'daily'} = this.props;
+        const requiredWinners = type === 'daily' ? winners : winnersWeekly;
 
         return (
             <Grid container>
                 <Grid item xs={12}>
                     {
-                        winners.length === 0
+                        requiredWinners.length === 0
                         ? <Error>No Data Found</Error>
                         : this.renderWinners()
                     }

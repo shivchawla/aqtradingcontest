@@ -25,6 +25,7 @@ export default class TopPicksLayout extends React.Component {
     renderContent() {
         const {winners = [], winnersWeekly = []} = this.props;
         const type = this.props.type === 0 ? 'daily' : 'weekly';
+        const requiredWinners = type === 'daily' ? winners : winnersWeekly;
 
         return (
             <SGrid container>
@@ -65,7 +66,7 @@ export default class TopPicksLayout extends React.Component {
                                             }}
                                     >
                                         {
-                                            winners.length == 0 
+                                            requiredWinners.length == 0 
                                             ?   <NoDataFound /> 
                                             :   <LeaderboardTable 
                                                     winners={winners}
