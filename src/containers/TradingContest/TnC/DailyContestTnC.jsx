@@ -51,7 +51,7 @@ export default class DailyContestTnC extends React.Component {
                         <p>&nbsp;</p>
                         <h3 style={h3Style}>Scoring </h3>
                         <p><strong>The contest is designed to award stock pickers that generate profits. As we award prizes on three different horizon, we will use three different scoring methods to select winners.</strong></p>
-                        <p><strong>DAILY WINNERS: </strong>At the end of each trading day, ONLY active predictions on that date are considered and participant's&nbsp; profit/loss (%) is calculated. The top 3 winners will get Rs 100 each.</p>
+                        <p><strong>DAILY WINNERS: </strong>At the end of each trading day, ONLY active predictions on that date are considered and participant's&nbsp; profit/loss (%) is calculated. The top 3 winners will get Rs 100, Rs 75 and Rs 50 respectively.</p>
                         <p><strong>WEEKLY WINNERS: </strong>At the end of each trading week, we will calculate the change in NET VALUE from last week&rsquo;s net value. The top 3 winners will get Rs.500, Rs, 300 and Rs 200 respectively.</p>
                         <p><strong>MONTHLY WINNERS: </strong>At the end of each trading month, we will calculate the change in NET VALUE from end of last month's net value. All applicable* winners will get 10% of the adjusted profits over the benchmark (Min. of 1%) to maximum of Rs 2000 per participant. Also, ONLY a maximum of Rs. 20,000 will be awarded as prize money per month. The prizes will be awarded in order of decreasing profitability. Additionally, a high water mark (ending NAV must be greater than NAV of all previous months) test will be applicable to avoid double incentive.</p>
                         <p>&nbsp;</p>
