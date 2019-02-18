@@ -67,13 +67,17 @@ class Header extends React.Component {
             >
                 <Toolbar className='toolbar'>
                     <Grid container>
-                        <Grid item xs={1} style={horizontalBox}>
+                        <Grid 
+                                item 
+                                xs={1} 
+                                style={horizontalBox}
+                                onClick={() => this.props.history.push('/')} 
+                        >
                             <img 
                                 src={logo} 
                                 style={imageStyle}
                             />
                             <h1 
-                                    onClick={() => this.props.history.push('/')} 
                                     style={{...headerTextStyle, cursor: 'pointer', marginLeft: '10px'}}
                             >
                                 <span style={{...biggerFont, color: '#03a7ad'}}>A</span>
