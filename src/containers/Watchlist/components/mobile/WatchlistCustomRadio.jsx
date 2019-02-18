@@ -13,12 +13,13 @@ export default class TimelineCustomRadio extends React.Component {
     }
 
     render() {
-        const {checked = false, label='-', small = false} = this.props;
-        const background = checked ? 'linear-gradient(to bottom, #2987F9, #386FFF)' : '#CCDBEB';
+        const {checked = false, label='-', small = false, disabled = false} = this.props;
+        const background = checked 
+            ? disabled ? '#a2aabe' : 'linear-gradient(to bottom, #2987F9, #386FFF)' 
+            : disabled ? '#e9e9e9' : '#CCDBEB';
         const color = checked ? '#fff' : '#7C7C7C';
         const fontSize = small ?  '12px' : '14px';
         const padding = small ? '4px 8px' : '6px 12px';
-        // const boxShadow = 'none';
         const boxShadow = checked ? '0 3px 7px #a3a3a3' : 'none';
 
         return (
@@ -32,6 +33,7 @@ export default class TimelineCustomRadio extends React.Component {
                         boxShadow,
                     }}
                     onClick={this.props.onChange}
+                    disabled={disabled}
             >
                 <span style={{whiteSpace: 'nowrap'}}>{label}</span>
             </ButtonBase>
@@ -48,5 +50,6 @@ const buttonStyle = {
     cursor: 'pointer',
     color: inactiveColor,
     fontFamily: 'Lato, sans-serif',
-    fontWeight: 500
+    fontWeight: 500,
+    transition: 'all 0.3s ease-in-out'
 }

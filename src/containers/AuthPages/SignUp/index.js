@@ -58,7 +58,7 @@ class SignUp extends React.Component {
         } else {
             this.setState({
                 loading: false,
-                error: error.response.data
+                error: JSON.stringify(error.response.data)
             });
         }
     }

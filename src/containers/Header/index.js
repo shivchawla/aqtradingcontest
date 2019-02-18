@@ -51,6 +51,7 @@ class Header extends React.Component {
                 <MenuItem onClick={() => this.handleMenuClose('/research')}>Backtest</MenuItem>
                 <MenuItem onClick={() => this.handleMenuClose('/community')}>Community</MenuItem>
                 <MenuItem onClick={() => this.handleMenuClose('/help')}>Help</MenuItem>
+                <MenuItem onClick={() => this.handleMenuClose('/tutorial')}>Tutorial</MenuItem>
             </Menu>
         );
     }
@@ -105,7 +106,6 @@ export default withStyles(styles)(withRouter(Header));
 const HeaderLinks = ({activeIndex = 0, history, isLoggedIn = null, renderQuantResearchMenu, handleMenuClick, handleMenuClose}) => {
     const urls = [
         {name: 'Contest', url: '/dailycontest/home', href: false},
-        {name: 'Stock Research', url: '/stockresearch', href: false},
     ];
     return (
         <React.Fragment>

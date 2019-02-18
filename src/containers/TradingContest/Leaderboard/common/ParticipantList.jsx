@@ -4,8 +4,10 @@ import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import ParticipantListItemMobileDaily from '../mobile/ParticipantListItem';
 import ParticipantListItemMobileWeekly from '../mobile/ParticipantListItemWeekly';
+import ParticipantListItemMobileOverall from '../mobile/ParticipantListItemOverall';
 import ParticipantListItemDesktop from '../desktop/ParticipantListItem';
 import ParticipantListItemDesktopWeekly from '../desktop/ParticipantListItemWeekly';
+import ParticipantListItemDesktopOverall from '../desktop/ParticipantListItemOverall';
 
 export default class ParticipantList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -16,20 +18,36 @@ export default class ParticipantList extends React.Component {
         return false;
     }
 
+    getRequiredWinners = (type = 'daily') => {
+        const {winners = [], winnersWeekly = [], winnersOverall = []} = this.props;
+        const requiredWinners = type === 'daily' 
+            ? winners 
+            : type === 'weekly'
+                ? winnersWeekly
+                : winnersOverall;
+        
+        return requiredWinners;
+    }
+
     renderWinners = () => {
-        const {winners = [], type = 'daily', winnersWeekly = []} = this.props;
-        const requiredWinners = type === 'daily' ? winners : winnersWeekly;
+        const {type = 'daily'} = this.props;
+        const requiredWinners = this.getRequiredWinners(type);
         const ParticipantListItem = global.screen.width < 801 
             ? type === 'daily'
                 ? ParticipantListItemMobileDaily
-                : ParticipantListItemMobileWeekly 
+                : type === 'weekly' 
+                    ?   ParticipantListItemMobileWeekly 
+                    :   ParticipantListItemMobileOverall
             : type === 'daily' 
                 ? ParticipantListItemDesktop
-                : ParticipantListItemDesktopWeekly
+                : type === 'weekly' 
+                    ?   ParticipantListItemDesktopWeekly
+                    :   ParticipantListItemDesktopOverall
 
         return requiredWinners.map((winner, index) => (
             <ParticipantListItem 
                 key={index} 
+                index={index}
                 {...winner} 
                 type={type}
                 toggleUserProfileBottomSheet={this.props.toggleUserProfileBottomSheet}
@@ -38,13 +56,14 @@ export default class ParticipantList extends React.Component {
     }
     
     render() {
-        const {winners = []} = this.props;
+        const {type = 'daily'} = this.props;
+        const requiredWinners = this.getRequiredWinners(type);
 
         return (
             <Grid container>
                 <Grid item xs={12}>
                     {
-                        winners.length === 0
+                        requiredWinners.length === 0
                         ? <Error>No Data Found</Error>
                         : this.renderWinners()
                     }
