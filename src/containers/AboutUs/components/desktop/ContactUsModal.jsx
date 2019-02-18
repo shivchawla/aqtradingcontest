@@ -29,6 +29,7 @@ export default class ContactUsModal extends React.Component {
         sendMessage(values)
         .then(() => {
             this.setState({error: false});
+            this.toggleModal()
         })
         .catch(err => this.setState({error: true}))
         .finally(() => {
