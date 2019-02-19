@@ -361,7 +361,8 @@ export class Utils{
 	static updateUserToken(newToken){
 		this.loggedInUserinfo['token'] = newToken;
 		this.loggedInUserinfo['recentTokenUpdateTime'] = moment().valueOf();
-		this.localStorageSaveObject(this.userInfoString, this.loggedInUserinfo);
+		// this.localStorageSaveObject(this.userInfoString, this.loggedInUserinfo);
+		Utils.cookieStorageSave(this.userInfoString, this.loggedInUserinfo);
 	}
 
 	static getLoggedInUserName(){
@@ -646,7 +647,7 @@ export class Utils{
 		};
 		axios.get(`${requestUrl}/me`, {headers})
         .then(response => {
-            Utils.localStorageSaveObject(Utils.userInfoString, {...response.data, token});
+            Utils.cookieStorageSave(Utils.userInfoString, {...response.data, token});
 			Utils.setLoggedInUserInfo({...response.data, token});
 			callback();
         })
