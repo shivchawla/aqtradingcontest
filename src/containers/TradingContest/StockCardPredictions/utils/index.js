@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
-import {targetKvp, horizonKvp, investmentKvp} from '../constants';
+import {targetKvp, horizonKvp, investmentKvp, conditionalKvp} from '../constants';
 import {getStockTicker} from '../../utils';
 import {sectors} from '../../../../constants';
 const dateFormat = 'YYYY-MM-DD';
@@ -56,9 +56,24 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     };
 }
 
-export const constructPrediction = (stockData, type = 'buy') => {
+export const getConditionalNetValue = (positive = true, lastPrice = 0, conditionalValue = conditionalKvp[0].value) => {
+    const diffValue = (lastPrice * conditionalValue) / 100;
+
+    return positive ? (lastPrice + diffValue).toFixed(2) : (lastPrice - diffValue).toFixed(2);
+}
+
+export const constructPrediction = (stockData, type = 'buy', conditional = false, conditionalValue = conditionalKvp[0].value) => {
     let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0, investment = 0} = stockData;
-    const targetValue = getTargetFromLastPrice(lastPrice, target, type);
+    let targetValue = getTargetFromLastPrice(lastPrice, target, type);
+    let avgPrice = 0;
+    if (conditional) {
+        if (type === 'sell') {
+            avgPrice = getConditionalNetValue(true, lastPrice, conditionalValue);
+        } else {
+            avgPrice = getConditionalNetValue(false, lastPrice, conditionalValue);
+        }
+        targetValue = getTargetFromLastPrice(Number(avgPrice), target, type);
+    }
     const startDate = moment().format(dateFormat);
     const endDate = moment(DateHelper.getNextNonHolidayWeekday(startDate, horizon)).format(dateFormat);
     stopLoss = -1 * (stopLoss / 100);
@@ -72,14 +87,15 @@ export const constructPrediction = (stockData, type = 'buy') => {
                     country: "IN",
                     exchange: "NSE"
                 },
-                    investment: (type === 'buy' ? 1 : -1) * (investment / 1000),
-                    quantity: 0,
-                    avgPrice: 0
-                },
+                investment: (type === 'buy' ? 1 : -1) * (investment / 1000),
+                quantity: 0,
+                avgPrice: Number(avgPrice)
+            },
             startDate,
             endDate,
             target: targetValue,
-            stopLoss
+            stopLoss,
+            conditional
         }
     ];
 }
@@ -127,11 +143,28 @@ export const getInvestment = (investmentValue = 0) => {
     return investmentValue;
 }
 
+// Gices the conditional index from the condition value
+export const getCondition = (conditionalValue = 0) => {
+    const conditionalValueIndex = _.findIndex(conditionalKvp, target => target.value === conditionalValue);
+    if (conditionalValueIndex > -1) {
+        return conditionalKvp[conditionalValueIndex].index;
+    }
+
+    return conditionalValue;
+}
+
 // Checks if custom horizon
 export const checkIfCustomHorizon = (horizonValue = 0) => {
     const horizonValueIndex = _.findIndex(horizonKvp, target => target.value === horizonValue);
 
     return horizonValueIndex === -1;
+}
+
+// Checks if custom conditional value
+export const checkIfCustomCondition = (conditionalValue = 0) => {
+    const conditionalValueIndex = _.findIndex(conditionalKvp, target => target.value === conditionalValue);
+
+    return conditionalValueIndex === -1;
 }
 
 // Gives the target value from the target index
@@ -159,6 +192,16 @@ export const getInvestmentValue = (value = 0) => {
     const investmentValueIndex = _.findIndex(investmentKvp, target => target.index === value);
     if (investmentValueIndex > -1) {
         return investmentKvp[investmentValueIndex].value;
+    }
+
+    return value;
+}
+
+// Gives the conditional value from the condition index
+export const getConditionValue = (value = 0) => {
+    const conditionValueIndex = _.findIndex(conditionalKvp, target => target.index === value);
+    if (conditionValueIndex > -1) {
+        return conditionalKvp[conditionValueIndex].value;
     }
 
     return value;

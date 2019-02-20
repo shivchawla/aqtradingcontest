@@ -21,8 +21,8 @@ import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import DialogHeaderComponent from '../../../../../components/Alerts/DialogHeader';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
-import {targetKvp, horizonKvp, investmentKvp} from '../../constants';
+import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue, getConditionValue, getCondition, checkIfCustomCondition} from '../../utils';
+import {targetKvp, horizonKvp, investmentKvp, conditionalKvp} from '../../constants';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from '../mobile/SubmitButton';
@@ -81,6 +81,16 @@ class StockCard extends React.Component {
         }
     }
 
+    conditionalChange = (value = null, custom = false) => {
+        if (value !== null) {
+            const requiredCondition = custom ? value : getConditionValue(value, custom);
+            this.props.modifyStockData({
+                ...this.props.stockData,
+                conditionalValue: requiredCondition
+            });
+        }
+    }
+
     renderViewMode = () => {
         const {horizon = 1, target = 2, stopLoss = 2} = this.props.stockData;
 
@@ -105,9 +115,10 @@ class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
-        const {horizon = 2, target = 2, stopLoss = 2, investment = 50000} = this.props.stockData;
+        const {horizon = 2, target = 2, stopLoss = 2, investment = 50000, conditional = false, conditionalValue = 0.2, lastPrice = 0} = this.props.stockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
+        const conditionalItems = conditionalKvp.map(condition => ({key: condition.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
@@ -222,6 +233,48 @@ class StockCard extends React.Component {
                         formatValue={Utils.formatInvestmentValueNormal}
                     />
                 </div>
+                {
+                    conditional &&
+                    <div style={radioGroupStyle}>
+                        <MetricLabel 
+                                style={{
+                                    marginBottom: '10px',
+                                    marginTop: isDesktop ? '0px' : '0px',
+                                    fontSize: '12px',
+                                    color: '#222'
+                                }}
+                        >
+                            Conditional Value (%)
+                        </MetricLabel>
+                        <StockCardRadioGroup 
+                            items={conditionalItems}
+                            onChange={this.conditionalChange}
+                            defaultSelected={conditionalValue}
+                            getIndex={getCondition}
+                            getValue={getConditionValue}
+                            showSlider
+                            hideLabel={true}
+                            checkIfCustom={checkIfCustomCondition}
+                        />
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'space-between',
+                                    width: '100%',
+                                    margin: '10px 0'
+                                }}
+                        >
+                            <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                                <ConditionValueLabel style={{color: '##EB5555'}}>Sell Above</ConditionValueLabel>
+                                <ConditionValue style={{color: '#EB5555', marginLeft: '4px'}}>₹{this.props.getConditionalNetValue()}</ConditionValue>
+                            </div>
+                            <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                                <ConditionValueLabel>Buy Below</ConditionValueLabel>
+                                <ConditionValue style={{color: '#0acc53', marginLeft: '4px'}}>₹{this.props.getConditionalNetValue(false)}</ConditionValue>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         );
     }
@@ -268,7 +321,7 @@ class StockCard extends React.Component {
 
         return (
             <div style={{...verticalBox, alignItems: 'flex-end'}}>
-                <MainText style={{marginRight: '5px', fontSize: '26px'}}>
+                <MainText style={{marginRight: '5px'}}>
                     ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                 </MainText>
                 <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)} ({changePct.toFixed(2)}%)</Change>
@@ -305,6 +358,7 @@ class StockCard extends React.Component {
             lastPrice = 0, 
             target = 2,
             horizon = 1,
+            conditional = false
         } = this.props.stockData;
         const editMode = isDesktop || this.props.editMode;
         const {bottomSheet = false} = this.props;
@@ -331,54 +385,26 @@ class StockCard extends React.Component {
                                 justifyContent: 'space-between'
                             }}
                     >
-                        <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                            <div 
-                                    style={{
-                                        ...horizontalBox, 
-                                        justifyContent: 'flex-start'
-                                    }}
-                            >
-                                <MainText>{symbol}</MainText>
-                            </div>
-                            <h3 style={nameStyle}>{name}</h3>
-                        </div>
                         {
-                            this.props.mobile
-                                ?   this.renderPriceMetricsMobile()
-                                :   <React.Fragment>
-                                        <Media 
-                                            query="(max-width: 800px)"
-                                            render={() => this.renderPriceMetricsMobile()}
-                                        />
-                                        <Media 
-                                            query="(min-width: 801px)"
-                                            render={() => this.renderPriceMetricsDesktop()}
-                                        />
-                                    </React.Fragment>
+                            isDesktop &&
+                            <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                                <div 
+                                        style={{
+                                            ...horizontalBox, 
+                                            justifyContent: 'flex-start'
+                                        }}
+                                >
+                                    <MainText>{symbol}</MainText>
+                                </div>
+                                <h3 style={{...nameStyle, color: '#525252'}}>{name}</h3>
+                            </div>
                         }
+                        <Media 
+                            query="(min-width: 801px)"
+                            render={() => this.renderPriceMetricsDesktop()}
+                        />
                     </div>
                 </Grid>
-                {/* {
-                    !editMode && !bottomSheet &&
-                    <Grid 
-                            item 
-                            xs={12} 
-                            style={{
-                                ...horizontalBox, 
-                                justifyContent: 'flex-start',
-                                margin: '10px 0',
-                                padding: '0 10px'
-                            }}
-                    >
-                        <Button 
-                                style={editButtonStyle}
-                                variant="outlined"
-                                onClick={this.props.toggleEditMode}
-                        >
-                            EDIT
-                        </Button>
-                    </Grid>
-                } */}
                 <Grid 
                         item 
                         xs={12} 
@@ -390,9 +416,6 @@ class StockCard extends React.Component {
                         }}
                 >
                     {
-                        // (editMode || bottomSheet)
-                        // ? this.renderEditMode()
-                        // : this.renderViewMode()
                         this.renderEditMode()
                     }
                 </Grid>
@@ -401,18 +424,12 @@ class StockCard extends React.Component {
                         xs={12} 
                         style={{
                             ...verticalBox,
-                            // borderTop: '1px solid #E2E2E2',
                             marginTop: isDesktop ? '0px' : '0px',
                             paddingTop: isDesktop ? '0px' : '0px'
                         }}
                 >
                     <QuestionText>
                         Will the price be higher or lower in
-                        {/* {
-                            shortable
-                            ?   "Will the price be higher or lower in"
-                            :   "How high will the price go in"
-                        } */}
                         <span 
                                 style={{
                                     color: primaryColor, 
@@ -427,45 +444,27 @@ class StockCard extends React.Component {
                             style={actionButtonContainerStyle}
                     >
                         {
-                            // shortable && 
                             <SubmitButton 
                                 onClick={() => this.props.createPrediction('sell')}
                                 target={target}
-                                lastPrice={lastPrice}
+                                lastPrice={conditional ? this.props.getConditionalNetValue() : lastPrice}
                                 type="sell"
                             />
                         }
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('buy')}
                             target={target}
-                            lastPrice={lastPrice}
+                                lastPrice={conditional ? this.props.getConditionalNetValue() : lastPrice}
+                                lastPrice={conditional ? this.props.getConditionalNetValue(false) : lastPrice}
                             type="buy"
                         />
                     </div>
-                    {
-                        bottomSheet &&
-                        <div 
-                                style={{
-                                    ...horizontalBox, 
-                                    justifyContent: 'center'
-                                }}
-                        >
-                            <ActionIcon 
-                                type='cancel'
-                                size={45}
-                                style={{marginTop: '10px'}}
-                                color='#767676'
-                                onClick={this.props.onClose}
-                            />
-                        </div>
-                    }
                 </Grid>
             </Grid>
         );
     }
 
     reloadStocks = () => {
-        console.log('Called');
         this.props.undoStockSkips()
         .then(() => {
             this.props.skipStock();
@@ -541,6 +540,17 @@ class StockCard extends React.Component {
     }
 
     renderHeader = () => {
+        const {
+            name = '', 
+            symbol = '', 
+            lastPrice = 0, 
+            target = 2,
+            horizon = 1,
+            conditional = false,
+            changePct = 0,
+            change = 0
+        } = this.props.stockData;
+
         return (
             <div 
                     style={{
@@ -548,10 +558,39 @@ class StockCard extends React.Component {
                         justifyContent: 'space-between',
                         background: 'linear-gradient(to right, #5443F0, #335AF0)',
                         width: '100%',
-                        padding: '5px 0'
+                        padding: '10px 0'
                     }}
             >
-                <Header>Add Prediction</Header>
+                <div 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'space-between', 
+                            width: '100%',
+                            padding: '0 5px',
+                            paddingLeft: '15px'
+                        }}
+                >
+                    <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                        <Header style={{marginLeft: 0}}>{symbol}</Header>
+                        <h3 style={nameStyle}>{name}</h3>                                                
+                    </div>
+                    <div style={{...verticalBox, alignItems: 'flex-end'}}>
+                        <Header>₹{lastPrice}</Header>
+                        <h3 
+                                style={{
+                                    ...nameStyle, 
+                                    textAlign: 'end',
+                                    color: changePct > 0 
+                                        ?   '#32FFD8'
+                                        :   changePct === 0 
+                                                ?   metricColor.neutral
+                                                :   '#FF7B7B'   
+                                }}
+                        >
+                            ₹{change}({changePct.toFixed(2)})%
+                        </h3>                                                
+                    </div>
+                </div>
                 <ActionIcon 
                     onClick={this.props.onClose} 
                     color='#fff'
@@ -638,7 +677,7 @@ const nameStyle = {
     width: isDesktop ? '300px' : '150px',
     textAlign: 'start',
     marginTop: '5px',
-    color: '#525252',
+    color: '#e9e9e9',
     fontFamily: 'Lato, sans-serif',
     fontWeight: 500,
     fontSize: isDesktop ? '16px' : '14px'
@@ -744,4 +783,18 @@ const Header = styled.h3`
     font-family: 'Lato', sans-serif;
     font-size: 18px;
     margin-left: 20px;
+`;
+
+const ConditionValue = styled.h3`
+    color: #323232;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+`;
+
+const ConditionValueLabel = styled.h3`
+    color: #8B8B8B;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
 `;

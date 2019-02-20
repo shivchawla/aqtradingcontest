@@ -46,7 +46,7 @@ const theme = createMuiTheme({
 
 export default class SubmitButton extends React.Component {
     render() {
-        const {target, lastPrice, onClick, type = 'buy', classes} = this.props;
+        let {target, lastPrice, onClick, type = 'buy', classes} = this.props;
         const icon = type === 'buy' ? Icons.faAngleDoubleUp : Icons.faAngleDoubleDown;
         const label = type === 'buy' ? 'HIGHER' : 'LOWER';
         const color = type === 'buy' ? metricColor.positive : metricColor.negative;

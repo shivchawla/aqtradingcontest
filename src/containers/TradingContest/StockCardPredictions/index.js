@@ -13,10 +13,11 @@ import Snackbar from '../../../components/Alerts/SnackbarComponent';
 import LoginBottomSheet from '../LoginBottomSheet';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
-import {formatIndividualStock, constructPrediction} from './utils';
+import {formatIndividualStock, constructPrediction, getConditionalNetValue} from './utils';
 import {getDailyContestPredictions, getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
 import {horizontalBox, primaryColor} from '../../../constants';
 import {onPredictionCreated, onSettingsClicked, onUserLoggedIn} from '../constants/events';
+import { conditionalKvp } from './constants';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -78,7 +79,8 @@ class StockCardPredictions extends React.Component {
                 listMode: _.get(defaultStockData, 'listMode', true),
                 stopLoss: _.get(defaultStockData, 'stopLoss', 5),
                 investment: _.get(defaultStockData, 'investment', 50000),
-                conditional: _.get(defaultStockData, 'conditional', false)
+                conditional: _.get(defaultStockData, 'conditional', false),
+                conditionalValue: _.get(defaultStockData, 'conditionalValue', conditionalKvp[0].value)
             });
         } catch (err) {
             reject(err);
@@ -320,11 +322,12 @@ class StockCardPredictions extends React.Component {
     }
 
     createDailyContestPrediction = (type = 'buy') => {
+        const {conditional = false, conditionalValue = conditionalKvp[0].value} = this.state.stockData;
         if (!Utils.isLoggedIn()) {
             this.toggleLoginBottomSheet();
             return;
         }
-        const predictions = constructPrediction(this.state.stockData, type);
+        const predictions = constructPrediction(this.state.stockData, type, conditional, conditionalValue);
         this.setState({loadingCreatePredictions: true});
         this.updatePortfolioStats()
         .then(portfolioStats => {
@@ -355,6 +358,12 @@ class StockCardPredictions extends React.Component {
         .finally(() => {
             this.setState({loadingCreatePredictions: false});
         })
+    }
+
+    getConditionalNetValue = (positive = true) => {
+        const {lastPrice = 0, conditionalValue} = this.state.stockData;
+
+        return getConditionalNetValue(positive, lastPrice, conditionalValue);
     }
 
     toggleSearchStocksBottomSheet = () => {
@@ -439,6 +448,7 @@ class StockCardPredictions extends React.Component {
                 onClose={this.toggleStockCardBottomSheet}
                 bottomSheet={bottomSheet}
                 toggleLoginBottomSheet={this.toggleLoginBottomSheet}
+                getConditionalNetValue={this.getConditionalNetValue}
             />
         );
     }
