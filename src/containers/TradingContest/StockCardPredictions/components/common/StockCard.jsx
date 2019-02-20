@@ -115,7 +115,7 @@ class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
-        const {horizon = 2, target = 2, stopLoss = 2, investment = 50000, conditional = false, conditionalValue = 0.2, lastPrice = 0} = this.props.stockData;
+        const {horizon = 2, target = 2, stopLoss = 2, investment = 50000, conditional = false, conditionalValue = 0.25, lastPrice = 0} = this.props.stockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const conditionalItems = conditionalKvp.map(condition => ({key: condition.value, label: null}));
@@ -255,6 +255,9 @@ class StockCard extends React.Component {
                             showSlider
                             hideLabel={true}
                             checkIfCustom={checkIfCustomCondition}
+                            max={1.5}
+                            min={0}
+                            step={0.01}
                         />
                         <div 
                                 style={{
@@ -575,7 +578,7 @@ class StockCard extends React.Component {
                         <h3 style={nameStyle}>{name}</h3>                                                
                     </div>
                     <div style={{...verticalBox, alignItems: 'flex-end'}}>
-                        <Header>₹{lastPrice}</Header>
+                        <Header>₹{lastPrice.toFixed(2)}</Header>
                         <h3 
                                 style={{
                                     ...nameStyle, 
@@ -587,7 +590,7 @@ class StockCard extends React.Component {
                                                 :   '#FF7B7B'   
                                 }}
                         >
-                            ₹{change}({changePct.toFixed(2)})%
+                            ₹{change} ({changePct.toFixed(2)}%)
                         </h3>                                                
                     </div>
                 </div>

@@ -80,7 +80,7 @@ class StockCardPredictions extends React.Component {
                 stopLoss: _.get(defaultStockData, 'stopLoss', 5),
                 investment: _.get(defaultStockData, 'investment', 50000),
                 conditional: _.get(defaultStockData, 'conditional', false),
-                conditionalValue: _.get(defaultStockData, 'conditionalValue', conditionalKvp[0].value)
+                conditionalValue: _.get(defaultStockData, 'conditionalValue', 0.25)
             });
         } catch (err) {
             reject(err);
@@ -322,7 +322,7 @@ class StockCardPredictions extends React.Component {
     }
 
     createDailyContestPrediction = (type = 'buy') => {
-        const {conditional = false, conditionalValue = conditionalKvp[0].value} = this.state.stockData;
+        const {conditional = false, conditionalValue = 0.25} = this.state.stockData;
         if (!Utils.isLoggedIn()) {
             this.toggleLoginBottomSheet();
             return;

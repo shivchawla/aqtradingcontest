@@ -62,13 +62,14 @@ class StockCardRadioGroup extends React.Component {
         this.setState({sliderValue: value});
         clearTimeout(sliderInputTimeout);
         sliderInputTimeout = setTimeout(() => {
-            this.props.onChange && this.props.onChange(value, false);
+            this.props.onChange && this.props.onChange(value, true);
         }, 300);
     }
 
     handleTextChange = (e) => {
         const value = e.target.value;
-        if (Number(value) >=0 && Number(value) <= 30) {
+        const {max = 30} = this.props;
+        if (Number(value) >=0 && Number(value) <= max) {
             this.setState({sliderValue: value});
             const requiredValue = value.length === 0 ? null : Number(value);
             clearTimeout(sliderInputTimeout);
@@ -84,7 +85,15 @@ class StockCardRadioGroup extends React.Component {
     }
 
     render() {
-        const {items = ['One', 'Two'], showSlider = false, classes, hideSlider = false} = this.props;
+        const {
+            items = ['One', 'Two'], 
+            showSlider = false, 
+            classes, 
+            hideSlider = false,
+            max = 30,
+            min = 1,
+            step = 1
+        } = this.props;
         const isDesktop = this.props.windowWidth > 800;
         const textFieldLabel = this.props.date 
                 ? this.getReadableDateForHorizon(this.state.sliderValue) 
@@ -191,7 +200,7 @@ class StockCardRadioGroup extends React.Component {
                                             }}
                                     >
                                         <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
-                                            {this.state.sliderValue} 
+                                            {(this.state.sliderValue || 0).toFixed(2)} 
                                             {this.props.label}
                                             {
                                                 this.props.date &&
@@ -216,11 +225,11 @@ class StockCardRadioGroup extends React.Component {
                                     !isDesktop &&
                                     <Slider
                                         style={{marginTop: '12px'}}
-                                        max={30}
+                                        max={max}
                                         value={Number(this.state.sliderValue)}
-                                        min={1}
+                                        min={min}
                                         onChange={this.handleSliderChange}
-                                        step={1}
+                                        step={step}
                                         thumb={<ActionIcon type='expand_less' style={{marginTop: '-7px'}} color={primaryColor}/>}
                                         classes={{
                                             trackBefore: classes.trackBefore

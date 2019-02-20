@@ -56,13 +56,13 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     };
 }
 
-export const getConditionalNetValue = (positive = true, lastPrice = 0, conditionalValue = conditionalKvp[0].value) => {
+export const getConditionalNetValue = (positive = true, lastPrice = 0, conditionalValue = 0.25) => {
     const diffValue = (lastPrice * conditionalValue) / 100;
 
     return positive ? (lastPrice + diffValue).toFixed(2) : (lastPrice - diffValue).toFixed(2);
 }
 
-export const constructPrediction = (stockData, type = 'buy', conditional = false, conditionalValue = conditionalKvp[0].value) => {
+export const constructPrediction = (stockData, type = 'buy', conditional = false, conditionalValue = 0.25) => {
     let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0, investment = 0} = stockData;
     let targetValue = getTargetFromLastPrice(lastPrice, target, type);
     let avgPrice = 0;
