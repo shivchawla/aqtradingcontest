@@ -77,7 +77,8 @@ class StockCardPredictions extends React.Component {
                 sector: _.get(defaultStockData, 'sector', ''),
                 listMode: _.get(defaultStockData, 'listMode', true),
                 stopLoss: _.get(defaultStockData, 'stopLoss', 5),
-                investment: _.get(defaultStockData, 'investment', 50000)
+                investment: _.get(defaultStockData, 'investment', 50000),
+                conditional: _.get(defaultStockData, 'conditional', false)
             });
         } catch (err) {
             reject(err);

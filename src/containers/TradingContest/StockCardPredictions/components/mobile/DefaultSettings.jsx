@@ -9,6 +9,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import {withStyles} from '@material-ui/core/styles';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
+import CardCustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
@@ -102,6 +103,16 @@ class DefaultSettings extends React.Component {
         }
     }
 
+    toggleConditional = (value = null) => {
+        if (value !== null) {
+            const booleanValue = value === 0;
+            this.props.modifyDefaultStockData({
+                ...this.props.defaultStockData,
+                conditional: booleanValue
+            })
+        }
+    }
+
     onEditModeChanged = (value) => {
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
@@ -153,7 +164,8 @@ class DefaultSettings extends React.Component {
             editMode = false, 
             listMode = false, 
             stopLoss = 0, 
-            investment = 1
+            investment = 1,
+            conditional = false
         } = this.props.defaultStockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
@@ -190,29 +202,6 @@ class DefaultSettings extends React.Component {
                                 alignItems: 'center'
                             }}
                     >
-                        {/* <div 
-                                style={{
-                                    ...horizontalBox, 
-                                    justifyContent: isDesktop ? 'flex-start': 'space-between',
-                                    width: '100%'
-                                }}
-                        >
-                            <MetricLabel 
-                                    style={{
-                                        marginLeft: '20px',
-                                        marginRight: isDesktop ? '20px' : 0
-                                    }}
-                            >
-                                Sectors
-                            </MetricLabel>
-                            <SectorMenu 
-                                anchorEl={this.state.anchorEl}
-                                onClick={this.onSectorkMenuClicked}
-                                onClose={this.onSectorMenuClose}
-                                onMenuItemClicked={this.onSectorMenuItemClicked}
-                                selectedSector={sector}
-                            />
-                        </div> */}
                         <div 
                                 style={{
                                     ...verticalBox, 
@@ -301,79 +290,27 @@ class DefaultSettings extends React.Component {
                                     formatValue={Utils.formatInvestmentValueNormal}
                                 />
                             </div>
-                        </div>
-                        {/* <div
-                                style={{
-                                    paddingLeft: '40px',
-                                    width: '100%',
-                                    justifyContent: 'flex-start',
-                                    marginTop: '30px'
-                                }}
-                        >
-                            <MetricLabel >
-                                View Mode
-                            </MetricLabel>
-                            <RadioGroup style={{margin:'0px auto 10px auto'}}
-                                items={['Card', 'List']}
-                                defaultSelected={listMode === true ? 1 : 0}
-                                onChange={this.onListModeChanged}
-                                style={{
-                                    marginLeft: '-13px'
-                                }}
-                            />
-                        </div>
-                        {
-                            !listMode &&
-                            <div
-                                    style={{
-                                        paddingLeft: '40px',
-                                        width: '100%',
-                                        justifyContent: 'flex-start',
-                                        marginTop: '30px'
-                                    }}
-                            >
-                                <MetricLabel >
-                                    Card Mode
+                            <div style={radioGroupStyle}>
+                                <MetricLabel 
+                                        style={{
+                                            marginBottom: '10px',
+                                            marginTop: '20px'
+                                        }}
+                                >
+                                    Conditional
                                 </MetricLabel>
-                                <RadioGroup style={{margin:'0px auto 10px auto'}}
-                                    items={['Normal', 'Customize']}
-                                    defaultSelected={editMode === true ? 1 : 0}
-                                    onChange={this.onEditModeChanged}
-                                    style={{
-                                        marginLeft: '-13px'
-                                    }}
-                                    disabled={listMode}
+                                <RadioGroup 
+                                    items={['True', 'False']}
+                                    onChange={this.toggleConditional}
+                                    defaultSelected={conditional ? 0 : 1}
+                                    style={{marginLeft: '-10px'}}
                                 />
                             </div>
-                        } */}
-                        {/* {
-                            Utils.isAdmin() &&
-                            <div 
-                                    style={{
-                                        ...horizontalBox, 
-                                        justifyContent: 'flex-start',
-                                        width: '100%',
-                                    }}
-                            >
-                                <Button 
-                                        variant="outlined"
-                                        onClick={this.resetAdvisor}
-                                        style={{
-                                            marginLeft: '20px'
-                                        }}
-                                        size='small'
-                                >
-                                    Reset Advisor
-                                </Button>
-                            </div>
-                        } */}
+                        </div>
                         <div
                                 style={{
                                     ...horizontalBox,
                                     width: '90%',
-                                    // justifyContent: this.props.skippedStocks.length > 0 
-                                    //     ? 'space-between'
-                                    //     : 'center',
                                     justifyContent: Utils.isAdmin() ? 'space-between' : 'center',
                                     marginTop: '30px'
                                 }}
@@ -388,16 +325,6 @@ class DefaultSettings extends React.Component {
                                     Reset Advisor
                                 </Button>
                             }
-                            {/* {
-                                this.props.skippedStocks.length > 0 &&
-                                <Button 
-                                        variant="outlined"
-                                        onClick={this.props.undoStockSkips}
-                                        style={{minWidth: '115px'}}
-                                >
-                                    Undo Skips
-                                </Button>
-                            } */}
                             <Button 
                                     variant="contained"
                                     style={applyButtonStyle}
