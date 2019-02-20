@@ -29,69 +29,75 @@ class TokenUpdateImpl extends Component {
       }
     } 
     this.updateToken = () => {
-      this.setState({loading: true});
-      axios({
-              method: 'PUT',
-              url: requestUrl + '/user/updateToken',
-              data: {
-                "email": Utils.getLoggedInUserEmail(),
-                "token": Utils.getAuthToken()
-              }
-            })
-          .then((response) => {
-              Utils.setShouldUpdateToken(false);
-              if(response.data && response.data.token){
-                Utils.updateUserToken(response.data.token);
-                if (this.redirectUrl){
-                  this.props.history.push(this.redirectUrl);
-                }else{
-                  this.props.history.push('/research');
-                }
-              }else{
-                Utils.logoutUser();
-                this.props.history.push('/login');
-              }
-          })
-          .catch((error) => {
-             Utils.setShouldUpdateToken(false);
-             Utils.logoutUser();
-             this.props.history.push('/login');
-          })
-          .finally(() => {
-            this.setState({loading: false})
-          });
+      	this.setState({loading: true});
+      	axios({
+			method: 'PUT',
+			url: requestUrl + '/user/updateToken',
+			data: {
+				"email": Utils.getLoggedInUserEmail(),
+				"token": Utils.getAuthToken()
+			}
+		})
+		.then((response) => {
+			Utils.setShouldUpdateToken(false);
+			if(response.data && response.data.token) {
+				Utils.updateUserToken(response.data.token);
+				if (this.redirectUrl){
+					this.props.history.push(this.redirectUrl);
+				} else {
+					this.props.history.push('/research');
+				}
+			} else {
+				Utils.logoutUser();
+				this.props.history.push('/login');
+			}
+		})
+		.catch((error) => {
+			Utils.setShouldUpdateToken(false);
+			Utils.logoutUser();
+			this.props.history.push('/login');
+		})
+		.finally(() => {
+			this.setState({loading: false})
+		});
     }
   }
 
-  componentDidMount(){
-    this._mounted = true;
-    if (Utils.getShouldUpdateToken() === 'true' ||
-      Utils.getShouldUpdateToken() === true){
-      this.updateToken();
-    }else{
-      this.props.history.push('/');
-    }
+  	componentDidMount(){
+		this._mounted = true;
+		if (Utils.getShouldUpdateToken() === 'true' ||
+			Utils.getShouldUpdateToken() === true){
+			this.updateToken();
+		} else {
+			this.props.history.push('/');
+		}
   }
 
-  componentWillUnMount(){
-    this._mounted = false;
-  }
+  	componentWillUnMount(){
+		this._mounted = false;
+  	}
 
 
-  render() {
-    return (
-	    <div style={{'display': 'flex',
-        'alignItems': 'center', 'justifyContent': 'center',
-        'minHeight': '142px', 'backgroundColor': 'white'}}>
-        <Loading 
-            show={this.state.loading}
-            color={primaryColor}
-            showSpinner={false}
-            className="main-loader"
-        />
-      </div>
-    );
-  }
+  	render() {
+		return (
+			<div 
+					style={{
+						display: 'flex',
+						alignItems: 'center', 
+						justifyContent: 'center',
+						minHeight: '142px', 
+						backgroundColor: 'white'
+					}}
+			>
+				<Loading 
+					show={this.state.loading}
+					color={primaryColor}
+					showSpinner={false}
+					className="main-loader"
+				/>
+			</div>
+		);
+  	}
 }
 
 export default withRouter(TokenUpdateImpl);
