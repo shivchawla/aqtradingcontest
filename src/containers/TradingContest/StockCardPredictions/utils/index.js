@@ -95,7 +95,7 @@ export const constructPrediction = (stockData, type = 'buy', conditional = false
             endDate,
             target: targetValue,
             stopLoss,
-            conditional
+            conditional: conditionalValue > 0
         }
     ];
 }

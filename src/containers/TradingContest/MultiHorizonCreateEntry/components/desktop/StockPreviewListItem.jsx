@@ -53,7 +53,7 @@ class StockPreviewListItem extends React.Component {
         let totalPnlPct = 0;
 
         let investment = 0;
-        predictions.forEach(item => {
+        predictions.filter(prediction => prediction.triggered === true).forEach(item => {
             investment += item.investment;
             var direction = item.type == "buy" ? 1 : -1;
             totalPnl += item.avgPrice > 0 ? direction*(item.investment/item.avgPrice)*(item.pnlLastPrice - item.avgPrice) : 0;

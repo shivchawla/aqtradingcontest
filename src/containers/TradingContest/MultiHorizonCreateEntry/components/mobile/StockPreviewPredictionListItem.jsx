@@ -117,7 +117,8 @@ export default class StockPreviewPredictionListItem extends React.Component {
             index = 0,
             priceInterval = {},
             _id = null,
-            stopLoss = 0
+            stopLoss = 0,
+            triggered = false
         } = this.props.prediction;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
@@ -139,7 +140,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
 
         const duration = DateHelper.getTradingDays(startDate, endDate);
 
-        const changedInvestmentColor = changedInvestment > investment
+        const changedInvestmentColor = (triggered ? changedInvestment : investment) > investment
             ? metricColor.positive 
             : changedInvestment < investment 
                 ? metricColor.negative 
@@ -229,7 +230,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 <MetricText 
                                         color={changedInvestmentColor}
                                 >
-                                    {Utils.formatInvestmentValue(changedInvestment)}
+                                    {
+                                        triggered
+                                        ? Utils.formatInvestmentValue(changedInvestment)
+                                        : Utils.formatInvestmentValue(investment)
+                                    }
                                 </MetricText>
                             </div>
                         </div>
@@ -247,17 +252,6 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 }
                             </div>
                         </div>
-                        {/* <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                            <MetricLabel>Status</MetricLabel>
-                            <div style={{...horizontalBox, minHeight: '22px'}}>
-                                <MetricText 
-                                        color={iconConfig.color} 
-                                        style={{fontWeight: 700}}
-                                >
-                                    {iconConfig.type}
-                                </MetricText>
-                            </div>
-                        </div> */}
                     </div>
                 </Grid>
             </Container>

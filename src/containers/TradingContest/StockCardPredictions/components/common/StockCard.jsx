@@ -233,51 +233,48 @@ class StockCard extends React.Component {
                         formatValue={Utils.formatInvestmentValueNormal}
                     />
                 </div>
-                {
-                    conditional &&
-                    <div style={radioGroupStyle}>
-                        <MetricLabel 
-                                style={{
-                                    marginBottom: '10px',
-                                    marginTop: isDesktop ? '0px' : '0px',
-                                    fontSize: '12px',
-                                    color: '#222'
-                                }}
-                        >
-                            Conditional Value (%)
-                        </MetricLabel>
-                        <StockCardRadioGroup 
-                            items={conditionalItems}
-                            onChange={this.conditionalChange}
-                            defaultSelected={conditionalValue}
-                            getIndex={getCondition}
-                            getValue={getConditionValue}
-                            showSlider
-                            hideLabel={true}
-                            checkIfCustom={checkIfCustomCondition}
-                            max={1.5}
-                            min={0}
-                            step={0.01}
-                        />
-                        <div 
-                                style={{
-                                    ...horizontalBox, 
-                                    justifyContent: 'space-between',
-                                    width: '100%',
-                                    margin: '10px 0'
-                                }}
-                        >
-                            <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                                <ConditionValueLabel style={{color: '##EB5555'}}>Sell Above</ConditionValueLabel>
-                                <ConditionValue style={{color: '#EB5555', marginLeft: '4px'}}>₹{this.props.getConditionalNetValue()}</ConditionValue>
-                            </div>
-                            <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                                <ConditionValueLabel>Buy Below</ConditionValueLabel>
-                                <ConditionValue style={{color: '#0acc53', marginLeft: '4px'}}>₹{this.props.getConditionalNetValue(false)}</ConditionValue>
-                            </div>
+                <div style={radioGroupStyle}>
+                    <MetricLabel 
+                            style={{
+                                marginBottom: '10px',
+                                marginTop: isDesktop ? '0px' : '0px',
+                                fontSize: '12px',
+                                color: '#222'
+                            }}
+                    >
+                        Conditional Value (%)
+                    </MetricLabel>
+                    <StockCardRadioGroup 
+                        items={conditionalItems}
+                        onChange={this.conditionalChange}
+                        defaultSelected={conditionalValue}
+                        getIndex={getCondition}
+                        getValue={getConditionValue}
+                        showSlider
+                        hideLabel={true}
+                        checkIfCustom={checkIfCustomCondition}
+                        max={1.5}
+                        min={0}
+                        step={0.01}
+                    />
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'space-between',
+                                width: '100%',
+                                margin: '10px 0'
+                            }}
+                    >
+                        <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                            <ConditionValueLabel style={{color: '##EB5555'}}>Sell Above</ConditionValueLabel>
+                            <ConditionValue style={{color: '#EB5555', marginLeft: '4px'}}>₹{Utils.formatMoneyValueMaxTwoDecimals(this.props.getConditionalNetValue())}</ConditionValue>
+                        </div>
+                        <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                            <ConditionValueLabel>Buy Below</ConditionValueLabel>
+                            <ConditionValue style={{color: '#0acc53', marginLeft: '4px'}}>₹{Utils.formatMoneyValueMaxTwoDecimals(this.props.getConditionalNetValue(false))}</ConditionValue>
                         </div>
                     </div>
-                }
+                </div>
             </div>
         );
     }
