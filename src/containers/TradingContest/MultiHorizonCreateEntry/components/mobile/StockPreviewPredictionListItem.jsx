@@ -25,6 +25,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
     }
 
     getIconConfig = (status) => {
+        const {selectedDate = moment()} = this.props;
         const {endDate = null} = this.props.prediction;
         const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
         const todayDate = moment().format(dateTimeFormat);
@@ -34,7 +35,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const manualExit = _.get(status, 'manualExit', false);
         const profitTarget = _.get(status, 'profitTarget', false);
         const stopLoss = _.get(status, 'stopLoss', false);
-        const {triggered = false} = _.get(this.props, 'prediction', {});
+        let {triggered = false, triggeredDate = null} = _.get(this.props, 'prediction', {});
+        triggeredDate = moment(triggeredDate, dateFormat);
+        triggered = triggered && selectedDate.isSame(triggeredDate);
         
         if (!manualExit && !profitTarget && !stopLoss) {
             if (!triggered) {

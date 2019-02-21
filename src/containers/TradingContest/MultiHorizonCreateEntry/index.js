@@ -819,6 +819,7 @@ class CreateEntry extends React.Component {
                         position={this.state.previewPositions[this.state.selectedPositionIndex]}
                         stopPrediction={this.stopPrediction}
                         stopPredictionLoading={this.state.stopPredictionLoading}
+                        selectedDate={this.state.selectedDate}
                     />
                     <StockDetailBottomSheet 
                         open={this.state.stockDetailBottomSheetOpen}

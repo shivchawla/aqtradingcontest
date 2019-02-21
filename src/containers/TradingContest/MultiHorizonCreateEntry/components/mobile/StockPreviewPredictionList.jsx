@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import TranslucentLoader from '../../../../../components/Loaders/TranslucentLoader';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import StockPreviewPredictionListItem from './StockPreviewPredictionListItem';
+const moment = require('moment');
 
 export default class StockEditPredictionList extends React.Component {
     constructor(props) {
@@ -37,7 +38,7 @@ export default class StockEditPredictionList extends React.Component {
     }
  
     render() {
-        const {predictions = []} = this.props;
+        const {predictions = [], selectedDate = moment()} = this.props;
 
         return (
             <React.Fragment>
@@ -64,6 +65,7 @@ export default class StockEditPredictionList extends React.Component {
                                     prediction={{...prediction, index: index+1}} 
                                     key={index}
                                     openDialog={this.openStopPredictionDialog}
+                                    selectedDate={this.props.selectedDate}
                                 />
                             )
                         })
