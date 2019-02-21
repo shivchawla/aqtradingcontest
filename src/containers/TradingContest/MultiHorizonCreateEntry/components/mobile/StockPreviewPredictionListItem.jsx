@@ -35,15 +35,16 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const profitTarget = _.get(status, 'profitTarget', false);
         const stopLoss = _.get(status, 'stopLoss', false);
         const {triggered = false} = _.get(this.props, 'prediction', {});
-        if (!triggered) {
-            return {
-                type: 'INACTIVE',
-                color: '#b8b8b8',
-                backgroundColor: '#e0e0e0'
-            };
-        }
+        
         if (!manualExit && !profitTarget && !stopLoss) {
-            if (active) {
+            if (!triggered) {
+                return {
+                    type: 'INACTIVE',
+                    color: '#b8b8b8',
+                    backgroundColor: '#e0e0e0'
+                };
+            }
+            else if (active) {
                 return {
                     type: 'ACTIVE',
                     color: '#a38b22',
@@ -172,7 +173,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             />
                         </div>
                         {
-                            marketOpen && iconConfig.type.toLowerCase() === 'active' &&
+                            (
+                                marketOpen && iconConfig.type.toLowerCase() === 'active' ||
+                                marketOpen && iconConfig.type.toLowerCase() === 'inactive'
+                            ) &&
                             <StopPredictionButton 
                                     onClick={() => this.props.openDialog(_id)}
                             >
