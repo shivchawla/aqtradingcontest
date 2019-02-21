@@ -21,7 +21,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
             return true;
         }
 
-        return false;
+        return false;_
     }
 
     getIconConfig = (status) => {
@@ -34,7 +34,14 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const manualExit = _.get(status, 'manualExit', false);
         const profitTarget = _.get(status, 'profitTarget', false);
         const stopLoss = _.get(status, 'stopLoss', false);
-
+        const {triggered = false} = _.get(this.props, 'prediction', {});
+        if (!triggered) {
+            return {
+                type: 'INACTIVE',
+                color: '#b8b8b8',
+                backgroundColor: '#e0e0e0'
+            };
+        }
         if (!manualExit && !profitTarget && !stopLoss) {
             if (active) {
                 return {
