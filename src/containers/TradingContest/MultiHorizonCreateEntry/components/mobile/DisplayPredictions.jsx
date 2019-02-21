@@ -185,6 +185,7 @@ class DisplayPredictions extends React.Component {
                                                 selectPosition={this.props.selectPosition}
                                                 toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
                                                 togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
+                                                selectedDate={this.props.selectedDate}
                                             />
                                         </EnclosedContainer>
                                     </Grid>

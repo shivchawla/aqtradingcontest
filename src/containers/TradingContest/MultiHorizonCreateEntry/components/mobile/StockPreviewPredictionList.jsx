@@ -65,7 +65,7 @@ export default class StockEditPredictionList extends React.Component {
                                     prediction={{...prediction, index: index+1}} 
                                     key={index}
                                     openDialog={this.openStopPredictionDialog}
-                                    selectedDate={this.props.selectedDate}
+                                    selectedDate={selectedDate}
                                 />
                             )
                         })

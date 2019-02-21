@@ -35,9 +35,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const manualExit = _.get(status, 'manualExit', false);
         const profitTarget = _.get(status, 'profitTarget', false);
         const stopLoss = _.get(status, 'stopLoss', false);
-        let {triggered = false, triggeredDate = null} = _.get(this.props, 'prediction', {});
-        triggeredDate = moment(triggeredDate, dateFormat);
-        triggered = triggered && selectedDate.isSame(triggeredDate);
+        let {triggered = false} = _.get(this.props, 'prediction', {});
         
         if (!manualExit && !profitTarget && !stopLoss) {
             if (!triggered) {
@@ -122,8 +120,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
             priceInterval = {},
             _id = null,
             stopLoss = 0,
-            triggered = false
+            triggered = false,
+            conditional = false
         } = this.props.prediction;
+        const allowAfterMaketHourExit = conditional && !triggered;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
         
@@ -176,7 +176,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             />
                         </div>
                         {
-                            marketOpen &&
+                            (allowAfterMaketHourExit ||marketOpen) &&
                             (
                                 iconConfig.type.toLowerCase() === 'active' 
                                 || iconConfig.type.toLowerCase() === 'inactive'

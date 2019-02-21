@@ -96,8 +96,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
             lastPrice = 0,
             status ={},
             _id = null,
-            triggered = false
+            triggered = false,
+            conditional = false
         } = this.props.prediction;
+        const allowAfterMaketHourExit = conditional && !triggered;
         const typeBackgroundColor = '#fff';
         const typeColor = type === 'buy' ? '#009688' : '#FE6662';
         const borderColor = type === 'buy' ? '#009688' : '#FE6662'
@@ -143,7 +145,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         {iconConfig.status}
                     </MetricText>
                     {
-                        marketOpen &&
+                        (allowAfterMaketHourExit || marketOpen) &&
                         (
                             iconConfig.status.toLowerCase() === 'active' 
                             || iconConfig.status.toLowerCase() === 'in-active'
