@@ -1,4 +1,5 @@
 import * as React from 'react';
+import styled from 'styled-components';
 import HighStock from 'highcharts/highstock';
 import _ from 'lodash';
 import axios from 'axios';
@@ -6,10 +7,48 @@ import moment from 'moment';
 import {withRouter} from 'react-router';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
+import TimelineCustomRadio from '../../containers/StockDetail/components/mobile/TimelineCustomRadio';
+import RadioGroup from '../selections/RadioGroup';
 import {getStockPerformance, dateFormat, Utils} from '../../utils';
-// import '../css/myChart.css';
+import {metricColor, horizontalBox, verticalBox} from '../../constants';
 
 const {requestUrl} = require('../../localConfig');
+
+const readableDateFormat = 'Do MMM YY';
+const readableTimeFormat = 'hh:mm A';
+const timelines = [
+    {
+        label: '1D',
+        count: 0,
+        timeline: 'd'
+    },
+    {
+        label: '1M',
+        count: 1,
+        timeline: 'M'
+    },
+    {
+        label: '3M',
+        count: 3,
+        timeline: 'M'
+    },
+    {
+        label: 'YTD',
+        count: -1,
+        timeline: 'year'
+    },
+    {
+        label: '1Y',
+        count: 1,
+        timeline: 'y'
+    },
+    {
+        label: '2Y',
+        count: 2,
+        timeline: 'y'
+    }
+];
+const selectedTimeline = 0;
 
 class MyChartNewImpl extends React.Component {
     constructor(props) {
@@ -19,6 +58,7 @@ class MyChartNewImpl extends React.Component {
             config: {
                 colors: ['#0082c8','#e6194b','#3cb44b','#ffe119','#f58231','#911eb4','#46f0f0','#f032e6','#d2f53c','#fabebe','#008080','#e6beff','#aa6e28','#fffac8','#800000','#aaffc3','#808000','#ffd8b1','#000080', '#808080'],
                 rangeSelector: {
+                    enabled: true,
                     selected: 3,
                     labelStyle: {
                         color: '#F86C6C'
@@ -65,7 +105,8 @@ class MyChartNewImpl extends React.Component {
                         style: {
                             color: '#039',
                             fontWeight: 'bold',
-                            zIndex: 20
+                            zIndex: 20,
+                            display: 'none'
                         },
                     }
                 },
@@ -91,11 +132,20 @@ class MyChartNewImpl extends React.Component {
                         },
                     },
                 },
+                xAxis: {
+                    gapGridLineWidth: 0,
+                    labels: {
+                        formatter: function() {
+                            const requiredFormat = self.state.intraDaySelected ? readableTimeFormat: readableDateFormat;
+                            return moment(this.value).format(requiredFormat);
+                        }
+                    },
+                },
                 yAxis: {
                     //gridLineColor: 'transparent',
                     labels: {
                         formatter: function () {
-                            return (this.value > 0 ? ' + ' : '') + this.value + '%';
+                            return Utils.formatMoneyValueMaxTwoDecimals(this.value);
                         }
                     }
                 },
@@ -114,10 +164,10 @@ class MyChartNewImpl extends React.Component {
                         var s = [];
                         self.updatePoints(this.points);
                     },
-                    positioner: function () {
-                        return { x: -100, y: 35 };
-                    },
-                    backgroundColor: 'transparent',
+                    // positioner: function () {
+                    //     return { x: -100, y: 35 };
+                    // },
+                    // backgroundColor: 'transparent',
                     shadow: false,
                     split: false,
                     useHTML: true
@@ -139,16 +189,53 @@ class MyChartNewImpl extends React.Component {
 
     updatePoints = points => {
         const legendItems = [...this.state.legendItems];
+        const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
         points.map(point => {
-            // // console.log(point.series.name);
             try{
                 const item = legendItems.filter(item => item.name.toUpperCase() === point.series.name.toUpperCase())[0];
                 item.y = point.y;
-                item.change = Number(point.point.change.toFixed(2));
-                this.setState({legendItems, selectedDate: moment(points[0].x).format(dateFormat)});
+                
+                this.setState({legendItems, selectedDate: moment(points[0].x).format(requiredMomentFormat)});
             }
-            catch(err) {
-                // console.log(err);
+            catch(err) {}
+        });
+    }
+
+    updateLegend = (name, data, destroy = false, color = null, disabled = false) => {
+        const legendItems = [...this.state.legendItems];
+        const selectedTime = data[data.length - 1][0];
+        const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
+        const formattedTime = moment(selectedTime).format(requiredMomentFormat);
+        const initialYValue = data.length > 0 ? data[data.length - 1][1] : 0;
+        this.setState(prevState => {
+            if (destroy) {
+                return {
+                    legendItems: [
+                        {
+                            name: name, //.toUpperCase(),
+                            x: '1994-16-02',
+                            y: initialYValue,
+                            change: 0,
+                            disabled,
+                            checked: legendItems.length < 5 ,
+                            color: color || this.chart.series[this.chart.series.length - 1].color
+                        }
+                    ],
+                    selectedDate: formattedTime
+                }
+            } else {
+                return {
+                    legendItems: [...prevState.legendItems, {
+                        name: name , //toUpperCase(),
+                        x: '1994-16-02',
+                        y: initialYValue,
+                        change: 0,
+                        disabled,
+                        checked: legendItems.length < 5 ,
+                        color: color || this.chart.series[this.chart.series.length - 1].color
+                    }],
+                    selectedDate: formattedTime
+                }
             }
         });
     }
@@ -411,46 +498,98 @@ class MyChartNewImpl extends React.Component {
         });
     }
 
+    changeSelection = (selected) => {
+        console.log(selected);
+        this.chart.update({
+            rangeSelector: {
+                selected
+            }
+        })
+    }
+
     renderHorizontalLegendList = () => {
         const {legendItems} = this.state;
         const fontSize = this.props.mobile ? '14px' : '12px'
         return (
-            <Grid item xs={12} style={{ zIndex:'20'}}>
-                {
+            <Grid item style={{ zIndex:'20'}} xs={12} >
+                {/* {
                     legendItems.map((legend, index) => {
-                        const changeColor = legend.change < 0 ? '#F44336' : '#00C853';
+                        const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
 
                         return (
-                                <Grid key={index} container alignItems="center"> 
-                                    <Grid item xs={1}>
-                                        <Checkbox 
-                                            disabled={legend.disabled} 
-                                            checked={legend.checked} 
-                                            onChange={e => this.onCheckboxChange(e, legend)} 
+                                <Grid container key={index} alignItems="center"> 
+                                    <Grid 
+                                            item 
+                                            xs={12}
+                                            style={{
+                                                ...verticalBox,
+                                                alignItems: 'center',
+                                                marginTop: '5px'
+                                            }}
+                                    >
+                                        <div 
+                                                style={{
+                                                    ...horizontalBox,
+                                                    justifyContent: 'space-between',
+                                                    width: '100%'
+                                                }}
+                                        >
+                                            <Date>{this.state.selectedDate}</Date>
+                                            <PriceComponent lastPrice={lastPrice} change={legend.change}/>    
+                                        </div>
+                                        <RadioGroup 
+                                            CustomRadio={TimelineCustomRadio}
+                                            items={timelines}
+                                            defaultSelected={3}
+                                            onChange={this.changeSelection}
+                                            style={{
+                                                marginTop: '10px',
+                                                width: '100%',
+                                                justifyContent: 'space-between'
+                                            }}
                                         />
-                                    </Grid>
-                                    <Grid item xs={11}>
-                                        <h3 style={{fontSize}}>
-                                            <span style={{color: legend.color}}>{legend.name}</span>
-                                            <span 
-                                                    style={{marginLeft: '10px', fontSize, fontWeight: '400'}}
-                                            >
-                                                {Number(legend.y).toFixed(2)}
-                                            </span>
-                                            <span 
-                                                    style={{fontSize, color: changeColor, marginLeft: '5px'}}
-                                            >
-                                                ({legend.change} %)
-                                            </span>
-                                        </h3>
                                     </Grid>
                                 </Grid>
                         );
                     })
-                }
+                } */}
+                <Grid container alignItems="center"> 
+                    <Grid 
+                            item 
+                            xs={12}
+                            style={{
+                                ...verticalBox,
+                                alignItems: 'center',
+                                marginTop: '5px'
+                            }}
+                    >
+                        {/* <div 
+                                style={{
+                                    ...horizontalBox,
+                                    justifyContent: 'space-between',
+                                    width: '100%'
+                                }}
+                        >
+                            <Date>{this.state.selectedDate}</Date>
+                            <PriceComponent lastPrice={lastPrice} change={legend.change}/>    
+                        </div> */}
+                        <RadioGroup 
+                            CustomRadio={TimelineCustomRadio}
+                            items={timelines.map(item => item.label)}
+                            defaultSelected={3}
+                            onChange={this.changeSelection}
+                            style={{
+                                marginTop: '10px',
+                                width: '100%',
+                                justifyContent: 'space-between'
+                            }}
+                        />
+                    </Grid>
+                </Grid>
             </Grid>
         );
     }
+
 
     renderHorizontalLegend = () => {
         const {chartId="highchart-container"} = this.props;
@@ -509,7 +648,51 @@ class MyChartNewImpl extends React.Component {
 
 export default withRouter(MyChartNewImpl);
 
-const searchIconStyle = {
-    marginRight: '20px',
-    fontSize: '18px'
-};
+const PriceComponent = ({lastPrice, change}) => {
+    const changeColor = change < 0 ? '#F44336' : change === 0 ? '#222' : '#00C853';
+    
+    return (
+        <div 
+                style={{
+                    ...horizontalBox,
+                    justifyContent: 'flex-start'
+                }}
+        >
+            <LastPrice>₹{lastPrice}</LastPrice>
+            <Divider>|</Divider>
+            <Change color={changeColor}>{change}%</Change>                                        
+        </div>
+    );
+}
+
+const LastPrice = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-size: ${props => props.fontSize || '14px'};
+    color: #222;
+    font-weight: 500;
+`;
+
+const Date = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    color: #6B6B6B;
+    font-size: 12px;
+    z-index: 20;
+`;
+
+const Change = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-size: ${props => props.fontSize || '14px'};
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+    color: ${props => props.color || metricColor.neutral}
+`;
+
+const Divider = styled.h3`
+    font-family: 'Lato', sans-serif;
+    color: #797979;
+    font-weight: 400;
+    font-size: 14px;
+    margin: 0 5px;
+    margin-top: -2px;
+`;
