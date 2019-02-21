@@ -143,9 +143,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         {iconConfig.status}
                     </MetricText>
                     {
+                        marketOpen &&
                         (
-                            marketOpen && iconConfig.status.toLowerCase() === 'active' 
-                            || marketOpen && iconConfig.status.toLowerCase() === 'in-active'
+                            iconConfig.status.toLowerCase() === 'active' 
+                            || iconConfig.status.toLowerCase() === 'in-active'
                         ) &&
                         <StopPredictionButton 
                                 onClick={() => this.props.openDialog(_id)}
