@@ -38,6 +38,7 @@ const NotAuthorized = React.lazy(() => import('./containers/ErrorPages/NotAuthor
 const DailyContestTnc = React.lazy(() => import('./containers/TradingContest/TnC/DailyContestTnC'));
 const PageNotFound = React.lazy(() => import('./containers/ErrorPages/PageNotFound'));
 const StockResearch = React.lazy(() => import('./containers/StockResearch'));
+const PortfolioDetail = React.lazy(() => import('./containers/PortfolioDetail'));
 const AboutUs = React.lazy(() => import('./containers/AboutUs'));
 const TnC = React.lazy(() => import('./containers/TnC'));
 const Policy = React.lazy(() => import('./containers/Policy'));
@@ -301,6 +302,7 @@ class App extends React.Component {
                                         <Route path='/policies/tnc' component={TnC}/> 
                                         <Route path='/policies/privacy' component={Policy}/> 
                                         <Route path='/aboutus' component={AboutUs}/> 
+                                        <Route path='/advice/:id' component={PortfolioDetail} /> 
                                         <Route exact={true} path='/api/docs' component={ApiDoc}/> 
                                         <Route 
                                             exact={true}

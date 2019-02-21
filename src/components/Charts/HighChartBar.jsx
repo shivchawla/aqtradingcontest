@@ -2,9 +2,9 @@ import * as React from 'react';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import HighChart from 'highcharts';
-import {benchmarkColor, currentPerformanceColor, simulatedPerformanceColor} from '../constants';
+import {benchmarkColor, currentPerformanceColor, simulatedPerformanceColor} from '../../constants';
 
-export class HighChartBar extends React.Component {
+export default class HighChartBar extends React.Component {
     constructor(props) {
         super(props);
         this.dollarChart = null;

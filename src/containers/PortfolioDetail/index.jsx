@@ -1,18 +1,15 @@
 import React from 'react';
-import Loadable from 'react-loadable';
 import axios from 'axios';
 import {withRouter} from 'react-router';
 import _ from 'lodash';
 import moment from 'moment';
-import {Row, Col, Button, Radio} from 'antd';
-import {currentPerformanceColor, simulatedPerformanceColor, shadowBoxStyle, benchmarkColor, primaryColor, buttonStyle} from '../../constants';
-import {AdviceDetailContent} from '../../containers/AdviceDetailContent';
-import {Utils, getBreadCrumbArray,fetchAjax, getStockPerformance, openNotification, handleCreateAjaxError, getStockStaticPerformance, getStockRollingPerformance} from '../../utils';
+import Grid from '@material-ui/core/Grid';
+import {currentPerformanceColor, simulatedPerformanceColor, benchmarkColor, buttonStyle} from '../../constants';
+import Layout from './components/desktop/Layout';
+import RadioGroup from '../../components/selections/RadioGroup';
+import {Utils,fetchAjax, getStockPerformance, openNotification, handleCreateAjaxError} from '../../utils';
 import {benchmarks as benchmarkArray} from '../../constants/benchmarks';
-import '../../css/adviceDetail.css';
-import AppLayout from '../../containers/AppLayout';
-
-const RadioGroup = Radio.Group;
+// import '../../css/adviceDetail.css';
 
 const {requestUrl} = require('../../localConfig.js');
 const DateHelper = require('../../utils/date');
@@ -66,7 +63,7 @@ const approvalObj = {
     }
 };
 
-class AdviceDetailImpl extends React.Component {
+class PortfolioDetailImpl extends React.Component {
     socketOpenConnectionTimeout = 1000;
     numberOfTimeSocketConnectionCalled = 1;
     mounted = false;
@@ -170,26 +167,6 @@ class AdviceDetailImpl extends React.Component {
 
         this.performanceSummary = {};
     }
-
-    makeAdvicePublic = () => {
-        const url = `${requestUrl}/advice/${this.props.match.params.id}/publish`;
-        axios({
-            method: 'POST',
-            url,
-            headers: Utils.getAuthTokenHeader(),
-        })
-        .then(response => {
-            this.togglePostWarningModal();
-            this.getAdviceData();
-        })
-        .catch(error => {
-            Utils.checkForInternet(error, this.props.history);
-            // console.log(error);
-            if (error.response) {
-                Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
-            }
-        });
-    };
 
     getAdviceSummary = (response, performance = true) => {
         const {
@@ -511,10 +488,6 @@ class AdviceDetailImpl extends React.Component {
         }
     }
 
-    handleAllContestAdviceSummaryError = error => {
-        // console.log('Advice Not found in any contest');
-    }
-
     getAdviceLatestContestSummary = () => {
         const adviceContestUrl = `${requestUrl}/contest/entry/${this.props.match.params.id}`;
         fetchAjax(
@@ -539,7 +512,6 @@ class AdviceDetailImpl extends React.Component {
     }
     
     getAdviceData = (startDate = moment().format('YYYY-MM-DD')) => {
-        const contestId = this.props.match.params.contestId;
         const adviceId = this.props.match.params.id;
         const adviceSummaryUrl = `${requestUrl}/advice/${adviceId}`;
         const advicePerformanceUrl = `${requestUrl}/performance/advice/${adviceId}`;
@@ -550,9 +522,7 @@ class AdviceDetailImpl extends React.Component {
         return Promise.all([
             fetchAjax(adviceSummaryUrl, this.props.history, this.props.match.url),
             fetchAjax(advicePerformanceUrl, this.props.history, this.props.match.url),
-            // fetchAjax(adviceContestUrl, this.props.history, this.props.match.url)
         ]) 
-        // .then(([adviceSummaryResponse, advicePerformanceResponse, adviceContestResponse]) => {
         .then(([adviceSummaryResponse, advicePerformanceResponse]) => {
             benchmark = _.get(adviceSummaryResponse.data, 'portfolio.benchmark.ticker', 'NIFTY_50');
             const contestOnly = _.get(adviceSummaryResponse.data, 'contestOnly', false);
@@ -599,7 +569,6 @@ class AdviceDetailImpl extends React.Component {
             this.setUpSocketConnection();
         });
     };
-
 
     toggleDialog = () => {
         const {adviceDetail} = this.state;
@@ -654,7 +623,6 @@ class AdviceDetailImpl extends React.Component {
         })
         .catch(error => {
             Utils.checkForInternet(error, this.props.history);
-            // console.log(error);
             if (error.response) {
                 Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
             }
@@ -754,7 +722,6 @@ class AdviceDetailImpl extends React.Component {
     }
 
     unSubscribeToAdvice = adviceId => {
-        // console.log('UnSubscription');
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
@@ -765,7 +732,6 @@ class AdviceDetailImpl extends React.Component {
     }
 
     subscribeToStock = ticker => {
-        // console.log('Subscription Started');
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
@@ -776,7 +742,6 @@ class AdviceDetailImpl extends React.Component {
     }
 
     unSubscribeToStock = ticker => {
-        // console.log('Unsubscription Started');
         const msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
@@ -948,120 +913,11 @@ class AdviceDetailImpl extends React.Component {
         this.setState({postWarningModalVisible: !this.state.postWarningModalVisible});
     }
 
-    renderActionButtons = (small=false) => {
-        const {userId} = this.state;
-        const isOwner = _.get(this.state, 'adviceDetail.isOwner', false);
-        let advisorId = this.state.adviceDetail.advisor.user ? this.state.adviceDetail.advisor.user._id: '';
-        const unsubscriptionPending = _.get(this.state, 'adviceResponse.subscriptionDetail.unsubscriptionPending', false);
-        const className = small ? 'action-button action-button-small' : 'action-button';
-        const isValid = _.get(this.state, 'adviceDetail.approval.status', false);
-        const isAdmin = _.get(this.state, 'adviceDetail.isAdmin', false);
-        const isPublic = _.get(this.state, 'adviceDetail.isPublic', false);
-        const active = _.get(this.state, 'adviceDetail.active', false);
-        const contestOnly = _.get(this.state, 'adviceDetail.contestOnly', false);
-        const approvalRequested = _.get(this.state, 'adviceDetail.approvalRequested', false);
-        if (!isOwner) {
-            return (
-                <div style={{width: '95%'}}>
-                    {
-                        isAdmin && contestOnly && active &&
-                        <Button
-                                onClick={() => this.toggleWitdrawOrProhibitModal('prohibitModalVisible')}
-                                className={className}
-                                style={buttonStyle}
-                                type="primary"
-                        >
-                            PROHIBIT ADVICE
-                        </Button>
-                    }
-                    <Button
-                            onClick={() => 
-                                Utils.isLoggedIn()
-                                ? this.followAdvice()
-                                : this.redirectToLogin()
-                            }
-                            className={className}
-                            style={buttonStyle}
-                            disabled={this.state.disableFollowButton}
-                    >
-                        {!this.state.adviceDetail.isFollowing ? "ADD TO WISHLIST" : "REMOVE FROM WISHLIST"}
-                    </Button>
-                </div>
-            );
-        } else {
-            return (
-                <div style={{width: '95%'}}>
-                    <Button
-                            onClick={() => this.props.history.push(`/contest/updateentry/${this.props.match.params.id}`)}
-                            className={className}
-                            style={buttonStyle}
-                            type="primary"
-                    >
-                        {
-                            (this.state.notPresentInLatestContest || !this.state.adviceDetail.active) 
-                                ? "ENTER CONTEST" 
-                                : "UPDATE ENTRY"
-                        }
-                    </Button>
-                    {
-                        this.state.adviceDetail.contestOnly &&
-                        this.state.adviceDetail.isPublic &&
-                        this.state.adviceDetail.active &&
-                        <Button 
-                                onClick={() => this.toggleWitdrawOrProhibitModal('withdrawModalVisible')}
-                                className={className} 
-                                style={buttonStyle} 
-                                loading={this.state.withdrawAdviceLoading}
-                        >
-                            WITHDRAW
-                        </Button>
-                    }
-                    {
-                        isAdmin && contestOnly && active &&
-                        <Button
-                                onClick={() => this.toggleWitdrawOrProhibitModal('prohibitModalVisible')}
-                                className={className}
-                                style={buttonStyle}
-                                loading={this.state.withdrawAdviceLoading}
-                        >
-                            PROHIBIT ADVICE
-                        </Button>
-                    }
-                    {
-                        !this.state.adviceDetail.contestOnly &&
-                        this.state.adviceDetail.isPublic &&
-                        !isValid &&
-                        !this.state.adviceDetail.approvalRequested &&
-                        <Button 
-                                onClick={this.requestApproval} 
-                                className={className} 
-                                style={buttonStyle} 
-                                loading={this.state.requestApprovalLoading}
-                        >
-                            REQUEST APPROVAL
-                        </Button>
-                    }
-                    {
-                        !this.state.adviceDetail.isPublic && 
-                        <Button 
-                                onClick={this.togglePostWarningModal} 
-                                className={className} 
-                                style={buttonStyle} 
-                        >
-                            POST  TO MARKETPLACE
-                        </Button>
-                    }                    
-                </div>
-            );
-        }
-    };
-
     handleChange = value => {
         this.setState({selectedValue: value});
     }
 
     updateTicker = record => {
-        // console.log(record);
         this.setState({stockResearchModalTicker: record}, () => {
             this.toggleModal();
         });
@@ -1110,8 +966,7 @@ class AdviceDetailImpl extends React.Component {
         })
     }
 
-    handleStaticPerformanceSelectorChange = e => {
-        const selectedMetric = e.target.value;
+    handleStaticPerformanceSelectorChange = selectedMetric => {
         const currentPortfolioPerformance = this.state.currentStaticPortfolioPerformance;
         const simulatedPortfolioPerformance = this.state.simulatedStaticPortfolioPerformance;
         const benchmarkCurrentStaticPerformance = this.state.benchmarkCurrentStaticPerformance;
@@ -1126,22 +981,21 @@ class AdviceDetailImpl extends React.Component {
     }
 
     renderStaticPerformanceSelectorRadioGroup = () => {
+        const requiredPerformanceSelectors = ['returns.totalreturn', 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
+        const selectedIndex = _.findIndex(requiredPerformanceSelectors, item => item === this.state.selectedPerformanceMetrics);
+        
         return (
             <RadioGroup 
-                    onChange={this.handleStaticPerformanceSelectorChange} 
-                    value={this.state.selectedPerformanceMetrics}
-            >
-                <Radio value={'returns.totalreturn'}>Total Return</Radio>
-                {/* <Radio value={'returns.monthlyreturn'}>Monthly Return</Radio>
-                <Radio value={'returns.annualreturn'}>Annual Return</Radio> */}
-                <Radio value={'deviation.annualstandarddeviation'}>Volatility</Radio>
-                <Radio value={'drawdown.maxdrawdown'}>Max Loss</Radio>
-            </RadioGroup>
+                items={['Total Return', 'Volatility', 'Max Loss']}
+                defaultSelected={selectedIndex}
+                onChange={value => {
+                    this.handleStaticPerformanceSelectorChange(requiredPerformanceSelectors[value])
+                }}
+            />
         );
     }
 
-    handleRollingPerformanceSelectorChange = e => {
-        const selectedMetric = e.target.value;
+    handleRollingPerformanceSelectorChange = selectedMetric => {
         const currentPortfolioPerformance = this.state.currentStaticPortfolioPerformance;
         const simulatedPortfolioPerformance = this.state.simulatedStaticPortfolioPerformance;
         const benchmarkRollingCurrentPerformance = this.state.benchmarkRollingCurrentPerformance;
@@ -1156,16 +1010,17 @@ class AdviceDetailImpl extends React.Component {
     }
 
     renderRollingPerformanceSelectorRadioGroup = () => {
+        const requiredRollingPerformanceSelectors = ['returns.totalreturn', 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
+        const selectedIndex = _.findIndex(requiredRollingPerformanceSelectors, item => item === this.state.selectedRollingPerformanceMetric);
+
         return (
             <RadioGroup 
-                    onChange={this.handleRollingPerformanceSelectorChange} 
-                    value={this.state.selectedRollingPerformanceMetric}
-            >
-                <Radio value={'returns.totalreturn'}>Total Return</Radio>
-                {/* <Radio value={'returns.annualreturn'}>Annual Return</Radio> */}
-                <Radio value={'deviation.annualstandarddeviation'}>Volatility</Radio>
-                <Radio value={'drawdown.maxdrawdown'}>Max Loss</Radio>
-            </RadioGroup>
+                items={['Total Return', 'Volatility', 'Max Loss']}
+                defaultSelected={selectedIndex}
+                onChange={value => {
+                    this.handleRollingPerformanceSelectorChange(requiredRollingPerformanceSelectors[value])
+                }}
+            />
         );
     }
 
@@ -1174,8 +1029,12 @@ class AdviceDetailImpl extends React.Component {
         const {annualReturn, totalReturns, averageReturns, dailyReturns} = this.state.metrics;
         
         return (
-            <Row style={{marginBottom:'20px'}} className='aq-page-container'>
-                <AdviceDetailContent 
+            <Grid   
+                    container 
+                    style={{marginBottom:'20px'}} 
+                    className='aq-page-container'
+            >
+                <Layout 
                         adviceDetail={this.state.adviceDetail}
                         metrics={this.state.metrics}
                         handlePortfolioStartDateChange={this.handlePortfolioStartDateChange}
@@ -1197,21 +1056,18 @@ class AdviceDetailImpl extends React.Component {
                         trueRollingPerformanceCategories={this.state.trueRollingPerformanceCategories}
                         simulatedRollingPerformanceCategories={this.state.simulatedRollingPerformanceCategories}
                 />
-                <Col xl={6} md={0} sm={0} xs={0}>
-                    {this.renderActionButtons()}
-                </Col>
-            </Row>
+            </Grid>
         );
     }
 
     render() {
         return (
-            <Row>
-                {this.renderPostWarningModal()}
+            <Grid container>
+                {/* {this.renderPostWarningModal()} */}
                 {this.renderPageContent()}
-            </Row>
+            </Grid>
         );
     }
 }
 
-export default withRouter(AdviceDetailImpl);
+export default withRouter(PortfolioDetailImpl);

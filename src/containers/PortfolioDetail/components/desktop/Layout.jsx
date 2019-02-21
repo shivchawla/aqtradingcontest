@@ -7,13 +7,8 @@ import {metricsHeaderStyle, shadowBoxStyle, metricColor} from '../../../../const
 import {formatMetric} from '../../utils';
 import {metricDefs} from '../../constants';
 import {Utils} from '../../../../utils';
-import '../css/adviceDetail.css';
 import HighChartBar from '../../../../components/Charts/HighChartBar';
-
-// const MyChartNew = Loadable({
-//     loader: () => import('./MyChartNew'),
-//     loading: () => <div>Loading</div>
-// });
+import HighStock from '../../../../components/Charts/HighStock';
 
 const metrics = [
     {
@@ -161,11 +156,7 @@ class Layout extends React.Component {
                             style={customPanelStyle}
                             header={<h3 style={metricsHeaderStyle}>Performance</h3>}
                         >
-                        {/* <Row className="row-container">
-                            <Spin spinning={this.props.loading}>
-                                <MyChartNew series={tickers} chartId="advice-detail-chart"/>
-                            </Spin>
-                        </Row> */}
+                            <HighStock series={tickers} chartId="advice-detail-chart"/>
                     </Grid>
                     <Grid
                             item
@@ -178,16 +169,14 @@ class Layout extends React.Component {
                                 {this.props.renderRollingPerformanceSelector()}
                             </Grid>
                             <Grid item xs={12}>
-                                {/* <Spin spinning={this.props.loading}> */}
-                                    <HighChartBar 
-                                        id='rollingPerformance'
-                                        dollarSeries={this.props.simulatedRollingPerformance}
-                                        percentageSeries={this.props.currentRollingPerformance}
-                                        radiogroupLabels = {['Historical', 'True']}
-                                        dollarCategories={this.props.simulatedRollingPerformanceCategories}
-                                        percentageCategories={this.props.trueRollingPerformanceCategories}
-                                    />
-                                {/* </Spin> */}
+                                <HighChartBar 
+                                    id='rollingPerformance'
+                                    dollarSeries={this.props.simulatedRollingPerformance}
+                                    percentageSeries={this.props.currentRollingPerformance}
+                                    radiogroupLabels = {['Historical', 'True']}
+                                    dollarCategories={this.props.simulatedRollingPerformanceCategories}
+                                    percentageCategories={this.props.trueRollingPerformanceCategories}
+                                />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -202,16 +191,14 @@ class Layout extends React.Component {
                                 {this.props.renderStaticPerformanceSelector()}
                             </Grid>
                             <Grid item xs={12}>
-                                {/* <Spin spinning={this.props.loading}> */}
-                                    <HighChartBar 
-                                        id='staticPerformance'
-                                        dollarSeries={this.props.simulatedStaticPerformance}
-                                        percentageSeries={this.props.currentStaticPerformance}
-                                        radiogroupLabels = {['Historical', 'True']}
-                                        categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
-                                        updateTimeline={true}
-                                    />
-                                {/* </Spin> */}
+                                <HighChartBar 
+                                    id='staticPerformance'
+                                    dollarSeries={this.props.simulatedStaticPerformance}
+                                    percentageSeries={this.props.currentStaticPerformance}
+                                    radiogroupLabels = {['Historical', 'True']}
+                                    categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
+                                    updateTimeline={true}
+                                />
                             </Grid>
                         </Grid>
                     </Grid>
