@@ -64,7 +64,7 @@ class StockPreviewListItem extends React.Component {
             let {triggeredDate = null, conditional = false} = prediction;
             triggeredDate = moment(triggeredDate).format(dateFormat);
 
-            return !conditional || (prediction.triggered === true && selectedDate === triggeredDate)
+            return !conditional || (prediction.triggered === true && moment(selectedDate, dateFormat).isSameOrAfter(triggeredDate, dateFormat))
         }).forEach(item => {
             investment += item.investment;
             var direction = item.type == "buy" ? 1 : -1;

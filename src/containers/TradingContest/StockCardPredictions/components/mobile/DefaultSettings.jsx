@@ -290,7 +290,7 @@ class DefaultSettings extends React.Component {
                                     formatValue={Utils.formatInvestmentValueNormal}
                                 />
                             </div>
-                            {/* <div style={radioGroupStyle}>
+                            <div style={radioGroupStyle}>
                                 <MetricLabel 
                                         style={{
                                             marginBottom: '10px',
@@ -305,7 +305,7 @@ class DefaultSettings extends React.Component {
                                     defaultSelected={conditional ? 0 : 1}
                                     style={{marginLeft: '-10px'}}
                                 />
-                            </div> */}
+                            </div>
                         </div>
                         <div
                                 style={{
