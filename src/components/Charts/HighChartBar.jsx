@@ -43,7 +43,7 @@ export default class HighChartBar extends React.Component {
                         name: 'Stock',
                         text: null
                     },
-                    categories: props.dollarCategories ? props.dollarCategories : props.categories || null
+                    categories: props.categories || null
                 },
                 title: {
                     style: {
@@ -63,13 +63,12 @@ export default class HighChartBar extends React.Component {
                 },
                 series: []
             },
-            dollarVisible: true,
         }
     }
 
     getCategories = () => {
-        if (this.dollarChart !== null) {
-            return this.dollarChart.series.map(item => item.name)
+        if (this.chart !== null) {
+            return this.chart.series.map(item => item.name)
         }
         return [];
     };
@@ -81,13 +80,19 @@ export default class HighChartBar extends React.Component {
     componentWillReceiveProps(nextProps, nextState) {
         if (nextProps.series !== this.props.series) {
             try {
-                this.update(nextProps.series);
+                this.updateSeries(nextProps.series);
             } catch(err) {}
         }
     }
 
     componentWillUnmount() {
         this.chart.destroy();
+    }
+
+    clearSeries = () => {
+        while (this.chart.series.length) {
+            this.chart.series[0].remove();
+        }
     }
 
     initializeChart = () => {
@@ -101,6 +106,7 @@ export default class HighChartBar extends React.Component {
 
     updateSeries = series => {
         if (series.length > 0) {
+            this.clearSeries()
             series.map((item, index) => {
                 this.chart.addSeries({
                     name: item.name,
@@ -115,11 +121,11 @@ export default class HighChartBar extends React.Component {
                     max: Number(this.findYAxisMaxValue(series))
                 }
             });
-            this.props.updateTimeline && this.chart.update({
+            this.chart.update({
                 xAxis: {
                     gridLineColor: 'transparent',
-                    categories: this.props.dollarCategories 
-                            ? this.props.dollarCategories 
+                    categories: this.props.categories 
+                            ? this.props.categories 
                             : series[0].timelineData.map(item => item.timeline.format('MMM YY'))
                 }
             })

@@ -1040,11 +1040,9 @@ class PortfolioDetailImpl extends React.Component {
                         loading={false}
                         participatedContests={this.state.participatedContests}
                         currentStaticPerformance={this.state.currentStaticPerformance}
-                        simulatedStaticPerformance={this.state.simulatedStaticPerformance}
                         renderStaticPerformanceSelector={this.renderStaticPerformanceSelectorRadioGroup}
                         renderRollingPerformanceSelector={this.renderRollingPerformanceSelectorRadioGroup}
                         currentRollingPerformance={this.state.currentRollingPerformance}
-                        simulatedRollingPerformance={this.state.simulatedRollingPerformance}
                         trueRollingPerformanceCategories={this.state.trueRollingPerformanceCategories}
                         simulatedRollingPerformanceCategories={this.state.simulatedRollingPerformanceCategories}
                 />

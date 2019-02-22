@@ -172,9 +172,7 @@ class Layout extends React.Component {
                                 <HighChartBar 
                                     id='rollingPerformance'
                                     series={this.props.currentRollingPerformance}
-                                    dollarSeries={this.props.simulatedRollingPerformance}
-                                    percentageSeries={this.props.currentRollingPerformance}
-                                    radiogroupLabels = {['Historical', 'True']}
+                                    categories={this.props.simulatedRollingPerformanceCategories}
                                     dollarCategories={this.props.simulatedRollingPerformanceCategories}
                                     percentageCategories={this.props.trueRollingPerformanceCategories}
                                 />
@@ -194,8 +192,7 @@ class Layout extends React.Component {
                             <Grid item xs={12}>
                                 <HighChartBar 
                                     id='staticPerformance'
-                                    dollarSeries={this.props.simulatedStaticPerformance}
-                                    percentageSeries={this.props.currentStaticPerformance}
+                                    series={this.props.currentStaticPerformance}
                                     radiogroupLabels = {['Historical', 'True']}
                                     categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
                                     updateTimeline={true}
