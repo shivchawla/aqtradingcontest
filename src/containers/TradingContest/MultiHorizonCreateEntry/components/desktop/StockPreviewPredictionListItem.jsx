@@ -108,9 +108,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const directionUnit = type === 'buy' ? 1 : -1;
         const changeInvestment = directionUnit * ((lastPrice - avgPrice) / avgPrice) * investment;
         const changedInvestment = investment + changeInvestment;
-        const changedInvestmentColor = (triggered ? changedInvestment : investment) > investment
+        const requiredChangedInvestment = triggered ? changedInvestment : investment;
+        const changedInvestmentColor = requiredChangedInvestment > investment
             ? metricColor.positive 
-            : changedInvestment < investment 
+            : requiredChangedInvestment < investment 
                 ? metricColor.negative
                 : metricColor.neutral;
         const isMarketTrading = !DateHelper.isHoliday();

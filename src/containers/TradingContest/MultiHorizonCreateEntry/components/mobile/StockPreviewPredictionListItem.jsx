@@ -143,10 +143,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const changedInvestment = investment + (changeInvestment * directionUnit);
 
         const duration = DateHelper.getTradingDays(startDate, endDate);
-
-        const changedInvestmentColor = (triggered ? changedInvestment : investment) > investment
+        const requiredChangedInvestment = triggered ? changedInvestment : investment;
+        const changedInvestmentColor = requiredChangedInvestment > investment
             ? metricColor.positive 
-            : changedInvestment < investment 
+            : requiredChangedInvestment < investment 
                 ? metricColor.negative 
                 : metricColor.neutral;        
 
