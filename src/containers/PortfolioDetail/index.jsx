@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import {currentPerformanceColor, simulatedPerformanceColor, benchmarkColor, buttonStyle} from '../../constants';
 import Layout from './components/desktop/Layout';
 import RadioGroup from '../../components/selections/RadioGroup';
+import CustomRadio from '../Watchlist/components/mobile/WatchlistCustomRadio';
 import {Utils,fetchAjax, getStockPerformance, openNotification, handleCreateAjaxError} from '../../utils';
 import {benchmarks as benchmarkArray} from '../../constants/benchmarks';
 // import '../../css/adviceDetail.css';
@@ -983,6 +984,8 @@ class PortfolioDetailImpl extends React.Component {
                 onChange={value => {
                     this.handleStaticPerformanceSelectorChange(requiredPerformanceSelectors[value])
                 }}
+                CustomRadio={CustomRadio}
+                small
             />
         );
     }
@@ -1012,6 +1015,8 @@ class PortfolioDetailImpl extends React.Component {
                 onChange={value => {
                     this.handleRollingPerformanceSelectorChange(requiredRollingPerformanceSelectors[value])
                 }}
+                CustomRadio={CustomRadio}
+                small
             />
         );
     }
@@ -1023,7 +1028,7 @@ class PortfolioDetailImpl extends React.Component {
         return (
             <Grid   
                     container 
-                    style={{marginBottom:'20px'}} 
+                    style={{padding: '20px'}} 
                     className='aq-page-container'
             >
                 <Layout 
@@ -1037,7 +1042,7 @@ class PortfolioDetailImpl extends React.Component {
                         showPerformanceToggle={Utils.isLoggedIn()}
                         handlePerformanceToggleChange={this.handlePerformanceToggleChange}
                         performanceType={this.state.performanceType}
-                        loading={false}
+                        loading={this.state.loading}
                         participatedContests={this.state.participatedContests}
                         currentStaticPerformance={this.state.currentStaticPerformance}
                         renderStaticPerformanceSelector={this.renderStaticPerformanceSelectorRadioGroup}

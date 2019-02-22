@@ -3,12 +3,13 @@ import Media from 'react-media';
 import {withRouter} from 'react-router';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
-import {metricsHeaderStyle, shadowBoxStyle, metricColor} from '../../../../constants';
+import {metricsHeaderStyle, shadowBoxStyle, metricColor, horizontalBox} from '../../../../constants';
 import {formatMetric} from '../../utils';
 import {metricDefs} from '../../constants';
 import {Utils} from '../../../../utils';
 import HighChartBar from '../../../../components/Charts/HighChartBar';
 import HighStock from '../../../../components/Charts/HighStock';
+import TranslucentLoader from '../../../../components/Loaders/TranslucentLoader';
 
 const metrics = [
     {
@@ -147,15 +148,25 @@ class Layout extends React.Component {
         const simulatedMetrics = this.processMetricsForSelectedAdvice(selectedContest, 'simulated');
 
         return (
-            <Grid item xs={8} style={{...shadowBoxStyle, ...this.props.style, marginBottom: '20px'}}>
-                <div style={{width: '100%', height: '1px', backgroundColor: '#e8e8e8'}}></div>
+            <Grid 
+                    item 
+                    xs={8} 
+                    style={{
+                        ...this.props.style, 
+                        marginBottom: '20px'
+                    }}
+            >
                 <Grid container>
                     <Grid 
                             item 
                             xs={12}
-                            style={customPanelStyle}
+                            style={{...customPanelStyle, position: 'relative'}}
                             header={<h3 style={metricsHeaderStyle}>Performance</h3>}
                         >
+                            {
+                                this.props.loading &&
+                                <TranslucentLoader />
+                            }
                             <HighStock series={tickers} chartId="advice-detail-chart"/>
                     </Grid>
                     <Grid
@@ -164,11 +175,27 @@ class Layout extends React.Component {
                             style={customPanelStyle}
                             header={<h3 style={metricsHeaderStyle}>Rolling Performance</h3>}
                         >
-                        <Grid container>
-                            <Grid item xs={12}>
+                        <Grid 
+                                container
+                                style={{
+                                    position: 'relative'
+                                }}
+                        >
+                            {
+                                this.props.loading &&
+                                <TranslucentLoader />
+                            }
+                            <Grid 
+                                    item 
+                                    xs={12}
+                                    style={{
+                                        ...horizontalBox,
+                                        justifyContent: 'flex-end'
+                                    }}
+                            >
                                 {this.props.renderRollingPerformanceSelector()}
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} style={{position: 'relative'}}>
                                 <HighChartBar 
                                     id='rollingPerformance'
                                     series={this.props.currentRollingPerformance}
@@ -185,8 +212,24 @@ class Layout extends React.Component {
                             style={customPanelStyle}
                             header={<h3 style={metricsHeaderStyle}>Static Performance</h3>}
                         >
-                        <Grid container>
-                            <Grid item xs={12}>
+                        <Grid 
+                                container
+                                style={{
+                                    position: 'relative'
+                                }}
+                        >
+                            {
+                                this.props.loading &&
+                                <TranslucentLoader />
+                            }
+                            <Grid 
+                                    style={{
+                                        ...horizontalBox,
+                                        justifyContent: 'flex-end'
+                                    }}
+                                    item 
+                                    xs={12}
+                            >
                                 {this.props.renderStaticPerformanceSelector()}
                             </Grid>
                             <Grid item xs={12}>
@@ -213,10 +256,14 @@ class Layout extends React.Component {
 export default withRouter(Layout);
 
 const customPanelStyle = {
+    ...shadowBoxStyle,
     background: 'transparent',
     borderRadius: 4,
     border: 0,
     borderBottom: '1px solid #eaeaea',
     overflow: 'hidden',
+    marginBottom: '20px',
+    padding: '10px',
+    boxSizing: 'border-box'
 };
 
