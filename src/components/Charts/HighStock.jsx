@@ -468,34 +468,38 @@ class MyChartNewImpl extends React.Component {
 
     renderHorizontalLegendList = () => {
         const {legendItems} = this.state;
-        const fontSize = this.props.mobile ? '14px' : '12px'
+
         return (
             <Grid item style={{ zIndex:'20'}} xs={12} >
                 <Grid container alignItems="center"> 
                     <Grid 
                             item 
-                            xs={12}
+                            xs={5}
                             style={{
                                 ...horizontalBox,
                                 justifyContent: 'space-between',
-                                marginTop: '5px'
                             }}
                     >
-                        <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                            {
-                                legendItems.map((legend, index) => {
-                                    const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
+                        {
+                            legendItems.map((legend, index) => {
+                                const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
+                                const color = _.get(legend, 'color', '#222');
+                                const name = _.get(legend, 'name', 'N/A')
 
-                                    return (
-                                        <PriceComponent 
-                                            key={index}
-                                            lastPrice={lastPrice} 
-                                            change={legend.change}
-                                        />    
-                                    );
-                                })
-                            }
-                        </div>
+                                return (
+                                    <PriceComponent 
+                                        color={color}
+                                        key={index}
+                                        lastPrice={lastPrice} 
+                                        change={legend.change}
+                                        name={name}
+                                    />    
+                                );
+                            })
+                        }
+                    </Grid>
+                    <Grid item xs={2} />
+                    <Grid item xs={5}>
                         <RadioGroup 
                             CustomRadio={TimelineCustomRadio}
                             items={timelines.map(item => item.label)}
@@ -538,7 +542,7 @@ class MyChartNewImpl extends React.Component {
                 }
                 {
                     !this.props.hideLegend &&
-                    <Grid container>
+                    <Grid container style={{marginTop: '10px'}}>
                         {this.renderHorizontalLegendList()}
                     </Grid>
                 }
@@ -568,19 +572,22 @@ class MyChartNewImpl extends React.Component {
 
 export default withRouter(MyChartNewImpl);
 
-const PriceComponent = ({lastPrice, change}) => {
+const PriceComponent = ({name = 'NIFTY_50', lastPrice, change, color = '#222'}) => {
     const changeColor = change < 0 ? '#F44336' : change === 0 ? '#222' : '#00C853';
     
     return (
         <div 
                 style={{
-                    ...horizontalBox,
-                    justifyContent: 'flex-start'
+                    ...verticalBox,
+                    alignItems: 'flex-start',
                 }}
         >
-            <LastPrice>₹{lastPrice}</LastPrice>
-            <Divider>|</Divider>
-            <Change color={changeColor}>{change}%</Change>                                        
+            <Name color={color}>{name}</Name>
+            <div style={{...horizontalBox, justifyContent: 'space-between'}}>
+                <LastPrice>₹{lastPrice}</LastPrice>
+                <Divider>|</Divider>
+                <Change color={changeColor}>{change}%</Change>  
+            </div>                                      
         </div>
     );
 }
@@ -588,8 +595,16 @@ const PriceComponent = ({lastPrice, change}) => {
 const LastPrice = styled.h3`
     font-family: 'Lato', sans-serif;
     font-size: ${props => props.fontSize || '14px'};
-    color: #222;
+    color: ${props => props.color || '#222'};
     font-weight: 500;
+`;
+
+const Name = styled.h3`
+    font-family: 'Lato', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: ${props => props.color || '#222'};
+    opacity: 0.8;
 `;
 
 const Date = styled.h3`
@@ -602,7 +617,7 @@ const Date = styled.h3`
 
 const Change = styled.h3`
     font-family: 'Lato', sans-serif;
-    font-size: ${props => props.fontSize || '14px'};
+    font-size: ${props => props.fontSize || '12px'};
     font-family: 'Lato', sans-serif;
     font-weight: 400;
     color: ${props => props.color || metricColor.neutral}

@@ -310,14 +310,6 @@ class PortfolioDetailImpl extends React.Component {
                 return moment(itemDate).isSameOrAfter(oneYearOldDate);
             });
 
-            if (performance.simulated && simulatedPerformance.length > 0) {
-                tickers.push({
-                    name: 'Historical Performance',
-                    data: simulatedPerformance,
-                    color: simulatedPerformanceColor,
-                    noLoadData: true
-                });
-            }
     
             if (performance.current && Utils.isLoggedIn() && truePerformance.length > 0) {
                 tickers.push({

@@ -147,7 +147,7 @@ class Layout extends React.Component {
         const simulatedMetrics = this.processMetricsForSelectedAdvice(selectedContest, 'simulated');
 
         return (
-            <Grid item xs={12} style={{...shadowBoxStyle, ...this.props.style, marginBottom: '20px'}}>
+            <Grid item xs={8} style={{...shadowBoxStyle, ...this.props.style, marginBottom: '20px'}}>
                 <div style={{width: '100%', height: '1px', backgroundColor: '#e8e8e8'}}></div>
                 <Grid container>
                     <Grid 
@@ -171,6 +171,7 @@ class Layout extends React.Component {
                             <Grid item xs={12}>
                                 <HighChartBar 
                                     id='rollingPerformance'
+                                    series={this.props.currentRollingPerformance}
                                     dollarSeries={this.props.simulatedRollingPerformance}
                                     percentageSeries={this.props.currentRollingPerformance}
                                     radiogroupLabels = {['Historical', 'True']}

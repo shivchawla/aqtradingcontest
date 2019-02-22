@@ -7,8 +7,7 @@ import {benchmarkColor, currentPerformanceColor, simulatedPerformanceColor} from
 export default class HighChartBar extends React.Component {
     constructor(props) {
         super(props);
-        this.dollarChart = null;
-        this.percentageChart = null;
+        this.chart = null;
         const {legendEnabled = false} = props; 
         this.state = {
             config: {
@@ -80,48 +79,43 @@ export default class HighChartBar extends React.Component {
     }
 
     componentWillReceiveProps(nextProps, nextState) {
-        if (nextProps.dollarSeries !== this.props.dollarSeries) {
+        if (nextProps.series !== this.props.series) {
             try {
-                this.updateDollarSeries(nextProps.dollarSeries);
-                this.updatePercentageSeries(nextProps.percentageSeries)
+                this.update(nextProps.series);
             } catch(err) {}
         }
     }
 
     componentWillUnmount() {
-        this.dollarChart.destroy();
-        this.percentageChart.destroy();
+        this.chart.destroy();
     }
 
     initializeChart = () => {
-        const {dollarSeries, percentageSeries} = this.props;
+        const {series} = this.props;
         const highChartId = _.get(this.props, 'id', '');
-        this.dollarChart = new HighChart['Chart'](`${highChartId}-bar-chart-dollar`, this.state.config);
-        this.percentageChart = new HighChart['Chart'](`${highChartId}-bar-chart-percentage`, this.state.config);
+        this.chart = new HighChart['Chart'](`${highChartId}-bar-chart`, this.state.config);
         try {
-            this.updateDollarSeries(dollarSeries);
-            this.updatePercentageSeries(percentageSeries)
+            this.updateSeries(series);
         } catch(err) {} 
     }
 
-    updateDollarSeries = series => {
+    updateSeries = series => {
         if (series.length > 0) {
-            this.clearDollarSeries();
             series.map((item, index) => {
-                this.dollarChart.addSeries({
+                this.chart.addSeries({
                     name: item.name,
                     data: this.props.updateTimeline 
                         ? item.timelineData.map(itemValue  => itemValue.value)
                         : item.data,
                 });
             });
-            this.dollarChart.update({
+            this.chart.update({
                 colors: [simulatedPerformanceColor, benchmarkColor],
                 yAxis: {
                     max: Number(this.findYAxisMaxValue(series))
                 }
             });
-            this.props.updateTimeline && this.dollarChart.update({
+            this.props.updateTimeline && this.chart.update({
                 xAxis: {
                     gridLineColor: 'transparent',
                     categories: this.props.dollarCategories 
@@ -132,33 +126,6 @@ export default class HighChartBar extends React.Component {
         }
     }
 
-    updatePercentageSeries = series => {
-        if (series.length > 0) {
-            this.clearPercentageSeries();
-            series.map((item, index) => {
-                this.percentageChart.addSeries({
-                    name: item.name,
-                    data: this.props.updateTimeline 
-                            ? item.timelineData.map(itemValue  => itemValue.value)
-                            : item.data,
-                });
-            });
-            this.percentageChart.update({
-                colors: [currentPerformanceColor, benchmarkColor],
-                yAxis: {
-                    max: Number(this.findYAxisMaxValue(series))
-                }
-            });
-            this.props.updateTimeline && this.percentageChart.update({
-                xAxis: {
-                    gridLineColor: 'transparent',
-                    categories: this.props.percentageCategories 
-                            ? this.props.percentageCategories 
-                            : series[0].timelineData.map(item => item.timeline.format('MMM YY'))
-                }
-            })
-        }
-    }
 
     findYAxisMaxValue = series => {
         let data = [];
@@ -180,44 +147,7 @@ export default class HighChartBar extends React.Component {
         return Math.ceil(minValue / 10) * 10;
     }
 
-    clearDollarSeries = () => {
-        while (this.dollarChart.series.length) {
-            this.dollarChart.series[0].remove();
-        }
-    }
-
-    clearPercentageSeries = () => {
-        while (this.percentageChart.series.length) {
-            this.percentageChart.series[0].remove();
-        }
-    }
-
-    handleRadioGroupChange = e => {
-        this.setState({
-            dollarVisible: e.target.value === 'dollarPerformance' ? true : false,
-        });
-        if (this.props.dollarCategories) {
-            if (e.target.value === 'dollarPerformance') {
-                this.dollarChart.update({
-                    xAxis: {
-                        gridLineColor: 'transparent',
-                        categories: this.props.dollarCategories
-                    }
-                });
-            } else {
-                this.percentageChart.update({
-                    xAxis: {
-                        gridLineColor: 'transparent',
-                        categories: this.props.percentageCategories
-                    }
-                });
-            }
-        }
-    }
-
     render() {
-        const chartPercentageStyle = !this.state.dollarVisible ? {display: 'block'} : {display: 'none'};
-        const chartDollarStyle = this.state.dollarVisible ? {display: 'block'} : {display: 'none'};
         const highChartId = _.get(this.props, 'id', '');
 
         return (
@@ -225,14 +155,7 @@ export default class HighChartBar extends React.Component {
                 <Grid 
                     item
                     xs={12} 
-                    style={{textAlign: 'center', ...chartDollarStyle}} 
-                    id={`${highChartId}-bar-chart-dollar`}
-                />
-                <Grid
-                    item
-                    xs={12} 
-                    style={{textAlign: 'center', ...chartPercentageStyle}} 
-                    id={`${highChartId}-bar-chart-percentage`}
+                    id={`${highChartId}-bar-chart`}
                 />
             </Grid>
         );
