@@ -7,6 +7,7 @@ import {metricsHeaderStyle, shadowBoxStyle, metricColor, horizontalBox} from '..
 import {formatMetric} from '../../utils';
 import {metricDefs} from '../../constants';
 import {Utils} from '../../../../utils';
+import PortfolioMetricItems from './PortfolioMetricItems';
 import HighChartBar from '../../../../components/Charts/HighChartBar';
 import HighStock from '../../../../components/Charts/HighStock';
 import TranslucentLoader from '../../../../components/Loaders/TranslucentLoader';
@@ -94,6 +95,39 @@ class Layout extends React.Component {
         }
     }
 
+    renderHelloWorld = () => {
+        return (
+            <h1>Hello World</h1>
+        );
+    }
+
+    renderAdviceMetrics = () => {
+        const {
+            annualReturn = 0, 
+            volatility = 0, 
+            maxLoss = 0, 
+            dailyNAVChangePct = 0, 
+            totalReturn = 0, 
+            beta = 0,
+            nstocks = 0,
+            calmar = 0
+        } = this.props.metrics || {};
+        const {followers = 0, subscribers = 0, contestOnly} = this.props.adviceDetail || {};
+        var subscriberOrFollowers = contestOnly ? {value: calmar, label: 'Wishlisters'} : {value: subscribers, label: 'Subscribers'};
+        const metricsItems = [
+            {value: annualReturn, label: 'Annual Return', percentage: true, color: true, fixed: 2, tooltipText: `Compounded annual growth rate ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
+            {value: volatility, label: 'Volatility', percentage: true, fixed: 2, tooltipText: `Annualized standard deviation of daily returns ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
+            {value: totalReturn, label: 'Total Return', percentage: true, color:true, fixed: 2, tooltipText: `Total return ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
+            {value: beta, label: 'Beta', noNumeric: true, color:true, fixed: 2, tooltipText: `Total return ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
+            {value: calmar, label: 'Calmar Ratio', noNumeric: true},
+            {value: -1 * maxLoss, color:true, label: 'Maximum Loss', percentage: true, fixed: 2, tooltipText: `Maximum drop from the peak return ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
+        ]
+
+        return (
+            <PortfolioMetricItems metrics={metricsItems} />
+        );
+    }
+
     renderPageContent() {
         const {
             name = '', 
@@ -157,6 +191,20 @@ class Layout extends React.Component {
                     }}
             >
                 <Grid container>
+                    <Grid 
+                            item 
+                            xs={12}
+                            style={{
+                                ...customPanelStyle,
+                                position: 'relative'
+                            }}
+                    >
+                        {
+                            this.props.loading &&
+                            <TranslucentLoader />
+                        }
+                        {this.renderAdviceMetrics()}
+                    </Grid>
                     <Grid 
                             item 
                             xs={12}

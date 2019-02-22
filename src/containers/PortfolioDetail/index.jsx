@@ -8,9 +8,9 @@ import {currentPerformanceColor, simulatedPerformanceColor, benchmarkColor, butt
 import Layout from './components/desktop/Layout';
 import RadioGroup from '../../components/selections/RadioGroup';
 import CustomRadio from '../Watchlist/components/mobile/WatchlistCustomRadio';
+import AqDesktopLayout from '../../components/Layout/AqDesktopLayout';
 import {Utils,fetchAjax, getStockPerformance, openNotification, handleCreateAjaxError} from '../../utils';
 import {benchmarks as benchmarkArray} from '../../constants/benchmarks';
-// import '../../css/adviceDetail.css';
 
 const {requestUrl} = require('../../localConfig.js');
 const DateHelper = require('../../utils/date');
@@ -195,7 +195,18 @@ class PortfolioDetailImpl extends React.Component {
         this.performanceSummary = performanceSummary;
         const currentPerformance = _.get(performanceSummary, 'current', {}) || {};
         const simulatedPerformance = _.get(performanceSummary, 'simulated', {}) || {};
-        const {annualReturn = 0, dailyNAVChangeEODPct = 0, netValueEOD = 0, totalReturn = 0, volatility = 0, maxLoss = 0, period = 0} = simulatedPerformance;
+        const {
+            annualReturn = 0, 
+            dailyNAVChangeEODPct = 0, 
+            netValueEOD = 0, 
+            totalReturn = 0, 
+            volatility = 0, 
+            maxLoss = 0, 
+            period = 0,
+            calmar = 0,
+            concentration = 0,
+            beta = 0
+        } = currentPerformance;
         const {nstocks = 0} = currentPerformance;
         var dailyNAVChangePct = 0.0
         var annualReturnEOD = annualReturn;
@@ -237,7 +248,11 @@ class PortfolioDetailImpl extends React.Component {
                 volatility,
                 maxLoss,
                 dailyNAVChangePct: 0,
-                netValue
+                netValue,
+                period,
+                calmar,
+                concentration,
+                beta
             },
             performance: {
                 current: currentPerformance,
@@ -520,21 +535,15 @@ class PortfolioDetailImpl extends React.Component {
             benchmark = _.get(adviceSummaryResponse.data, 'portfolio.benchmark.ticker', 'NIFTY_50');
             const contestOnly = _.get(adviceSummaryResponse.data, 'contestOnly', false);
             this.getAdviceSummary(adviceSummaryResponse);
-            const advicePortfolioUrl = `${adviceSummaryUrl}/portfolio?date=${startDate}`;
             
             const adviceDetail = this.state.adviceDetail;
-            const authorizedToViewPortfolio = adviceDetail.isSubscribed || adviceDetail.isOwner || adviceDetail.isAdmin;
             return Promise.all([
-                authorizedToViewPortfolio ? fetchAjax(advicePortfolioUrl) : null,
                 contestOnly && fetchAjax(adviceContestUrl, this.props.history, this.props.match.url, undefined, this.handleErrorNotFoundInContestError),
                 contestOnly && fetchAjax(adviceAllContestUrl, this.props.history, this.props.match.url, undefined, this.handleAllContestAdviceSummaryError),
                 this.getAdvicePerformance(advicePerformanceResponse.data, benchmark)
             ])
         })
-        .then(([advicePortfolioResponse, adviceContestResponse, allContestResponse])  => {
-            if (advicePortfolioResponse) {
-                this.getAdviceDetail(advicePortfolioResponse);
-            }
+        .then(([adviceContestResponse, allContestResponse])  => {
             const participatedContests = _.get(allContestResponse, 'data', []);
             const adviceActive = _.get(adviceContestResponse.data, 'active', false);
             const withdrawn = _.get(adviceContestResponse.data, 'withDrawn', false);
@@ -1057,10 +1066,12 @@ class PortfolioDetailImpl extends React.Component {
 
     render() {
         return (
-            <Grid container>
-                {/* {this.renderPostWarningModal()} */}
-                {this.renderPageContent()}
-            </Grid>
+            <AqDesktopLayout>
+                <Grid container>
+                    {/* {this.renderPostWarningModal()} */}
+                    {this.renderPageContent()}
+                </Grid>
+            </AqDesktopLayout>
         );
     }
 }
