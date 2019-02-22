@@ -164,10 +164,10 @@ class MyChartNewImpl extends React.Component {
                         var s = [];
                         self.updatePoints(this.points);
                     },
-                    // positioner: function () {
-                    //     return { x: -100, y: 35 };
-                    // },
-                    // backgroundColor: 'transparent',
+                    positioner: function () {
+                        return { x: -100, y: 35 };
+                    },
+                    backgroundColor: 'transparent',
                     shadow: false,
                     split: false,
                     useHTML: true
@@ -194,49 +194,11 @@ class MyChartNewImpl extends React.Component {
             try{
                 const item = legendItems.filter(item => item.name.toUpperCase() === point.series.name.toUpperCase())[0];
                 item.y = point.y;
+                item.change = Number(point.point.change.toFixed(2));
                 
                 this.setState({legendItems, selectedDate: moment(points[0].x).format(requiredMomentFormat)});
             }
             catch(err) {}
-        });
-    }
-
-    updateLegend = (name, data, destroy = false, color = null, disabled = false) => {
-        const legendItems = [...this.state.legendItems];
-        const selectedTime = data[data.length - 1][0];
-        const requiredMomentFormat = this.state.intraDaySelected ? readableTimeFormat : readableDateFormat;
-        const formattedTime = moment(selectedTime).format(requiredMomentFormat);
-        const initialYValue = data.length > 0 ? data[data.length - 1][1] : 0;
-        this.setState(prevState => {
-            if (destroy) {
-                return {
-                    legendItems: [
-                        {
-                            name: name, //.toUpperCase(),
-                            x: '1994-16-02',
-                            y: initialYValue,
-                            change: 0,
-                            disabled,
-                            checked: legendItems.length < 5 ,
-                            color: color || this.chart.series[this.chart.series.length - 1].color
-                        }
-                    ],
-                    selectedDate: formattedTime
-                }
-            } else {
-                return {
-                    legendItems: [...prevState.legendItems, {
-                        name: name , //toUpperCase(),
-                        x: '1994-16-02',
-                        y: initialYValue,
-                        change: 0,
-                        disabled,
-                        checked: legendItems.length < 5 ,
-                        color: color || this.chart.series[this.chart.series.length - 1].color
-                    }],
-                    selectedDate: formattedTime
-                }
-            }
         });
     }
 
@@ -405,19 +367,16 @@ class MyChartNewImpl extends React.Component {
                 series.map((item, index) => {
                     const seriesIndex = _.findIndex(this.chart.series, 
                                 seriesItem => seriesItem.name.toUpperCase() === item.name.toUpperCase());
-                    // if (seriesIndex === -1) {
                         if ((item.data === undefined || item.data.length < 1) && (item.noLoadData === undefined || item.noLoadData === false)) { // When no data is passed
                             this.showLoader();
                             getStockPerformance(item.name.toUpperCase())
                             .then(performance => {
-                                // // console.log('Updating index', index);
                                 this.updateItemInSeries(
                                     index, 
                                     {name: item.name, data: performance, disabled: item.disabled}
                                 );
                             })
                             .catch(err => {
-                                // console.log(err);
                             })
                             .finally(() => {
                                 this.hideLoader();
@@ -512,67 +471,31 @@ class MyChartNewImpl extends React.Component {
         const fontSize = this.props.mobile ? '14px' : '12px'
         return (
             <Grid item style={{ zIndex:'20'}} xs={12} >
-                {/* {
-                    legendItems.map((legend, index) => {
-                        const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
-
-                        return (
-                                <Grid container key={index} alignItems="center"> 
-                                    <Grid 
-                                            item 
-                                            xs={12}
-                                            style={{
-                                                ...verticalBox,
-                                                alignItems: 'center',
-                                                marginTop: '5px'
-                                            }}
-                                    >
-                                        <div 
-                                                style={{
-                                                    ...horizontalBox,
-                                                    justifyContent: 'space-between',
-                                                    width: '100%'
-                                                }}
-                                        >
-                                            <Date>{this.state.selectedDate}</Date>
-                                            <PriceComponent lastPrice={lastPrice} change={legend.change}/>    
-                                        </div>
-                                        <RadioGroup 
-                                            CustomRadio={TimelineCustomRadio}
-                                            items={timelines}
-                                            defaultSelected={3}
-                                            onChange={this.changeSelection}
-                                            style={{
-                                                marginTop: '10px',
-                                                width: '100%',
-                                                justifyContent: 'space-between'
-                                            }}
-                                        />
-                                    </Grid>
-                                </Grid>
-                        );
-                    })
-                } */}
                 <Grid container alignItems="center"> 
                     <Grid 
                             item 
                             xs={12}
                             style={{
-                                ...verticalBox,
-                                alignItems: 'center',
+                                ...horizontalBox,
+                                justifyContent: 'space-between',
                                 marginTop: '5px'
                             }}
                     >
-                        {/* <div 
-                                style={{
-                                    ...horizontalBox,
-                                    justifyContent: 'space-between',
-                                    width: '100%'
-                                }}
-                        >
-                            <Date>{this.state.selectedDate}</Date>
-                            <PriceComponent lastPrice={lastPrice} change={legend.change}/>    
-                        </div> */}
+                        <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                            {
+                                legendItems.map((legend, index) => {
+                                    const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
+
+                                    return (
+                                        <PriceComponent 
+                                            key={index}
+                                            lastPrice={lastPrice} 
+                                            change={legend.change}
+                                        />    
+                                    );
+                                })
+                            }
+                        </div>
                         <RadioGroup 
                             CustomRadio={TimelineCustomRadio}
                             items={timelines.map(item => item.label)}
@@ -615,10 +538,7 @@ class MyChartNewImpl extends React.Component {
                 }
                 {
                     !this.props.hideLegend &&
-                    <Grid 
-                            container 
-                            style={{position: !this.props.mobile ? 'absolute' : 'relative', width: '300px'}}
-                    >
+                    <Grid container>
                         {this.renderHorizontalLegendList()}
                     </Grid>
                 }
