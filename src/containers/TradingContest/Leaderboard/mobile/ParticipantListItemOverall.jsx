@@ -63,7 +63,7 @@ export default class ParticipantListItemOverall extends React.Component {
                 >
                     <SecondaryText style={{marginLeft: '5px'}} color={this.getColor(avgPnl)}>
                         <p style={labelStyle}>Avg. PnL</p>
-                        {(avgPnl * 100).toFixed(2)} %
+                        {(avgPnl || 0).toFixed(2)} %
                     </SecondaryText>
                     <SecondaryText style={{marginLeft: '5px'}} color={this.getColor(totalReturn)}>
                         <p style={labelStyle}>Total Return</p>

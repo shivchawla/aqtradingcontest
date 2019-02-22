@@ -51,12 +51,12 @@ export default class ParticipantListItemOverall extends React.Component {
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={this.getColor(avgPnlPct)}>
-                        {(avgPnl * 100).toFixed(2)} %
+                        {(avgPnl || 0).toFixed(2)} %
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={getNetValueColor(netValue)}>
-                        ₹{Utils.formatMoneyValueMaxTwoDecimals(netValue * 1000)}
+                        ₹{Utils.formatInvestmentValue(netValue)}
                     </SecondaryText>
                 </Grid>
                 <Grid item xs={3} style={{textAlign: 'start'}}>
