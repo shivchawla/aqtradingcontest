@@ -35,45 +35,41 @@ const MetricItem =  (props) => {
 
     return (
         props.type === 'mobile'
-        ?   <Tooltip title={tooltipText}>
-                <Grid container style={{...containerStyle,...style, height, border, padding}}>
-                    <Grid item xs={12}>
+        ?   <Grid container style={{...containerStyle,...style, height, border, padding}}>
+                <Grid item xs={12}>
+                    <h5 style={{...valueStyle, ...props.valueStyle, color: valueColor}}>
+                        {value}
+                        {props.isNetValue && change !== null && <span style={{fontSize: '18px', marginLeft: '2px', color: changeColor}}>{change}</span>}
+                        {props.isNetValue && changePct !== null &&<span style={{fontSize: '18px', marginLeft: '2px', color: changeColor, fontWeight: 400}}>({changePct}%)</span>}
+                    </h5>
+                </Grid>
+                <Grid item xs={12}>
+                    <h5 
+                        style={{textAlign: 'center', ...labelStyle, ...props.labelStyle}} 
+                        value={labelStyle}
+                    >
+                        {label}
+                    </h5>
+                </Grid>
+            </Grid>
+        :   <Grid container style={{...containerStyle,...style, height, border, padding}}>
+                <div style={props.metricContainerStyle}>
+                    <Grid item xs={12} span={24} style={props.valueContainerStyle}>
                         <h5 style={{...valueStyle, ...props.valueStyle, color: valueColor}}>
                             {value}
-                            {props.isNetValue && change !== null && <span style={{fontSize: '18px', marginLeft: '2px', color: changeColor}}>{change}</span>}
-                            {props.isNetValue && changePct !== null &&<span style={{fontSize: '18px', marginLeft: '2px', color: changeColor, fontWeight: 400}}>({changePct}%)</span>}
+                            {props.isNetValue && change !== null && <span style={{fontSize: '12.5px', marginLeft: '2px', color: changeColor}}>{change}</span>}
+                            {props.isNetValue && changePct !== null &&<span style={{fontSize: '12.5px', marginLeft: '2px', color: changeColor}}>({changePct}%)</span>}
                         </h5>
                     </Grid>
-                    <Grid item xs={12}>
-                        <h5 
-                            style={{textAlign: 'center', ...labelStyle, ...props.labelStyle}} 
-                            value={labelStyle}
-                        >
-                            {label}
-                        </h5>
+                    <Grid 
+                            item
+                            xs={12}
+                            style={props.labelContainerStyle}
+                    >
+                        <h5 style={{...labelStyle, ...props.labelStyle}} value={labelStyle}>{label}</h5>
                     </Grid>
-                </Grid>
-            </Tooltip>
-        :   <Tooltip title={tooltipText}>
-                <Grid container style={{...containerStyle,...style, height, border, padding}}>
-                    <div style={props.metricContainerStyle}>
-                        <Grid item xs={12} span={24} style={props.valueContainerStyle}>
-                            <h5 style={{...valueStyle, ...props.valueStyle, color: valueColor}}>
-                                {value}
-                                {props.isNetValue && change !== null && <span style={{fontSize: '12.5px', marginLeft: '2px', color: changeColor}}>{change}</span>}
-                                {props.isNetValue && changePct !== null &&<span style={{fontSize: '12.5px', marginLeft: '2px', color: changeColor}}>({changePct}%)</span>}
-                            </h5>
-                        </Grid>
-                        <Grid 
-                                item
-                                xs={12}
-                                style={props.labelContainerStyle}
-                        >
-                            <h5 style={{...labelStyle, ...props.labelStyle}} value={labelStyle}>{label}</h5>
-                        </Grid>
-                    </div>
-                </Grid>
-            </Tooltip>
+                </div>
+            </Grid>
     );
 };
 
