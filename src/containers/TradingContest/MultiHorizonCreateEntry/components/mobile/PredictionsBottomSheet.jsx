@@ -72,7 +72,6 @@ export default class PredictionsBottomSheet extends React.Component {
     render() {
         const {predictions = []} = _.get(this.props, 'position', {});
         const {selectedDate  = moment()} = this.props;
-        console.log(selectedDate.format('YYYY-MM-DD'));
  
         return (
             <BottomSheet 
