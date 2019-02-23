@@ -1,11 +1,11 @@
 import * as React from 'react';
+import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import HighStock from 'highcharts/highstock';
 import _ from 'lodash';
 import axios from 'axios';
 import moment from 'moment';
 import {withRouter} from 'react-router';
-import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import TimelineCustomRadio from '../../containers/StockDetail/components/mobile/TimelineCustomRadio';
 import RadioGroup from '../selections/RadioGroup';
@@ -457,7 +457,6 @@ class HighStockImpl extends React.Component {
     }
 
     changeSelection = (selected) => {
-        console.log(selected);
         this.chart.update({
             rangeSelector: {
                 selected
@@ -465,40 +464,93 @@ class HighStockImpl extends React.Component {
         })
     }
 
-    renderHorizontalLegendList = () => {
+    renderDesktopPriceComponents = () => {
         const {legendItems} = this.state;
+
+        return (
+            <Grid 
+                    item 
+                    xs={5}
+                    style={{
+                        ...horizontalBox,
+                        justifyContent: 'space-between',
+                    }}
+            >
+                {
+                    legendItems.map((legend, index) => {
+                        const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
+                        const color = _.get(legend, 'color', '#222');
+                        const name = _.get(legend, 'name', 'N/A')
+
+                        return (
+                            <PriceComponent 
+                                color={color}
+                                key={index}
+                                lastPrice={lastPrice} 
+                                change={legend.change}
+                                name={name}
+                            />    
+                        );
+                    })
+                }
+            </Grid>
+        );
+    }
+
+    renderMobilePriceComponents = () => {
+        const {legendItems} = this.state;
+        
+        return (
+            <Grid 
+                    item 
+                    xs={12}
+                    style={{
+                        ...horizontalBox,
+                        justifyContent: 'flex-start',
+                    }}
+            >
+                {
+                    legendItems.map((legend, index) => {
+                        const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
+                        const color = _.get(legend, 'color', '#222');
+                        const name = _.get(legend, 'name', 'N/A')
+
+                        return (
+                            <PriceComponent 
+                                style={{
+                                    marginLeft: index > 0 ? '25px' : 0
+                                }}
+                                color={color}
+                                key={index}
+                                lastPrice={lastPrice} 
+                                change={legend.change}
+                                name={name}
+                                desktop={false}
+                            />    
+                        );
+                    })
+                }
+            </Grid>
+        );
+    }
+
+    renderHorizontalLegendList = () => {
+        const isDesktop = this.props.windowWidth >= 800;
 
         return (
             <Grid item style={{ zIndex:'20'}} xs={12} >
                 <Grid container alignItems="center"> 
+                    {
+                        isDesktop ? this.renderDesktopPriceComponents() : this.renderMobilePriceComponents()
+                    }
+                    {
+                        isDesktop &&
+                        <Grid item xs={2} />
+                    }
                     <Grid 
                             item 
-                            xs={5}
-                            style={{
-                                ...horizontalBox,
-                                justifyContent: 'space-between',
-                            }}
+                            xs={isDesktop ? 5 : 12}
                     >
-                        {
-                            legendItems.map((legend, index) => {
-                                const lastPrice = Utils.formatMoneyValueMaxTwoDecimals(legend.y);
-                                const color = _.get(legend, 'color', '#222');
-                                const name = _.get(legend, 'name', 'N/A')
-
-                                return (
-                                    <PriceComponent 
-                                        color={color}
-                                        key={index}
-                                        lastPrice={lastPrice} 
-                                        change={legend.change}
-                                        name={name}
-                                    />    
-                                );
-                            })
-                        }
-                    </Grid>
-                    <Grid item xs={2} />
-                    <Grid item xs={5}>
                         <RadioGroup 
                             CustomRadio={TimelineCustomRadio}
                             items={timelines.map(item => item.label)}
@@ -525,7 +577,7 @@ class HighStockImpl extends React.Component {
                 <Grid item xs={12}>
                     {
                         !this.props.hideLegend &&
-                        <Grid container>
+                        <Grid container style={{marginTop: '15px'}}>
                             <h2 style={{fontSize: this.props.mobile ? '14px' : '12px', margin: '0'}}>
                                 Date 
                                 <span 
@@ -571,23 +623,24 @@ class HighStockImpl extends React.Component {
     }
 }
 
-export default withRouter(HighStockImpl);
+export default windowSize(withRouter(HighStockImpl));
 
-const PriceComponent = ({name = 'NIFTY_50', lastPrice, change, color = '#222'}) => {
+const PriceComponent = ({name = 'NIFTY_50', lastPrice, change, color = '#222', style={}, desktop = true}) => {
     const changeColor = change < 0 ? '#F44336' : change === 0 ? '#222' : '#00C853';
     
     return (
         <div 
                 style={{
                     ...verticalBox,
+                    ...style,
                     alignItems: 'flex-start',
                 }}
         >
-            <Name color={color}>{name}</Name>
+            <Name color={color} fontSize={desktop ? '14px' : '12px'}>{name}</Name>
             <div style={{...horizontalBox, justifyContent: 'space-between'}}>
-                <LastPrice>₹{lastPrice}</LastPrice>
+                <LastPrice fontSize={desktop ? '14px' : '12px'}>₹{lastPrice}</LastPrice>
                 <Divider>|</Divider>
-                <Change color={changeColor}>{change}%</Change>  
+                <Change color={changeColor} fontSize={desktop ? '14px' : '12px'}>{change}%</Change>  
             </div>                                      
         </div>
     );
@@ -602,8 +655,8 @@ const LastPrice = styled.h3`
 
 const Name = styled.h3`
     font-family: 'Lato', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: ${props => props.fontSize || '14px'};
+    font-weight: 500;
     color: ${props => props.color || '#222'};
     opacity: 0.8;
 `;

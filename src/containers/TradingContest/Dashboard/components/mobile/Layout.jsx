@@ -10,6 +10,7 @@ import VerticalCard from './VerticalCard';
 import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
+import PortfolioDetail from '../../../../PortfolioDetail';
 import AutoComplete from '../../../../../components/input/AutoComplete';
 import {horizontalBox, verticalBox} from '../../../../../constants';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
@@ -149,7 +150,6 @@ export default class Layout extends React.Component {
                                 trade={leastProfitableStock}
                             />
                         </div>
-                        <div style={{height: '100px'}}></div>
                     </React.Fragment>
         );
     }
@@ -215,6 +215,9 @@ export default class Layout extends React.Component {
                                 ? this.renderInternalData()
                                 : <LoaderComponent />
                             }
+                            <div style={{marginTop: '15px'}}>
+                                <PortfolioDetail />
+                            </div>
                         </React.Fragment>
                 }
             </Grid>

@@ -1,14 +1,15 @@
 import React from 'react';
 import axios from 'axios';
+import Media from 'react-media';
 import {withRouter} from 'react-router';
 import _ from 'lodash';
 import moment from 'moment';
 import Grid from '@material-ui/core/Grid';
 import {currentPerformanceColor, simulatedPerformanceColor, benchmarkColor, buttonStyle} from '../../constants';
-import Layout from './components/desktop/Layout';
+import LayoutDesktop from './components/desktop/Layout';
+import LayoutMobile from './components/mobile/Layout';
 import RadioGroup from '../../components/selections/RadioGroup';
 import CustomRadio from '../Watchlist/components/mobile/WatchlistCustomRadio';
-import AqDesktopLayout from '../../components/Layout/AqDesktopLayout';
 import {Utils,fetchAjax, getStockPerformance, openNotification, handleCreateAjaxError} from '../../utils';
 import {benchmarks as benchmarkArray} from '../../constants/benchmarks';
 
@@ -1033,28 +1034,38 @@ class PortfolioDetailImpl extends React.Component {
     render() {
         const {name, heading, description, advisor, updatedDate} = this.state.adviceDetail;
         const {annualReturn, totalReturns, averageReturns, dailyReturns} = this.state.metrics;
+        const layoutProps = {
+            adviceDetail: this.state.adviceDetail,
+            metrics: this.state.metrics,
+            handlePortfolioStartDateChange: this.handlePortfolioStartDateChange,
+            selectedPortfolioDate: this.state.selectedPortfolioDate,
+            positions: this.state.positions,
+            updateTicker: this.updateTicker,
+            tickers: this.state.tickers,
+            showPerformanceToggle: Utils.isLoggedIn(),
+            handlePerformanceToggleChange: this.handlePerformanceToggleChange,
+            performanceType: this.state.performanceType,
+            loading: this.state.loading,
+            participatedContests: this.state.participatedContests,
+            currentStaticPerformance: this.state.currentStaticPerformance,
+            renderStaticPerformanceSelector: this.renderStaticPerformanceSelectorRadioGroup,
+            renderRollingPerformanceSelector: this.renderRollingPerformanceSelectorRadioGroup,
+            currentRollingPerformance: this.state.currentRollingPerformance,
+            trueRollingPerformanceCategories: this.state.trueRollingPerformanceCategories,
+            simulatedRollingPerformanceCategories: this.state.simulatedRollingPerformanceCategories
+        }
         
         return (
-            <Layout 
-                    adviceDetail={this.state.adviceDetail}
-                    metrics={this.state.metrics}
-                    handlePortfolioStartDateChange={this.handlePortfolioStartDateChange}
-                    selectedPortfolioDate={this.state.selectedPortfolioDate}
-                    positions={this.state.positions}
-                    updateTicker={this.updateTicker}
-                    tickers={this.state.tickers}
-                    showPerformanceToggle={Utils.isLoggedIn()}
-                    handlePerformanceToggleChange={this.handlePerformanceToggleChange}
-                    performanceType={this.state.performanceType}
-                    loading={this.state.loading}
-                    participatedContests={this.state.participatedContests}
-                    currentStaticPerformance={this.state.currentStaticPerformance}
-                    renderStaticPerformanceSelector={this.renderStaticPerformanceSelectorRadioGroup}
-                    renderRollingPerformanceSelector={this.renderRollingPerformanceSelectorRadioGroup}
-                    currentRollingPerformance={this.state.currentRollingPerformance}
-                    trueRollingPerformanceCategories={this.state.trueRollingPerformanceCategories}
-                    simulatedRollingPerformanceCategories={this.state.simulatedRollingPerformanceCategories}
-            />
+            <React.Fragment>
+                <Media 
+                    query="(max-width: 800px)"
+                    render={() => <LayoutMobile {...layoutProps} />}
+                />
+                <Media 
+                    query="(min-width: 801px)"
+                    render={() => <LayoutDesktop {...layoutProps} />}
+                />
+            </React.Fragment>
         );
     }
 }
