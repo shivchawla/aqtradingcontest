@@ -50,7 +50,7 @@ const timelines = [
 ];
 const selectedTimeline = 0;
 
-class MyChartNewImpl extends React.Component {
+class HighStockImpl extends React.Component {
     constructor(props) {
         super(props);
         const self = this;
@@ -121,7 +121,7 @@ class MyChartNewImpl extends React.Component {
                 },
                 navigator: {
                     outlineColor: '#F86C6C',
-                    enabled: false
+                    enabled: true
                 },
                 series: [],
                 plotOptions: {
@@ -173,7 +173,7 @@ class MyChartNewImpl extends React.Component {
                     useHTML: true
                 },
                 chart: {
-                    height: this.props.height || 350 
+                    height: this.props.height || 350 ,
                 },
                 credits: {
                     enabled: false
@@ -388,7 +388,6 @@ class MyChartNewImpl extends React.Component {
                 });
             }
         }
-        
     }
 
     clearSeries = () => {
@@ -522,35 +521,37 @@ class MyChartNewImpl extends React.Component {
         const {chartId="highchart-container"} = this.props;
 
         return (
-            <Grid item xs={12}>
-                {
-                    !this.props.hideLegend &&
-                    <Grid container>
-                        <h2 style={{fontSize: this.props.mobile ? '14px' : '12px', margin: '0'}}>
-                            Date 
-                            <span 
-                                    style={{
-                                        fontWeight: '700', 
-                                        color: '#555454',
-                                        marginLeft: '5px' 
-                                    }}
-                            >
-                                {this.state.selectedDate}
-                            </span>
-                        </h2>
-                    </Grid>
-                }
-                {
-                    !this.props.hideLegend &&
-                    <Grid container style={{marginTop: '10px'}}>
-                        {this.renderHorizontalLegendList()}
-                    </Grid>
-                }
-                <Grid 
-                        container
-                        style={{marginTop: !this.props.mobile ? '30px' : '0px'}} 
-                        id={chartId}
-                />
+            <Grid container>
+                <Grid item xs={12}>
+                    {
+                        !this.props.hideLegend &&
+                        <Grid container>
+                            <h2 style={{fontSize: this.props.mobile ? '14px' : '12px', margin: '0'}}>
+                                Date 
+                                <span 
+                                        style={{
+                                            fontWeight: '700', 
+                                            color: '#555454',
+                                            marginLeft: '5px' 
+                                        }}
+                                >
+                                    {this.state.selectedDate}
+                                </span>
+                            </h2>
+                        </Grid>
+                    }
+                    {
+                        !this.props.hideLegend &&
+                        <Grid container style={{marginTop: '10px'}}>
+                            {this.renderHorizontalLegendList()}
+                        </Grid>
+                    }
+                    <Grid 
+                            container
+                            style={{marginTop: !this.props.mobile ? '30px' : '0px'}} 
+                            id={chartId}
+                    />
+                </Grid>
             </Grid>
         );
     }
@@ -570,7 +571,7 @@ class MyChartNewImpl extends React.Component {
     }
 }
 
-export default withRouter(MyChartNewImpl);
+export default withRouter(HighStockImpl);
 
 const PriceComponent = ({name = 'NIFTY_50', lastPrice, change, color = '#222'}) => {
     const changeColor = change < 0 ? '#F44336' : change === 0 ? '#222' : '#00C853';

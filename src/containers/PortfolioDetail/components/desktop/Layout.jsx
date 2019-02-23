@@ -1,9 +1,9 @@
 import React from 'react';
-import Media from 'react-media';
+import styled from 'styled-components';
 import {withRouter} from 'react-router';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
-import {metricsHeaderStyle, shadowBoxStyle, metricColor, horizontalBox} from '../../../../constants';
+import {metricsHeaderStyle, shadowBoxStyle, metricColor, horizontalBox, verticalBox} from '../../../../constants';
 import {formatMetric} from '../../utils';
 import {metricDefs} from '../../constants';
 import {Utils} from '../../../../utils';
@@ -183,19 +183,45 @@ class Layout extends React.Component {
 
         return (
             <Grid 
-                    item 
-                    xs={8} 
-                    style={{
-                        ...this.props.style, 
-                        marginBottom: '20px'
-                    }}
+                    container
+                    style={this.props.style}
             >
-                <Grid container>
+                <Grid 
+                        item 
+                        xs={12}
+                        style={{
+                            ...customPanelStyle,
+                            position: 'relative'
+                        }}
+                >
+                    <SectionHeader>Portfolio Metrics</SectionHeader>
+                    {
+                        this.props.loading &&
+                        <TranslucentLoader />
+                    }
+                    {this.renderAdviceMetrics()}
+                </Grid>
+                <Grid 
+                        item 
+                        xs={12}
+                        style={{...customPanelStyle, position: 'relative', marginBottom: '10px'}}
+                        header={<h3 style={metricsHeaderStyle}>Performance</h3>}
+                    >
+                        <SectionHeader style={{marginBottom: 0}}>Portfolio Performance</SectionHeader>
+                        {
+                            this.props.loading &&
+                            <TranslucentLoader />
+                        }
+                        <HighStock series={tickers} chartId="advice-detail-chart"/>
+                </Grid>
+                <Grid
+                        item
+                        xs={12}
+                        style={customPanelStyle}
+                    >
                     <Grid 
-                            item 
-                            xs={12}
+                            container
                             style={{
-                                ...customPanelStyle,
                                 position: 'relative'
                             }}
                     >
@@ -203,92 +229,63 @@ class Layout extends React.Component {
                             this.props.loading &&
                             <TranslucentLoader />
                         }
-                        {this.renderAdviceMetrics()}
-                    </Grid>
-                    <Grid 
-                            item 
-                            xs={12}
-                            style={{...customPanelStyle, position: 'relative'}}
-                            header={<h3 style={metricsHeaderStyle}>Performance</h3>}
-                        >
-                            {
-                                this.props.loading &&
-                                <TranslucentLoader />
-                            }
-                            <HighStock series={tickers} chartId="advice-detail-chart"/>
-                    </Grid>
-                    <Grid
-                            item
-                            xs={12}
-                            style={customPanelStyle}
-                            header={<h3 style={metricsHeaderStyle}>Rolling Performance</h3>}
-                        >
                         <Grid 
-                                container
+                                item 
+                                xs={12}
                                 style={{
-                                    position: 'relative'
+                                    ...horizontalBox,
+                                    justifyContent: 'space-between',
+                                    marginBottom: '10px'
                                 }}
                         >
-                            {
-                                this.props.loading &&
-                                <TranslucentLoader />
-                            }
-                            <Grid 
-                                    item 
-                                    xs={12}
-                                    style={{
-                                        ...horizontalBox,
-                                        justifyContent: 'flex-end'
-                                    }}
-                            >
-                                {this.props.renderRollingPerformanceSelector()}
-                            </Grid>
-                            <Grid item xs={12} style={{position: 'relative'}}>
-                                <HighChartBar 
-                                    id='rollingPerformance'
-                                    series={this.props.currentRollingPerformance}
-                                    categories={this.props.simulatedRollingPerformanceCategories}
-                                    dollarCategories={this.props.simulatedRollingPerformanceCategories}
-                                    percentageCategories={this.props.trueRollingPerformanceCategories}
-                                />
-                            </Grid>
+                             <SectionHeader style={{marginBottom: 0}}>Rolling Performance</SectionHeader>
+                            {this.props.renderRollingPerformanceSelector()}
+                        </Grid>
+                        <Grid item xs={12} style={{position: 'relative'}}>
+                            <HighChartBar 
+                                id='rollingPerformance'
+                                series={this.props.currentRollingPerformance}
+                                categories={this.props.simulatedRollingPerformanceCategories}
+                                dollarCategories={this.props.simulatedRollingPerformanceCategories}
+                                percentageCategories={this.props.trueRollingPerformanceCategories}
+                            />
                         </Grid>
                     </Grid>
-                    <Grid
-                            item
-                            xs={12}
-                            style={customPanelStyle}
-                            header={<h3 style={metricsHeaderStyle}>Static Performance</h3>}
-                        >
+                </Grid>
+                <Grid
+                        item
+                        xs={12}
+                        style={customPanelStyle}
+                    >
+                    <Grid 
+                            container
+                            style={{
+                                position: 'relative'
+                            }}
+                    >
+                        {
+                            this.props.loading &&
+                            <TranslucentLoader />
+                        }
                         <Grid 
-                                container
                                 style={{
-                                    position: 'relative'
+                                    ...horizontalBox,
+                                    justifyContent: 'space-between'
                                 }}
+                                item 
+                                xs={12}
                         >
-                            {
-                                this.props.loading &&
-                                <TranslucentLoader />
-                            }
-                            <Grid 
-                                    style={{
-                                        ...horizontalBox,
-                                        justifyContent: 'flex-end'
-                                    }}
-                                    item 
-                                    xs={12}
-                            >
-                                {this.props.renderStaticPerformanceSelector()}
-                            </Grid>
-                            <Grid item xs={12}>
-                                <HighChartBar 
-                                    id='staticPerformance'
-                                    series={this.props.currentStaticPerformance}
-                                    radiogroupLabels = {['Historical', 'True']}
-                                    categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
-                                    updateTimeline={true}
-                                />
-                            </Grid>
+                            <SectionHeader>Static Performance</SectionHeader>
+                            {this.props.renderStaticPerformanceSelector()}
+                        </Grid>
+                        <Grid item xs={12}>
+                            <HighChartBar 
+                                id='staticPerformance'
+                                series={this.props.currentStaticPerformance}
+                                radiogroupLabels = {['Historical', 'True']}
+                                categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
+                                updateTimeline={true}
+                            />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -304,14 +301,24 @@ class Layout extends React.Component {
 export default withRouter(Layout);
 
 const customPanelStyle = {
-    ...shadowBoxStyle,
+    ...verticalBox,
+    // ...shadowBoxStyle,
+    alignItems: 'flex-start',
     background: 'transparent',
-    borderRadius: 4,
-    border: 0,
-    borderBottom: '1px solid #eaeaea',
+    borderRadius: '4px',
+    border: '1px solid #EAEAEA',
+    // borderBottom: '1px solid #eaeaea',
+    backgroundColor: '#FBFCFF',
     overflow: 'hidden',
     marginBottom: '20px',
     padding: '10px',
     boxSizing: 'border-box'
 };
 
+const SectionHeader = styled.h3`
+    font-size: 14px;
+    color: #1565C0;
+    font-weight: 500;
+    font-family: 'Lato', sans-serif;
+    margin-bottom: 10px;
+`;

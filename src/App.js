@@ -302,7 +302,7 @@ class App extends React.Component {
                                         <Route path='/policies/tnc' component={TnC}/> 
                                         <Route path='/policies/privacy' component={Policy}/> 
                                         <Route path='/aboutus' component={AboutUs}/> 
-                                        <Route path='/advice/:id' component={PortfolioDetail} /> 
+                                        <Route path='/advice' component={PortfolioDetail} /> 
                                         <Route exact={true} path='/api/docs' component={ApiDoc}/> 
                                         <Route 
                                             exact={true}

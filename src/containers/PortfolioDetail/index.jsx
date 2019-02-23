@@ -405,11 +405,11 @@ class PortfolioDetailImpl extends React.Component {
         });
 
         return [{
-            name: `Portfolio (${type})`,
+            name: `Portfolio`,
             data: currentData,
             timelineData: currentTimelineData
         }, { 
-            name: `${this.state.adviceDetail.benchmark} (${type})`,
+            name: `${this.state.adviceDetail.benchmark}`,
             data: benchmarkData,
             timelineData: benchmarkTimelineData
         }  
@@ -444,11 +444,11 @@ class PortfolioDetailImpl extends React.Component {
         })
         return [
             {
-                name: `Portfolio (${type})`,
+                name: `Portfolio`,
                 data: timelineData
             },
             {
-                name: `${this.state.adviceDetail.benchmark} (${type})`,
+                name: `${this.state.adviceDetail.benchmark}`,
                 data: benchmarkTimelineData
             }
         ];
@@ -519,8 +519,8 @@ class PortfolioDetailImpl extends React.Component {
         .catch(err => err);
     }
     
-    getAdviceData = (startDate = moment().format('YYYY-MM-DD')) => {
-        const adviceId = this.props.match.params.id;
+    getAdviceData = (adviceId = '5b3db2f54aed94405bf7cc93') => {
+        // const adviceId = this.props.match.params.id;
         const adviceSummaryUrl = `${requestUrl}/advice/${adviceId}`;
         const advicePerformanceUrl = `${requestUrl}/performance/advice/${adviceId}`;
         const adviceContestUrl = `${requestUrl}/contest/entry/${adviceId}`;
@@ -1030,48 +1030,31 @@ class PortfolioDetailImpl extends React.Component {
         );
     }
 
-    renderPageContent = () => {
+    render() {
         const {name, heading, description, advisor, updatedDate} = this.state.adviceDetail;
         const {annualReturn, totalReturns, averageReturns, dailyReturns} = this.state.metrics;
         
         return (
-            <Grid   
-                    container 
-                    style={{padding: '20px'}} 
-                    className='aq-page-container'
-            >
-                <Layout 
-                        adviceDetail={this.state.adviceDetail}
-                        metrics={this.state.metrics}
-                        handlePortfolioStartDateChange={this.handlePortfolioStartDateChange}
-                        selectedPortfolioDate={this.state.selectedPortfolioDate}
-                        positions={this.state.positions}
-                        updateTicker={this.updateTicker}
-                        tickers={this.state.tickers}
-                        showPerformanceToggle={Utils.isLoggedIn()}
-                        handlePerformanceToggleChange={this.handlePerformanceToggleChange}
-                        performanceType={this.state.performanceType}
-                        loading={this.state.loading}
-                        participatedContests={this.state.participatedContests}
-                        currentStaticPerformance={this.state.currentStaticPerformance}
-                        renderStaticPerformanceSelector={this.renderStaticPerformanceSelectorRadioGroup}
-                        renderRollingPerformanceSelector={this.renderRollingPerformanceSelectorRadioGroup}
-                        currentRollingPerformance={this.state.currentRollingPerformance}
-                        trueRollingPerformanceCategories={this.state.trueRollingPerformanceCategories}
-                        simulatedRollingPerformanceCategories={this.state.simulatedRollingPerformanceCategories}
-                />
-            </Grid>
-        );
-    }
-
-    render() {
-        return (
-            <AqDesktopLayout>
-                <Grid container>
-                    {/* {this.renderPostWarningModal()} */}
-                    {this.renderPageContent()}
-                </Grid>
-            </AqDesktopLayout>
+            <Layout 
+                    adviceDetail={this.state.adviceDetail}
+                    metrics={this.state.metrics}
+                    handlePortfolioStartDateChange={this.handlePortfolioStartDateChange}
+                    selectedPortfolioDate={this.state.selectedPortfolioDate}
+                    positions={this.state.positions}
+                    updateTicker={this.updateTicker}
+                    tickers={this.state.tickers}
+                    showPerformanceToggle={Utils.isLoggedIn()}
+                    handlePerformanceToggleChange={this.handlePerformanceToggleChange}
+                    performanceType={this.state.performanceType}
+                    loading={this.state.loading}
+                    participatedContests={this.state.participatedContests}
+                    currentStaticPerformance={this.state.currentStaticPerformance}
+                    renderStaticPerformanceSelector={this.renderStaticPerformanceSelectorRadioGroup}
+                    renderRollingPerformanceSelector={this.renderRollingPerformanceSelectorRadioGroup}
+                    currentRollingPerformance={this.state.currentRollingPerformance}
+                    trueRollingPerformanceCategories={this.state.trueRollingPerformanceCategories}
+                    simulatedRollingPerformanceCategories={this.state.simulatedRollingPerformanceCategories}
+            />
         );
     }
 }

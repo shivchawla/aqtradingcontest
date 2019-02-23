@@ -12,6 +12,7 @@ import LoaderComponent from '../../../Misc/Loader';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio'
 import AutoComplete from '../../../../../components/input/AutoComplete';
+import PortfolioDetail from '../../../../PortfolioDetail';
 import {horizontalBox, verticalBox} from '../../../../../constants';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
 
@@ -75,109 +76,110 @@ export default class Layout extends React.Component {
                         onReload={() => this.props.updateDailyContestStats()}
                         hideReload
                     />
-                :   <React.Fragment>
-                        <Grid container spacing={16}>
-                            <Grid 
-                                    item 
-                                    xs={4}
-                            >
-                                <TopCard 
-                                    header='Predictions'
-                                    barColor='#4468FF'
-                                    {...predictions}
-                                    number
-                                    colouredBorder
-                                    small
-                                />
-                            </Grid>
-                            <Grid 
-                                    item 
-                                    xs={4}
-                            >
-                                <TopCard 
-                                    header='Avg. PnL (%)'
-                                    barColor='#E6B74C'
-                                    percentage
-                                    {...avgPnlPct}
-                                    colouredBorder
-                                    small
-                                />
-                            </Grid>
-                            <Grid 
-                                    item 
-                                    xs={4}
-                            >
-                                <TopCard 
-                                    header='Avg. Holding Period (Days)'
-                                    barColor='#4CC2E6'
-                                    number
-                                    {...avgHoldingPeriod}
-                                    colouredBorder
-                                    small
-                                />
-                            </Grid>
-                        
-                            <Grid item xs={6}>
-                                <HorizontalCard 
-                                    header='Profit Factor' 
-                                    {...profitFactor}
-                                    ratio
-                                    defaultValue={null}
-                                    defaultValueToShow='-'
-                                    small
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <HorizontalCard 
-                                    header='Success Rate' 
-                                    {...winRatio}
-                                    percentage
-                                    baseValue={50}
-                                    small
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <HorizontalCard 
-                                    header='Avg. Maximum Loss' 
-                                    {...avgMaxLossPct}
-                                    style={{
-                                        marginTop: '10px'
-                                    }}
-                                    percentage
-                                    baseValue={0}
-                                    noColor
-                                    small
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <HorizontalCard 
-                                    header='Avg. Maximum Gain' 
-                                    {...avgMaxGainPct}
-                                    style={{
-                                        marginTop: '10px'
-                                    }}
-                                    percentage
-                                    baseValue={0}
-                                    noColor
-                                    small
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <VerticalCard 
-                                    header='Most Profitable'
-                                    trade={mostProftableStock}
-                                    small
-                                />                        
-                            </Grid>
-                            <Grid item xs={6}>
-                                <VerticalCard 
-                                    header='Least Proftable' 
-                                    trade={leastProfitableStock}
-                                    small
-                                />                     
-                            </Grid>
+                :   <Grid container spacing={16}>
+                        <Grid 
+                                item 
+                                xs={4}
+                        >
+                            <TopCard 
+                                header='Predictions'
+                                barColor='#4468FF'
+                                {...predictions}
+                                number
+                                colouredBorder
+                                small
+                            />
                         </Grid>
-                    </React.Fragment>
+                        <Grid 
+                                item 
+                                xs={4}
+                        >
+                            <TopCard 
+                                header='Avg. PnL (%)'
+                                barColor='#E6B74C'
+                                percentage
+                                {...avgPnlPct}
+                                colouredBorder
+                                small
+                            />
+                        </Grid>
+                        <Grid 
+                                item 
+                                xs={4}
+                        >
+                            <TopCard 
+                                header='Avg. Holding Period (Days)'
+                                barColor='#4CC2E6'
+                                number
+                                {...avgHoldingPeriod}
+                                colouredBorder
+                                small
+                            />
+                        </Grid>
+                    
+                        <Grid item xs={6}>
+                            <HorizontalCard 
+                                header='Profit Factor' 
+                                {...profitFactor}
+                                ratio
+                                defaultValue={null}
+                                defaultValueToShow='-'
+                                small
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <HorizontalCard 
+                                header='Success Rate' 
+                                {...winRatio}
+                                percentage
+                                baseValue={50}
+                                small
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <HorizontalCard 
+                                header='Avg. Maximum Loss' 
+                                {...avgMaxLossPct}
+                                style={{
+                                    marginTop: '10px'
+                                }}
+                                percentage
+                                baseValue={0}
+                                noColor
+                                small
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <HorizontalCard 
+                                header='Avg. Maximum Gain' 
+                                {...avgMaxGainPct}
+                                style={{
+                                    marginTop: '10px'
+                                }}
+                                percentage
+                                baseValue={0}
+                                noColor
+                                small
+                            />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <VerticalCard 
+                                header='Most Profitable'
+                                trade={mostProftableStock}
+                                small
+                            />                        
+                        </Grid>
+                        <Grid item xs={6}>
+                            <VerticalCard 
+                                header='Least Proftable' 
+                                trade={leastProfitableStock}
+                                small
+                            />                     
+                        </Grid>
+                        <Grid item xs={12}>
+                            <PortfolioDetail />
+                        </Grid>
+                    </Grid>
         );
     }
 
