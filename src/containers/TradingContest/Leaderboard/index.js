@@ -108,7 +108,6 @@ class Participants extends React.Component {
                 }
             });
             requiredData = _.orderBy(requiredData, ['totalEarnings'], ['desc'])
-            console.log(requiredData);
             this.setState({
                 winnersOverall: requiredData,
                 skip
