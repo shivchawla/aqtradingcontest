@@ -1,69 +1,19 @@
 import React from 'react';
-import axios from 'axios';
 import Media from 'react-media';
 import {withRouter} from 'react-router';
 import _ from 'lodash';
 import moment from 'moment';
-import Grid from '@material-ui/core/Grid';
-import {currentPerformanceColor, simulatedPerformanceColor, benchmarkColor, buttonStyle} from '../../constants';
+import {currentPerformanceColor, benchmarkColor} from '../../constants';
 import LayoutDesktop from './components/desktop/Layout';
 import LayoutMobile from './components/mobile/Layout';
 import RadioGroup from '../../components/selections/RadioGroup';
 import CustomRadio from '../Watchlist/components/mobile/WatchlistCustomRadio';
-import {Utils,fetchAjax, getStockPerformance, openNotification, handleCreateAjaxError} from '../../utils';
+import {Utils,fetchAjax, getStockPerformance} from '../../utils';
 import {benchmarks as benchmarkArray} from '../../constants/benchmarks';
 
 const {requestUrl} = require('../../localConfig.js');
 const DateHelper = require('../../utils/date');
 const dateFormat = 'Do MMMM YYYY';
-
-const approvalObj = {
-    name: {
-        valid: true,
-        reason: '',
-        fieldName: 'Name',
-    },
-    stockExposure: {
-        valid: false,
-        reason: '',
-        fieldName: 'Stock Exposure',
-    },
-    industryExposure: {
-        valid: false,
-        reason: '',
-        fieldName: 'Industry Exposure',
-    },
-    sectorExposure: {
-        valid: false,
-        reason: '',
-        fieldName: 'Sector Exposure',
-    },
-    goal: {
-        valid: true,
-        reason: '',
-        fieldName: 'Goal',
-    },
-    portfolioValuation: {
-        valid: true,
-        reason: '',
-        fieldName: 'Portfolio Valuation',
-    },
-    capitalization: {
-        valid: true,
-        reason: '',
-        fieldName: 'Capitalization',
-    },
-    sectors: {
-        valid: true,
-        reason: '',
-        fieldName: 'Sectors',
-    },
-    userText: {
-        valid: true,
-        reason: '',
-        fieldName: 'User Text'
-    }
-};
 
 class PortfolioDetailImpl extends React.Component {
     socketOpenConnectionTimeout = 1000;
@@ -93,12 +43,7 @@ class PortfolioDetailImpl extends React.Component {
                 isOwner: false,
                 isSubscribed: false,
                 isFollowing: false,
-                contestOnly: false,
                 benchmark: '',
-                approval: [],
-                approvalStatus: false,
-                investmentObjective: {},
-                approvalRequested: false
             },
             metrics: {
                 annualReturn: 0,
@@ -141,7 +86,6 @@ class PortfolioDetailImpl extends React.Component {
             notAuthorized: false,
             approvalLoading: false,
             // Used to approve investment objective and other fields
-            approvalObj,
             postWarningModalVisible: false,
             postToMarketPlaceLoading: false,
             requestApprovalLoading: false,
@@ -184,7 +128,6 @@ class PortfolioDetailImpl extends React.Component {
             isAdmin = false,
             numSubscribers = 0,
             numFollowers = 0,
-            contestOnly = false,
             portfolio = {},
             performanceSummary = {},
             netValue = 0,
@@ -198,8 +141,6 @@ class PortfolioDetailImpl extends React.Component {
         const simulatedPerformance = _.get(performanceSummary, 'simulated', {}) || {};
         const {
             annualReturn = 0, 
-            dailyNAVChangeEODPct = 0, 
-            netValueEOD = 0, 
             totalReturn = 0, 
             volatility = 0, 
             maxLoss = 0, 
@@ -209,12 +150,7 @@ class PortfolioDetailImpl extends React.Component {
             beta = 0
         } = currentPerformance;
         const {nstocks = 0} = currentPerformance;
-        var dailyNAVChangePct = 0.0
         var annualReturnEOD = annualReturn;
-        const approval = _.get(response.data, 'latestApproval', {});
-        const investmentObjective = _.get(response.data, 'investmentObjective', {});
-        const approvalRequested = _.get(response.data, 'approvalRequested', false);
-        this.updateApprovalObj(approval, investmentObjective);
 
         this.setState({
             adviceResponse: response.data,
@@ -236,10 +172,6 @@ class PortfolioDetailImpl extends React.Component {
                 updatedDate: moment(updatedDate).format(dateFormat),
                 rating: Number((rating.current || 0).toFixed(2)),
                 isPublic: _.get(response.data, 'public', false),
-                investmentObjective,
-                approval,
-                approvalRequested,
-                contestOnly
             },
             metrics: {
                 ...this.state.metrics,
@@ -260,26 +192,6 @@ class PortfolioDetailImpl extends React.Component {
                 simulated: simulatedPerformance
             }
         });
-    }
-
-    updateApprovalObj = (approval, investmentObjective) => {
-        const detail = _.get(approval, 'detail', []);
-        const {approvalObj} = this.state;
-        detail.map(item => {
-            const fieldValidIndex = Object.keys(approvalObj).indexOf(item.field);
-            if (fieldValidIndex !== -1) {
-                approvalObj[item.field].valid = item.valid;
-                approvalObj[item.field].reason = item.reason;
-            }
-        });
-        Object.keys(investmentObjective).map(item => {
-            const fieldValidIndex = Object.keys(approvalObj).indexOf(item);
-            if (fieldValidIndex !== -1) {
-                approvalObj[item].valid = investmentObjective[item].valid;
-                approvalObj[item].reason = investmentObjective[item].reason;
-            }
-        });
-        this.setState({approvalObj});
     }
 
     getAdviceDetail = response => {
@@ -304,12 +216,9 @@ class PortfolioDetailImpl extends React.Component {
         const currentPortfolioPerformance = _.get(performance, 'current.metrics.portfolioPerformance', {});
         const simulatedPortfolioPerformance = _.get(performance, 'simulated.metrics.portfolioPerformance', {});
         const benchmarkRequestType = _.indexOf(benchmarkArray, benchmark) === -1 ? 'detail' : 'detail_benchmark';
-        const simulatedPerformance = this.processPerformanceData(_.get(performance, 'simulated.portfolioValues', []));
         const truePerformance = this.processPerformanceData(_.get(performance, 'current.portfolioValues', []));
         Promise.all([
             getStockPerformance(benchmark, benchmarkRequestType),
-            // getStockStaticPerformance(benchmark, benchmarkRequestType),
-            // getStockRollingPerformance(benchmark, benchmarkRequestType)
         ])
         .then(([benchmarkResponse]) => {
             const benchmarkCurrentStaticPerformance = _.get(currentPortfolioPerformance, 'static_benchmark.monthly', {});    
@@ -524,8 +433,6 @@ class PortfolioDetailImpl extends React.Component {
         // const adviceId = this.props.match.params.id;
         const adviceSummaryUrl = `${requestUrl}/advice/${adviceId}`;
         const advicePerformanceUrl = `${requestUrl}/performance/advice/${adviceId}`;
-        const adviceContestUrl = `${requestUrl}/contest/entry/${adviceId}`;
-        const adviceAllContestUrl = `${requestUrl}/contest/entry/all/${adviceId}`;
         let benchmark = '';
         this.setState({loading: true});
         return Promise.all([
@@ -534,31 +441,10 @@ class PortfolioDetailImpl extends React.Component {
         ]) 
         .then(([adviceSummaryResponse, advicePerformanceResponse]) => {
             benchmark = _.get(adviceSummaryResponse.data, 'portfolio.benchmark.ticker', 'NIFTY_50');
-            const contestOnly = _.get(adviceSummaryResponse.data, 'contestOnly', false);
-            this.getAdviceSummary(adviceSummaryResponse);
-            
-            const adviceDetail = this.state.adviceDetail;
+            this.getAdviceSummary(adviceSummaryResponse);            
             return Promise.all([
-                contestOnly && fetchAjax(adviceContestUrl, this.props.history, this.props.match.url, undefined, this.handleErrorNotFoundInContestError),
-                contestOnly && fetchAjax(adviceAllContestUrl, this.props.history, this.props.match.url, undefined, this.handleAllContestAdviceSummaryError),
                 this.getAdvicePerformance(advicePerformanceResponse.data, benchmark)
             ])
-        })
-        .then(([adviceContestResponse, allContestResponse])  => {
-            const participatedContests = _.get(allContestResponse, 'data', []);
-            const adviceActive = _.get(adviceContestResponse.data, 'active', false);
-            const withdrawn = _.get(adviceContestResponse.data, 'withDrawn', false);
-            const prohibited = _.get(adviceContestResponse.data, 'prohibited', false);
-            this.setState({
-                adviceDetail: {
-                    ...this.state.adviceDetail, 
-                    active: adviceActive,
-                    withdrawn,
-                    prohibited,
-                    benchmark
-                },
-                participatedContests: participatedContests,
-            });
         })
         .catch(error => {
             this.setState({
@@ -570,95 +456,6 @@ class PortfolioDetailImpl extends React.Component {
         .finally(() => {
             this.setState({loading: false});
             this.setUpSocketConnection();
-        });
-    };
-
-    toggleDialog = () => {
-        const {adviceDetail} = this.state;
-        this.setState({isDialogVisible: !this.state.isDialogVisible});
-    };
-
-    subscribeAdvice = () => {
-        this.setState({disableSubscribeButton: true});
-        axios({
-            method: 'POST',
-            url: `${requestUrl}/advice/${this.props.match.params.id}/subscribe`,
-            headers: Utils.getAuthTokenHeader()
-        })
-        .then(response => {
-            this.toggleDialog();
-            const portfolioUrl = `${requestUrl}/advice/${this.props.match.params.id}/portfolio`;
-            const summaryUrl = `${requestUrl}/advice/${this.props.match.params.id}`;
-            return Promise.all([
-                fetchAjax(portfolioUrl, this.props.history, this.props.match.url),
-                fetchAjax(summaryUrl, this.props.history, this.props.match.url)
-            ]);
-        })
-        .then(([advicePortfolioResponse, adviceSummaryResponse]) => {
-            this.getAdviceDetail(advicePortfolioResponse);
-            this.getAdviceSummary(adviceSummaryResponse);
-        })
-        .catch(error => {
-            Utils.checkForInternet(error, this.props.history);
-            // console.log(error);
-            if (error.response) {
-                Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
-            }
-        })
-        .finally(() => {
-            this.setState({disableSubscribeButton: false});
-        });
-    };
-
-    followAdvice = () => {
-        const url = `${requestUrl}/advice/${this.props.match.params.id}`;
-        this.setState({disableFollowButton: true});
-        axios({
-            method: 'POST',
-            url: `${requestUrl}/advice/${this.props.match.params.id}/follow`,
-            headers: Utils.getAuthTokenHeader()
-        })
-        .then(response => {
-            return axios.get(url, {headers: Utils.getAuthTokenHeader()})
-        })
-        .then(response => {
-            this.getAdviceSummary(response, false);
-        })
-        .catch(error => {
-            Utils.checkForInternet(error, this.props.history);
-            if (error.response) {
-                Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
-            }
-        })
-        .finally(() => {
-            this.setState({disableFollowButton: false});
-        });
-    };
-
-    toggleUpdateDialog = () => {
-        this.setState({isUpdateDialogVisible: !this.state.isUpdateDialogVisible});
-    };
-
-    toggleWitdrawOrProhibitModal = (modalType) => {
-        this.setState({[modalType]: !this.state[modalType]});
-    }
-
-    onProhibitButtonClicked = () => {
-        this.prohibitAdvice();
-        this.toggleWitdrawOrProhibitModal('prohibitModalVisible');
-    }
-
-    onWithdrawButtonClicked = () => {
-        this.withdrawAdviceFromContest();
-        this.toggleWitdrawOrProhibitModal('withdrawModalVisible');
-    }
-
-    getUserData = () => {
-        const url = `${requestUrl}/me`;
-        fetchAjax(url, this.props.history, this.props.match.url)
-        .then(response => {
-            const userId = _.get(response.data, '_id', '');
-            this.setState({userId});
         });
     };
 
@@ -819,154 +616,9 @@ class PortfolioDetailImpl extends React.Component {
         });
     }
 
-    toggleUnsubscriptionModal = () => {
-        this.setState({unsubscriptionModalVisible: !this.state.unsubscriptionModalVisible});
-    }
-
     redirectToLogin = () => {
         Utils.localStorageSave('redirectToUrlFromLogin', this.props.match.url);
         this.props.history.push('/login');
-    }
-
-    requestApproval = () => {
-        const url = `${requestUrl}/advice/${this.props.match.params.id}/requestapproval`;
-        this.setState({requestApprovalLoading: true});
-        axios({
-            url,
-            method: 'POST',
-            headers: Utils.getAuthTokenHeader()
-        })
-        .then(response => {
-            const summaryUrl = `${requestUrl}/advice/${this.props.match.params.id}`;
-            return Promise.all([
-                fetchAjax(summaryUrl, this.props.history, this.props.match.url)
-            ]);
-        })
-        .then(([adviceSummaryResponse]) => {
-            this.getAdviceSummary(adviceSummaryResponse);
-        })
-        .catch(error => {
-            Utils.checkForInternet(error, this.props.history);
-            if (error.response) {
-                if (error.response.status === 400 || error.response.status === 403) {
-                    this.props.history.push('/forbiddenAccess');
-                }
-                Utils.checkErrorForTokenExpiry(error, this.props.history, this.props.match.url);
-            }
-        })
-        .finally(() => {
-            this.setState({requestApprovalLoading: false});
-        })
-    }
-
-    withdrawAdviceFromContest = () => {
-        const contestId = this.props.match.params.contestId;
-        const withdrawAdviceUrl = `${requestUrl}/contest/${this.props.match.params.id}/action?type=withdraw`;
-        this.setState({withdrawAdviceLoading: true});
-        axios({
-            method: 'POST',
-            url: withdrawAdviceUrl,
-            headers: Utils.getAuthTokenHeader()
-        })
-        .then(response => {
-            const active = _.get(response.data, 'active', false);
-            this.setState({adviceDetail: {...this.state.adviceDetail, active}});
-            openNotification('info', 'Success', 'Advice Successfully Withdrawn from contest');
-            this.getAdviceLatestContestSummary();
-        })
-        .catch(error => {
-            return handleCreateAjaxError(
-                error, 
-                this.props.history, 
-                this.props.match.url
-            );
-        })
-        .finally(() => {
-            this.setState({withdrawAdviceLoading: false});
-        })
-    }
-
-    prohibitAdvice = () => {
-        const prohibitAdviceUrl = `${requestUrl}/contest/${this.props.match.params.id}/action?type=prohibit`;
-        this.setState({withdrawAdviceLoading: true});
-        axios({
-            method: 'POST',
-            url: prohibitAdviceUrl,
-            headers: Utils.getAuthTokenHeader()
-        })
-        .then(response => {
-            const active = _.get(response.data, 'active', false);
-            this.setState({adviceDetail: {...this.state.adviceDetail, active}});
-            openNotification('info', 'Success', 'Advice Successfully Prohibited from contest');
-            this.getAdviceLatestContestSummary();
-        })
-        .catch(error => {
-            return handleCreateAjaxError(
-                error, 
-                this.props.history, 
-                this.props.match.url
-            );
-        })
-        .finally(() => {
-            this.setState({withdrawAdviceLoading: false});
-        })
-    }
-
-    togglePostWarningModal = () => {
-        this.setState({postWarningModalVisible: !this.state.postWarningModalVisible});
-    }
-
-    handleChange = value => {
-        this.setState({selectedValue: value});
-    }
-
-    updateTicker = record => {
-        this.setState({stockResearchModalTicker: record}, () => {
-            this.toggleModal();
-        });
-    }
-
-    toggleModal = ticker => {
-        this.setState({stockResearchModalVisible: !this.state.stockResearchModalVisible});
-    }
-
-    handlePortfolioStartDateChange = date => {
-        const startDate = date.format('YYYY-MM-DD');
-        const url = `${requestUrl}/advice/${this.props.match.params.id}`;
-        fetchAjax(`${url}/portfolio?date=${startDate}`, this.props.history, this.props.match.url)
-        .then(response => {
-            this.setState({selectedPortfolioDate: date}, () => {
-                this.getAdviceDetail(response);
-            });
-        })
-
-    }
-
-    handleWatchListClick = name => {
-        this.updateTicker({symbol: name, name});
-    }
-
-    handlePerformanceToggleChange = e => {
-        const {
-            annualReturn = 0, 
-            dailyNAVChangeEODPct = 0,
-            netValueEOD = 0, 
-            totalReturn = 0, 
-            volatility = 0, 
-            maxLoss = 0, 
-            nstocks = 0, 
-            period = 0
-        } = e.target.value ? this.state.performance.current : this.state.performance.simulated;
-        this.setState({
-            metrics: {
-                ...this.state.metrics,
-                annualReturn,
-                totalReturn,
-                volatility,
-                maxLoss,
-            },
-            performanceType: e.target.value ? 'Current' : 'Simulated'
-        })
     }
 
     handleStaticPerformanceSelectorChange = selectedMetric => {
@@ -1040,10 +692,8 @@ class PortfolioDetailImpl extends React.Component {
             handlePortfolioStartDateChange: this.handlePortfolioStartDateChange,
             selectedPortfolioDate: this.state.selectedPortfolioDate,
             positions: this.state.positions,
-            updateTicker: this.updateTicker,
             tickers: this.state.tickers,
             showPerformanceToggle: Utils.isLoggedIn(),
-            handlePerformanceToggleChange: this.handlePerformanceToggleChange,
             performanceType: this.state.performanceType,
             loading: this.state.loading,
             participatedContests: this.state.participatedContests,
