@@ -99,6 +99,15 @@ class Participants extends React.Component {
             } else {
                 requiredData = winnersData;
             }
+            requiredData = requiredData.map(item => {
+                const totalEarnings = _.get(item, 'dailyEarnings', 0) + _.get(item, 'weeklyEarnings', 0);
+
+                return {
+                    ...item,
+                    totalEarnings
+                }
+            });
+            requiredData = _.orderBy(requiredData, ['totalEarnings'], ['desc'])
             this.setState({
                 winnersOverall: requiredData,
                 skip

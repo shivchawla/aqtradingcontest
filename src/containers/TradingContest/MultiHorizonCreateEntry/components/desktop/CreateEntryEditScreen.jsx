@@ -214,7 +214,8 @@ class CreateEntryEditScreen extends React.Component {
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
-            pnlFound = false
+            pnlFound = false,
+            selectedDate = moment()
         } = this.props;
         const statsExpanded = (this.props.previewPositions.length === 0 || this.props.noEntryFound);
 
@@ -259,6 +260,7 @@ class CreateEntryEditScreen extends React.Component {
                                         positions={positions} 
                                         deletePrediction={this.props.stopPrediction}
                                         stopPredictionLoading={this.props.stopPredictionLoading}
+                                        selectedDate={selectedDate}
                                     />
                             }
                             {

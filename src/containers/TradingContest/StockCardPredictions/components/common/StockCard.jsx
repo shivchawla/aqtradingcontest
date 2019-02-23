@@ -269,11 +269,11 @@ class StockCard extends React.Component {
                         >
                             <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
                                 <ConditionValueLabel style={{color: '##EB5555'}}>Sell Above</ConditionValueLabel>
-                                <ConditionValue style={{color: '#EB5555', marginLeft: '4px'}}>₹{this.props.getConditionalNetValue()}</ConditionValue>
+                                <ConditionValue style={{color: '#EB5555', marginLeft: '4px'}}>₹{Utils.formatMoneyValueMaxTwoDecimals(this.props.getConditionalNetValue())}</ConditionValue>
                             </div>
                             <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
                                 <ConditionValueLabel>Buy Below</ConditionValueLabel>
-                                <ConditionValue style={{color: '#0acc53', marginLeft: '4px'}}>₹{this.props.getConditionalNetValue(false)}</ConditionValue>
+                                <ConditionValue style={{color: '#0acc53', marginLeft: '4px'}}>₹{Utils.formatMoneyValueMaxTwoDecimals(this.props.getConditionalNetValue(false))}</ConditionValue>
                             </div>
                         </div>
                     </div>

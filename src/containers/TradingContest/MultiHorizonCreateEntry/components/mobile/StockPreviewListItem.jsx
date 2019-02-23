@@ -1,11 +1,14 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {withStyles} from '@material-ui/core/styles';
 import ActionIcon from '../../../Misc/ActionIcons';
 import {horizontalBox, metricColor, nameEllipsisStyle, verticalBox, primaryColor} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
+
+const dateFormat = 'YYYY-MM-DD';
 
 const styles = theme => ({
     expansionPanelRoot: {
@@ -60,14 +63,21 @@ class StockPreviewListItem extends React.Component {
             pnlLastPrice = 0,
             predictions = []
         } = this.props.position;
-
+        let {selectedDate = moment()} = this.props;
+        selectedDate = selectedDate.format(dateFormat);
         const nPredictions = predictions.length;
 
         let totalPnl = 0;
         let totalPnlPct = 0;
 
         let investment = 0;
-        predictions.filter(prediction => prediction.triggered === true).forEach(item => {
+        predictions
+        .filter(prediction => {
+            let {triggeredDate = null, conditional = false} = prediction;
+            triggeredDate = moment(triggeredDate).format(dateFormat);
+
+            return !conditional || (prediction.triggered === true && moment(selectedDate, dateFormat).isSameOrAfter(triggeredDate, dateFormat))
+        }).forEach(item => {
             investment += item.investment;
             var direction = item.type == "buy" ? 1 : -1;
             totalPnl += item.avgPrice > 0 ? direction*(item.investment/item.avgPrice)*(item.pnlLastPrice - item.avgPrice) : 0;

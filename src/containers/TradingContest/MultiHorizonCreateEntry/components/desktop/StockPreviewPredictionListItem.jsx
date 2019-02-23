@@ -34,9 +34,17 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const manualExit = _.get(status, 'manualExit', false);
         const profitTarget = _.get(status, 'profitTarget', false);
         const stopLoss = _.get(status, 'stopLoss', false);
-
+        const {triggered = false} = _.get(this.props, 'prediction', {});
+  
         if (!manualExit && !profitTarget && !stopLoss) {
-            if (active) {
+            if (!triggered) {
+                return {
+                    type: 'loop',
+                    color: '#b8b8b8',
+                    status: 'In-Active'
+                };
+            }
+            else if (active) {
                 return {
                     type: 'loop',
                     color: primaryColor,
@@ -87,8 +95,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
             active = false,
             lastPrice = 0,
             status ={},
-            _id = null
+            _id = null,
+            triggered = false,
+            conditional = false
         } = this.props.prediction;
+        const allowAfterMaketHourExit = conditional && !triggered;
         const typeBackgroundColor = '#fff';
         const typeColor = type === 'buy' ? '#009688' : '#FE6662';
         const borderColor = type === 'buy' ? '#009688' : '#FE6662'
@@ -97,11 +108,12 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const directionUnit = type === 'buy' ? 1 : -1;
         const changeInvestment = directionUnit * ((lastPrice - avgPrice) / avgPrice) * investment;
         const changedInvestment = investment + changeInvestment;
-        const changedInvestmentColor = changeInvestment > 0 
+        const requiredChangedInvestment = triggered ? changedInvestment : investment;
+        const changedInvestmentColor = requiredChangedInvestment > investment
             ? metricColor.positive 
-            : changeInvestment === 0 
-                ? metricColor.neutral
-                : metricColor.negative;
+            : requiredChangedInvestment < investment 
+                ? metricColor.negative
+                : metricColor.neutral;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
 
@@ -120,7 +132,13 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
                     <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
                     <Icon>arrow_right_alt</Icon>
-                    <MetricText color={changedInvestmentColor}>{Utils.formatInvestmentValue(changedInvestment)}</MetricText>
+                    <MetricText color={changedInvestmentColor}>
+                        {
+                            triggered
+                                ? Utils.formatInvestmentValue(changedInvestment)
+                                : Utils.formatInvestmentValue(investment)
+                        }
+                    </MetricText>
                 </Grid>
                 <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
                 <Grid item xs={1} style={{...verticalBox, alignItems: 'center', justifyContent: 'center'}}>
@@ -128,7 +146,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         {iconConfig.status}
                     </MetricText>
                     {
-                        marketOpen && iconConfig.status.toLowerCase() === 'active' &&
+                        (allowAfterMaketHourExit || marketOpen) &&
+                        (
+                            iconConfig.status.toLowerCase() === 'active' 
+                            || iconConfig.status.toLowerCase() === 'in-active'
+                        ) &&
                         <StopPredictionButton 
                                 onClick={() => this.props.openDialog(_id)}
                         >

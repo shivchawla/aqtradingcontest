@@ -66,7 +66,7 @@ export const constructPrediction = (stockData, type = 'buy', conditional = false
     let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0, investment = 0} = stockData;
     let targetValue = getTargetFromLastPrice(lastPrice, target, type);
     let avgPrice = 0;
-    if (conditional) {
+    if (conditional && conditionalValue > 0) {
         if (type === 'sell') {
             avgPrice = getConditionalNetValue(true, lastPrice, conditionalValue);
         } else {
@@ -95,7 +95,7 @@ export const constructPrediction = (stockData, type = 'buy', conditional = false
             endDate,
             target: targetValue,
             stopLoss,
-            conditional
+            conditional: conditionalValue > 0 && conditional
         }
     ];
 }

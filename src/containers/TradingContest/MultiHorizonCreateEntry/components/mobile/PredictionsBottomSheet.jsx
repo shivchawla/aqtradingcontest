@@ -7,6 +7,7 @@ import StockPreviewPredictionList from './StockPreviewPredictionList';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import {horizontalBox, verticalBox, nameEllipsisStyle} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
+const moment = require('moment');
 
 export default class PredictionsBottomSheet extends React.Component {
     renderHeader = () => {
@@ -70,7 +71,8 @@ export default class PredictionsBottomSheet extends React.Component {
     }
     render() {
         const {predictions = []} = _.get(this.props, 'position', {});
-
+        const {selectedDate  = moment()} = this.props;
+ 
         return (
             <BottomSheet 
                     open={this.props.open}
@@ -84,6 +86,7 @@ export default class PredictionsBottomSheet extends React.Component {
                             predictions={predictions} 
                             stopPrediction={this.props.stopPrediction}
                             stopPredictionLoading={this.props.stopPredictionLoading}
+                            selectedDate={selectedDate}
                         />
                         <div style={{height: '50px'}}></div>
                     </Grid>

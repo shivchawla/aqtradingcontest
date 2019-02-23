@@ -25,6 +25,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
     }
 
     getIconConfig = (status) => {
+        const {selectedDate = moment()} = this.props;
         const {endDate = null} = this.props.prediction;
         const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
         const todayDate = moment().format(dateTimeFormat);
@@ -34,16 +35,17 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const manualExit = _.get(status, 'manualExit', false);
         const profitTarget = _.get(status, 'profitTarget', false);
         const stopLoss = _.get(status, 'stopLoss', false);
-        const {triggered = false} = _.get(this.props, 'prediction', {});
-        if (!triggered) {
-            return {
-                type: 'INACTIVE',
-                color: '#b8b8b8',
-                backgroundColor: '#e0e0e0'
-            };
-        }
+        let {triggered = false} = _.get(this.props, 'prediction', {});
+        
         if (!manualExit && !profitTarget && !stopLoss) {
-            if (active) {
+            if (!triggered) {
+                return {
+                    type: 'INACTIVE',
+                    color: '#b8b8b8',
+                    backgroundColor: '#e0e0e0'
+                };
+            }
+            else if (active) {
                 return {
                     type: 'ACTIVE',
                     color: '#a38b22',
@@ -117,8 +119,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
             index = 0,
             priceInterval = {},
             _id = null,
-            stopLoss = 0
+            stopLoss = 0,
+            triggered = false,
+            conditional = false
         } = this.props.prediction;
+        const allowAfterMaketHourExit = conditional && !triggered;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
         
@@ -138,10 +143,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const changedInvestment = investment + (changeInvestment * directionUnit);
 
         const duration = DateHelper.getTradingDays(startDate, endDate);
-
-        const changedInvestmentColor = changedInvestment > investment
+        const requiredChangedInvestment = triggered ? changedInvestment : investment;
+        const changedInvestmentColor = requiredChangedInvestment > investment
             ? metricColor.positive 
-            : changedInvestment < investment 
+            : requiredChangedInvestment < investment 
                 ? metricColor.negative 
                 : metricColor.neutral;        
 
@@ -171,7 +176,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             />
                         </div>
                         {
-                            marketOpen && iconConfig.type.toLowerCase() === 'active' &&
+                            (allowAfterMaketHourExit ||marketOpen) &&
+                            (
+                                iconConfig.type.toLowerCase() === 'active' 
+                                || iconConfig.type.toLowerCase() === 'inactive'
+                            ) &&
                             <StopPredictionButton 
                                     onClick={() => this.props.openDialog(_id)}
                             >
@@ -229,7 +238,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 <MetricText 
                                         color={changedInvestmentColor}
                                 >
-                                    {Utils.formatInvestmentValue(changedInvestment)}
+                                    {
+                                        triggered
+                                        ? Utils.formatInvestmentValue(changedInvestment)
+                                        : Utils.formatInvestmentValue(investment)
+                                    }
                                 </MetricText>
                             </div>
                         </div>
@@ -247,17 +260,6 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 }
                             </div>
                         </div>
-                        {/* <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                            <MetricLabel>Status</MetricLabel>
-                            <div style={{...horizontalBox, minHeight: '22px'}}>
-                                <MetricText 
-                                        color={iconConfig.color} 
-                                        style={{fontWeight: 700}}
-                                >
-                                    {iconConfig.type}
-                                </MetricText>
-                            </div>
-                        </div> */}
                     </div>
                 </Grid>
             </Container>
