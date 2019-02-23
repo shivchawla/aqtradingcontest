@@ -7,7 +7,7 @@ export const processOverallLeaderboardData = data => Promise.map(data, leaderIte
     const totalEarnings = _.get(leaderItem, 'totalEarnings', 0);
     const dailyEarnings = _.get(leaderItem, 'dailyEarnings', 0);
     const weeklyEarnings = _.get(leaderItem, 'weeklyEarnings', 0);
-    const netValue = _.get(leaderItem, 'pnlStats.net.total.portfolio.net.netValue', 0);
+    const netValue = _.get(leaderItem, 'portfolioStats.netTotal', 0);
     const avgPnl = _.get(leaderItem, 'pnlStats.net.total.portfolio.net.avgPnl', 0);
     const avgPnlPct = _.get(leaderItem, 'pnlStats.net.total.portfolio.net.avgPnlPct', 0);
     const netTotal = _.get(leaderItem, 'portfolioStats.netTotal', 0);
