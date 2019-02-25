@@ -48,57 +48,6 @@ const metrics = [
 class Layout extends React.Component {
     constructor(props) {
         super(props);
-        const participatedContestLength = _.get(props, 'participatedContests', []).length;
-        this.state = {
-            selectedContestId: _.get(props, `participatedContests[${participatedContestLength - 1}]._id`, null),
-            showCurrentRankView: true
-        }
-    }
-
-    processMetricsForSelectedAdvice = (selectedAdvice, metricType) => {
-        if (selectedAdvice !== undefined) {
-            const adviceMetrics = _.get(selectedAdvice, `adviceSummary.latestRank.rating.${metricType}.detail`, []);
-
-            var pctMetrics = ['annualReturn', 'volatility', 'maxLoss'];
-            var labels =  {
-                annualReturn: {label: "Excess Return", index: 0},
-                volatility: {label: "Tracking Error", index: 1},
-                maxLoss: {label: 'Maximum Loss', index: 2},
-                sharpe: {label: 'Information Ratio', index: 3},
-                calmar: {label: 'Calmar Ratio', index: 4},
-                concentration: {label: 'Concentration', index: 5}
-            };
-                        
-            return adviceMetrics.map(metricItem => {
-                const field = metricItem.field;
-                var rawVal = metricItem.metricValue;
-                if (field == "maxLoss") {
-                    rawVal *=-1;
-                }
-
-                var idx = pctMetrics.indexOf(field);
-                const adjustedVal = idx != -1 ? formatMetric(rawVal, "pct") : formatMetric(rawVal);
-                const color = ["annualReturn", "maxLoss"].indexOf(field) != -1 ? rawVal > 0 ? metricColor.positive : rawVal < 0 ? metricColor.negative : '#353535' : '#353535';
-
-                return {
-                    metricValue: adjustedVal,
-                    rank: metricItem.rank,
-                    label: _.get(labels, `${metricItem.field}.label`, ''),
-                    index: _.get(labels, `${metricItem.field}.index`, 0),
-                    tooltip: _.get(metricDefs, field, ""),
-                    color: color
-                }
-            }).sort((a,b) => {return a.index < b.index ? -1 : 1});
-
-        } else {
-            return metrics;
-        }
-    }
-
-    renderHelloWorld = () => {
-        return (
-            <h1>Hello World</h1>
-        );
     }
 
     renderAdviceMetrics = () => {
