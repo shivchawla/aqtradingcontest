@@ -116,7 +116,7 @@ export default class HighChartBar extends React.Component {
                 });
             });
             this.chart.update({
-                colors: [simulatedPerformanceColor, benchmarkColor],
+                colors: [currentPerformanceColor, benchmarkColor],
                 yAxis: {
                     max: Number(this.findYAxisMaxValue(series))
                 }

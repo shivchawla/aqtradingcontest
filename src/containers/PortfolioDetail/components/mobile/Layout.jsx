@@ -111,16 +111,15 @@ class Layout extends React.Component {
             beta = 0,
             nstocks = 0,
             calmar = 0
-        } = this.props.metrics || {};
-        const {followers = 0, subscribers = 0, contestOnly} = this.props.adviceDetail || {};
-        var subscriberOrFollowers = contestOnly ? {value: calmar, label: 'Wishlisters'} : {value: subscribers, label: 'Subscribers'};
+        } = this.props.performanceSummary || {};
+
         const metricsItems = [
-            {value: annualReturn, label: 'Annual Return', percentage: true, color: true, fixed: 2, tooltipText: `Compounded annual growth rate ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
-            {value: volatility, label: 'Volatility', percentage: true, fixed: 2, tooltipText: `Annualized standard deviation of daily returns ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
-            {value: totalReturn, label: 'Total Return', percentage: true, color:true, fixed: 2, tooltipText: `Total return ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
-            {value: beta, label: 'Beta', noNumeric: true, color:true, fixed: 2, tooltipText: `Total return ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
+            {value: annualReturn, label: 'Annual Return', percentage: true, color: true, fixed: 2, tooltipText: "Compounded Annual Return"},
+            {value: volatility, label: 'Volatility', percentage: true, fixed: 2, tooltipText: `Annualized standard deviation of daily returns `},
+            {value: totalReturn, label: 'Total Return', percentage: true, color:true, fixed: 2, tooltipText: `Total return `},
+            {value: beta, label: 'Beta', noNumeric: true, color:true, fixed: 2, tooltipText: `Beta`},
             {value: calmar, label: 'Calmar Ratio', noNumeric: true},
-            {value: -1 * maxLoss, color:true, label: 'Maximum Loss', percentage: true, fixed: 2, tooltipText: `Maximum drop from the peak return ${this.props.performanceType == "Simulated" ? "over last year (simulated) for Current Portfolio" : "since inception"}`},
+            {value: -1 * maxLoss, color:true, label: 'Maximum Loss', percentage: true, fixed: 2, tooltipText: `Maximum drop from the peak return`},
         ]
 
         return (
@@ -129,57 +128,8 @@ class Layout extends React.Component {
     }
 
     renderPageContent() {
-        const {
-            name = '', 
-            advisor = '', 
-            updatedDate = '', 
-            isSubscribed = false, 
-            isOwner = false, 
-            rating = 0,
-            investmentObjective = {},
-            approvalRequested = true,
-            isAdmin = false,
-            isPublic = false,
-            approval = {},
-            contestOnly = false,
-            active = false,
-            withdrawn = false,
-            prohibited = false
-        } = this.props.adviceDetail || {};
-        const {
-            annualReturn = 0, 
-            totalReturns = 0, 
-            averageReturns = 0, 
-            dailyReturns = 0
-        } = this.props.metrics || {};
-        const {goal = {}, capitalization = {}, portfolioValuation = {}, userText = {}} = investmentObjective;
-        const defaultActiveKey = Utils.isLoggedIn() ? (isSubscribed || isOwner) ? ["1", "2","3", "5"] : ["1","5","3"] : ["1","5","3"];
+        
         const tickers = _.get(this.props, 'tickers', []);
-        const {netValue = 0, dailyNAVChangePct = 0} = this.props.metrics || {};
-        const netValueMetricItem = {
-            value: netValue, 
-            label: 'Net Value', 
-            money:true, 
-            isNetValue:true, 
-            dailyChangePct:dailyNAVChangePct
-        };
-        const ownerColumns = ['name', 'symbol', 'shares', 'price', 'avgPrice', 'unrealizedPnL', 'weight'];
-        const notOwnerColumns = ['name', 'symbol', 'shares', 'price', 'sector', 'weight'];
-        const portfolioTableColumns = ((isOwner || isAdmin) && !this.props.preview) ? ownerColumns : notOwnerColumns;
-        const approvalStatus = _.get(approval, 'status', false);
-
-        //Use from portfolio (instead of Investment Objective)
-        let sectors;
-        if (this.props.preview) {
-            sectors = this.props.positions ? _.uniq(this.props.positions.map(item => _.get(item, 'sector', '')).filter(item => item != '')) : [];
-        } else {
-            sectors = this.props.positions ? _.uniq(this.props.positions.map(item => _.get(item, 'security.detail.Sector', '')).filter(item => item != '')) : [];
-        }
-
-        // Selected participated contest operation
-        const selectedContest = this.props.participatedContests.filter(contest => contest._id === this.state.selectedContestId)[0];
-        const currentMetrics = this.processMetricsForSelectedAdvice(selectedContest, 'current');
-        const simulatedMetrics = this.processMetricsForSelectedAdvice(selectedContest, 'simulated');
 
         return (
             <Grid 
@@ -254,10 +204,10 @@ class Layout extends React.Component {
                         <Grid item xs={12} style={{position: 'relative'}}>
                             <HighChartBar 
                                 id='rollingPerformance'
-                                series={this.props.currentRollingPerformance}
-                                categories={this.props.simulatedRollingPerformanceCategories}
-                                dollarCategories={this.props.simulatedRollingPerformanceCategories}
-                                percentageCategories={this.props.trueRollingPerformanceCategories}
+                                series={this.props.rollingPerformance}
+                                categories={this.props.rollingPerformanceCategories}
+                                dollarCategories={this.props.rollingPerformanceCategories}
+                                percentageCategories={this.props.rollingPerformanceCategories}
                             />
                         </Grid>
                     </Grid>
@@ -301,8 +251,7 @@ class Layout extends React.Component {
                         <Grid item xs={12}>
                             <HighChartBar 
                                 id='staticPerformance'
-                                series={this.props.currentStaticPerformance}
-                                radiogroupLabels = {['Historical', 'True']}
+                                series={this.props.staticPerformance}
                                 categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
                                 updateTimeline={true}
                             />
