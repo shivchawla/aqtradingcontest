@@ -19,10 +19,12 @@ import {
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import DialogHeaderComponent from '../../../../../components/Alerts/DialogHeader';
+import RadioGroup from '../../../../../components/selections/RadioGroup';
+import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue, getConditionValue, getCondition, checkIfCustomCondition} from '../../utils';
-import {targetKvp, horizonKvp, investmentKvp, conditionalKvp} from '../../constants';
+import {targetKvp, horizonKvp, investmentKvp, conditionalKvp, conditionalTypeItems} from '../../constants';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from '../mobile/SubmitButton';
@@ -81,6 +83,16 @@ class StockCard extends React.Component {
         }
     }
 
+    updateConditionalChange = (value = null) => {
+        if (value !== null) {
+            const requiredCondition = conditionalTypeItems[value];
+            this.props.modifyStockData({
+                ...this.props.stockData,
+                conditionalType: requiredCondition
+            });
+        }
+    }
+
     conditionalChange = (value = null, custom = false) => {
         if (value !== null) {
             const requiredCondition = custom ? value : getConditionValue(value, custom);
@@ -115,7 +127,16 @@ class StockCard extends React.Component {
     }
 
     renderEditMode = () => {
-        const {horizon = 2, target = 2, stopLoss = 2, investment = 50000, conditional = false, conditionalValue = 0.25, lastPrice = 0} = this.props.stockData;
+        const {
+            horizon = 2, 
+            target = 2, 
+            stopLoss = 2, 
+            investment = 50000, 
+            conditional = false, 
+            conditionalValue = 0.25, 
+            lastPrice = 0,
+            conditionalType = conditionalTypeItems[0]
+        } = this.props.stockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const conditionalItems = conditionalKvp.map(condition => ({key: condition.value, label: null}));
@@ -236,16 +257,34 @@ class StockCard extends React.Component {
                 {
                     conditional &&
                     <div style={radioGroupStyle}>
-                        <MetricLabel 
+                        <div 
                                 style={{
-                                    marginBottom: '10px',
-                                    marginTop: isDesktop ? '0px' : '0px',
-                                    fontSize: '12px',
-                                    color: '#222'
+                                    ...horizontalBox,  
+                                    justifyContent: 'space-between',
+                                    width: '100%',
+                                    alignItems: 'center',
+                                    marginBottom: '15px'
                                 }}
                         >
-                            Conditional Value (%)
-                        </MetricLabel>
+                            <MetricLabel 
+                                    style={{
+                                        marginTop: isDesktop ? '0px' : '0px',
+                                        fontSize: '12px',
+                                        color: '#222'
+                                    }}
+                            >
+                                Conditional Value (%)
+                            </MetricLabel>
+                            <RadioGroup 
+                                items={conditionalTypeItems}
+                                defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
+                                CustomRadio={CustomRadio}
+                                onChange={this.updateConditionalChange}
+                                small
+                                
+                            />
+                        </div>
+                        
                         <StockCardRadioGroup 
                             items={conditionalItems}
                             onChange={this.conditionalChange}
@@ -258,24 +297,62 @@ class StockCard extends React.Component {
                             max={1.5}
                             min={0}
                             step={0.01}
+                            disabled={conditionalType.toUpperCase() === 'NOW'}
                         />
-                        <div 
-                                style={{
-                                    ...horizontalBox, 
-                                    justifyContent: 'space-between',
-                                    width: '100%',
-                                    margin: '10px 0'
-                                }}
-                        >
-                            <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                                <ConditionValueLabel style={{color: '##EB5555'}}>Sell Above</ConditionValueLabel>
-                                <ConditionValue style={{color: '#EB5555', marginLeft: '4px'}}>₹{Utils.formatMoneyValueMaxTwoDecimals(this.props.getConditionalNetValue())}</ConditionValue>
+                        {
+                            conditionalType.toUpperCase() !== 'NOW' &&
+                            <div 
+                                    style={{
+                                        ...horizontalBox, 
+                                        justifyContent: 'space-between',
+                                        width: '100%',
+                                        margin: '10px 0'
+                                    }}
+                            >
+                                <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                                    <ConditionValueLabel 
+                                            style={{color: '##EB5555'}}
+                                    >
+                                        Sell
+                                        {conditionalType.toUpperCase() === 'LIMIT' ? ' above' : ' below'}
+                                    </ConditionValueLabel>
+                                    <ConditionValue 
+                                            style={{
+                                                color: '#EB5555', 
+                                                marginLeft: '4px'
+                                            }}
+                                    >
+                                        ₹{Utils.formatMoneyValueMaxTwoDecimals(
+                                            this.props.getConditionalNetValue(
+                                                conditionalType.toUpperCase() === 'LIMIT' 
+                                                    ? true
+                                                    : false
+                                            )
+                                        )}
+                                    </ConditionValue>
+                                </div>
+                                <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                                    <ConditionValueLabel>
+                                        Buy
+                                        {conditionalType.toUpperCase() === 'LIMIT' ? ' below' : ' above'}
+                                    </ConditionValueLabel>
+                                    <ConditionValue 
+                                            style={{
+                                                color: '#0acc53', 
+                                                marginLeft: '4px'
+                                            }}
+                                    >
+                                        ₹{Utils.formatMoneyValueMaxTwoDecimals(
+                                            this.props.getConditionalNetValue(
+                                                conditionalType.toUpperCase() === 'LIMIT'
+                                                ? false
+                                                : true
+                                            )
+                                        )}
+                                    </ConditionValue>
+                                </div>
                             </div>
-                            <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                                <ConditionValueLabel>Buy Below</ConditionValueLabel>
-                                <ConditionValue style={{color: '#0acc53', marginLeft: '4px'}}>₹{Utils.formatMoneyValueMaxTwoDecimals(this.props.getConditionalNetValue(false))}</ConditionValue>
-                            </div>
-                        </div>
+                        }
                     </div>
                 }
             </div>
@@ -361,7 +438,8 @@ class StockCard extends React.Component {
             lastPrice = 0, 
             target = 2,
             horizon = 1,
-            conditional = false
+            conditional = false,
+            conditionalType = conditionalTypeItems[0]
         } = this.props.stockData;
         const editMode = isDesktop || this.props.editMode;
         const {bottomSheet = false} = this.props;
@@ -450,15 +528,30 @@ class StockCard extends React.Component {
                             <SubmitButton 
                                 onClick={() => this.props.createPrediction('sell')}
                                 target={target}
-                                lastPrice={conditional ? this.props.getConditionalNetValue() : lastPrice}
+                                lastPrice={
+                                    conditionalType.toUpperCase() !== 'NOW' 
+                                        ?   this.props.getConditionalNetValue(
+                                            conditionalType.toUpperCase() === 'LIMIT'
+                                                ? true
+                                                : false
+                                            ) 
+                                        : lastPrice
+                                }
                                 type="sell"
                             />
                         }
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('buy')}
                             target={target}
-                                lastPrice={conditional ? this.props.getConditionalNetValue() : lastPrice}
-                                lastPrice={conditional ? this.props.getConditionalNetValue(false) : lastPrice}
+                                lastPrice={
+                                    conditionalType.toUpperCase() !== 'NOW' 
+                                        ?   this.props.getConditionalNetValue(
+                                                conditionalType.toUpperCase() === 'LIMIT'
+                                                    ? false
+                                                    : true
+                                            ) 
+                                        : lastPrice
+                                }
                             type="buy"
                         />
                     </div>

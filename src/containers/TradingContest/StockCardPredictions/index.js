@@ -17,7 +17,7 @@ import {formatIndividualStock, constructPrediction, getConditionalNetValue} from
 import {getDailyContestPredictions, getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
 import {horizontalBox, primaryColor} from '../../../constants';
 import {onPredictionCreated, onSettingsClicked, onUserLoggedIn} from '../constants/events';
-import { conditionalKvp } from './constants';
+import {conditionalTypeItems} from './constants';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -80,7 +80,8 @@ class StockCardPredictions extends React.Component {
                 stopLoss: _.get(defaultStockData, 'stopLoss', 5),
                 investment: _.get(defaultStockData, 'investment', 50000),
                 conditional: _.get(defaultStockData, 'conditional', false),
-                conditionalValue: _.get(defaultStockData, 'conditionalValue', 0.25)
+                conditionalValue: _.get(defaultStockData, 'conditionalValue', 0.25),
+                conditionalType: _.get(defaultStockData, 'conditionalType', 'NOW')
             });
         } catch (err) {
             reject(err);
@@ -322,12 +323,16 @@ class StockCardPredictions extends React.Component {
     }
 
     createDailyContestPrediction = (type = 'buy') => {
-        const {conditional = false, conditionalValue = 0.25} = this.state.stockData;
+        const {
+            conditional = false, 
+            conditionalValue = 0.25, 
+            conditionalType = conditionalTypeItems[0]
+        } = this.state.stockData;
         if (!Utils.isLoggedIn()) {
             this.toggleLoginBottomSheet();
             return;
         }
-        const predictions = constructPrediction(this.state.stockData, type, conditional, conditionalValue);
+        const predictions = constructPrediction(this.state.stockData, type, conditionalType, conditionalValue);
         this.setState({loadingCreatePredictions: true});
         this.updatePortfolioStats()
         .then(portfolioStats => {

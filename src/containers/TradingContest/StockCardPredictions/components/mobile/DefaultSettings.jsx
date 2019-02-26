@@ -18,7 +18,7 @@ import DialogHeaderComponent from '../../../../../components/Alerts/DialogHeader
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
 import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
 import {Utils} from '../../../../../utils';
-import {targetKvp, horizonKvp, investmentKvp} from '../../constants';
+import {targetKvp, horizonKvp, investmentKvp, conditionalTypeItems} from '../../constants';
 
 const styles = theme => ({
     dialogContentRoot: {
@@ -103,12 +103,12 @@ class DefaultSettings extends React.Component {
         }
     }
 
-    toggleConditional = (value = null) => {
+    updateConditionalChange = (value = null) => {
+        const conditionalTypes = conditionalTypeItems.map(item => item.toUpperCase());
         if (value !== null) {
-            const booleanValue = value === 0;
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
-                conditional: booleanValue
+                conditionalType: conditionalTypes[value]
             })
         }
     }
@@ -165,6 +165,7 @@ class DefaultSettings extends React.Component {
             listMode = false, 
             stopLoss = 0, 
             investment = 1,
+            conditionalType = conditionalTypeItems[0],
             conditional = false
         } = this.props.defaultStockData;
         const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
@@ -300,10 +301,11 @@ class DefaultSettings extends React.Component {
                                     Conditional
                                 </MetricLabel>
                                 <RadioGroup 
-                                    items={['True', 'False']}
-                                    onChange={this.toggleConditional}
-                                    defaultSelected={conditional ? 0 : 1}
+                                    items={conditionalTypeItems}
+                                    onChange={this.updateConditionalChange}
+                                    defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
                                     style={{marginLeft: '-10px'}}
+                                    CustomRadio={CardCustomRadio}
                                 />
                             </div>
                         </div>

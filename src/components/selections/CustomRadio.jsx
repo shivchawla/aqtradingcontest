@@ -20,6 +20,15 @@ const styles = {
         boxShadow: 'none',
         borderRadius: '2px'
     },
+    disabled: {
+        minWidth: '35px',
+        padding: '4px',
+        color: '#fff',
+        boxShadow: 'none',
+        borderRadius: '2px',
+        backgroundColor: '#a2aabe',
+        border: '1px solid #a2aabe'
+    },
     label: {
         fontSize: '14px',
         fontWeight: 500,
@@ -37,7 +46,15 @@ class CustomRadio extends React.Component {
     }
 
     render() {
-        let {checked = false, label = 1, classes, secondaryLabel = '28th Oct', hideLabel = false, formatValue = null} = this.props;
+        let {
+            checked = false, 
+            label = 1, 
+            classes, 
+            secondaryLabel = '28th Oct', 
+            hideLabel = false, 
+            formatValue = null,
+            disabled = false
+        } = this.props;
         label = formatValue !== null ? formatValue(label) : label;
 
         return (
@@ -48,14 +65,16 @@ class CustomRadio extends React.Component {
                     }}
             >
                 <Button
-                        variant={checked ? 'contained' : 'outlined'}
+                        variant={(checked || disabled) ? 'contained' : 'outlined'}
                         color="primary"
                         onClick={this.props.onChange}
                         classes={{
                             root: classes.root,
                             contained: classes.contained,
-                            label: classes.label
+                            label: classes.label,
+                            disabled: classes.disabled
                         }}
+                        disabled={disabled}
                 >
                     <span style={{fontFamily: 'Lato, sans-serif'}}>{label}</span>
                 </Button>

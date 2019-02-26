@@ -92,7 +92,8 @@ class StockCardRadioGroup extends React.Component {
             hideSlider = false,
             max = 30,
             min = 1,
-            step = 1
+            step = 1,
+            disabled = false
         } = this.props;
         const isDesktop = this.props.windowWidth > 800;
         const textFieldLabel = this.props.date 
@@ -131,6 +132,7 @@ class StockCardRadioGroup extends React.Component {
                                             onChange={() => this.handleChange(index)}
                                             hideLabel={this.props.hideLabel}
                                             formatValue={this.props.formatValue}
+                                            disabled={disabled}
                                         />
                                     );
                                 })
@@ -162,7 +164,7 @@ class StockCardRadioGroup extends React.Component {
                                     </div>
                                 }
                                 {
-                                    !hideSlider &&
+                                    !disabled && !hideSlider &&
                                     <ActionIcon 
                                         type="edit" 
                                         color='#444' 

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
-import {targetKvp, horizonKvp, investmentKvp, conditionalKvp} from '../constants';
+import {targetKvp, horizonKvp, investmentKvp, conditionalKvp, conditionalTypeItems} from '../constants';
 import {getStockTicker} from '../../utils';
 import {sectors} from '../../../../constants';
 const dateFormat = 'YYYY-MM-DD';
@@ -62,15 +62,23 @@ export const getConditionalNetValue = (positive = true, lastPrice = 0, condition
     return positive ? (lastPrice + diffValue).toFixed(2) : (lastPrice - diffValue).toFixed(2);
 }
 
-export const constructPrediction = (stockData, type = 'buy', conditional = false, conditionalValue = 0.25) => {
+export const constructPrediction = (stockData, type = 'buy', conditionalType = conditionalTypeItems[0], conditionalValue = 0.25) => {
     let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0, investment = 0} = stockData;
     let targetValue = getTargetFromLastPrice(lastPrice, target, type);
     let avgPrice = 0;
-    if (conditional && conditionalValue > 0) {
+    if (conditionalType.toUpperCase() !== 'NOW' && conditionalValue > 0) {
         if (type === 'sell') {
-            avgPrice = getConditionalNetValue(true, lastPrice, conditionalValue);
+            avgPrice = getConditionalNetValue(
+                conditionalType.toUpperCase() === 'LIMIT' ? true : false, 
+                lastPrice, 
+                conditionalValue
+            );
         } else {
-            avgPrice = getConditionalNetValue(false, lastPrice, conditionalValue);
+            avgPrice = getConditionalNetValue(
+                conditionalType.toUpperCase() === 'LIMIT' ? false : true, 
+                lastPrice, 
+                conditionalValue
+            );
         }
         targetValue = getTargetFromLastPrice(Number(avgPrice), target, type);
     }
@@ -95,7 +103,7 @@ export const constructPrediction = (stockData, type = 'buy', conditional = false
             endDate,
             target: targetValue,
             stopLoss,
-            conditional: conditionalValue > 0 && conditional
+            conditionalType
         }
     ];
 }

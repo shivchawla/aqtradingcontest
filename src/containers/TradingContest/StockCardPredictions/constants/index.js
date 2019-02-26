@@ -30,3 +30,5 @@ export const conditionalKvp = [
     {index: 4, value: 1},
     {index: 5, value: 1.25},
 ];
+
+export const conditionalTypeItems = ['NOW', 'CROSS', 'LIMIT'];
