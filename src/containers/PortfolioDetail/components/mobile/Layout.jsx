@@ -155,8 +155,6 @@ class Layout extends React.Component {
                                 id='rollingPerformance'
                                 series={this.props.rollingPerformance}
                                 categories={this.props.rollingPerformanceCategories}
-                                dollarCategories={this.props.rollingPerformanceCategories}
-                                percentageCategories={this.props.rollingPerformanceCategories}
                             />
                         </Grid>
                     </Grid>

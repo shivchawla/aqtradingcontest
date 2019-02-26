@@ -18,34 +18,34 @@ const readableDateFormat = 'Do MMM YY';
 const readableTimeFormat = 'hh:mm A';
 const timelines = [
     {
-        label: '1D',
-        count: 0,
-        timeline: 'd'
-    },
-    {
         label: '1M',
-        count: 1,
+        count: 0,
         timeline: 'M'
     },
     {
         label: '3M',
-        count: 3,
-        timeline: 'M'
+        count: 1,
+        timeline: '3M'
     },
     {
         label: 'YTD',
-        count: -1,
+        count: 2,
         timeline: 'year'
     },
     {
         label: '1Y',
-        count: 1,
-        timeline: 'y'
+        count: 3,
+        timeline: 'Y'
     },
     {
         label: '2Y',
-        count: 2,
-        timeline: 'y'
+        count: 4,
+        timeline: '2Y'
+    },
+    {
+        label: 'ALL',
+        count: 5,
+        timeline: 'all'
     }
 ];
 const selectedTimeline = 0;
@@ -59,7 +59,6 @@ class HighStockImpl extends React.Component {
                 colors: ['#0082c8','#e6194b','#3cb44b','#ffe119','#f58231','#911eb4','#46f0f0','#f032e6','#d2f53c','#fabebe','#008080','#e6beff','#aa6e28','#fffac8','#800000','#aaffc3','#808000','#ffd8b1','#000080', '#808080'],
                 rangeSelector: {
                     enabled: true,
-                    selected: 3,
                     labelStyle: {
                         color: '#F86C6C'
                     },
@@ -97,6 +96,7 @@ class HighStockImpl extends React.Component {
                         type: 'all',
                         text: 'All'
                     }],
+                    selected: 0,
                     buttonTheme: { // styles for the buttons
                         fill: 'none',
                         stroke: 'none',
@@ -554,7 +554,7 @@ class HighStockImpl extends React.Component {
                         <RadioGroup 
                             CustomRadio={TimelineCustomRadio}
                             items={timelines.map(item => item.label)}
-                            defaultSelected={3}
+                            defaultSelected={0}
                             onChange={this.changeSelection}
                             style={{
                                 marginTop: '10px',
