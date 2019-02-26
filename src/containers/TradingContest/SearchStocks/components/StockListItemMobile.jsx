@@ -84,6 +84,23 @@ export default class StockListItemMobile extends React.Component {
         );
     }
 
+    checkIfAllowerNiftyIndex = (ticker) => {
+        let tickerParts = ticker.split('_');
+        const allowedIndex = ['50', 'it', 'bank'];
+
+        if (tickerParts.length > 1 && _.get(tickerParts, '[0]', '').toLowerCase() === 'nifty') {
+            const secondPart = _.get(tickerParts, '[1]', null);
+
+            if (secondPart !== null) {
+                return _.findIndex(allowedIndex, item => item === secondPart.toLowerCase()) > -1;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     render() {
         const {
             symbol, 
@@ -205,6 +222,7 @@ export default class StockListItemMobile extends React.Component {
                         }
                         {
                             (showPredict || watchlistPredict) &&
+                            this.checkIfAllowerNiftyIndex(symbol) &&
                             <PredictButton 
                                 onClick={() => {
                                     showPredict
