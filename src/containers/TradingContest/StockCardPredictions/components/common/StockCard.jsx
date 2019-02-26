@@ -147,8 +147,8 @@ class StockCard extends React.Component {
             ...verticalBox, 
             justifyContent: 'flex-start', 
             alignItems: 'flex-start', 
-            minHeight: isDesktop ? '60px' : '80px', 
-            width: '100%'
+            width: '100%',
+            paddingBottom: '10px'
         };
         const isDesktop = this.props.windowWidth > 800;
 
@@ -164,7 +164,7 @@ class StockCard extends React.Component {
                 <div style={radioGroupStyle}>
                     <MetricLabel 
                             style={{
-                                marginBottom: '10px',
+                                marginBottom: '5px',
                                 marginTop: '0',
                                 fontSize: '12px',
                                 color: '#222'
@@ -187,8 +187,7 @@ class StockCard extends React.Component {
                 <div style={radioGroupStyle}>
                     <MetricLabel 
                             style={{
-                                marginBottom: '10px',
-                                marginTop: isDesktop ? '5px' : '10px',
+                                marginBottom: '5px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -210,8 +209,8 @@ class StockCard extends React.Component {
                 <div style={radioGroupStyle}>
                     <MetricLabel 
                             style={{
-                                marginBottom: '10px',
-                                marginTop: isDesktop ? '0px' : '5px',
+                                marginBottom: '5px',
+                                marginTop: '0px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -233,8 +232,8 @@ class StockCard extends React.Component {
                 <div style={radioGroupStyle}>
                     <MetricLabel 
                             style={{
-                                marginBottom: '10px',
-                                marginTop: isDesktop ? '0px' : '0px',
+                                marginBottom: '5px',
+                                marginTop: '0px',
                                 fontSize: '12px',
                                 color: '#222'
                             }}
@@ -254,107 +253,105 @@ class StockCard extends React.Component {
                         formatValue={Utils.formatInvestmentValueNormal}
                     />
                 </div>
-                {
-                    conditional &&
-                    <div style={radioGroupStyle}>
-                        <div 
+                <div style={radioGroupStyle}>
+                    <div 
+                            style={{
+                                ...horizontalBox,  
+                                justifyContent: 'space-between',
+                                width: '100%',
+                                alignItems: 'center',
+                                marginBottom: isDesktop ? '10px': '15px',
+                            }}
+                    >
+                        <MetricLabel 
                                 style={{
-                                    ...horizontalBox,  
-                                    justifyContent: 'space-between',
-                                    width: '100%',
-                                    alignItems: 'center',
-                                    marginBottom: '15px'
+                                    marginTop: '0px',
+                                    fontSize: '12px',
+                                    color: '#222'
                                 }}
                         >
-                            <MetricLabel 
-                                    style={{
-                                        marginTop: isDesktop ? '0px' : '0px',
-                                        fontSize: '12px',
-                                        color: '#222'
-                                    }}
-                            >
-                                Conditional Value (%)
-                            </MetricLabel>
-                            <RadioGroup 
-                                items={conditionalTypeItems}
-                                defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
-                                CustomRadio={CustomRadio}
-                                onChange={this.updateConditionalChange}
-                                small
-                                
-                            />
-                        </div>
-                        
-                        <StockCardRadioGroup 
-                            items={conditionalItems}
-                            onChange={this.conditionalChange}
-                            defaultSelected={conditionalValue}
-                            getIndex={getCondition}
-                            getValue={getConditionValue}
-                            showSlider
-                            hideLabel={true}
-                            checkIfCustom={checkIfCustomCondition}
-                            max={1.5}
-                            min={0}
-                            step={0.01}
-                            disabled={conditionalType.toUpperCase() === 'NOW'}
+                            Conditional Value (%)
+                        </MetricLabel>
+                        <RadioGroup 
+                            items={conditionalTypeItems}
+                            defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
+                            CustomRadio={CustomRadio}
+                            onChange={this.updateConditionalChange}
+                            small
+                            
                         />
-                        {
-                            conditionalType.toUpperCase() !== 'NOW' &&
-                            <div 
-                                    style={{
-                                        ...horizontalBox, 
-                                        justifyContent: 'space-between',
-                                        width: '100%',
-                                        margin: '10px 0'
-                                    }}
-                            >
-                                <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                                    <ConditionValueLabel 
-                                            style={{color: '##EB5555'}}
-                                    >
-                                        Sell
-                                        {conditionalType.toUpperCase() === 'LIMIT' ? ' above' : ' below'}
-                                    </ConditionValueLabel>
-                                    <ConditionValue 
-                                            style={{
-                                                color: '#EB5555', 
-                                                marginLeft: '4px'
-                                            }}
-                                    >
-                                        ₹{Utils.formatMoneyValueMaxTwoDecimals(
-                                            this.props.getConditionalNetValue(
-                                                conditionalType.toUpperCase() === 'LIMIT' 
-                                                    ? true
-                                                    : false
-                                            )
-                                        )}
-                                    </ConditionValue>
-                                </div>
-                                <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                                    <ConditionValueLabel>
-                                        Buy
-                                        {conditionalType.toUpperCase() === 'LIMIT' ? ' below' : ' above'}
-                                    </ConditionValueLabel>
-                                    <ConditionValue 
-                                            style={{
-                                                color: '#0acc53', 
-                                                marginLeft: '4px'
-                                            }}
-                                    >
-                                        ₹{Utils.formatMoneyValueMaxTwoDecimals(
-                                            this.props.getConditionalNetValue(
-                                                conditionalType.toUpperCase() === 'LIMIT'
-                                                ? false
-                                                : true
-                                            )
-                                        )}
-                                    </ConditionValue>
-                                </div>
-                            </div>
-                        }
                     </div>
-                }
+                    
+                    <StockCardRadioGroup 
+                        items={conditionalItems}
+                        onChange={this.conditionalChange}
+                        defaultSelected={conditionalValue}
+                        getIndex={getCondition}
+                        getValue={getConditionValue}
+                        showSlider
+                        hideLabel={true}
+                        checkIfCustom={checkIfCustomCondition}
+                        max={1.5}
+                        min={0}
+                        step={0.01}
+                        disabled={conditionalType.toUpperCase() === 'NOW'}
+                    />
+                    {
+                        conditionalType.toUpperCase() !== 'NOW' &&
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'space-between',
+                                    width: '100%',
+                                    marginTop: '5px',
+                                    marginBottom: '5px'
+                                }}
+                        >
+                            <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                                <ConditionValueLabel 
+                                        style={{color: '##EB5555'}}
+                                >
+                                    Sell
+                                    {conditionalType.toUpperCase() === 'LIMIT' ? ' above' : ' below'}
+                                </ConditionValueLabel>
+                                <ConditionValue 
+                                        style={{
+                                            color: '#EB5555', 
+                                            marginLeft: '4px'
+                                        }}
+                                >
+                                    ₹{Utils.formatMoneyValueMaxTwoDecimals(
+                                        this.props.getConditionalNetValue(
+                                            conditionalType.toUpperCase() === 'LIMIT' 
+                                                ? true
+                                                : false
+                                        )
+                                    )}
+                                </ConditionValue>
+                            </div>
+                            <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
+                                <ConditionValueLabel>
+                                    Buy
+                                    {conditionalType.toUpperCase() === 'LIMIT' ? ' below' : ' above'}
+                                </ConditionValueLabel>
+                                <ConditionValue 
+                                        style={{
+                                            color: '#0acc53', 
+                                            marginLeft: '4px'
+                                        }}
+                                >
+                                    ₹{Utils.formatMoneyValueMaxTwoDecimals(
+                                        this.props.getConditionalNetValue(
+                                            conditionalType.toUpperCase() === 'LIMIT'
+                                            ? false
+                                            : true
+                                        )
+                                    )}
+                                </ConditionValue>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
         );
     }
@@ -447,7 +444,6 @@ class StockCard extends React.Component {
             ...horizontalBox, 
             justifyContent: 'space-around',
             width: isDesktop ? '70%' : '100%',
-            marginTop: '5px'
         };
         const isDesktop = this.props.windowWidth > 800;
 
@@ -457,7 +453,7 @@ class StockCard extends React.Component {
                         item 
                         xs={12}
                         style={{
-                            padding: '0 10px'
+                            marginBottom: '15px'
                         }}
                 >
                     <div 
@@ -492,8 +488,6 @@ class StockCard extends React.Component {
                         style={{
                             ...horizontalBox, 
                             justifyContent: 'flex-start',
-                            marginTop: '10px',
-                            padding: '0 10px',
                         }}
                 >
                     {
@@ -505,11 +499,14 @@ class StockCard extends React.Component {
                         xs={12} 
                         style={{
                             ...verticalBox,
-                            marginTop: isDesktop ? '0px' : '0px',
-                            paddingTop: isDesktop ? '0px' : '0px'
                         }}
                 >
-                    <QuestionText>
+                    <QuestionText
+                            style={{
+                                margin: conditionalType.toUpperCase() === 'NOW' ? '10px' : '0',
+                                marginBottom: conditionalType.toUpperCase() !== 'NOW' ? '7px' : '0'
+                            }}
+                    >
                         Will the price be higher or lower in
                         <span 
                                 style={{
@@ -576,7 +573,6 @@ class StockCard extends React.Component {
                         item xs={12} 
                         style={{
                             ...verticalBox, 
-                            padding: '10px',
                             minHeight: '318px'
                         }}
                 >
@@ -663,7 +659,7 @@ class StockCard extends React.Component {
                             justifyContent: 'space-between', 
                             width: '100%',
                             padding: '0 5px',
-                            paddingLeft: '15px'
+                            paddingLeft: '10px'
                         }}
                 >
                     <div style={{...verticalBox, alignItems: 'flex-start'}}>
@@ -811,7 +807,7 @@ const Container = styled(Grid)`
     transition: all 0.4s ease-in-out;
     padding: 10px 0;
     padding-top: 0;
-    margin-top: ${props => props.bottomSheet ? '10px' : '0px'}
+    margin-top: ${props => props.bottomSheet ? '10px' : '0px'};
 `;
 
 const MainText = styled.h3`

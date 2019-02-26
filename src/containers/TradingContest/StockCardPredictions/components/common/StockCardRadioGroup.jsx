@@ -116,8 +116,10 @@ class StockCardRadioGroup extends React.Component {
                         <div
                                 style={{
                                     ...horizontalBox, 
-                                    justifyContent: 'flex-end',
+                                    justifyContent: 'flex-start',
                                     alignItems: 'flex-start',
+                                    position: 'relative',
+                                    width: '100%',
                                     ...this.props.style
                                 }}
                         >
@@ -169,7 +171,7 @@ class StockCardRadioGroup extends React.Component {
                                         type="edit" 
                                         color='#444' 
                                         onClick={this.toggleSlider} 
-                                        style={{marginLeft: '-10px'}}
+                                        style={{position: 'absolute', right: '0px'}}
                                     />
                                 }
                             </div>

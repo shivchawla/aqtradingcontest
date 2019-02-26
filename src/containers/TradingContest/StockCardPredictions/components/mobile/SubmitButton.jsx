@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as Icons from "@fortawesome/free-solid-svg-icons";
 import {Utils} from '../../../../../utils';
 import {getPercentageModifiedValue} from '../../../MultiHorizonCreateEntry/utils';
-import {verticalBox, metricColor} from '../../../../../constants';
+import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
 
 const theme = createMuiTheme({
     palette: {
@@ -55,17 +55,26 @@ export default class SubmitButton extends React.Component {
         return (
             <MuiThemeProvider theme={theme}>
                 <div style={{...verticalBox}}>
-                    <Target color={color}>₹{Utils.formatMoneyValueMaxTwoDecimals(targetValue)}</Target>
                     <Button 
                             variant="contained" 
                             color={type === 'buy' ? 'primary' : 'secondary'}
                             onClick={onClick}
                     >
-                        <FontAwesomeIcon 
-                            icon={icon} 
-                            style={{fontSize: '20px', marginRight: '10px'}}
-                        />
-                        {label}
+                        <div
+                                style={{
+                                    ...horizontalBox,
+                                    justifyContent: 'center'
+                                }}
+                        >
+                            <FontAwesomeIcon 
+                                icon={icon} 
+                                style={{fontSize: '20px', marginRight: '10px'}}
+                            />
+                            <div style={{...verticalBox}}>
+                                {label}
+                                <Target color='#fff'>₹{Utils.formatMoneyValueMaxTwoDecimals(targetValue)}</Target>
+                            </div>
+                        </div>
                     </Button>
                 </div>
             </MuiThemeProvider>
@@ -76,7 +85,6 @@ export default class SubmitButton extends React.Component {
 const Target = styled.h3`
     font-size: 16px;
     color: ${props => props.color || metricColor.positive};
-    margin-bottom: 10px;
     font-family: 'Lato', sans-serif;
-    font-weight: 700;
+    font-weight: 500;
 `;
