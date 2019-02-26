@@ -62,7 +62,7 @@ class StockCardRadioGroup extends React.Component {
         this.setState({sliderValue: value});
         clearTimeout(sliderInputTimeout);
         sliderInputTimeout = setTimeout(() => {
-            this.props.onChange && this.props.onChange(value, true);
+            this.props.onChange && this.props.onChange(value, false);
         }, 300);
     }
 

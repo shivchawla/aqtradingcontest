@@ -449,39 +449,42 @@ class StockCard extends React.Component {
 
         return (
             <Grid container>
-                <Grid 
-                        item 
-                        xs={12}
-                        style={{
-                            marginBottom: '15px'
-                        }}
-                >
-                    <div 
+                {
+                    isDesktop &&
+                    <Grid 
+                            item 
+                            xs={12}
                             style={{
-                                ...horizontalBox, 
-                                justifyContent: 'space-between'
+                                marginBottom: '15px'
                             }}
                     >
-                        {
-                            isDesktop &&
-                            <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                                <div 
-                                        style={{
-                                            ...horizontalBox, 
-                                            justifyContent: 'flex-start'
-                                        }}
-                                >
-                                    <MainText>{symbol}</MainText>
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'space-between'
+                                }}
+                        >
+                            {
+                                isDesktop &&
+                                <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                                    <div 
+                                            style={{
+                                                ...horizontalBox, 
+                                                justifyContent: 'flex-start'
+                                            }}
+                                    >
+                                        <MainText>{symbol}</MainText>
+                                    </div>
+                                    <h3 style={{...nameStyle, color: '#525252'}}>{name}</h3>
                                 </div>
-                                <h3 style={{...nameStyle, color: '#525252'}}>{name}</h3>
-                            </div>
-                        }
-                        <Media 
-                            query="(min-width: 801px)"
-                            render={() => this.renderPriceMetricsDesktop()}
-                        />
-                    </div>
-                </Grid>
+                            }
+                            <Media 
+                                query="(min-width: 801px)"
+                                render={() => this.renderPriceMetricsDesktop()}
+                            />
+                        </div>
+                    </Grid>
+                }
                 <Grid 
                         item 
                         xs={12} 
