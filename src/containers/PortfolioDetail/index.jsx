@@ -126,6 +126,8 @@ class PortfolioDetailImpl extends React.Component {
         const staticPerformance = this.processStaticPerformance(portfolioStaticPerformance, benchmarkStaticPerformance, 'returns.totalreturn');    
         const rollingPerformance = this.processRollingPerformance(portfolioRollingPerformance, benchmarkRollingPerformance, 'returns.totalreturn');
 
+        console.log(staticPerformance);
+
         this.setState({
             portfolioStaticPerformance,
             portfolioRollingPerformance,
@@ -247,8 +249,7 @@ class PortfolioDetailImpl extends React.Component {
     }
 
     getAdvisorPerformanceData = () => {
-       
-        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        const selectedAdvisorId = _.get(Utils.getUserInfo(), 'advisor', null);
         const advicePerformanceUrl = `${requestUrl}/dailycontest/performance?advisor=${selectedAdvisorId}`;
 
         let benchmark = '';

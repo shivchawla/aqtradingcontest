@@ -13,35 +13,37 @@ import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import Snackbar from './components/Alerts/SnackbarComponent';
 import DummyLogin from './containers/DummyLogin';
+// import ExploreStocks from './containers/ExploreStocks';
 import {horizontalBox} from './constants';
 import {Utils} from './utils';
 import './App.css';
 
 const {gaTrackingId = null} = require('./localConfig');
-const ServerError = React.lazy(() => import('./containers/ErrorPages/ServerError'));
-const ApiDoc = React.lazy(() => import('./containers/ReDoc'));
+// const ServerError = React.lazy(() => import('./containers/ErrorPages/ServerError'));
+// const ApiDoc = React.lazy(() => import('./containers/ReDoc'));
 const AppHome = React.lazy(() => import('./containers/HomeFrame'));
-const DailyContestHome = React.lazy(() => import('./containers/DailyContestHomeFrame'));
+// const DailyContestHome = React.lazy(() => import('./containers/DailyContestHomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
-const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
-const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
-const TradingContestLeaderboard = React.lazy(() => import('./containers/TradingContestLeaderboard'));
-const TradingContestTopPicks = React.lazy(() => import('./containers/TradingContestTopPicks'));
+// const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
+// const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
+// const TradingContestLeaderboard = React.lazy(() => import('./containers/TradingContestLeaderboard'));
+// const TradingContestTopPicks = React.lazy(() => import('./containers/TradingContestTopPicks'));
 const Login = React.lazy(() => import('./containers/AuthPages/Login'));
-const Signup = React.lazy(() => import('./containers/AuthPages/SignUp'));
-const ForgotPassword = React.lazy(() => import('./containers/AuthPages/ForgotPassword'));
-const ForbiddenAccess = React.lazy(() => import('./containers/ErrorPages/ForbiddenAccess'));
-const ResetPassword = React.lazy(() => import('./containers/AuthPages/ResetPassword'));
-const AuthFeedback = React.lazy(() => import('./containers/AuthPages/AuthFeedback'));
-const StockDetail = React.lazy(() => import('./containers/StockDetail'));
-const NotAuthorized = React.lazy(() => import('./containers/ErrorPages/NotAuthorized'));
-const DailyContestTnc = React.lazy(() => import('./containers/TradingContest/TnC/DailyContestTnC'));
+// const Signup = React.lazy(() => import('./containers/AuthPages/SignUp'));
+// const ForgotPassword = React.lazy(() => import('./containers/AuthPages/ForgotPassword'));
+// const ForbiddenAccess = React.lazy(() => import('./containers/ErrorPages/ForbiddenAccess'));
+// const ResetPassword = React.lazy(() => import('./containers/AuthPages/ResetPassword'));
+// const AuthFeedback = React.lazy(() => import('./containers/AuthPages/AuthFeedback'));
+// const StockDetail = React.lazy(() => import('./containers/StockDetail'));
+// const NotAuthorized = React.lazy(() => import('./containers/ErrorPages/NotAuthorized'));
+// const DailyContestTnc = React.lazy(() => import('./containers/TradingContest/TnC/DailyContestTnC'));
 const PageNotFound = React.lazy(() => import('./containers/ErrorPages/PageNotFound'));
-const StockResearch = React.lazy(() => import('./containers/StockResearch'));
+// const StockResearch = React.lazy(() => import('./containers/StockResearch'));
 const PortfolioDetail = React.lazy(() => import('./containers/PortfolioDetail'));
-const AboutUs = React.lazy(() => import('./containers/AboutUs'));
-const TnC = React.lazy(() => import('./containers/TnC'));
-const Policy = React.lazy(() => import('./containers/Policy'));
+// const AboutUs = React.lazy(() => import('./containers/AboutUs'));
+// const TnC = React.lazy(() => import('./containers/TnC'));
+// const Policy = React.lazy(() => import('./containers/Policy'));
+const ExploreStocks = React.lazy(() => import('./containers/ExploreStocks'));
 
 class App extends React.Component {
     constructor(props) {
@@ -190,7 +192,7 @@ class App extends React.Component {
                             return (
                                 <React.Suspense fallback={<Loader />}>
                                     <Switch>
-                                        <Route exact={true} path='/dailycontest/home' component={DailyContestHome} /> 
+                                        {/* <Route exact={true} path='/dailycontest/home' component={DailyContestHome} /> 
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                         <Route exact={true} path='/api/docs' component={ApiDoc}/> 
                                         <Route 
@@ -205,7 +207,7 @@ class App extends React.Component {
                                             }
                                         />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/>
-                                        <Route path='/server_error' component={ServerError}/>
+                                        <Route path='/server_error' component={ServerError}/> */}
                                         <Route 
                                             exact={true}
                                             path='/login'
@@ -215,7 +217,7 @@ class App extends React.Component {
                                                     : <Login {...props} />
                                             }}
                                         />
-                                        <Route 
+                                        {/* <Route 
                                             exact={true}
                                             path='/signup'
                                             render={(props) => {
@@ -279,8 +281,9 @@ class App extends React.Component {
                                                     ? <StockCardPredictions />
                                                     : this.redirectToLogin('/contest')
                                             }}
-                                        />
+                                        /> */}
                                         <Route path='/dailycontest' component={TradingContest} />
+                                        <Route path='/explore' component={ExploreStocks} />
                                         <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
@@ -288,7 +291,7 @@ class App extends React.Component {
                             );
                         }}
                     />
-                    <Media 
+                    {/* <Media 
                         query="(min-width: 801px)"
                         render={() => {
                             return (
@@ -365,7 +368,7 @@ class App extends React.Component {
                                 </React.Suspense>
                             );
                         }}
-                    />
+                    /> */}
                 </div>
             </MuiPickersUtilsProvider>
         );

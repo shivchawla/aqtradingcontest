@@ -34,7 +34,6 @@ export default class HighChartBar extends React.Component {
                         enabled: false,
                     },
                     gridLineColor: 'transparent',
-                    // tickInterval: 5,
                 },
                 xAxis: {
                     gridLineColor: 'transparent',
@@ -51,7 +50,7 @@ export default class HighChartBar extends React.Component {
                     }
                 },
                 legend: {
-                    enabled: true,
+                    enabled: _.get(props, 'legendEnabled', true),
                 },
                 credits: {
                     enabled: false
