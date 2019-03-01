@@ -143,168 +143,187 @@ class StockCard extends React.Component {
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
-        const radioGroupStyle = {
-            ...verticalBox, 
-            justifyContent: 'flex-start', 
-            alignItems: 'flex-start', 
-            width: '100%',
-            paddingBottom: '10px',
-            minHeight: isDesktop ? '60px' : '65px'
+        const selectorsContainerStyle = {
+            overflow: 'hidden',
+            paddingBottom: '7px'
         };
         const isDesktop = this.props.windowWidth > 800;
 
         return (
-            <div 
-                    style={{
-                        ...verticalBox, 
-                        alignItems: 'flex-start',
-                        justifyContent: 'flex-start',
-                        width: '100%',
-                    }}
-            >
-                <div style={radioGroupStyle}>
-                    <MetricLabel 
-                            style={{
-                                marginBottom: '5px',
-                                marginTop: '0',
-                                fontSize: '12px',
-                                color: '#222'
-                            }}
-                    >
-                        Horizon in Days
-                    </MetricLabel>
-                    <StockCardRadioGroup 
-                        items={horizonItems}
-                        onChange={this.handleHorizonChange}
-                        defaultSelected={horizon}
-                        getIndex={getHorizon}
-                        getValue={getHorizonValue}
-                        showSlider
-                        checkIfCustom={checkIfCustomHorizon}
-                        label='Days'
-                        date={true}
-                    />
-                </div>
-                <div style={radioGroupStyle}>
-                    <MetricLabel 
-                            style={{
-                                marginBottom: '5px',
-                                fontSize: '12px',
-                                color: '#222'
-                            }}
-                    >
-                        Target in %
-                    </MetricLabel>
-                    <StockCardRadioGroup 
-                        items={targetItems}
-                        onChange={this.handleTargetChange}
-                        defaultSelected={target}
-                        getIndex={getTarget}
-                        getValue={getTargetValue}
-                        checkIfCustom={checkIfCustomTarget}
-                        showSlider
-                        hideLabel={true}
-                        label='%'
-                    />
-                </div>
-                <div style={radioGroupStyle}>
-                    <MetricLabel 
-                            style={{
-                                marginBottom: '5px',
-                                marginTop: '0px',
-                                fontSize: '12px',
-                                color: '#222'
-                            }}
-                    >
-                        Stop-Loss in %
-                    </MetricLabel>
-                    <StockCardRadioGroup 
-                        items={targetItems}
-                        onChange={this.handleStopLossChange}
-                        defaultSelected={stopLoss}
-                        getIndex={getTarget}
-                        checkIfCustom={checkIfCustomTarget}
-                        getValue={getTargetValue}
-                        showSlider
-                        hideLabel={true}
-                        label='%'
-                    />
-                </div>
-                <div style={radioGroupStyle}>
-                    <MetricLabel 
-                            style={{
-                                marginBottom: '5px',
-                                marginTop: '0px',
-                                fontSize: '12px',
-                                color: '#222'
-                            }}
-                    >
-                        Investment
-                    </MetricLabel>
-                    <StockCardRadioGroup 
-                        items={investmentItems}
-                        onChange={this.handleInvestmentChange}
-                        defaultSelected={investment}
-                        getIndex={getInvestment}
-                        getValue={getInvestmentValue}
-                        showSlider
-                        hideLabel={true}
-                        label='%'
-                        hideSlider={true}
-                        formatValue={Utils.formatInvestmentValueNormal}
-                    />
-                </div>
-                <div style={radioGroupStyle}>
-                    <div 
-                            style={{
-                                ...horizontalBox,  
-                                justifyContent: isDesktop 
-                                    ? 'flex-start' 
-                                    : 'space-between',
-                                width: '100%',
-                                alignItems: 'center',
-                                marginBottom: isDesktop ? '10px': '15px',
-                            }}
-                    >
-                        <MetricLabel 
+            <React.Fragment>
+                <Grid item xs={12} style={selectorsContainerStyle}>
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <MetricLabel 
+                                    style={{
+                                        marginBottom: '5px',
+                                        marginTop: '0',
+                                        fontSize: '12px',
+                                        color: '#222'
+                                    }}
+                            >
+                                Horizon in Days
+                            </MetricLabel>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <StockCardRadioGroup 
+                                items={horizonItems}
+                                onChange={this.handleHorizonChange}
+                                defaultSelected={horizon}
+                                getIndex={getHorizon}
+                                getValue={getHorizonValue}
+                                showSlider
+                                checkIfCustom={checkIfCustomHorizon}
+                                label='Days'
+                                date={true}
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid >
+                <Grid item xs={12} style={selectorsContainerStyle}>
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <MetricLabel 
+                                    style={{
+                                        marginBottom: '5px',
+                                        fontSize: '12px',
+                                        color: '#222'
+                                    }}
+                            >
+                                Target in %
+                            </MetricLabel>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <StockCardRadioGroup 
+                                items={targetItems}
+                                onChange={this.handleTargetChange}
+                                defaultSelected={target}
+                                getIndex={getTarget}
+                                getValue={getTargetValue}
+                                checkIfCustom={checkIfCustomTarget}
+                                showSlider
+                                hideLabel={true}
+                                label='%'
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} style={selectorsContainerStyle}>
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <MetricLabel 
+                                    style={{
+                                        marginBottom: '5px',
+                                        marginTop: '0px',
+                                        fontSize: '12px',
+                                        color: '#222'
+                                    }}
+                            >
+                                Stop-Loss in %
+                            </MetricLabel>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <StockCardRadioGroup 
+                                items={targetItems}
+                                onChange={this.handleStopLossChange}
+                                defaultSelected={stopLoss}
+                                getIndex={getTarget}
+                                checkIfCustom={checkIfCustomTarget}
+                                getValue={getTargetValue}
+                                showSlider
+                                hideLabel={true}
+                                label='%'
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} style={selectorsContainerStyle}>
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <MetricLabel 
+                                    style={{
+                                        marginBottom: '5px',
+                                        marginTop: '0px',
+                                        fontSize: '12px',
+                                        color: '#222'
+                                    }}
+                            >
+                                Investment
+                            </MetricLabel>  
+                        </Grid>
+                        <Grid item xs={12}>
+                            <StockCardRadioGroup 
+                                items={investmentItems}
+                                onChange={this.handleInvestmentChange}
+                                defaultSelected={investment}
+                                getIndex={getInvestment}
+                                getValue={getInvestmentValue}
+                                showSlider
+                                hideLabel={true}
+                                label='%'
+                                hideSlider={true}
+                                formatValue={Utils.formatInvestmentValueNormal}
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} style={selectorsContainerStyle}>
+                    <Grid container>
+                        <Grid 
+                                item 
+                                xs={12}
                                 style={{
-                                    marginTop: '0px',
-                                    fontSize: '12px',
-                                    color: '#222'
+                                    ...horizontalBox,  
+                                    justifyContent: isDesktop 
+                                        ? 'flex-start' 
+                                        : 'space-between',
+                                    width: '100%',
+                                    alignItems: 'center',
+                                    marginBottom: isDesktop ? '10px': '15px',
                                 }}
                         >
-                            Conditional Value (%)
-                        </MetricLabel>
-                        <RadioGroup 
-                            items={conditionalTypeItems}
-                            defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
-                            CustomRadio={CustomRadio}
-                            onChange={this.updateConditionalChange}
-                            small
-                            style={{
-                                marginLeft: isDesktop ? '20px' : '0px' 
-                            }}
-                            
+                            <MetricLabel 
+                                    style={{
+                                        marginTop: '0px',
+                                        fontSize: '12px',
+                                        color: '#222'
+                                    }}
+                            >
+                                Schedule/On Change (%)
+                            </MetricLabel>
+                            <RadioGroup 
+                                items={conditionalTypeItems}
+                                defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
+                                CustomRadio={CustomRadio}
+                                onChange={this.updateConditionalChange}
+                                small
+                                style={{
+                                    marginLeft: isDesktop ? '20px' : '0px' 
+                                }}
+                                
+                            />
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} style={selectorsContainerStyle}>
+                        <StockCardRadioGroup 
+                            items={conditionalItems}
+                            onChange={this.conditionalChange}
+                            defaultSelected={conditionalValue}
+                            getIndex={getCondition}
+                            getValue={getConditionValue}
+                            showSlider
+                            hideLabel={true}
+                            checkIfCustom={checkIfCustomCondition}
+                            max={1.5}
+                            min={0}
+                            step={0.01}
+                            disabled={conditionalType.toUpperCase() === 'NOW'}
                         />
-                    </div>
-                    
-                    <StockCardRadioGroup 
-                        items={conditionalItems}
-                        onChange={this.conditionalChange}
-                        defaultSelected={conditionalValue}
-                        getIndex={getCondition}
-                        getValue={getConditionValue}
-                        showSlider
-                        hideLabel={true}
-                        checkIfCustom={checkIfCustomCondition}
-                        max={1.5}
-                        min={0}
-                        step={0.01}
-                        disabled={conditionalType.toUpperCase() === 'NOW'}
-                    />
+                    </Grid>
                     {
                         conditionalType.toUpperCase() !== 'NOW' &&
-                        <div 
+                        <Grid 
+                                item xs={12}
                                 style={{
                                     ...horizontalBox, 
                                     justifyContent: 'space-between',
@@ -355,10 +374,10 @@ class StockCard extends React.Component {
                                     )}
                                 </ConditionValue>
                             </div>
-                        </div>
+                        </Grid>
                     }
-                </div>
-            </div>
+                </Grid>
+            </React.Fragment>
         );
     }
 
@@ -477,9 +496,11 @@ class StockCard extends React.Component {
                             justifyContent: 'flex-start',
                         }}
                 >
-                    {
-                        this.renderEditMode()
-                    }
+                    <Grid container>
+                        {
+                            this.renderEditMode()
+                        }
+                    </Grid>
                 </Grid>
                 <Grid 
                         item 
@@ -851,7 +872,6 @@ const Container = styled(Grid)`
     transition: all 0.4s ease-in-out;
     padding: 10px 0;
     padding-top: 0;
-    margin-top: ${props => props.bottomSheet ? '10px' : '0px'};
 `;
 
 const MainText = styled.h3`

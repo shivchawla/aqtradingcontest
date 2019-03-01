@@ -101,7 +101,7 @@ class StockCardRadioGroup extends React.Component {
                 : this.state.sliderValue;
 
         return (
-            <Grid container style={{...verticalBox, alignItems: 'flex-start'}}>
+            <Grid container>
                 <Grid item xs={12} 
                         style={{
                             ...horizontalBox, 
