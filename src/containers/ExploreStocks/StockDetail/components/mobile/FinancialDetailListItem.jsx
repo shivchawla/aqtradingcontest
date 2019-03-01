@@ -6,8 +6,6 @@ import numeral from 'numeral';
 import {horizontalBox, metricColor} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
 
-const myNumeral = numeral(1000);
-
 export default class FinancialDetailListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
@@ -55,7 +53,7 @@ export default class FinancialDetailListItem extends React.Component {
                     <Value>
                         {
                             change !== null
-                                ?   numeral(Number(change)).format('₹ 0.00 a')
+                                ?   `${(Number(change) * 100).toFixed(2)}%`
                                 :   '-'
                         }
                     </Value>

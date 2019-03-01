@@ -20,7 +20,7 @@ export default class StockDetail extends React.Component {
             general: {},
             highlights: {},
             valuation: {},
-            loadingHistoricalData: false
+            loading: false
         }
     }
 
@@ -46,7 +46,7 @@ export default class StockDetail extends React.Component {
         return getStockStaticPerformance(symbol)
         .then(data => {
             const rawPerformance = data;
-            const requiredStaticPerformance = processStaticPerformance(data);
+            const requiredStaticPerformance = processStaticPerformance(data, 'returns.annualreturn', symbol);
             this.setState({
                 staticPerformance: requiredStaticPerformance,
                 rawStaticPerformance: rawPerformance
@@ -63,7 +63,7 @@ export default class StockDetail extends React.Component {
         return getStockRollingPerformance(symbol)
         .then(data => {
             const rawPerformance = data;
-            const requiredRollingPerformance = processRollingPerformance(data);
+            const requiredRollingPerformance = processRollingPerformance(data, 'returns.annualreturn', symbol);
             this.setState({
                 rollingPerformance: requiredRollingPerformance.chartData,
                 rollingPerformanceTimelines: requiredRollingPerformance.timelines,
@@ -76,16 +76,12 @@ export default class StockDetail extends React.Component {
     }
 
     updateHistoricalData = () => {
-        this.setState({loadingHistoricalData: true});
         const symbol = _.get(this.props, 'match.params.symbol', null);
         this.fetchStockHistoricalData(symbol)
         .then(response => {
             const general = _.get(response.data, 'General', {});
             const highlights = _.get(response.data, 'Highlights', {});
             const valuation = _.get(response.data, 'Valuation');
-            console.log('General', general);
-            console.log('Highlights', highlights);
-            console.log('Valuation', valuation);
             this.setState({
                 financialData: processFinancials(response.data),
                 general,
@@ -96,13 +92,11 @@ export default class StockDetail extends React.Component {
         .catch(err => {
             console.log(err);
         })
-        .finally(() =>  {
-            this.setState({loadingHistoricalData: false});
-        })
     }
 
     onRollingPerformanceChange = selector => {
-        const requiredRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance, selector);
+        const symbol = _.get(this.props, 'match.params.symbol', null);
+        const requiredRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance, selector, symbol);
         this.setState({
             rollingPerformance: requiredRollingPerformance.chartData,
             rollingPerformanceTimelines: requiredRollingPerformance.timelines
@@ -110,25 +104,30 @@ export default class StockDetail extends React.Component {
     }
 
     onStaticPerformanceChange = selector => {
-        const requiredStaticPerformance = processStaticPerformance(this.state.rawStaticPerformance, selector);
+        const symbol = _.get(this.props, 'match.params.symbol', null);
+        const requiredStaticPerformance = processStaticPerformance(this.state.rawStaticPerformance, selector, symbol);
         this.setState({
             staticPerformance: requiredStaticPerformance
         });
     }
 
     componentWillMount() {
+        this.setState({loading: true});
         Promise.all([
             this.updateHistoricalData(),
             this.fetchStockStaticPerformance(),
             this.fetchRollingPerformance()    
         ])
+        .finally(() => {
+            this.setState({loading: false});
+        })
     }
 
     render() {
         const props = {
             symbol: 'TCS',
             financialData: this.state.financialData,
-            loading: this.state.loadingHistoricalData,
+            loading: this.state.loading,
             staticPerformance: this.state.staticPerformance,
             rollingPerformance: this.state.rollingPerformance,
             rollingPerformanceTimelines: this.state.rollingPerformanceTimelines,

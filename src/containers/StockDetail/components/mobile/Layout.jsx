@@ -5,14 +5,20 @@ import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Button from '@material-ui/core/Button';
+import {withStyles} from '@material-ui/styles'
 import HighStock from '../../../../components/Charts/StockChart';
 import PriceMetrics from './PriceMetrics';
 import LoaderComponent from '../../../TradingContest/Misc/Loader';
 import RollingPerformance from './RollingPerformance';
 import NoDataFound from '../../../../components/Errors/NoDataFound';
-import NotSelected from './NotSelected';
-import {checkIfSymbolSelected} from '../../utils';
-import {horizontalBox, verticalBox} from '../../../../constants';
+import MetricStats from './MetricStats'; 
+import {verticalBox} from '../../../../constants';
+
+const StyledTab = withStyles(theme => ({
+    root: {
+        fontSize: '12px',
+    }
+}))(Tab)
 
 export default class LayoutMobile extends React.Component {
     constructor(props) {
@@ -38,6 +44,16 @@ export default class LayoutMobile extends React.Component {
         );
     }
 
+    renderExtraTab = () => {
+        const metrics = _.get(this.props, 'extraTab.metrics', []);
+
+        return (
+            <div style={{marginTop: '10px'}}>
+                <MetricStats metrics={metrics} />
+            </div>
+        );
+    }
+
     handleSegmentControlChange = (event, value) => {
         this.setState({selectedMetricView: value});
     }
@@ -59,7 +75,6 @@ export default class LayoutMobile extends React.Component {
             changePct: Number((changePct * 100).toFixed(2))
         };
         this.props.selectStock(stockData);
-        // this.props.toggleStockDetailBottomSheetOpen();
         this.props.toggleStockCardBottomSheet();
     }
 
@@ -77,8 +92,9 @@ export default class LayoutMobile extends React.Component {
     }
 
     renderContent = () => {
-        const {series, noDataFound = false, intraDaySeries, latestDetail = {}} = this.props;
+        const {series, noDataFound = false, intraDaySeries, latestDetail = {}, extraTab = null} = this.props;
         const prevClose = _.get(latestDetail, 'close', 0);
+        const extraTabName = _.get(this.props, 'extraTab.name', '');
 
         return (
             noDataFound
@@ -105,21 +121,31 @@ export default class LayoutMobile extends React.Component {
                             xs={12}
                             style={{
                                 ...verticalBox,
-                                marginTop: '-15px'
+                                alignItems: 'flex-start',
+                                marginTop: '20px'
                             }}
                     >
+                        <Header>HIGHLIGHTS</Header>
                         <Tabs 
                                 value={this.state.selectedMetricView} 
                                 onChange={this.handleSegmentControlChange}
                                 size='small'
                         >
-                            <Tab label="Price" />
-                            <Tab label="Rolling" />
+                            <StyledTab label="Quotes" />
+                            <StyledTab label="Performance" />
+                            {
+                                extraTab !== null &&
+                                <StyledTab label={extraTabName} />
+                            }
                         </Tabs>
                         {
-                            this.state.selectedMetricView == 0
-                                ? this.renderPriceMetrics()
-                                : this.renderRollingPerformance()
+                            this.state.selectedMetricView == 0 && this.renderPriceMetrics()
+                        }
+                        {
+                            this.state.selectedMetricView == 1 && this.renderRollingPerformance()
+                        }
+                        {
+                            this.state.selectedMetricView == 2 && this.renderExtraTab()
                         }
                     </Grid>
                     {
@@ -167,3 +193,15 @@ const predictButtonStyle = {
     fontSize: '12px',
     background: 'linear-gradient(rgb(41, 135, 249), rgb(56, 111, 255))'
 }
+
+const Header = styled.h3`
+    font-size: 14px;
+    font-weight: 500;
+    color: #2a5cf7;
+    font-family: 'Lato', sans-serif;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border-left: 2px solid #2a5cf7;
+    padding-left: 5px;
+    text-align: start;
+`;

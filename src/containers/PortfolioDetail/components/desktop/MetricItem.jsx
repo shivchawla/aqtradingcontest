@@ -20,7 +20,6 @@ const MetricItem =  (props) => {
     const positiveColor = '#00b300';
     const negativeColor = '#F44336';
     const valueColor = props.color ? props.value > 0 ? positiveColor : props.value < 0 ? negativeColor : neutralColor: neutralColor;
-    // var dirArrow = props.direction ? props.value > 0 ? '▲' : props.value < 0 ? '▼' : "" : ""; 
     var dirArrow = "";
     var fixed = props.fixed ? props.fixed : props.percentage ? 2 : 0;
     const value = !props.noNumeric ? 
@@ -81,7 +80,7 @@ const containerStyle = {
     ':hover': {
         backgroundColor: '#44'
     },
-    width: '100%'
+    width: '100%',
 };
 
 const valueStyle = {

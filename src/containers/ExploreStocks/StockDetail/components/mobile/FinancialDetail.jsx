@@ -73,12 +73,19 @@ export default class FinancialDetailComponent extends React.Component {
         const timelineArray = Object.keys(timelineData);
         let requiredData = _.get(detail, `${this.state.selectedTimeline}.${this.state.selectedDate}`, {});
         requiredData = _.pick(requiredData, financialAttributes[header]);
+        const containerCardStyle = {
+            paddingTop: '10px',
+            borderRadius: '4px',
+            boxShadow: '0 2px 8px #d6d6d6',
+            marginBottom: '15px'
+        }
 
         return (
             <Grid 
                     container
                     style={{
-                        padding: '10px'
+                        padding: '10px',
+                        ...containerCardStyle
                     }}
             >
                 <Grid 
@@ -154,7 +161,7 @@ export default class FinancialDetailComponent extends React.Component {
 const Header = styled.h3`
     font-size: 14px;
     font-weight: 500;
-    color: #4E4E4E;
+    color: #2a5cf7;
     font-family: 'Lato', sans-serif;
     box-sizing: border-box;
     border-left: 2px solid #2a5cf7;

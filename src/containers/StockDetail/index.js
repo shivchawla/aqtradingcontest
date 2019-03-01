@@ -168,7 +168,8 @@ export default class StockDetail extends React.Component {
             selectStock: this.props.selectStock,
             toggleStockCardBottomSheet: this.props.toggleStockCardBottomSheet,
             toggleStockDetailBottomSheetOpen: this.props.toggleStockDetailBottomSheetOpen,
-            stockData: this.props.stockData
+            stockData: this.props.stockData,
+            extraTab: this.props.extraTab
         };
 
         return (

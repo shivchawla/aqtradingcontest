@@ -44,76 +44,79 @@ export const extractData = (data, keys = []) => {
      * Sorting the dates in ascending order
      */
     const sortedKeys = keys.sort((a, b) => {
-        return moment(a, dateFormat).isSameOrBefore(moment(b, dateFormat)) ? -1 : 1;
+        return moment(a, dateFormat).isSameOrBefore(moment(b, dateFormat)) ? 1 : -1;
     });
 
     /**
      * Contains the result data
      */
     let resultData = {};
-    
-    sortedKeys.forEach((date, index) => {
-        const dataObj = data[date];
-        let groupedData = {};
-        Object.keys(dataObj).forEach(attribute => {
-            groupedData = {
-                ...groupedData,
-                [attribute]: {
-                    label: `${attribute}`,
-                    value: data[date][attribute],
-                    change: sortedKeys[index - 1] !== undefined
-                        ?   data[date][attribute] - data[sortedKeys[index -1]][attribute]
-                        :   null
-                }
-            };
+    try {
+        sortedKeys.forEach((date, index) => {
+            const dataObj = data[date];
+            let groupedData = {};
+            Object.keys(dataObj).forEach(attribute => {
+                const changePercntage = data[sortedKeys[index + 1]][attribute] === null 
+                    ? null
+                    : (data[date][attribute] - data[sortedKeys[index + 1]][attribute]) / data[sortedKeys[index + 1]][attribute]
+                groupedData = {
+                    ...groupedData,
+                    [attribute]: {
+                        label: `${attribute}`,
+                        value: data[date][attribute],
+                        change: sortedKeys[index + 1] !== undefined
+                            ?   changePercntage
+                            :   null
+                    }
+                };
+            });
+            resultData = {
+                ...resultData,
+                [date]: groupedData
+            }
         });
-        resultData = {
-            ...resultData,
-            [date]: groupedData
-        }
-    });
-
+    } catch (e) {
+        // console.log(e);
+    }
+    
     return resultData;
 };
 
-export const processStaticPerformance = (data, field = 'returns.totalreturn') => {
-    const performance = _.get(data, 'monthly', {});
+export const processStaticPerformance = (data, field = 'returns.annualreturn', tickerName = 'Ticker') => {
+    const performance = _.get(data, 'yearly', {});
 
     let performanceKeys = Object.keys(performance);
-        const dateOneyYearBack = moment().subtract(1, 'y').subtract(1, 'M');
-        performanceKeys = performanceKeys.map(key => moment(key, 'YYYY_M'));
-        performanceKeys = performanceKeys.filter(item => 
-            moment(item, 'YYYY_M').isSameOrAfter(dateOneyYearBack)
-        );
-        performanceKeys = performanceKeys.sort((a, b) => {return moment(a).isBefore(b) ?-1:1});
-        const currentData = [];
-        const currentTimelineData = [];
-
-        performanceKeys.map(key => {
-            let metricValue = (_.get(performance, `${[moment(key).format('YYYY_M')]}.${field}`, 0) || 0);
-            if (field === 'returns.monthlyreturn') {
-                const annualreturn = (_.get(performance, `${[moment(key).format('YYYY_M')]}.returns.annualreturn`, 0) || 0);
-                metricValue = Math.exp(Math.log(1 + annualreturn) / 12) - 1;
-            }
-            const metricValuePercentage = Number((metricValue * 100).toFixed(2));
-            currentData.push(metricValuePercentage);
-            currentTimelineData.push({
-                timeline: key,
-                value: metricValuePercentage
-            });
+    const dateTenYearsBack = moment().subtract(10, 'years').format('YYYY');
+    performanceKeys = performanceKeys.map(key => moment(key, 'YYYY'));
+    performanceKeys = performanceKeys.filter(key => {
+        return key.isSameOrAfter(moment(dateTenYearsBack, 'YYYY'));
+    });
+    
+    performanceKeys = performanceKeys.sort((a, b) => {return moment(a).isBefore(b) ? -1 : 1});
+    const currentData = [];
+    const currentTimelineData = [];
+    performanceKeys.map(key => {
+        let metricValue = _.get(performance, `${moment(key).format('YYYY')}.${field}`, 0) || 0;
+        const metricValuePercentage = Number((metricValue * 100).toFixed(2));
+        currentData.push(metricValuePercentage);
+        currentTimelineData.push({
+            timeline: moment(key).format('YYYY'),
+            value: metricValuePercentage
         });
+    });
 
-        return [{
-            name: '',
-            data: currentData,
-            timelineData: currentTimelineData
-        }];
+    return [{
+        name: tickerName,
+        data: currentData,
+        timelineData: currentTimelineData,
+        categories: currentTimelineData.map(item => item.timeline)
+    }];
 };
 
-export const processRollingPerformance = (performance, field = 'returns.totalreturn') => {
+export const processRollingPerformance = (performance, field = 'returns.annualreturn', tickerName = 'Ticker') => {
     let performanceKeys = Object.keys(performance);
     const timelineData = [];
-    let timelines = ['wtd', '1wk', 'mtd', '1m', '2m', '3m', '6m', 'ytd', '1y', 'inception']
+    let timelines = ['wtd', '1wk', 'mtd', '1m', '2m', '3m', '6m', 'ytd', '1y', '2y', '5y']
     
 
     timelines = timelines.filter(timelineItem => {
@@ -129,7 +132,7 @@ export const processRollingPerformance = (performance, field = 'returns.totalret
     return {
         chartData: [
             {
-                name: `Contest Entry`,
+                name: tickerName,
                 data: timelineData
             }
         ],

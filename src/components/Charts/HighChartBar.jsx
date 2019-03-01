@@ -2,7 +2,7 @@ import * as React from 'react';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import HighChart from 'highcharts';
-import {benchmarkColor, currentPerformanceColor, simulatedPerformanceColor} from '../../constants';
+import {benchmarkColor, currentPerformanceColor} from '../../constants';
 
 export default class HighChartBar extends React.Component {
     constructor(props) {
@@ -104,6 +104,8 @@ export default class HighChartBar extends React.Component {
     }
 
     updateSeries = series => {
+        const {graphColor = currentPerformanceColor} = this.props;
+
         if (series.length > 0) {
             this.clearSeries()
             series.map((item, index) => {
@@ -115,7 +117,7 @@ export default class HighChartBar extends React.Component {
                 });
             });
             this.chart.update({
-                colors: [currentPerformanceColor, benchmarkColor],
+                colors: [graphColor, benchmarkColor],
                 yAxis: {
                     max: Number(this.findYAxisMaxValue(series))
                 }

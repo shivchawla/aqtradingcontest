@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import numeral from 'numeral';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -41,16 +42,37 @@ export default class Layout extends React.Component {
     }
 
     handleStaticPerformanceChange = value => {
-        const requiredPerformanceSelectors = ['returns.totalreturn', 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
+        const requiredPerformanceSelectors = ['returns.annualreturn', 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
         this.props.onStaticPerformanceChange(requiredPerformanceSelectors[value]);
     }
 
     handleRollingPerformanceChange = value => {
-        const requiredPerformanceSelectors = ['returns.totalreturn', 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
+        const requiredPerformanceSelectors = ['returns.annualreturn', 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
         this.props.onRollingPerformanceChange(requiredPerformanceSelectors[value]);
     }
 
-    render() {
+    renderHighlights = () => {
+        const {highlights = {}} = this.props;
+        const bookValue = _.get(highlights, 'BookValue', 0);
+        const marketCapitalization = _.get(highlights, 'MarketCapitalization', 0);
+        const profitMargin = _.get(highlights, 'ProfitMargin', 0);
+        const returnOnAssets = _.get(highlights, 'ReturnOnAssetsTTM', 0);
+        const returnOnEquity = _.get(highlights, 'ReturnOnEquityTTM', 0);
+        const revenuePerShare = _.get(highlights, 'RevenuePerShareTTM', 0);
+
+        const metrics = [
+            {label: 'Book Value', value: bookValue, noNumeric: true},
+            {label: 'Market Cap', value: numeral(Number(marketCapitalization)).format('₹ 0.00 a'), noNumeric: true},
+            {label: 'Profit Margin', value: profitMargin, noNumeric: true},
+            {label: 'Return on assets', value: returnOnAssets, noNumeric: true},
+            {label: 'Return on equity', value: returnOnEquity, noNumeric: true},
+            {label: 'Revenue per share', value: revenuePerShare, noNumeric: true},
+        ];
+
+        return metrics;
+    }
+
+    renderContent() {
         const {
             symbol = '', 
             loading = false,
@@ -59,11 +81,29 @@ export default class Layout extends React.Component {
             rollingPerformanceTimelines = []
         } = this.props;
 
+        const containerCardStyle = {
+            paddingTop: '10px',
+            borderRadius: '4px',
+            boxShadow: '0 2px 8px #d6d6d6',
+            marginBottom: '15px'
+        }
+
         return(
-            <Grid container>
-                <Grid item xs={12}>
+            <Grid 
+                    container 
+                    style={{
+                        padding: '10px',
+                        boxSizing: 'border-box'
+                    }}
+            >
+                <Grid item xs={12} style={containerCardStyle}>
+                    <Header>PERFORMANCE</Header>
                     <StockDetail 
                         symbol={symbol}
+                        extraTab={{
+                            name: 'Fundamentals',
+                            metrics: this.renderHighlights()
+                        }}
                     />
                 </Grid>
                 <Grid 
@@ -71,12 +111,13 @@ export default class Layout extends React.Component {
                         xs={12}
                         style={{
                             ...verticalBox,
-                            alignItems: 'flex-start'
+                            ...containerCardStyle,
+                            alignItems: 'flex-start',
                         }}
                 >
                     <Header>STATIC PERFORMANCE</Header>
                     <RadioGroup 
-                        items={['Total Return', 'Volatility', 'Max Loss']}
+                        items={['Annual Return', 'Volatility', 'Max Loss']}
                         defaultSelected={0}
                         small
                         CustomRadio={CardCustomRadio}
@@ -89,9 +130,10 @@ export default class Layout extends React.Component {
                     <HighchartBar
                         id='staticPerformance'
                         series={staticPerformance}
-                        categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
+                        categories={staticPerformance[0].categories}
                         updateTimeline={true}
                         legendEnabled={false}
+                        graphColor='#2a5cf7'
                     />
                 </Grid>
                 <Grid 
@@ -99,12 +141,13 @@ export default class Layout extends React.Component {
                         xs={12}
                         style={{
                             ...verticalBox,
+                            ...containerCardStyle,
                             alignItems: 'flex-start'
                         }}
                 >
                     <Header>ROLLING PERFORMANCE</Header>
                     <RadioGroup 
-                        items={['Total Return', 'Volatility', 'Max Loss']}
+                        items={['Annual Return', 'Volatility', 'Max Loss']}
                         defaultSelected={0}
                         small
                         CustomRadio={CardCustomRadio}
@@ -119,14 +162,33 @@ export default class Layout extends React.Component {
                         series={rollingPerformance}
                         categories={rollingPerformanceTimelines}
                         legendEnabled={false}
+                        graphColor='#2a5cf7'
                     />
                 </Grid>
-                {
-                    loading
-                        ?   <CircularProgress /> 
-                        :   this.renderFinancialDetail()
-                }
+                {this.renderFinancialDetail()}
             </Grid>
+        );
+    }
+
+    renderLoader = () => {
+        return (
+            <div 
+                    style={{
+                        ...verticalBox,
+                        height: '100vh',
+                        width: '100vw'
+                    }}
+            >
+                <CircularProgress />
+            </div>
+        );
+    }
+
+    render() {
+        const {loading = false} = this.props;
+
+        return (
+            loading ? this.renderLoader() : this.renderContent()
         );
     }
 }
@@ -134,11 +196,12 @@ export default class Layout extends React.Component {
 const Header = styled.h3`
     font-size: 14px;
     font-weight: 500;
-    color: #4E4E4E;
+    color: #2a5cf7;
     font-family: 'Lato', sans-serif;
     margin-left: 10px;
     margin-bottom: 10px;
     box-sizing: border-box;
     border-left: 2px solid #2a5cf7;
     padding-left: 5px;
+    text-align: start;
 `;
