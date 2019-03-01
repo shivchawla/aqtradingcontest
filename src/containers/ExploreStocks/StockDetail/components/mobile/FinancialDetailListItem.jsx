@@ -2,8 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
+import numeral from 'numeral';
 import {horizontalBox, metricColor} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
+
+const myNumeral = numeral(1000);
 
 export default class FinancialDetailListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -27,13 +30,13 @@ export default class FinancialDetailListItem extends React.Component {
                     }}
             >
                 <Grid item xs={6}>
-                    <Value>{label.replace(/([a-z])([A-Z])/g, '$1 $2')}</Value>
+                    <MetricName>{label.replace(/([a-z])([A-Z])/g, '$1 $2')}</MetricName>
                 </Grid>
                 <Grid item xs={3}>
                     <Value>
                         {
                             value !== null
-                                ?   Utils.formatInvestmentValue(Number(value))
+                                ?   numeral(Number(value)).format('₹ 0.00 a')
                                 :   '-'
                         }
                     </Value>
@@ -43,12 +46,16 @@ export default class FinancialDetailListItem extends React.Component {
                         xs={3}
                         style={{
                             ...horizontalBox,
+                            width: '100%',
+                            justifyContent: 'space-between',
+                            paddingRight: '2px',
+                            boxSizing: 'border-box'
                         }}
                 >
                     <Value>
                         {
                             change !== null
-                                ?   Utils.formatInvestmentValue(Number(change))
+                                ?   numeral(Number(change)).format('₹ 0.00 a')
                                 :   '-'
                         }
                     </Value>
@@ -57,8 +64,11 @@ export default class FinancialDetailListItem extends React.Component {
                             ?   <Dot 
                                     style={{
                                         backgroundColor: Number(change) > 0 
-                                            ? metricColor.positive 
-                                            : metricColor.negative
+                                            ?   metricColor.positive 
+                                            :   Number(change) === 0
+                                                    ?   metricColor.neutral
+                                                    :   metricColor.negative
+
                                     }}
                                 />
                             :   null
@@ -70,6 +80,14 @@ export default class FinancialDetailListItem extends React.Component {
 }
 
 const Value = styled.h3`
+    font-size: 14px;
+    color: #303030;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    text-align: start;
+`;
+
+const MetricName = styled.h3`
     width: 140px;
     font-size: 14px;
     color: #303030;
@@ -85,7 +103,6 @@ const Value = styled.h3`
 const Dot = styled.div`
     width: 5px;
     height: 5px;
-    margin-left: 10px;
     background-color: red;
     border-radius: 50%;
 `;
