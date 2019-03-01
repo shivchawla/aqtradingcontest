@@ -97,7 +97,7 @@ export default class Layout extends React.Component {
                     }}
             >
                 <Grid item xs={12} style={containerCardStyle}>
-                    <Header>PERFORMANCE</Header>
+                    <Header>PRICE CHART</Header>
                     <StockDetail 
                         symbol={symbol}
                         extraTab={{
