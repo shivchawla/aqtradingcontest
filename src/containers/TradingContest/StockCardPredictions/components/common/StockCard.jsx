@@ -420,11 +420,12 @@ class StockCard extends React.Component {
             changePct = 0,
             change = 0,
         } = this.props.stockData;
+
         const changeColor = change > 0 
-            ? metricColor.positive 
+            ? '#32FFD8' 
             : change === 0 
                 ? metricColor.neutral 
-                : metricColor.negative;
+                : '#FF7B7B';
 
         return (
             <div style={{...verticalBox, alignItems: 'flex-end'}}>
