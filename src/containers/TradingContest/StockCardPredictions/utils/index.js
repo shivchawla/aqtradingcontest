@@ -63,7 +63,7 @@ export const getConditionalNetValue = (positive = true, lastPrice = 0, condition
 }
 
 export const constructPrediction = (stockData, type = 'buy', conditionalType = conditionalTypeItems[0], conditionalValue = 0.25) => {
-    let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0, investment = 0} = stockData;
+    let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0, investment = 0, conditional = false} = stockData;
     let targetValue = getTargetFromLastPrice(lastPrice, target, type);
     let avgPrice = 0;
     if (conditionalType.toUpperCase() !== 'NOW' && conditionalValue > 0) {
@@ -97,13 +97,13 @@ export const constructPrediction = (stockData, type = 'buy', conditionalType = c
                 },
                 investment: (type === 'buy' ? 1 : -1) * (investment / 1000),
                 quantity: 0,
-                avgPrice: Number(avgPrice)
+                avgPrice: conditional ?  Number(avgPrice) : 0
             },
             startDate,
             endDate,
             target: targetValue,
             stopLoss,
-            conditionalType
+            conditionalType: conditional ? conditionalType : 'NOW'
         }
     ];
 }
