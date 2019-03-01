@@ -691,7 +691,7 @@ class StockCard extends React.Component {
                                                 :   '#FF7B7B'   
                                 }}
                         >
-                            ₹{change} ({changePct.toFixed(2)}%)
+                            ₹{change.toFixed(2)} ({changePct.toFixed(2)}%)
                         </h3>                                                
                     </div>
                 </div>
