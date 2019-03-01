@@ -159,11 +159,15 @@ export default class FinancialDetailComponent extends React.Component {
 }
 
 const Header = styled.h3`
-    font-size: 14px;
+   font-size: 14px;
     font-weight: 500;
     color: #2a5cf7;
     font-family: 'Lato', sans-serif;
+    margin-bottom: 20px;
     box-sizing: border-box;
-    border-left: 2px solid #2a5cf7;
-    padding-left: 5px;
+    border-left: 4px solid #2a5cf7;
+    padding: 7px 5px;
+    text-align: start;
+    margin-left: -10px;
+    
 `;

@@ -201,7 +201,8 @@ const Header = styled.h3`
     font-family: 'Lato', sans-serif;
     margin-bottom: 10px;
     box-sizing: border-box;
-    border-left: 2px solid #2a5cf7;
-    padding-left: 5px;
+    border-left: 4px solid #2a5cf7;
+    padding: 7px 5px;
     text-align: start;
+    margin-left: -10px;
 `;
