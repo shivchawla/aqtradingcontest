@@ -148,7 +148,8 @@ class StockCard extends React.Component {
             justifyContent: 'flex-start', 
             alignItems: 'flex-start', 
             width: '100%',
-            paddingBottom: '10px'
+            paddingBottom: '10px',
+            minHeight: isDesktop ? '60px' : '65px'
         };
         const isDesktop = this.props.windowWidth > 800;
 
@@ -257,7 +258,9 @@ class StockCard extends React.Component {
                     <div 
                             style={{
                                 ...horizontalBox,  
-                                justifyContent: 'space-between',
+                                justifyContent: isDesktop 
+                                    ? 'flex-start' 
+                                    : 'space-between',
                                 width: '100%',
                                 alignItems: 'center',
                                 marginBottom: isDesktop ? '10px': '15px',
@@ -278,6 +281,9 @@ class StockCard extends React.Component {
                             CustomRadio={CustomRadio}
                             onChange={this.updateConditionalChange}
                             small
+                            style={{
+                                marginLeft: isDesktop ? '20px' : '0px' 
+                            }}
                             
                         />
                     </div>
@@ -398,10 +404,24 @@ class StockCard extends React.Component {
 
         return (
             <div style={{...verticalBox, alignItems: 'flex-end'}}>
-                <MainText style={{marginRight: '5px'}}>
+                <MainText 
+                        style={{
+                            marginRight: '5px', 
+                            fontSize: '18px', 
+                            color: '#fff',
+                            fontWeight: 500
+                        }}
+                >
                     ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
                 </MainText>
-                <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)} ({changePct.toFixed(2)}%)</Change>
+                <Change 
+                        color={changeColor}
+                        style={{
+                            fontSize: '14px'
+                        }}
+                >
+                    ₹{Utils.formatMoneyValueMaxTwoDecimals(change)} ({changePct.toFixed(2)}%)
+                </Change>
             </div>
         );
     }
@@ -449,42 +469,6 @@ class StockCard extends React.Component {
 
         return (
             <Grid container>
-                {
-                    isDesktop &&
-                    <Grid 
-                            item 
-                            xs={12}
-                            style={{
-                                marginBottom: '15px'
-                            }}
-                    >
-                        <div 
-                                style={{
-                                    ...horizontalBox, 
-                                    justifyContent: 'space-between'
-                                }}
-                        >
-                            {
-                                isDesktop &&
-                                <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                                    <div 
-                                            style={{
-                                                ...horizontalBox, 
-                                                justifyContent: 'flex-start'
-                                            }}
-                                    >
-                                        <MainText>{symbol}</MainText>
-                                    </div>
-                                    <h3 style={{...nameStyle, color: '#525252'}}>{name}</h3>
-                                </div>
-                            }
-                            <Media 
-                                query="(min-width: 801px)"
-                                render={() => this.renderPriceMetricsDesktop()}
-                            />
-                        </div>
-                    </Grid>
-                }
                 <Grid 
                         item 
                         xs={12} 
@@ -613,7 +597,6 @@ class StockCard extends React.Component {
             <Container 
                     container 
                     bottomSheet={bottomSheet}
-                    style={{marginTop: bottomSheet ? 0 : '40px'}}
             >
                 {this.props.loading && <Loader />}
                 {
@@ -708,13 +691,71 @@ class StockCard extends React.Component {
         );
     }
 
+    renderStockDialogHeader = () => {
+        const {
+            name = '', 
+            symbol = '', 
+        } = this.props.stockData;
+
+        return (
+            <Grid 
+                    item 
+                    xs={12}
+                    style={{
+                        padding: '5px 10px',
+                        marginBottom: '5px',
+                        ...horizontalBox, 
+                        justifyContent: 'space-between',
+                        background: 'linear-gradient(to right, rgb(84, 67, 240), rgb(51, 90, 240))',
+                    }}
+            >
+                <div 
+                        style={{
+                            ...horizontalBox, 
+                            justifyContent: 'space-between',
+                            width: '100%'
+                        }}
+                >
+                    <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    justifyContent: 'flex-start'
+                                }}
+                        >
+                            <MainText 
+                                    style={{
+                                        color: '#fff',
+                                        fontSize: '18px',
+                                        fontWeight: 500
+                                    }}
+                            >
+                                {symbol}
+                            </MainText>
+                        </div>
+                        <h3 style={{...nameStyle, color: '#fff', fontSize: '14px'}}>{name}</h3>
+                    </div>
+                    {this.renderPriceMetricsDesktop()}
+                </div>
+                <ActionIcon 
+                    onClick={this.props.onClose} 
+                    color='#fff'
+                    type="close"
+                    style={{
+                        marginLeft: '10px'
+                    }}
+                />
+            </Grid>
+        );
+    }
+
     renderStockCardDialog = () => {
         return <DialogComponent
                         open={this.props.open}
                         onClose={this.props.onClose}
                         style={{padding: 0}}
                 >
-                    <DialogHeaderComponent title='Predict' onClose={this.props.onClose} />
+                    {this.renderStockDialogHeader()}
                     {this.renderStockCard()}
                 </DialogComponent>
     }

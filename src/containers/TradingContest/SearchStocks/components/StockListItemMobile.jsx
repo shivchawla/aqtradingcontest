@@ -222,12 +222,18 @@ export default class StockListItemMobile extends React.Component {
                         }
                         {
                             (showPredict || watchlistPredict) &&
-                            this.checkIfAllowerNiftyIndex(symbol) &&
                             <PredictButton 
+                                style={
+                                    this.checkIfAllowerNiftyIndex(symbol)
+                                        ?   {background: 'linear-gradient(to bottom, #2987F9, #386FFF)'}
+                                        :   {backgroundColor: '#c2c2c2'}
+                                }
                                 onClick={() => {
-                                    showPredict
-                                        ?   onAddIconClick(symbol)
-                                        :   onPredictIconClicked(symbol)
+                                    this.checkIfAllowerNiftyIndex(symbol)
+                                    ?   showPredict
+                                            ?   onAddIconClick(symbol)
+                                            :   onPredictIconClicked(symbol)
+                                    :   null
                                 }}
                             />
                         }
@@ -241,8 +247,7 @@ export default class StockListItemMobile extends React.Component {
     }
 }
 
-const PredictButton = ({onClick}) => {
-    const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
+const PredictButton = ({onClick, style}) => {
     const color = '#fff';
     const fontSize = '12px';
     const padding = '4px 8px';
@@ -254,9 +259,8 @@ const PredictButton = ({onClick}) => {
                     color,
                     fontSize,
                     padding,
-                    background,
-                    // boxShadow,
-                    marginLeft: '10px'
+                    marginLeft: '10px',
+                    ...style
                 }}
                 onClick={onClick}
         >
