@@ -113,6 +113,18 @@ class DefaultSettings extends React.Component {
         }
     }
 
+    handleConditionalBooleanChange = (value = null) => {
+        let {conditionalType = conditionalTypeItems[0]} = this.props.defaultStockData;
+
+        if (value !== null) {
+            this.props.modifyDefaultStockData({
+                ...this.props.defaultStockData,
+                conditional: value === 0 ? true : false,
+                conditionalType: value === 0 ? conditionalType : 'NOW'
+            });
+        }
+    }
+
     onEditModeChanged = (value) => {
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
@@ -173,7 +185,15 @@ class DefaultSettings extends React.Component {
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
         ));
-        const radioGroupStyle = {...verticalBox, alignItems: 'flex-start', minHeight: '80px', width: '90%'};
+        const radioGroupStyle = {
+            ...verticalBox, 
+            alignItems: 'flex-start', 
+            width: '90%',
+            margin: '5px 0'
+        };
+        const headerStyle = {
+            marginBottom: '5px'
+        }
         const Dialog = this.props.dialog ? DialogComponent : BottomSheet;
         const isDesktop = this.props.windowWidth > 800;
         const gridContainerStyle = isDesktop? {minWidth: '38vw'} : {};
@@ -212,12 +232,7 @@ class DefaultSettings extends React.Component {
                                 }}
                         >
                             <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '10px'
-                                        }}
-                                >
+                                <MetricLabel style={headerStyle}>
                                     Horizon in Days
                                 </MetricLabel>
                                 <StockCardRadioGroup 
@@ -231,13 +246,8 @@ class DefaultSettings extends React.Component {
                                     date={true}
                                 />
                             </div>
-                            <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '20px'
-                                        }}
-                                >
+                            <div style={{...radioGroupStyle, marginTop: 0}}>
+                                <MetricLabel style={headerStyle}>
                                     Target in %
                                 </MetricLabel>
                                 <StockCardRadioGroup 
@@ -252,12 +262,7 @@ class DefaultSettings extends React.Component {
                                 />
                             </div>
                             <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '20px'
-                                        }}
-                                >
+                                <MetricLabel style={headerStyle}>
                                     Stop-Loss %
                                 </MetricLabel>
                                 <StockCardRadioGroup 
@@ -272,12 +277,7 @@ class DefaultSettings extends React.Component {
                                 />
                             </div>
                             <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '20px'
-                                        }}
-                                >
+                                <MetricLabel style={headerStyle}>
                                     Investment
                                 </MetricLabel>
                                 <StockCardRadioGroup 
@@ -292,22 +292,30 @@ class DefaultSettings extends React.Component {
                                 />
                             </div>
                             <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '20px'
-                                        }}
-                                >
+                                <MetricLabel style={headerStyle}>
                                     Conditional
                                 </MetricLabel>
                                 <RadioGroup 
-                                    items={conditionalTypeItems}
-                                    onChange={this.updateConditionalChange}
-                                    defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
-                                    style={{marginLeft: '-10px'}}
+                                    items={['True', 'False']}
+                                    onChange={this.handleConditionalBooleanChange}
+                                    defaultSelected={conditional === true ? 0 : 1}
                                     CustomRadio={CardCustomRadio}
                                 />
                             </div>
+                            {
+                                conditional &&
+                                <div style={radioGroupStyle}>
+                                    <MetricLabel style={headerStyle}>
+                                        Schedule/On Change(%)
+                                    </MetricLabel>
+                                    <RadioGroup 
+                                        items={conditionalTypeItems}
+                                        onChange={this.updateConditionalChange}
+                                        defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
+                                        CustomRadio={CardCustomRadio}
+                                    />
+                                </div>
+                            }
                         </div>
                         <div
                                 style={{
