@@ -1,12 +1,13 @@
 import React from 'react';
 import _ from 'lodash';
 import Media from 'react-media';
+import {withRouter} from 'react-router';
 import LayoutDesktop from './components/desktop/Layout';
 import LayoutMobile from './components/mobile/Layout';
-import {fetchAjaxPromise, getStockStaticPerformance, getStockRollingPerformance} from '../../../utils';
+import {fetchAjaxPromise, getStockStaticPerformance, getStockRollingPerformance, getStockData} from '../../../utils';
 import {processFinancials, processStaticPerformance, processRollingPerformance} from './utils';
 
-export default class StockDetail extends React.Component {
+class StockDetail extends React.Component {
     constructor(props) {
         super(props);
         this.cancelGetHistoricalData = null;
@@ -20,6 +21,8 @@ export default class StockDetail extends React.Component {
             general: {},
             highlights: {},
             valuation: {},
+            latestDetail: {},
+            position: {},
             loading: false
         }
     }
@@ -93,6 +96,36 @@ export default class StockDetail extends React.Component {
             console.log(err);
         })
     }
+    
+    fetchStockLatestDetail = (symbol) => {
+        return getStockData(symbol, 'latestDetail')
+        .then(response => {
+            return {
+                priceDetail: _.get(response, 'data.latestDetailRT', {}),
+                position: _.get(response, 'data.detail', {})
+            };
+        });
+    }
+
+    updateStockLatestDetail = () => {
+        const symbol = _.get(this.props, 'match.params.symbol', null);
+        this.fetchStockLatestDetail(symbol)
+        .then(({priceDetail, position}) => {
+            const name = _.get(position, 'Nse_Name', '');
+            const symbol = _.get(position, 'NSE_ID', '');
+            const lastPrice = _.get(priceDetail, 'current', 0);
+            const chg = _.get(priceDetail, 'change', 0);
+            const chgPct = _.get(priceDetail, 'changePct', 0);
+            this.setState({latestDetail: priceDetail, position});
+            this.props.updateStockData({
+                name,
+                symbol,
+                lastPrice,
+                chg,
+                chgPct
+            })
+        });
+    }
 
     onRollingPerformanceChange = selector => {
         const symbol = _.get(this.props, 'match.params.symbol', null);
@@ -113,13 +146,16 @@ export default class StockDetail extends React.Component {
 
     componentWillMount() {
         this.setState({loading: true});
+        this.props.updateLoading(true);
         Promise.all([
+            this.updateStockLatestDetail(),
             this.updateHistoricalData(),
             this.fetchStockStaticPerformance(),
             this.fetchRollingPerformance()    
         ])
         .finally(() => {
             this.setState({loading: false});
+            this.props.updateLoading(false);
         })
     }
 
@@ -135,7 +171,9 @@ export default class StockDetail extends React.Component {
             onStaticPerformanceChange: this.onStaticPerformanceChange,
             highlights: this.state.highlights,
             general: this.state.general,
-            valuation: this.state.valuation
+            valuation: this.state.valuation,
+            latestDetail: this.state.latestDetail,
+            updateStockData: this.props.updateStockData
         };
 
         return (
@@ -152,3 +190,5 @@ export default class StockDetail extends React.Component {
         );
     }
 }
+
+export default withRouter(StockDetail);

@@ -4,7 +4,7 @@ import Route from 'react-router/Route';
 import Switch from 'react-router/Switch';
 import {withRouter} from 'react-router-dom';
 import StockList from './StockList';
-import StockDetail from './StockDetail';
+import StockDetail from './Outer/DetailPage';
 
 class ExploreStocks extends React.Component {
     render() {

@@ -272,11 +272,3 @@ const Change = styled.h3`
     font-weight: 500;
     font-size: 15px;
 `;
-
-const DialogHeader = styled.h3`
-    color: #fff;
-    font-weight: 400;
-    font-family: 'Lato', sans-serif;
-    font-size: 16px;
-    margin-left: 20px;
-`;

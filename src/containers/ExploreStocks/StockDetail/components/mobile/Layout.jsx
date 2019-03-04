@@ -104,6 +104,7 @@ export default class Layout extends React.Component {
                             name: 'Fundamentals',
                             metrics: this.renderHighlights()
                         }}
+                        updateStockData={this.props.updateStockData}
                     />
                 </Grid>
                 <Grid 
