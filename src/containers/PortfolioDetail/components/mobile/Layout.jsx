@@ -3,47 +3,11 @@ import styled from 'styled-components';
 import {withRouter} from 'react-router';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
-import {metricsHeaderStyle, shadowBoxStyle, metricColor, horizontalBox, verticalBox} from '../../../../constants';
-import {formatMetric} from '../../utils';
-import {metricDefs} from '../../constants';
-import {Utils} from '../../../../utils';
+import {metricsHeaderStyle, horizontalBox, verticalBox} from '../../../../constants';
 import PortfolioMetricItems from './PortfolioMetricItems';
 import HighChartBar from '../../../../components/Charts/HighChartBar';
 import HighStock from '../../../../components/Charts/HighStock';
 import TranslucentLoader from '../../../../components/Loaders/TranslucentLoader';
-
-const metrics = [
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    }
-];
 
 class Layout extends React.Component {
     constructor(props) {
@@ -199,7 +163,7 @@ class Layout extends React.Component {
                             <HighChartBar 
                                 id='staticPerformance'
                                 series={this.props.staticPerformance}
-                                categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
+                                // categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
                                 updateTimeline={true}
                             />
                         </Grid>
