@@ -134,7 +134,7 @@ class Layout extends React.Component {
                                     marginBottom: '10px'
                                 }}
                         >
-                             <SectionHeader style={{marginBottom: 0}}>Rolling Performance</SectionHeader>
+                             <SectionHeader style={{marginBottom: 0}}>Periodic Performance</SectionHeader>
                         </Grid>
                         <Grid 
                                 item 
@@ -179,7 +179,7 @@ class Layout extends React.Component {
                                 item 
                                 xs={12}
                         >
-                            <SectionHeader>Static Performance</SectionHeader>
+                            <SectionHeader>Monthly Performance</SectionHeader>
                         </Grid>
                         <Grid 
                                 item 

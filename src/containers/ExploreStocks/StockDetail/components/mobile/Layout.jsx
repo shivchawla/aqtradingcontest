@@ -115,7 +115,7 @@ export default class Layout extends React.Component {
                             alignItems: 'flex-start',
                         }}
                 >
-                    <Header>STATIC PERFORMANCE</Header>
+                    <Header>MONTHLY PERFORMANCE</Header>
                     <RadioGroup 
                         items={['Annual Return', 'Volatility', 'Max Loss']}
                         defaultSelected={0}
@@ -145,7 +145,7 @@ export default class Layout extends React.Component {
                             alignItems: 'flex-start'
                         }}
                 >
-                    <Header>ROLLING PERFORMANCE</Header>
+                    <Header>PERIODIC PERFORMANCE</Header>
                     <RadioGroup 
                         items={['Annual Return', 'Volatility', 'Max Loss']}
                         defaultSelected={0}
