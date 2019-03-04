@@ -96,7 +96,14 @@ export default class Layout extends React.Component {
                         boxSizing: 'border-box'
                     }}
             >
-                <Grid item xs={12} style={containerCardStyle}>
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            ...containerCardStyle,
+                            display: loading ? 'none' : 'block'
+                        }}
+                >
                     <Header>PRICE CHART</Header>
                     <StockDetail 
                         symbol={symbol}
@@ -107,66 +114,72 @@ export default class Layout extends React.Component {
                         updateStockData={this.props.updateStockData}
                     />
                 </Grid>
-                <Grid 
-                        item 
-                        xs={12}
-                        style={{
-                            ...verticalBox,
-                            ...containerCardStyle,
-                            alignItems: 'flex-start',
-                        }}
-                >
-                    <Header>MONTHLY PERFORMANCE</Header>
-                    <RadioGroup 
-                        items={['Annual Return', 'Volatility', 'Max Loss']}
-                        defaultSelected={0}
-                        small
-                        CustomRadio={CardCustomRadio}
-                        style={{
-                            padding: '0 10px',
-                            marginBottom: '10px'
-                        }}
-                        onChange={this.handleStaticPerformanceChange}
-                    />
-                    <HighchartBar
-                        id='staticPerformance'
-                        series={staticPerformance}
-                        categories={staticPerformance[0].categories}
-                        updateTimeline={true}
-                        legendEnabled={false}
-                        graphColor='#2a5cf7'
-                    />
-                </Grid>
-                <Grid 
-                        item 
-                        xs={12}
-                        style={{
-                            ...verticalBox,
-                            ...containerCardStyle,
-                            alignItems: 'flex-start'
-                        }}
-                >
-                    <Header>PERIODIC PERFORMANCE</Header>
-                    <RadioGroup 
-                        items={['Annual Return', 'Volatility', 'Max Loss']}
-                        defaultSelected={0}
-                        small
-                        CustomRadio={CardCustomRadio}
-                        style={{
-                            padding: '0 10px',
-                            marginBottom: '10px'
-                        }}
-                        onChange={this.handleRollingPerformanceChange}
-                    />
-                    <HighchartBar
-                        id='rollingPerformance'
-                        series={rollingPerformance}
-                        categories={rollingPerformanceTimelines}
-                        legendEnabled={false}
-                        graphColor='#2a5cf7'
-                    />
-                </Grid>
-                {this.renderFinancialDetail()}
+                {
+                    loading 
+                        ?   this.renderLoader()
+                        :   <React.Fragment>
+                                <Grid 
+                                        item 
+                                        xs={12}
+                                        style={{
+                                            ...verticalBox,
+                                            ...containerCardStyle,
+                                            alignItems: 'flex-start',
+                                        }}
+                                >
+                                    <Header>MONTHLY PERFORMANCE</Header>
+                                    <RadioGroup 
+                                        items={['Annual Return', 'Volatility', 'Max Loss']}
+                                        defaultSelected={0}
+                                        small
+                                        CustomRadio={CardCustomRadio}
+                                        style={{
+                                            padding: '0 10px',
+                                            marginBottom: '10px'
+                                        }}
+                                        onChange={this.handleStaticPerformanceChange}
+                                    />
+                                    <HighchartBar
+                                        id='staticPerformance'
+                                        series={staticPerformance}
+                                        categories={staticPerformance[0].categories}
+                                        updateTimeline={true}
+                                        legendEnabled={false}
+                                        graphColor='#2a5cf7'
+                                    />
+                                </Grid>
+                                <Grid 
+                                        item 
+                                        xs={12}
+                                        style={{
+                                            ...verticalBox,
+                                            ...containerCardStyle,
+                                            alignItems: 'flex-start'
+                                        }}
+                                >
+                                    <Header>PERIODIC PERFORMANCE</Header>
+                                    <RadioGroup 
+                                        items={['Annual Return', 'Volatility', 'Max Loss']}
+                                        defaultSelected={0}
+                                        small
+                                        CustomRadio={CardCustomRadio}
+                                        style={{
+                                            padding: '0 10px',
+                                            marginBottom: '10px'
+                                        }}
+                                        onChange={this.handleRollingPerformanceChange}
+                                    />
+                                    <HighchartBar
+                                        id='rollingPerformance'
+                                        series={rollingPerformance}
+                                        categories={rollingPerformanceTimelines}
+                                        legendEnabled={false}
+                                        graphColor='#2a5cf7'
+                                    />
+                                </Grid>
+                                {this.renderFinancialDetail()}
+                            </React.Fragment>
+                }
             </Grid>
         );
     }
@@ -188,9 +201,10 @@ export default class Layout extends React.Component {
     render() {
         const {loading = false} = this.props;
 
-        return (
-            loading ? this.renderLoader() : this.renderContent()
-        );
+        // return (
+        //     loading ? this.renderLoader() : this.renderContent()
+        // );
+        return this.renderContent();
     }
 }
 
