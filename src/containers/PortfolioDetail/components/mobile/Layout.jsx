@@ -3,10 +3,7 @@ import styled from 'styled-components';
 import {withRouter} from 'react-router';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
-import {metricsHeaderStyle, shadowBoxStyle, metricColor, horizontalBox, verticalBox} from '../../../../constants';
-import {formatMetric} from '../../utils';
-import {metricDefs} from '../../constants';
-import {Utils} from '../../../../utils';
+import {metricsHeaderStyle, horizontalBox, verticalBox} from '../../../../constants';
 import PortfolioMetricItems from './PortfolioMetricItems';
 import HighChartBar from '../../../../components/Charts/HighChartBar';
 import HighStock from '../../../../components/Charts/HighStock';
@@ -199,7 +196,7 @@ class Layout extends React.Component {
                             <HighChartBar
                                 id='staticPerformance'
                                 series={this.props.staticPerformance}
-                                categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
+                                categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']}
                                 updateTimeline={true}
                             />
                         </Grid>

@@ -126,8 +126,6 @@ class PortfolioDetailImpl extends React.Component {
         const staticPerformance = this.processStaticPerformance(portfolioStaticPerformance, benchmarkStaticPerformance, 'returns.totalreturn');    
         const rollingPerformance = this.processRollingPerformance(portfolioRollingPerformance, benchmarkRollingPerformance, 'returns.totalreturn');
 
-        console.log(staticPerformance);
-
         this.setState({
             portfolioStaticPerformance,
             portfolioRollingPerformance,
