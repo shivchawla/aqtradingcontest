@@ -248,7 +248,10 @@ class PortfolioDetailImpl extends React.Component {
 
     getAdvisorPerformanceData = () => {
        
-        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        let selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        selectedAdvisorId = (selectedAdvisorId === null || selectedAdvisorId === 'null') 
+            ? _.get(Utils.getUserInfo(), 'advisor', null) 
+            : selectedAdvisorId
         const advicePerformanceUrl = `${requestUrl}/dailycontest/performance?advisor=${selectedAdvisorId}`;
 
         let benchmark = '';
