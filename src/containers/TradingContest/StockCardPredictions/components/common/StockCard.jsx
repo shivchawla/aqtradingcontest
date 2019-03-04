@@ -214,7 +214,7 @@ class StockCard extends React.Component {
                                         color: '#222'
                                     }}
                             >
-                                Target in %
+                                Target {valueTypePct ? 'in %' : ''}
                             </MetricLabel>
                         </Grid>
                         <Grid item xs={12}>
@@ -245,7 +245,7 @@ class StockCard extends React.Component {
                                         color: '#222'
                                     }}
                             >
-                                Stop-Loss in %
+                                Stop-Loss {valueTypePct ? 'in %' : ''}
                             </MetricLabel>
                         </Grid>
                         <Grid item xs={12}>
@@ -320,7 +320,7 @@ class StockCard extends React.Component {
                                             color: '#222'
                                         }}
                                 >
-                                    Schedule / On Change (%)
+                                    Schedule / On Change {valueTypePct ? '(%)' : ''}
                                 </MetricLabel>
                                 <RadioGroup 
                                     items={conditionalTypeItems}

@@ -279,6 +279,7 @@ class DefaultSettings extends React.Component {
                                     onChange={this.updateSelectionType}
                                     defaultSelected={valueTypePct === true ? 0 : 1}
                                     CustomRadio={CardCustomRadio}
+                                    small
                                 />
                             </div>
                             <div style={radioGroupStyle}>
@@ -298,7 +299,7 @@ class DefaultSettings extends React.Component {
                             </div>
                             <div style={{...radioGroupStyle, marginTop: 0}}>
                                 <MetricLabel style={headerStyle}>
-                                    Target in %
+                                    Target {valueTypePct ? 'in %' : ''}
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
@@ -314,7 +315,7 @@ class DefaultSettings extends React.Component {
                             </div>
                             <div style={radioGroupStyle}>
                                 <MetricLabel style={headerStyle}>
-                                    Stop-Loss %
+                                    Stop-Loss {valueTypePct ? 'in %' : ''}
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
@@ -352,6 +353,7 @@ class DefaultSettings extends React.Component {
                                     onChange={this.handleConditionalBooleanChange}
                                     defaultSelected={conditional === true ? 0 : 1}
                                     CustomRadio={CardCustomRadio}
+                                    small
                                 />
                             </div>
                             {
@@ -365,6 +367,7 @@ class DefaultSettings extends React.Component {
                                         onChange={this.updateConditionalChange}
                                         defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
                                         CustomRadio={CardCustomRadio}
+                                        small
                                     />
                                 </div>
                             }
@@ -455,7 +458,7 @@ const applyButtonStyle = {
 }
 
 const MetricLabel = styled.h3`
-    font-size: 16px;
+    font-size: 12px;
     color: #5D5D5D;
     font-weight: 600;
     text-align: start;
