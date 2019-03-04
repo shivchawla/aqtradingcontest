@@ -1,9 +1,8 @@
 import _ from 'lodash';
 import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
-import {targetKvp, horizonKvp, investmentKvp, conditionalKvp, conditionalTypeItems} from '../constants';
+import {targetKvp, horizonKvp, investmentKvp, conditionalKvp, conditionalTypeItems, conditionalKvpValue, targetKvpValue} from '../constants';
 import {getStockTicker} from '../../utils';
-import {sectors} from '../../../../constants';
 const dateFormat = 'YYYY-MM-DD';
 
 const DateHelper = require('../../../../utils/date');
@@ -17,7 +16,6 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultInvestment = _.get(defaultStockData, 'investment', 50000);
     const name = _.get(stockData, 'detail.Nse_Name', '');
     const symbol = getStockTicker(stockData);
-    // const symbol = _.get(stockData, 'ticker', '');
     const lastPrice = _.get(stockData, 'latestDetailRT.current', null) || _.get(stockData, 'latestDetail.Close', 0);
     const change = _.get(stockData, 'latestDetailRT.change', null) || _.get(stockData, 'latestDetail.Change', 0);
     let changePct = _.get(stockData, 'latestDetailRT.changePct', null) || _.get(stockData, 'latestDetail.ChangePct', 0);
@@ -56,31 +54,33 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     };
 }
 
-export const getConditionalNetValue = (positive = true, lastPrice = 0, conditionalValue = 0.25) => {
-    const diffValue = (lastPrice * conditionalValue) / 100;
+export const getConditionalNetValue = (positive = true, lastPrice = 0, conditionalValue = 0.25, valueTypePct = true) => {
+    const diffValue = valueTypePct ? (lastPrice * conditionalValue) / 100 : conditionalValue;
 
     return positive ? (lastPrice + diffValue).toFixed(2) : (lastPrice - diffValue).toFixed(2);
 }
 
-export const constructPrediction = (stockData, type = 'buy', conditionalType = conditionalTypeItems[0], conditionalValue = 0.25) => {
+export const constructPrediction = (stockData, type = 'buy', conditionalType = conditionalTypeItems[0], conditionalValue = 0.25, valueTypePct = true) => {
     let {target = 0, lastPrice = 0, symbol = '', horizon = 1, stopLoss = 0, investment = 0, conditional = false} = stockData;
-    let targetValue = getTargetFromLastPrice(lastPrice, target, type);
+    let targetValue = getTargetFromLastPrice(lastPrice, target, type, valueTypePct);
     let avgPrice = 0;
     if (conditionalType.toUpperCase() !== 'NOW' && conditionalValue > 0) {
         if (type === 'sell') {
             avgPrice = getConditionalNetValue(
                 conditionalType.toUpperCase() === 'LIMIT' ? true : false, 
                 lastPrice, 
-                conditionalValue
+                conditionalValue,
+                valueTypePct
             );
         } else {
             avgPrice = getConditionalNetValue(
                 conditionalType.toUpperCase() === 'LIMIT' ? false : true, 
                 lastPrice, 
-                conditionalValue
+                conditionalValue,
+                valueTypePct
             );
         }
-        targetValue = getTargetFromLastPrice(Number(avgPrice), target, type);
+        targetValue = getTargetFromLastPrice(Number(avgPrice), target, type, valueTypePct);
     }
     const startDate = moment().format(dateFormat);
     const endDate = moment(DateHelper.getNextNonHolidayWeekday(startDate, horizon)).format(dateFormat);
@@ -108,25 +108,30 @@ export const constructPrediction = (stockData, type = 'buy', conditionalType = c
     ];
 }
 
-export const getTargetFromLastPrice = (lastPrice, percentage, type = 'buy') => {
-    const valueToBeChanged = (type === 'buy' ? 1 : -1) * (percentage * lastPrice) / 100;
+export const getTargetFromLastPrice = (lastPrice, percentage, type = 'buy', valueTypePct = true) => {
+    console.log('lastPrice ', lastPrice);
+    const diff = valueTypePct ? ((percentage * lastPrice) / 100) : percentage;
+    const valueToBeChanged = (type === 'buy' ? 1 : -1) * diff;
+    console.log('Target ', Number((lastPrice + valueToBeChanged).toFixed(2)));
 
     return Number((lastPrice + valueToBeChanged).toFixed(2));
 }
 
 // Gives the target index from the target value
-export const getTarget = (targetValue = 0) => {
-    const targetValueIndex = _.findIndex(targetKvp, target => target.value === targetValue);
+export const getTarget = (targetValue = 0, valueTypePct = true) => {
+    const targetValues = valueTypePct ? targetKvp : targetValue;
+    const targetValueIndex = _.findIndex(targetValues, target => target.value === targetValue);
     if (targetValueIndex > -1) {
-        return targetKvp[targetValueIndex].index;
+        return targetValues[targetValueIndex].index;
     }
 
     return targetValue;
 }
 
 // Checks if custom target
-export const checkIfCustomTarget = (targetValue = 0) => {
-    const targetValueIndex = _.findIndex(targetKvp, target => target.value === targetValue);
+export const checkIfCustomTarget = (targetValue = 0, valueTypePct = true) => {
+    const targetValues = valueTypePct ? targetKvp : targetKvpValue;
+    const targetValueIndex = _.findIndex(targetValues, target => target.value === targetValue);
 
     return targetValueIndex === -1;
 }
@@ -152,10 +157,11 @@ export const getInvestment = (investmentValue = 0) => {
 }
 
 // Gices the conditional index from the condition value
-export const getCondition = (conditionalValue = 0) => {
-    const conditionalValueIndex = _.findIndex(conditionalKvp, target => target.value === conditionalValue);
+export const getCondition = (conditionalValue = 0, valueTypePct = true) => {
+    const conditionalValues = valueTypePct ? conditionalKvp : conditionalKvpValue;
+    const conditionalValueIndex = _.findIndex(conditionalValues, target => target.value === conditionalValue);
     if (conditionalValueIndex > -1) {
-        return conditionalKvp[conditionalValueIndex].index;
+        return conditionalValues[conditionalValueIndex].index;
     }
 
     return conditionalValue;
@@ -169,17 +175,19 @@ export const checkIfCustomHorizon = (horizonValue = 0) => {
 }
 
 // Checks if custom conditional value
-export const checkIfCustomCondition = (conditionalValue = 0) => {
-    const conditionalValueIndex = _.findIndex(conditionalKvp, target => target.value === conditionalValue);
+export const checkIfCustomCondition = (conditionalValue = 0, valueTypePct = true) => {
+    const conditionalValues = valueTypePct ? conditionalKvp : conditionalKvpValue;
+    const conditionalValueIndex = _.findIndex(conditionalValues, target => target.value === conditionalValue);
 
     return conditionalValueIndex === -1;
 }
 
 // Gives the target value from the target index
-export const getTargetValue = (value = 0) => {
-    const targetValueIndex = _.findIndex(targetKvp, target => target.index === value);
+export const getTargetValue = (value = 0, valueTypePct = true) => {
+    const targetValues = valueTypePct ? targetKvp : targetKvpValue;
+    const targetValueIndex = _.findIndex(targetValues, target => target.index === value);
     if (targetValueIndex > -1) {
-        return targetKvp[targetValueIndex].value;
+        return targetValues[targetValueIndex].value;
     }
 
     return value;
@@ -206,10 +214,11 @@ export const getInvestmentValue = (value = 0) => {
 }
 
 // Gives the conditional value from the condition index
-export const getConditionValue = (value = 0) => {
-    const conditionValueIndex = _.findIndex(conditionalKvp, target => target.index === value);
+export const getConditionValue = (value = 0, valueTypePct = true) => {
+    const conditionalValues = valueTypePct ? conditionalKvp : conditionalKvpValue;
+    const conditionValueIndex = _.findIndex(conditionalValues, target => target.index === value);
     if (conditionValueIndex > -1) {
-        return conditionalKvp[conditionValueIndex].value;
+        return conditionalValues[conditionValueIndex].value;
     }
 
     return value;

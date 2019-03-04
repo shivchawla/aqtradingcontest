@@ -2,10 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import windowSize from 'react-window-size';
 import moment from 'moment';
-import Media from 'react-media';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as Icons from "@fortawesome/free-solid-svg-icons";
@@ -18,13 +16,32 @@ import {
 } from '../../../../../constants';
 import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
-import DialogHeaderComponent from '../../../../../components/Alerts/DialogHeader';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import {Utils} from '../../../../../utils';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue, getConditionValue, getCondition, checkIfCustomCondition} from '../../utils';
-import {targetKvp, horizonKvp, investmentKvp, conditionalKvp, conditionalTypeItems} from '../../constants';
+import {
+    getTarget, 
+    getTargetValue, 
+    getHorizon, 
+    getHorizonValue, 
+    checkIfCustomHorizon, 
+    checkIfCustomTarget, 
+    getInvestment, 
+    getInvestmentValue, 
+    getConditionValue, 
+    getCondition, 
+    checkIfCustomCondition
+} from '../../utils';
+import {
+    targetKvp, 
+    targetKvpValue,
+    horizonKvp, 
+    investmentKvp, 
+    conditionalKvp, 
+    conditionalKvpValue,
+    conditionalTypeItems
+} from '../../constants';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from '../mobile/SubmitButton';
@@ -52,9 +69,10 @@ class StockCard extends React.Component {
     }
 
     handleTargetChange = (targetIndex = null, format = true) => {
+        const {valueTypePct = true} = this.props.stockData;
         if (targetIndex !== null) {
             let stockData = this.props.stockData;
-            let target = format ? getTargetValue(targetIndex) : targetIndex;
+            let target = format ? getTargetValue(targetIndex, valueTypePct) : targetIndex;
             stockData = {
                 ...stockData,
                 target,
@@ -64,8 +82,9 @@ class StockCard extends React.Component {
     }
 
     handleStopLossChange = (value = null, format = true) => {
+        const {valueTypePct = true} = this.props.stockData;
         if (value !== null) {
-            const requiredStopLoss = format ? getTargetValue(value) : value;
+            const requiredStopLoss = format ? getTargetValue(value, valueTypePct) : value;
             this.props.modifyStockData({
                 ...this.props.stockData,
                 stopLoss: requiredStopLoss
@@ -94,8 +113,9 @@ class StockCard extends React.Component {
     }
 
     conditionalChange = (value = null, custom = false) => {
+        const {valueTypePct = true} = this.props.stockData;
         if (value !== null) {
-            const requiredCondition = custom ? value : getConditionValue(value, custom);
+            const requiredCondition = custom ? value : getConditionValue(value, valueTypePct);
             this.props.modifyStockData({
                 ...this.props.stockData,
                 conditionalValue: requiredCondition
@@ -135,11 +155,12 @@ class StockCard extends React.Component {
             conditional = false, 
             conditionalValue = 0.25, 
             lastPrice = 0,
-            conditionalType = conditionalTypeItems[0]
+            conditionalType = conditionalTypeItems[0],
+            valueTypePct = true
         } = this.props.stockData;
-        const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
+        const targetItems = (valueTypePct ? targetKvp : targetKvpValue).map(target => ({key: target.value, label: null}));
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
-        const conditionalItems = conditionalKvp.map(condition => ({key: condition.value, label: null}));
+        const conditionalItems = (valueTypePct ? conditionalKvp : conditionalKvpValue).map(condition => ({key: condition.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
@@ -149,6 +170,7 @@ class StockCard extends React.Component {
             marginBottom: conditional ? '0' : '10px'
         };
         const isDesktop = this.props.windowWidth > 800;
+        const stockCardRadioGroupMax = valueTypePct ? 30 : 100;
 
         return (
             <React.Fragment>
@@ -177,6 +199,7 @@ class StockCard extends React.Component {
                                 checkIfCustom={checkIfCustomHorizon}
                                 label='Days'
                                 date={true}
+                                max={stockCardRadioGroupMax}
                             />
                         </Grid>
                     </Grid>
@@ -202,9 +225,11 @@ class StockCard extends React.Component {
                                 getIndex={getTarget}
                                 getValue={getTargetValue}
                                 checkIfCustom={checkIfCustomTarget}
+                                valueTypePct={valueTypePct}
                                 showSlider
                                 hideLabel={true}
                                 label='%'
+                                max={stockCardRadioGroupMax}
                             />
                         </Grid>
                     </Grid>
@@ -231,9 +256,11 @@ class StockCard extends React.Component {
                                 getIndex={getTarget}
                                 checkIfCustom={checkIfCustomTarget}
                                 getValue={getTargetValue}
+                                valueTypePct={valueTypePct}
                                 showSlider
                                 hideLabel={true}
                                 label='%'
+                                max={stockCardRadioGroupMax}
                             />
                         </Grid>
                     </Grid>
@@ -263,6 +290,7 @@ class StockCard extends React.Component {
                                 hideLabel={true}
                                 label='%'
                                 hideSlider={true}
+                                max={stockCardRadioGroupMax}
                                 formatValue={Utils.formatInvestmentValueNormal}
                             />
                         </Grid>
@@ -292,7 +320,7 @@ class StockCard extends React.Component {
                                             color: '#222'
                                         }}
                                 >
-                                    Schedule/On Change (%)
+                                    Schedule / On Change (%)
                                 </MetricLabel>
                                 <RadioGroup 
                                     items={conditionalTypeItems}
@@ -317,7 +345,8 @@ class StockCard extends React.Component {
                                 showSlider
                                 hideLabel={true}
                                 checkIfCustom={checkIfCustomCondition}
-                                max={1.5}
+                                valueTypePct={valueTypePct}
+                                max={valueTypePct ? 1.5 : 100}
                                 min={0}
                                 step={0.01}
                                 disabled={conditionalType.toUpperCase() === 'NOW'}
@@ -352,7 +381,8 @@ class StockCard extends React.Component {
                                             this.props.getConditionalNetValue(
                                                 conditionalType.toUpperCase() === 'LIMIT' 
                                                     ? true
-                                                    : false
+                                                    : false,
+                                                valueTypePct
                                             )
                                         )}
                                     </ConditionValue>
@@ -371,8 +401,9 @@ class StockCard extends React.Component {
                                         ₹{Utils.formatMoneyValueMaxTwoDecimals(
                                             this.props.getConditionalNetValue(
                                                 conditionalType.toUpperCase() === 'LIMIT'
-                                                ? false
-                                                : true
+                                                    ?   false
+                                                    :   true,
+                                                valueTypePct
                                             )
                                         )}
                                     </ConditionValue>
@@ -481,7 +512,8 @@ class StockCard extends React.Component {
             target = 2,
             horizon = 1,
             conditional = false,
-            conditionalType = conditionalTypeItems[0]
+            conditionalType = conditionalTypeItems[0],
+            valueTypePct = true
         } = this.props.stockData;
         const editMode = isDesktop || this.props.editMode;
         const {bottomSheet = false} = this.props;
@@ -535,22 +567,22 @@ class StockCard extends React.Component {
                     <div 
                             style={actionButtonContainerStyle}
                     >
-                        {
-                            <SubmitButton 
-                                onClick={() => this.props.createPrediction('sell')}
-                                target={target}
-                                lastPrice={
-                                    conditionalType.toUpperCase() !== 'NOW' 
-                                        ?   this.props.getConditionalNetValue(
+                        <SubmitButton 
+                            onClick={() => this.props.createPrediction('sell')}
+                            target={target}
+                            lastPrice={
+                                conditionalType.toUpperCase() !== 'NOW' 
+                                    ?   this.props.getConditionalNetValue(
                                             conditionalType.toUpperCase() === 'LIMIT'
-                                                ? true
-                                                : false
-                                            ) 
-                                        : lastPrice
-                                }
-                                type="sell"
-                            />
-                        }
+                                                ?   true
+                                                :   false,
+                                            valueTypePct
+                                        ) 
+                                    : lastPrice
+                            }
+                            type="sell"
+                            valueTypePct={valueTypePct}
+                        />
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('buy')}
                             target={target}
@@ -559,11 +591,13 @@ class StockCard extends React.Component {
                                         ?   this.props.getConditionalNetValue(
                                                 conditionalType.toUpperCase() === 'LIMIT'
                                                     ? false
-                                                    : true
+                                                    : true,
+                                                valueTypePct
                                             ) 
                                         : lastPrice
                                 }
                             type="buy"
+                            valueTypePct={valueTypePct}
                         />
                     </div>
                 </Grid>

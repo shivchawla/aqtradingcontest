@@ -54,7 +54,8 @@ class StockCardRadioGroup extends React.Component {
     }
 
     handleChange = value => {
-        this.setState({selected: this.props.getValue ? this.props.getValue(value) : value});
+        const {valueTypePct = true} = this.props;
+        this.setState({selected: this.props.getValue ? this.props.getValue(value, valueTypePct) : value});
         this.props.onChange && this.props.onChange(value);
     }
 
@@ -93,7 +94,8 @@ class StockCardRadioGroup extends React.Component {
             max = 30,
             min = 1,
             step = 1,
-            disabled = false
+            disabled = false,
+            valueTypePct = true
         } = this.props;
         const isDesktop = this.props.windowWidth > 800;
         const textFieldLabel = this.props.date 
@@ -148,7 +150,7 @@ class StockCardRadioGroup extends React.Component {
                             >
                                 {
                                     this.props.checkIfCustom && 
-                                    this.props.checkIfCustom(this.props.defaultSelected) && 
+                                    this.props.checkIfCustom(this.props.defaultSelected, valueTypePct) && 
                                     <div 
                                             style={{
                                                 ...verticalBox,

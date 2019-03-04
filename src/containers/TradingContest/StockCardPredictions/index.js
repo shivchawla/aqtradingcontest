@@ -69,7 +69,8 @@ class StockCardPredictions extends React.Component {
     initializeDefaultStockData = () => new Promise((resolve, reject) => {
         try {
             const defaultStockData = Utils.getObjectFromLocalStorage('defaultSettings');
-        
+            const valueTypePct = _.get(defaultStockData, 'valueTypePct', true);
+
             resolve({
                 benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_500'),
                 horizon: _.get(defaultStockData, 'horizon', 5),
@@ -80,8 +81,9 @@ class StockCardPredictions extends React.Component {
                 stopLoss: _.get(defaultStockData, 'stopLoss', 5),
                 investment: _.get(defaultStockData, 'investment', 50000),
                 conditional: _.get(defaultStockData, 'conditional', false),
-                conditionalValue: _.get(defaultStockData, 'conditionalValue', 0.25),
-                conditionalType: _.get(defaultStockData, 'conditionalType', 'NOW')
+                conditionalValue: valueTypePct ? 0.25 : 5,
+                conditionalType: _.get(defaultStockData, 'conditionalType', 'NOW'),
+                valueTypePct: _.get(defaultStockData, 'valueTypePct', true),
             });
         } catch (err) {
             reject(err);
@@ -326,13 +328,16 @@ class StockCardPredictions extends React.Component {
         const {
             conditional = false, 
             conditionalValue = 0.25, 
-            conditionalType = conditionalTypeItems[0]
+            conditionalType = conditionalTypeItems[0],
+            valueTypePct = true
         } = this.state.stockData;
         if (!Utils.isLoggedIn()) {
             this.toggleLoginBottomSheet();
             return;
         }
-        const predictions = constructPrediction(this.state.stockData, type, conditionalType, conditionalValue);
+        const predictions = constructPrediction(this.state.stockData, type, conditionalType, conditionalValue, valueTypePct);
+        console.log('Predictions ', predictions);
+        return;
         this.setState({loadingCreatePredictions: true});
         this.updatePortfolioStats()
         .then(portfolioStats => {
@@ -365,10 +370,10 @@ class StockCardPredictions extends React.Component {
         })
     }
 
-    getConditionalNetValue = (positive = true) => {
+    getConditionalNetValue = (positive = true, valueTypePct = true) => {
         const {lastPrice = 0, conditionalValue} = this.state.stockData;
 
-        return getConditionalNetValue(positive, lastPrice, conditionalValue);
+        return getConditionalNetValue(positive, lastPrice, conditionalValue, valueTypePct);
     }
 
     toggleSearchStocksBottomSheet = () => {

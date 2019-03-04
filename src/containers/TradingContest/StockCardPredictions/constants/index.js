@@ -6,6 +6,14 @@ export const targetKvp = [
     {index: 4, value: 10},
 ];
 
+export const targetKvpValue = [
+    {index: 0, value: 20},
+    {index: 1, value: 30},
+    {index: 2, value: 50},
+    {index: 3, value: 70},
+    {index: 4, value: 100},
+];
+
 export const horizonKvp = [
     {index: 0, value: 1},
     {index: 1, value: 2},
@@ -31,4 +39,15 @@ export const conditionalKvp = [
     {index: 5, value: 1.25},
 ];
 
+export const conditionalKvpValue = [
+    {index: 0, value: 0},
+    {index: 1, value: 5},
+    {index: 2, value: 10},
+    {index: 3, value: 15},
+    {index: 4, value: 20},
+    {index: 5, value: 25},
+];
+
 export const conditionalTypeItems = ['NOW', 'CROSS', 'LIMIT'];
+
+export const selectionTypeItems = ['Percentage', 'Value']

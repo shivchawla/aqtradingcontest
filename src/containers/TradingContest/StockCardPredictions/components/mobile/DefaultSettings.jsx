@@ -16,9 +16,25 @@ import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import DialogHeaderComponent from '../../../../../components/Alerts/DialogHeader';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
 import {Utils} from '../../../../../utils';
-import {targetKvp, horizonKvp, investmentKvp, conditionalTypeItems} from '../../constants';
+import {
+    getTarget, 
+    getTargetValue, 
+    getHorizon, 
+    getHorizonValue, 
+    checkIfCustomHorizon, 
+    checkIfCustomTarget, 
+    getInvestment, 
+    getInvestmentValue
+} from '../../utils';
+import {
+    targetKvp, 
+    targetKvpValue,
+    horizonKvp, 
+    investmentKvp, 
+    conditionalTypeItems, 
+    selectionTypeItems
+} from '../../constants';
 
 const styles = theme => ({
     dialogContentRoot: {
@@ -74,8 +90,9 @@ class DefaultSettings extends React.Component {
     }
 
     handleTargetChange = (value = null, format = true) => {
+        let {valueTypePct = true} = this.props.defaultStockData;
         if (value !== null) {
-            const requiredTarget = format ? getTargetValue(value) : value;
+            const requiredTarget = format ? getTargetValue(value, valueTypePct) : value;
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
                 target: requiredTarget
@@ -84,8 +101,10 @@ class DefaultSettings extends React.Component {
     }
 
     handleStopLossChange = (value = null, format = true) => {
+        let {valueTypePct = true} = this.props.defaultStockData;
+
         if (value !== null) {
-            const requiredStopLoss = format ? getTargetValue(value) : value;
+            const requiredStopLoss = format ? getTargetValue(value, valueTypePct) : value;
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
                 stopLoss: requiredStopLoss
@@ -133,6 +152,11 @@ class DefaultSettings extends React.Component {
         this.props.updateEditMode(value === 1);
     }
 
+    updateSelectionType = (value = 0) => {
+        const valueTypePct = value === 0;
+        this.resetToPercentageDefaultSettings(valueTypePct);
+    }
+
     onListModeChanged = (value) => {
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
@@ -145,6 +169,20 @@ class DefaultSettings extends React.Component {
         Utils.localStorageSave('selectedAdvisorId', null);
         Utils.localStorageSave('selectedUserId', null);
         Utils.localStorageSave('selectedUserName', null);
+    }
+
+    resetToPercentageDefaultSettings = (valueTypePct = true) => {
+        const target = getTargetValue(0, valueTypePct);
+        const stopLoss = getTargetValue(0, valueTypePct);
+        const conditionalValue = valueTypePct ? 0.25 : 5;
+
+        this.props.modifyDefaultStockData({
+            ...this.props.defaultStockData,
+            valueTypePct,
+            stopLoss,
+            target,
+            conditionalValue
+        });
     }
 
     renderHeader = () => {
@@ -178,9 +216,10 @@ class DefaultSettings extends React.Component {
             stopLoss = 0, 
             investment = 1,
             conditionalType = conditionalTypeItems[0],
-            conditional = false
+            conditional = false,
+            valueTypePct = true
         } = this.props.defaultStockData;
-        const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
+        const targetItems = (valueTypePct ? targetKvp : targetKvpValue).map(target => ({key: target.value, label: null}));
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
@@ -233,6 +272,17 @@ class DefaultSettings extends React.Component {
                         >
                             <div style={radioGroupStyle}>
                                 <MetricLabel style={headerStyle}>
+                                    Selection Type
+                                </MetricLabel>
+                                <RadioGroup 
+                                    items={selectionTypeItems}
+                                    onChange={this.updateSelectionType}
+                                    defaultSelected={valueTypePct === true ? 0 : 1}
+                                    CustomRadio={CardCustomRadio}
+                                />
+                            </div>
+                            <div style={radioGroupStyle}>
+                                <MetricLabel style={headerStyle}>
                                     Horizon in Days
                                 </MetricLabel>
                                 <StockCardRadioGroup 
@@ -257,6 +307,7 @@ class DefaultSettings extends React.Component {
                                     hideLabel={true}
                                     getIndex={getTarget}
                                     checkIfCustom={checkIfCustomTarget}
+                                    valueTypePct={valueTypePct}
                                     showSlider
                                     label='%'
                                 />
@@ -271,6 +322,7 @@ class DefaultSettings extends React.Component {
                                     defaultSelected={stopLoss}
                                     hideLabel={true}
                                     getIndex={getTarget}
+                                    valueTypePct={valueTypePct}
                                     checkIfCustom={checkIfCustomTarget}
                                     showSlider
                                     label='%'

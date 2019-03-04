@@ -283,12 +283,14 @@ export const getPositionsWithNewPredictions = (positions = []) => {
 }
 
 // gives 2% of a number
-export const getPercentageModifiedValue = (percentage, value, add = true) => {
+export const getPercentageModifiedValue = (percentage, value, add = true, valueTypePct = true) => {
+    const diff = Number(valueTypePct ? ((percentage * value) / 100) : percentage);
+
     if (add === true) {
-        return Number(value) + ((percentage * value) / 100);
+        return Number(value) + diff;
     }
 
-    return Number(value) - ((percentage * value) / 100);
+    return Number(value) - diff;
 }
 
 export const getPredictionEndDate = (predictions = []) => {
