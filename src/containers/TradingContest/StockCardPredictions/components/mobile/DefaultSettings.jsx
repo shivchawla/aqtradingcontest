@@ -231,7 +231,7 @@ class DefaultSettings extends React.Component {
             conditional = false,
             valueTypePct = true
         } = this.props.defaultStockData;
-        const targetItems = this.getTargetItems();
+        const targetItems = this.getTargetItems(true);
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
@@ -307,11 +307,12 @@ class DefaultSettings extends React.Component {
                                     showSlider
                                     label='Days'
                                     date={true}
+                                    max={15}
                                 />
                             </div>
                             <div style={{...radioGroupStyle, marginTop: 0}}>
                                 <MetricLabel style={headerStyle}>
-                                    Target {valueTypePct ? 'in %' : '(₹)'}
+                                    Target in %
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
@@ -323,11 +324,12 @@ class DefaultSettings extends React.Component {
                                     valueTypePct={valueTypePct}
                                     showSlider
                                     label='%'
+                                    disabled={!valueTypePct}
                                 />
                             </div>
                             <div style={radioGroupStyle}>
                                 <MetricLabel style={headerStyle}>
-                                    Stop-Loss {valueTypePct ? 'in %' : '(₹)'}
+                                    Stop-Loss in %
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
@@ -339,6 +341,7 @@ class DefaultSettings extends React.Component {
                                     checkIfCustom={checkIfCustomTarget}
                                     showSlider
                                     label='%'
+                                    disabled={!valueTypePct}
                                 />
                             </div>
                             <div style={radioGroupStyle}>

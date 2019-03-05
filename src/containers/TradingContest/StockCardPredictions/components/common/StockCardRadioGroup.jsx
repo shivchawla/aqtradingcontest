@@ -55,8 +55,8 @@ class StockCardRadioGroup extends React.Component {
     }
 
     handleChange = value => {
-        const {valueTypePct = true, items = []} = this.props;
-        this.setState({selected: this.props.getValue ? this.props.getValue(value, valueTypePct, constructKvpPairs(items)) : value});
+        const {customValues = true, items = []} = this.props;
+        this.setState({selected: this.props.getValue ? this.props.getValue(value, customValues, constructKvpPairs(items)) : value});
         this.props.onChange && this.props.onChange(value);
     }
 
@@ -64,14 +64,14 @@ class StockCardRadioGroup extends React.Component {
         this.setState({sliderValue: value});
         clearTimeout(sliderInputTimeout);
         sliderInputTimeout = setTimeout(() => {
-            this.props.onChange && this.props.onChange(value, false);
+            this.props.onChange && this.props.onChange(value, true);
         }, 300);
     }
 
     handleTextChange = (e) => {
         const value = e.target.value;
-        const {max = 30} = this.props;
-        if (Number(value) >=0 && Number(value) <= max) {
+        const {max = 30, min = 0} = this.props;
+        if (Number(value) >= min && Number(value) <= max) {
             this.setState({sliderValue: value});
             const requiredValue = value.length === 0 ? null : Number(value);
             clearTimeout(sliderInputTimeout);
@@ -96,7 +96,7 @@ class StockCardRadioGroup extends React.Component {
             min = 1,
             step = 1,
             disabled = false,
-            valueTypePct = true
+            customValues = true
         } = this.props;
         const isDesktop = this.props.windowWidth > 800;
         const textFieldLabel = this.props.date 
@@ -151,7 +151,7 @@ class StockCardRadioGroup extends React.Component {
                             >
                                 {
                                     this.props.checkIfCustom && 
-                                    this.props.checkIfCustom(this.props.defaultSelected, valueTypePct, constructKvpPairs(items)) && 
+                                    this.props.checkIfCustom(this.props.defaultSelected, customValues, constructKvpPairs(items)) && 
                                     <div 
                                             style={{
                                                 ...verticalBox,
@@ -160,7 +160,13 @@ class StockCardRadioGroup extends React.Component {
                                             }}
                                     >
                                         <ValueContainer disabled={disabled}>
-                                            <CustomValue disabled={disabled}>{this.props.defaultSelected}</CustomValue>
+                                            <CustomValue disabled={disabled}>
+                                                {
+                                                    this.props.formatValue
+                                                        ?   this.props.formatValue(this.props.defaultSelected)
+                                                        :   this.props.defaultSelected
+                                                }
+                                            </CustomValue>
                                         </ValueContainer>
                                         {
                                             this.props.date && !this.props.hideLabel &&

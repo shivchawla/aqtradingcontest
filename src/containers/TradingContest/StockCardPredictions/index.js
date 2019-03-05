@@ -13,11 +13,10 @@ import Snackbar from '../../../components/Alerts/SnackbarComponent';
 import LoginBottomSheet from '../LoginBottomSheet';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
-import {formatIndividualStock, constructPrediction, getConditionalNetValue} from './utils';
+import {formatIndividualStock, constructPrediction, getConditionalNetValue, getConditionalMaxValue, getConditionalItems} from './utils';
 import {getDailyContestPredictions, getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
-import {horizontalBox, primaryColor} from '../../../constants';
-import {onPredictionCreated, onSettingsClicked, onUserLoggedIn} from '../constants/events';
-import {conditionalTypeItems} from './constants';
+import {onPredictionCreated, onSettingsClicked} from '../constants/events';
+import {conditionalTypeItems, conditionalKvp} from './constants';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -81,9 +80,10 @@ class StockCardPredictions extends React.Component {
                 stopLoss: _.get(defaultStockData, 'stopLoss', 5),
                 investment: _.get(defaultStockData, 'investment', 50000),
                 conditional: _.get(defaultStockData, 'conditional', false),
-                conditionalValue: valueTypePct ? 0.25 : 5,
+                conditionalValue: valueTypePct ? 0.25 : 100000, // deliberately putting a very high value such that it will be converted the second value from the items
                 conditionalType: _.get(defaultStockData, 'conditionalType', 'NOW'),
                 valueTypePct: _.get(defaultStockData, 'valueTypePct', true),
+                realPrediction: false
             });
         } catch (err) {
             reject(err);
@@ -338,7 +338,7 @@ class StockCardPredictions extends React.Component {
         const predictions = constructPrediction(this.state.stockData, type, conditionalType, conditionalValue, valueTypePct);
         console.log(predictions);
         return;
-        // this.setState({loadingCreatePredictions: true});
+        this.setState({loadingCreatePredictions: true});
         this.updatePortfolioStats()
         .then(portfolioStats => {
             if (this.checkIfCashAvailable(_.get(portfolioStats, 'liquidCash', 0))) {
@@ -371,7 +371,11 @@ class StockCardPredictions extends React.Component {
     }
 
     getConditionalNetValue = (positive = true, valueTypePct = true) => {
-        const {lastPrice = 0, conditionalValue} = this.state.stockData;
+        let {lastPrice = 0, conditionalValue} = this.state.stockData;
+        const conditionalMaxValue = getConditionalMaxValue(lastPrice, valueTypePct);
+        conditionalValue = conditionalValue > conditionalMaxValue 
+            ? getConditionalItems(lastPrice, valueTypePct)[1].key 
+            : conditionalValue;
 
         return getConditionalNetValue(positive, lastPrice, conditionalValue, valueTypePct);
     }

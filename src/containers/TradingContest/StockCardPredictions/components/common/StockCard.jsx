@@ -4,6 +4,7 @@ import windowSize from 'react-window-size';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as Icons from "@fortawesome/free-solid-svg-icons";
@@ -33,7 +34,11 @@ import {
     getCondition, 
     checkIfCustomCondition,
     roundToValue,
-    constructKvpPairs
+    constructKvpPairs,
+    getShares,
+    checkIfCustomInvestment,
+    getMaxValue,
+    getConditionalMaxValue
 } from '../../utils';
 import {
     targetKvp, 
@@ -42,11 +47,14 @@ import {
     investmentKvp, 
     conditionalKvp, 
     conditionalKvpValue,
-    conditionalTypeItems
+    conditionalTypeItems,
+    investmentKvpReal,
+    horizonKvpReal
 } from '../../constants';
 import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from '../mobile/SubmitButton';
+import { getPercentageModifiedValue } from '../../../MultiHorizonCreateEntry/utils';
 
 const readableDateFormat = 'Do MMM';
 const isDesktop = global.screen.width > 800 ? true : false;
@@ -61,8 +69,9 @@ class StockCard extends React.Component {
     }
 
     handleHorizonChange = (value = null, format = true) => {
+        const {realPrediction = false} = this.props.stockData;
         if (value !== null) {
-            let horizon = format ? getHorizonValue(value) : value;
+            let horizon = format ? getHorizonValue(value, realPrediction) : value;
             this.props.modifyStockData({
                 ...this.props.stockData,
                 horizon
@@ -94,9 +103,11 @@ class StockCard extends React.Component {
         }
     }
 
-    handleInvestmentChange = (value = null) => {
+    handleInvestmentChange = (value = null, format = true) => {
+        const {realPrediction = false} = this.props.stockData;
+
         if (value !== null) {
-            const requiredInvestment = getInvestmentValue(value);
+            const requiredInvestment = format ? getInvestmentValue(value, realPrediction, constructKvpPairs(this.getInvestmentItems())) : value;
             this.props.modifyStockData({
                 ...this.props.stockData,
                 investment: requiredInvestment
@@ -112,6 +123,27 @@ class StockCard extends React.Component {
                 conditionalType: requiredCondition
             });
         }
+    }
+
+    handlePredictionTypeChange = e => {
+        const value = e.target.checked;
+        const investmentItems = this.getInvestmentItems(value);
+        let {
+            stopLoss = 2,
+            valueTypePct = true,
+            lastPrice = 0
+        } = this.props.stockData;
+        const maxValue = valueTypePct ? 10 : roundToValue(lastPrice, 10);
+        if (value) {
+            stopLoss = stopLoss > maxValue ? maxValue : stopLoss;
+        }
+
+        this.props.modifyStockData({
+            ...this.props.stockData,
+            realPrediction: value,
+            investment: investmentItems[0].key,
+            stopLoss
+        });
     }
 
     conditionalChange = (value = null, custom = false) => {
@@ -168,8 +200,20 @@ class StockCard extends React.Component {
         return conditionalItems;
     }
 
+    getInvestmentItems = (realPrediction = _.get(this.props, 'stockData.realPrediction', false)) => {
+        const {lastPrice = 0} = this.props.stockData;
+        let investmentItems = [];
+        if (realPrediction) {
+            investmentItems = investmentKvpReal.map(investment => ({key: getShares(investment.value, lastPrice)}));
+        } else {
+            investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
+        }
+        
+        return investmentItems;
+    }
+
     renderEditMode = () => {
-        const {
+        let {
             horizon = 2, 
             target = 2, 
             stopLoss = 2, 
@@ -178,28 +222,86 @@ class StockCard extends React.Component {
             conditionalValue = 0.25, 
             lastPrice = 0,
             conditionalType = conditionalTypeItems[0],
-            valueTypePct = true
+            valueTypePct = true,
+            realPrediction = false
         } = this.props.stockData;
-
+        const conditionalMax = 100;
+        
         const targetItems = this.getTargetItems();
+        const stockCardTargetRadioGroupMax = valueTypePct ? 30 : getMaxValue(lastPrice);
+        const stockCardStopLossRadioGroupMax = valueTypePct
+            ?   realPrediction ? 10 : 30
+            :   getMaxValue(lastPrice, 5, 10)
         
-        const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
-        
+        const investmentItems = this.getInvestmentItems();
+
         const conditionalItems = this.getConditionalItems();
+
+        const investmentMaxValue = realPrediction 
+            ? getShares(50000, lastPrice)
+            : investmentItems[investmentItems.length - 1].key;
         
-        const horizonItems = horizonKvp.map(horizon => (
+        const conditionalMaxValue = getConditionalMaxValue(lastPrice, valueTypePct);
+
+        if (realPrediction) {
+            horizon = horizon < 2 ? 2 : horizon;
+        }
+        
+        if (target > stockCardTargetRadioGroupMax) {
+            target = targetItems[0].key;
+        }
+
+        if (stopLoss > stockCardTargetRadioGroupMax) {
+            stopLoss = targetItems[0].key;
+        }
+
+        if (investment > investmentMaxValue) {
+            investment = investmentItems[0].key;
+        }
+
+        if (conditionalValue > conditionalMax) {
+            conditionalValue = conditionalItems[1].key;
+        }
+
+        
+        let horizonItems = (realPrediction ? horizonKvpReal : horizonKvp).map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
+
         const selectorsContainerStyle = {
             overflow: 'hidden',
             paddingBottom: '7px',
             marginBottom: conditional ? '0' : '10px'
         };
         const isDesktop = this.props.windowWidth > 800;
-        const stockCardRadioGroupMax = true ? 30 : 100;
 
         return (
             <React.Fragment>
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            ...horizontalBox,
+                            justifyContent: 'flex-start'
+                        }}
+                >
+                    <Checkbox 
+                        checked={realPrediction}
+                        onChange={this.handlePredictionTypeChange}
+                        style={{
+                            marginLeft: '-15px'
+                        }}
+                    />
+                    <MetricLabel 
+                            style={{
+                                marginTop: '0',
+                                fontSize: '12px',
+                                color: '#222'
+                            }}
+                    >
+                        Real Prediction
+                    </MetricLabel>
+                </Grid>
                 <Grid item xs={12} style={selectorsContainerStyle}>
                     <Grid container>
                         <Grid item xs={12}>
@@ -224,15 +326,24 @@ class StockCard extends React.Component {
                                 showSlider
                                 checkIfCustom={checkIfCustomHorizon}
                                 label='Days'
+                                customValues={realPrediction}
                                 date={true}
-                                max={stockCardRadioGroupMax}
+                                max={15}
+                                min={realPrediction ? 2 : 1}
                             />
                         </Grid>
                     </Grid>
                 </Grid >
                 <Grid item xs={12} style={selectorsContainerStyle}>
                     <Grid container>
-                        <Grid item xs={12}>
+                        <Grid 
+                                item 
+                                xs={12}
+                                style={{
+                                    ...horizontalBox,
+                                    justifyContent: 'flex-start'
+                                }}
+                        >
                             <MetricLabel 
                                     style={{
                                         marginBottom: '5px',
@@ -242,6 +353,47 @@ class StockCard extends React.Component {
                             >
                                 Target {valueTypePct ? 'in %' : '(₹)'}
                             </MetricLabel>
+                            <div 
+                                    style={{
+                                        ...horizontalBox, 
+                                        justifyContent: 'flex-start',
+                                        marginLeft: '20px'
+                                    }}
+                            >
+                                <ConditionValue 
+                                        style={{
+                                            color: '#EB5555',
+                                            marginBottom: '5px',
+                                            fontSize: '12px',
+                                            marginRight: '5px'
+                                        }}
+                                >
+                                    {
+                                        getPercentageModifiedValue(
+                                            target, 
+                                            this.getRequiredLastPrice(false), 
+                                            false, 
+                                            valueTypePct
+                                        ).toFixed(2)}
+                                </ConditionValue>
+                                -
+                                <ConditionValue 
+                                        style={{
+                                            color: '#0acc53',
+                                            marginBottom: '5px',
+                                            fontSize: '12px',
+                                            marginLeft: '5px'
+                                        }}
+                                >
+                                    {
+                                        getPercentageModifiedValue(
+                                            target, 
+                                            this.getRequiredLastPrice(), 
+                                            true, 
+                                            valueTypePct
+                                        ).toFixed(2)}
+                                </ConditionValue>
+                            </div>
                         </Grid>
                         <Grid item xs={12}>
                             <StockCardRadioGroup 
@@ -251,18 +403,25 @@ class StockCard extends React.Component {
                                 getIndex={getTarget}
                                 getValue={getTargetValue}
                                 checkIfCustom={checkIfCustomTarget}
-                                valueTypePct={valueTypePct}
+                                customValues={valueTypePct}
                                 showSlider
                                 hideLabel={true}
-                                label='%'
-                                max={stockCardRadioGroupMax}
+                                label={(!valueTypePct ||realPrediction) ? '' : '%'}
+                                max={stockCardTargetRadioGroupMax}
                             />
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid item xs={12} style={selectorsContainerStyle}>
                     <Grid container>
-                        <Grid item xs={12}>
+                        <Grid 
+                                item 
+                                xs={12}
+                                style={{
+                                    ...horizontalBox,
+                                    justifyContent: 'flex-start'
+                                }}
+                        >
                             <MetricLabel 
                                     style={{
                                         marginBottom: '5px',
@@ -273,6 +432,35 @@ class StockCard extends React.Component {
                             >
                                 Stop-Loss {valueTypePct ? 'in %' : '(₹)'}
                             </MetricLabel>
+                            <div 
+                                    style={{
+                                        ...horizontalBox, 
+                                        justifyContent: 'flex-start',
+                                        marginLeft: '20px'
+                                    }}
+                            >
+                                <ConditionValue 
+                                        style={{
+                                            color: '#EB5555',
+                                            marginBottom: '5px',
+                                            fontSize: '12px',
+                                            marginRight: '5px'
+                                        }}
+                                >
+                                    {this.getRequiredStopLoss(false)}
+                                </ConditionValue>
+                                -
+                                <ConditionValue 
+                                        style={{
+                                            color: '#0acc53',
+                                            marginBottom: '5px',
+                                            fontSize: '12px',
+                                            marginLeft: '5px'
+                                        }}
+                                >
+                                    {this.getRequiredStopLoss()}
+                                </ConditionValue>
+                            </div>
                         </Grid>
                         <Grid item xs={12}>
                             <StockCardRadioGroup 
@@ -282,11 +470,11 @@ class StockCard extends React.Component {
                                 getIndex={getTarget}
                                 checkIfCustom={checkIfCustomTarget}
                                 getValue={getTargetValue}
-                                valueTypePct={valueTypePct}
+                                customValues={valueTypePct}
                                 showSlider
                                 hideLabel={true}
-                                label='%'
-                                max={stockCardRadioGroupMax}
+                                label={(!valueTypePct ||realPrediction) ? '' : '%'}
+                                max={stockCardStopLossRadioGroupMax}
                             />
                         </Grid>
                     </Grid>
@@ -302,7 +490,11 @@ class StockCard extends React.Component {
                                         color: '#222'
                                     }}
                             >
-                                Investment (₹)
+                                {
+                                    realPrediction
+                                        ?   'Shares (#)'
+                                        :   'Investment (₹)'
+                                }
                             </MetricLabel>  
                         </Grid>
                         <Grid item xs={12}>
@@ -314,10 +506,10 @@ class StockCard extends React.Component {
                                 getValue={getInvestmentValue}
                                 showSlider
                                 hideLabel={true}
-                                label='%'
-                                hideSlider={true}
-                                max={stockCardRadioGroupMax}
-                                formatValue={Utils.formatInvestmentValueNormal}
+                                customValues={realPrediction}
+                                max={investmentMaxValue}
+                                checkIfCustom={checkIfCustomInvestment}
+                                formatValue={realPrediction ? null : Utils.formatInvestmentValueNormal}
                             />
                         </Grid>
                     </Grid>
@@ -371,8 +563,8 @@ class StockCard extends React.Component {
                                 showSlider
                                 hideLabel={true}
                                 checkIfCustom={checkIfCustomCondition}
-                                valueTypePct={valueTypePct}
-                                max={valueTypePct ? 1.5 : 100}
+                                customValues={valueTypePct}
+                                max={conditionalMaxValue}
                                 min={0}
                                 step={0.01}
                                 disabled={conditionalType.toUpperCase() === 'NOW'}
@@ -391,9 +583,7 @@ class StockCard extends React.Component {
                                     }}
                             >
                                 <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                                    <ConditionValueLabel 
-                                            style={{color: '##EB5555'}}
-                                    >
+                                    <ConditionValueLabel >
                                         Sell
                                         {conditionalType.toUpperCase() === 'LIMIT' ? ' above' : ' below'}
                                     </ConditionValueLabel>
@@ -530,6 +720,69 @@ class StockCard extends React.Component {
         );
     }
 
+    getRequiredLastPrice = (buy = true) => {
+        const {
+            lastPrice = 0, 
+            conditionalType = conditionalTypeItems[0],
+            valueTypePct = true,
+        } = this.props.stockData;
+
+        if (!buy) {
+            return (
+                conditionalType.toUpperCase() !== 'NOW' 
+                    ?   this.props.getConditionalNetValue(
+                            conditionalType.toUpperCase() === 'LIMIT'
+                                ?   true
+                                :   false,
+                            valueTypePct
+                        ) 
+                    : lastPrice
+            );
+        } else {
+            return (
+                conditionalType.toUpperCase() !== 'NOW' 
+                    ?   this.props.getConditionalNetValue(
+                            conditionalType.toUpperCase() === 'LIMIT'
+                                ? false
+                                : true,
+                            valueTypePct
+                        ) 
+                    : lastPrice
+            );
+        }
+    }
+
+    getRequiredStopLoss = (buy = true) => {
+        let {
+            lastPrice = 0, 
+            conditionalType = conditionalTypeItems[0],
+            valueTypePct = true,
+            stopLoss = 0
+        } = this.props.stockData;
+
+        let avgPrice = 0;
+
+        if (!buy) {
+            avgPrice = this.props.getConditionalNetValue(
+                conditionalType.toUpperCase() === 'LIMIT' 
+                    ? true
+                    : false,
+                valueTypePct                                            
+            )
+        } else {
+            avgPrice = this.props.getConditionalNetValue(
+                conditionalType.toUpperCase() === 'LIMIT'
+                    ?   false
+                    :   true,
+                valueTypePct
+            )
+        }
+        const stopLossDiff = valueTypePct ? ((stopLoss * lastPrice) / 100) : stopLoss;
+        stopLoss = !buy ? (Number(avgPrice) + stopLossDiff) : (Number(avgPrice) - stopLossDiff);
+        
+        return stopLoss;
+    }
+
     renderContent = () => {
         const {
             name = '', 
@@ -539,7 +792,8 @@ class StockCard extends React.Component {
             horizon = 1,
             conditional = false,
             conditionalType = conditionalTypeItems[0],
-            valueTypePct = true
+            valueTypePct = true,
+            realPrediction = false
         } = this.props.stockData;
         const editMode = isDesktop || this.props.editMode;
         const {bottomSheet = false} = this.props;
@@ -596,32 +850,15 @@ class StockCard extends React.Component {
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('sell')}
                             target={target}
-                            lastPrice={
-                                conditionalType.toUpperCase() !== 'NOW' 
-                                    ?   this.props.getConditionalNetValue(
-                                            conditionalType.toUpperCase() === 'LIMIT'
-                                                ?   true
-                                                :   false,
-                                            valueTypePct
-                                        ) 
-                                    : lastPrice
-                            }
+                            lastPrice={this.getRequiredLastPrice(false)}
                             type="sell"
                             valueTypePct={valueTypePct}
+                            disabled={realPrediction}
                         />
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('buy')}
                             target={target}
-                            lastPrice={
-                                conditionalType.toUpperCase() !== 'NOW' 
-                                    ?   this.props.getConditionalNetValue(
-                                            conditionalType.toUpperCase() === 'LIMIT'
-                                                ? false
-                                                : true,
-                                            valueTypePct
-                                        ) 
-                                    : lastPrice
-                            }
+                            lastPrice={this.getRequiredLastPrice()}
                             type="buy"
                             valueTypePct={valueTypePct}
                         />
