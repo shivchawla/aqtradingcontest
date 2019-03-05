@@ -25,7 +25,9 @@ import {
     checkIfCustomHorizon, 
     checkIfCustomTarget, 
     getInvestment, 
-    getInvestmentValue
+    getInvestmentValue,
+    constructKvpPairs,
+    roundToValue
 } from '../../utils';
 import {
     targetKvp, 
@@ -92,7 +94,7 @@ class DefaultSettings extends React.Component {
     handleTargetChange = (value = null, format = true) => {
         let {valueTypePct = true} = this.props.defaultStockData;
         if (value !== null) {
-            const requiredTarget = format ? getTargetValue(value, valueTypePct) : value;
+            const requiredTarget = format ? getTargetValue(value, valueTypePct, constructKvpPairs(this.getTargetItems())) : value;
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
                 target: requiredTarget
@@ -104,7 +106,7 @@ class DefaultSettings extends React.Component {
         let {valueTypePct = true} = this.props.defaultStockData;
 
         if (value !== null) {
-            const requiredStopLoss = format ? getTargetValue(value, valueTypePct) : value;
+            const requiredStopLoss = format ? getTargetValue(value, valueTypePct, constructKvpPairs(this.getTargetItems())) : value;
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
                 stopLoss: requiredStopLoss
@@ -172,9 +174,10 @@ class DefaultSettings extends React.Component {
     }
 
     resetToPercentageDefaultSettings = (valueTypePct = true) => {
-        const target = getTargetValue(0, valueTypePct);
-        const stopLoss = getTargetValue(0, valueTypePct);
-        const conditionalValue = valueTypePct ? 0.25 : 5;
+        const targetItems = this.getTargetItems(valueTypePct);
+        const target = getTargetValue(targetItems[0].key, valueTypePct, this.getTargetItems());
+        const stopLoss = getTargetValue(targetItems[0].key, valueTypePct, this.getTargetItems());
+        const conditionalValue = valueTypePct ? 0.25 : 1;
 
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
@@ -206,6 +209,15 @@ class DefaultSettings extends React.Component {
         );
     }
 
+    getTargetItems = (valueTypePct = _.get(this.props, 'defaultStockData.valueTypePct', true)) => {
+        const {lastPrice = 500} = this.props.defaultStockData;
+        let targetItems = targetKvp.map(target => {
+            const requiredValue = roundToValue(lastPrice, target.value);
+            return {key: valueTypePct ? target.value:  requiredValue, label: null};
+        });
+        return _.uniqBy(targetItems, 'key');
+    }
+
     render() {
         let {
             horizon = 2, 
@@ -219,7 +231,7 @@ class DefaultSettings extends React.Component {
             conditional = false,
             valueTypePct = true
         } = this.props.defaultStockData;
-        const targetItems = (valueTypePct ? targetKvp : targetKvpValue).map(target => ({key: target.value, label: null}));
+        const targetItems = this.getTargetItems();
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
@@ -299,7 +311,7 @@ class DefaultSettings extends React.Component {
                             </div>
                             <div style={{...radioGroupStyle, marginTop: 0}}>
                                 <MetricLabel style={headerStyle}>
-                                    Target {valueTypePct ? 'in %' : ''}
+                                    Target {valueTypePct ? 'in %' : '(₹)'}
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
@@ -315,7 +327,7 @@ class DefaultSettings extends React.Component {
                             </div>
                             <div style={radioGroupStyle}>
                                 <MetricLabel style={headerStyle}>
-                                    Stop-Loss {valueTypePct ? 'in %' : ''}
+                                    Stop-Loss {valueTypePct ? 'in %' : '(₹)'}
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
@@ -331,7 +343,7 @@ class DefaultSettings extends React.Component {
                             </div>
                             <div style={radioGroupStyle}>
                                 <MetricLabel style={headerStyle}>
-                                    Investment
+                                    Investment (₹)
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={investmentItems}

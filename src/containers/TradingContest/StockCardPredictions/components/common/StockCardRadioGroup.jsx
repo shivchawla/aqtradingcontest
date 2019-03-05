@@ -11,6 +11,7 @@ import CustomRadio from '../../../../../components/selections/CustomRadio';
 import TextField from '@material-ui/core/TextField';
 import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
+import {constructKvpPairs} from '../../utils';
 
 let sliderInputTimeout = null;
 const yellowColor = '#dda91a';
@@ -54,8 +55,8 @@ class StockCardRadioGroup extends React.Component {
     }
 
     handleChange = value => {
-        const {valueTypePct = true} = this.props;
-        this.setState({selected: this.props.getValue ? this.props.getValue(value, valueTypePct) : value});
+        const {valueTypePct = true, items = []} = this.props;
+        this.setState({selected: this.props.getValue ? this.props.getValue(value, valueTypePct, constructKvpPairs(items)) : value});
         this.props.onChange && this.props.onChange(value);
     }
 
@@ -150,7 +151,7 @@ class StockCardRadioGroup extends React.Component {
                             >
                                 {
                                     this.props.checkIfCustom && 
-                                    this.props.checkIfCustom(this.props.defaultSelected, valueTypePct) && 
+                                    this.props.checkIfCustom(this.props.defaultSelected, valueTypePct, constructKvpPairs(items)) && 
                                     <div 
                                             style={{
                                                 ...verticalBox,
@@ -158,8 +159,8 @@ class StockCardRadioGroup extends React.Component {
                                                 width: '48px'
                                             }}
                                     >
-                                        <ValueContainer>
-                                            <CustomValue>{this.props.defaultSelected}</CustomValue>
+                                        <ValueContainer disabled={disabled}>
+                                            <CustomValue disabled={disabled}>{this.props.defaultSelected}</CustomValue>
                                         </ValueContainer>
                                         {
                                             this.props.date && !this.props.hideLabel &&
@@ -269,7 +270,8 @@ const ValueContainer = styled.div`
     align-items: center;
     flex-direction: column;
     border-radius: 2px;
-    background-color: #3e4db8;
+    background-color: ${props => props.disabled ? '#0000001f' : '#3e4db8'};
+    border: ${props => props.disabled ? '1px solid #a2aabe' : 'none'}
 `;
 
 const CustomText = styled.h3`
@@ -285,7 +287,7 @@ const CustomValue = styled.h3`
     font-weight: 700;
     font-size: 12px;
     text-align: start;
-    color: #fff;
+    color: ${props => props.disabled ? '#00000042' : '#fff'};
 `;
 
 const HelperText = styled.h3`

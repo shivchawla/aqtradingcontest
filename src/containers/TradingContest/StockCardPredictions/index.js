@@ -336,9 +336,9 @@ class StockCardPredictions extends React.Component {
             return;
         }
         const predictions = constructPrediction(this.state.stockData, type, conditionalType, conditionalValue, valueTypePct);
-        console.log('Predictions ', predictions);
+        console.log(predictions);
         return;
-        this.setState({loadingCreatePredictions: true});
+        // this.setState({loadingCreatePredictions: true});
         this.updatePortfolioStats()
         .then(portfolioStats => {
             if (this.checkIfCashAvailable(_.get(portfolioStats, 'liquidCash', 0))) {

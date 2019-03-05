@@ -31,7 +31,9 @@ import {
     getInvestmentValue, 
     getConditionValue, 
     getCondition, 
-    checkIfCustomCondition
+    checkIfCustomCondition,
+    roundToValue,
+    constructKvpPairs
 } from '../../utils';
 import {
     targetKvp, 
@@ -72,7 +74,7 @@ class StockCard extends React.Component {
         const {valueTypePct = true} = this.props.stockData;
         if (targetIndex !== null) {
             let stockData = this.props.stockData;
-            let target = format ? getTargetValue(targetIndex, valueTypePct) : targetIndex;
+            let target = format ? getTargetValue(targetIndex, valueTypePct, constructKvpPairs(this.getTargetItems())) : targetIndex;
             stockData = {
                 ...stockData,
                 target,
@@ -84,7 +86,7 @@ class StockCard extends React.Component {
     handleStopLossChange = (value = null, format = true) => {
         const {valueTypePct = true} = this.props.stockData;
         if (value !== null) {
-            const requiredStopLoss = format ? getTargetValue(value, valueTypePct) : value;
+            const requiredStopLoss = format ? getTargetValue(value, valueTypePct, constructKvpPairs(this.getTargetItems())) : value;
             this.props.modifyStockData({
                 ...this.props.stockData,
                 stopLoss: requiredStopLoss
@@ -115,7 +117,7 @@ class StockCard extends React.Component {
     conditionalChange = (value = null, custom = false) => {
         const {valueTypePct = true} = this.props.stockData;
         if (value !== null) {
-            const requiredCondition = custom ? value : getConditionValue(value, valueTypePct);
+            const requiredCondition = custom ? value : getConditionValue(value, valueTypePct, constructKvpPairs(this.getConditionalItems()));
             this.props.modifyStockData({
                 ...this.props.stockData,
                 conditionalValue: requiredCondition
@@ -146,6 +148,26 @@ class StockCard extends React.Component {
         return moment(getNextNonHolidayWeekday(currentDate, horizon)).format(readableDateFormat)
     }
 
+    getTargetItems = () => {
+        const {lastPrice = 0, valueTypePct = true} = this.props.stockData;
+        let targetItems = targetKvp.map(target => {
+            const requiredValue = roundToValue(lastPrice, target.value);
+            return {key: valueTypePct ? target.value:  requiredValue, label: null};
+        });
+        return _.uniqBy(targetItems, 'key');
+    }
+
+    getConditionalItems = () => {
+        const {lastPrice = 0, valueTypePct = true} = this.props.stockData;
+
+        const conditionalItems = conditionalKvp.map(condition => {
+            const requiredValue = roundToValue(lastPrice, condition.value, 0.25);
+            return {key: valueTypePct ? condition.value : requiredValue, label: null};
+        });
+
+        return conditionalItems;
+    }
+
     renderEditMode = () => {
         const {
             horizon = 2, 
@@ -158,9 +180,13 @@ class StockCard extends React.Component {
             conditionalType = conditionalTypeItems[0],
             valueTypePct = true
         } = this.props.stockData;
-        const targetItems = (valueTypePct ? targetKvp : targetKvpValue).map(target => ({key: target.value, label: null}));
+
+        const targetItems = this.getTargetItems();
+        
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
-        const conditionalItems = (valueTypePct ? conditionalKvp : conditionalKvpValue).map(condition => ({key: condition.value, label: null}));
+        
+        const conditionalItems = this.getConditionalItems();
+        
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
@@ -170,7 +196,7 @@ class StockCard extends React.Component {
             marginBottom: conditional ? '0' : '10px'
         };
         const isDesktop = this.props.windowWidth > 800;
-        const stockCardRadioGroupMax = valueTypePct ? 30 : 100;
+        const stockCardRadioGroupMax = true ? 30 : 100;
 
         return (
             <React.Fragment>
@@ -214,7 +240,7 @@ class StockCard extends React.Component {
                                         color: '#222'
                                     }}
                             >
-                                Target {valueTypePct ? 'in %' : ''}
+                                Target {valueTypePct ? 'in %' : '(₹)'}
                             </MetricLabel>
                         </Grid>
                         <Grid item xs={12}>
@@ -245,7 +271,7 @@ class StockCard extends React.Component {
                                         color: '#222'
                                     }}
                             >
-                                Stop-Loss {valueTypePct ? 'in %' : ''}
+                                Stop-Loss {valueTypePct ? 'in %' : '(₹)'}
                             </MetricLabel>
                         </Grid>
                         <Grid item xs={12}>
@@ -276,7 +302,7 @@ class StockCard extends React.Component {
                                         color: '#222'
                                     }}
                             >
-                                Investment
+                                Investment (₹)
                             </MetricLabel>  
                         </Grid>
                         <Grid item xs={12}>
@@ -382,7 +408,7 @@ class StockCard extends React.Component {
                                                 conditionalType.toUpperCase() === 'LIMIT' 
                                                     ? true
                                                     : false,
-                                                valueTypePct
+                                                valueTypePct                                            
                                             )
                                         )}
                                     </ConditionValue>
@@ -586,16 +612,16 @@ class StockCard extends React.Component {
                         <SubmitButton 
                             onClick={() => this.props.createPrediction('buy')}
                             target={target}
-                                lastPrice={
-                                    conditionalType.toUpperCase() !== 'NOW' 
-                                        ?   this.props.getConditionalNetValue(
-                                                conditionalType.toUpperCase() === 'LIMIT'
-                                                    ? false
-                                                    : true,
-                                                valueTypePct
-                                            ) 
-                                        : lastPrice
-                                }
+                            lastPrice={
+                                conditionalType.toUpperCase() !== 'NOW' 
+                                    ?   this.props.getConditionalNetValue(
+                                            conditionalType.toUpperCase() === 'LIMIT'
+                                                ? false
+                                                : true,
+                                            valueTypePct
+                                        ) 
+                                    : lastPrice
+                            }
                             type="buy"
                             valueTypePct={valueTypePct}
                         />

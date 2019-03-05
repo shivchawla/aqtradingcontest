@@ -84,7 +84,8 @@ export const constructPrediction = (stockData, type = 'buy', conditionalType = c
     }
     const startDate = moment().format(dateFormat);
     const endDate = moment(DateHelper.getNextNonHolidayWeekday(startDate, horizon)).format(dateFormat);
-    stopLoss = -1 * (stopLoss / 100);
+    stopLoss = (stopLoss * 100) / lastPrice;
+    stopLoss = Number((-1 * stopLoss).toFixed(2));
     
     return [
         {
@@ -109,10 +110,8 @@ export const constructPrediction = (stockData, type = 'buy', conditionalType = c
 }
 
 export const getTargetFromLastPrice = (lastPrice, percentage, type = 'buy', valueTypePct = true) => {
-    console.log('lastPrice ', lastPrice);
     const diff = valueTypePct ? ((percentage * lastPrice) / 100) : percentage;
     const valueToBeChanged = (type === 'buy' ? 1 : -1) * diff;
-    console.log('Target ', Number((lastPrice + valueToBeChanged).toFixed(2)));
 
     return Number((lastPrice + valueToBeChanged).toFixed(2));
 }
@@ -129,10 +128,9 @@ export const getTarget = (targetValue = 0, valueTypePct = true) => {
 }
 
 // Checks if custom target
-export const checkIfCustomTarget = (targetValue = 0, valueTypePct = true) => {
-    const targetValues = valueTypePct ? targetKvp : targetKvpValue;
+export const checkIfCustomTarget = (targetValue = 0, valueTypePct = true, values = []) => {
+    const targetValues = valueTypePct ? targetKvp : values;
     const targetValueIndex = _.findIndex(targetValues, target => target.value === targetValue);
-
     return targetValueIndex === -1;
 }
 
@@ -175,16 +173,16 @@ export const checkIfCustomHorizon = (horizonValue = 0) => {
 }
 
 // Checks if custom conditional value
-export const checkIfCustomCondition = (conditionalValue = 0, valueTypePct = true) => {
-    const conditionalValues = valueTypePct ? conditionalKvp : conditionalKvpValue;
+export const checkIfCustomCondition = (conditionalValue = 0, valueTypePct = true, values = []) => {
+    const conditionalValues = valueTypePct ? conditionalKvp : values;
     const conditionalValueIndex = _.findIndex(conditionalValues, target => target.value === conditionalValue);
 
     return conditionalValueIndex === -1;
 }
 
 // Gives the target value from the target index
-export const getTargetValue = (value = 0, valueTypePct = true) => {
-    const targetValues = valueTypePct ? targetKvp : targetKvpValue;
+export const getTargetValue = (value = 0, valueTypePct = true, values = []) => {
+    const targetValues = valueTypePct ? targetKvp : values;
     const targetValueIndex = _.findIndex(targetValues, target => target.index === value);
     if (targetValueIndex > -1) {
         return targetValues[targetValueIndex].value;
@@ -214,12 +212,22 @@ export const getInvestmentValue = (value = 0) => {
 }
 
 // Gives the conditional value from the condition index
-export const getConditionValue = (value = 0, valueTypePct = true) => {
-    const conditionalValues = valueTypePct ? conditionalKvp : conditionalKvpValue;
+export const getConditionValue = (value = 0, valueTypePct = true, values = []) => {
+    const conditionalValues = valueTypePct ? conditionalKvp : values;
     const conditionValueIndex = _.findIndex(conditionalValues, target => target.index === value);
     if (conditionValueIndex > -1) {
         return conditionalValues[conditionValueIndex].value;
     }
 
     return value;
+}
+
+export const roundToValue = (lastPrice, value, roundValue = 5) => {
+    const diff = (value * lastPrice) / 100;
+
+    return Math.ceil(diff / roundValue) * roundValue;
+}
+
+export const constructKvpPairs = (items) => {
+    return items.map((item, index) => ({index, value: item.key}));
 }
