@@ -691,29 +691,16 @@ class StockCard extends React.Component {
             conditionalType = conditionalTypeItems[0],
             valueTypePct = true,
         } = this.props.stockData;
+        const isConditionTypeLimit = conditionalType.toUpperCase() === 'LIMIT';
 
-        if (!buy) {
-            return (
-                conditionalType.toUpperCase() !== 'NOW' 
-                    ?   this.props.getConditionalNetValue(
-                            conditionalType.toUpperCase() === 'LIMIT'
-                                ?   true
-                                :   false,
-                            valueTypePct
-                        ) 
-                    : lastPrice
-            );
+        if (conditionalType.toUpperCase() === 'NOW') {
+            return lastPrice;
         } else {
-            return (
-                conditionalType.toUpperCase() !== 'NOW' 
-                    ?   this.props.getConditionalNetValue(
-                            conditionalType.toUpperCase() === 'LIMIT'
-                                ? false
-                                : true,
-                            valueTypePct
-                        ) 
-                    : lastPrice
-            );
+            const positive = buy 
+                ? isConditionTypeLimit ? false : true 
+                : isConditionTypeLimit ? true : false 
+            
+            return this.props.getConditionalNetValue(positive, valueTypePct)
         }
     }
 
