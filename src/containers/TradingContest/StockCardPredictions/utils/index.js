@@ -54,6 +54,14 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     };
 }
 
+/**
+ * Gets the conditionalNetValue based on the lastPrice.
+ * If positive is true then change will be added else it will be dedcuted
+ * diffValue - Difference that needs to be added or deducted
+ * If value is % based 
+ * then diffValue is conditionalValue % of the lastPrice, ex - 0.25% of the lastPrice.
+ * else diffValue is conditionaValue itself
+ */
 export const getConditionalNetValue = (positive = true, lastPrice = 0, conditionalValue = 0.25, valueTypePct = true) => {
     const diffValue = valueTypePct ? (lastPrice * conditionalValue) / 100 : conditionalValue;
 
@@ -265,7 +273,7 @@ export const constructKvpPairs = (items) => {
 }
 
 // Gives the number of stocks based on the lastPrice and notional
-export const getShares = (notional, lastPrice) => {
+export const getNumSharesFromInvestment = (notional, lastPrice) => {
     const ceilValue = Math.ceil(notional / lastPrice);
     const floorValue = Math.floor(notional / lastPrice);
     if ((ceilValue * lastPrice) < (1.05 * notional)) {
@@ -282,6 +290,10 @@ export const getMaxValue = (lastPrice, roundToValue = 5, maxPct = 30) => {
     return Math.ceil(max / roundToValue) * roundToValue;
 }
 
+/**
+ * If value is % based then, maximum is 2
+ * else 5% of the lastPrice, rouned off to the nearest 0.5 with a Math.ceil operation
+ */
 export const getConditionalMaxValue = (lastPrice, valueTypePct = false) => {
     const maxValuePct = 5;
     let max = valueTypePct ? 2 : ((maxValuePct * lastPrice) / 100);
@@ -289,7 +301,13 @@ export const getConditionalMaxValue = (lastPrice, valueTypePct = false) => {
 
     return max;
 }
-
+/**
+ * Gets the required conditional items
+ * If value type is % based then it is the normal value from the conditionalKvp
+ * else required value is the conditionalValue % on the lastPrice rounded off to the nearest 0.25
+ * ex - if conditionalValue is 0.5, so required value is 0.5% of the lastPrice, rounded off to the
+ * nearest 0.25
+ */
 export const getConditionalItems = (lastPrice, valueTypePct) => {
     const conditionalItems = conditionalKvp.map(condition => {
         const requiredValue = roundToValue(lastPrice, condition.value, 0.25);

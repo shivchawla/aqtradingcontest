@@ -35,7 +35,7 @@ import {
     checkIfCustomCondition,
     roundToValue,
     constructKvpPairs,
-    getShares,
+    getNumSharesFromInvestment,
     checkIfCustomInvestment,
     getMaxValue,
     getConditionalMaxValue
@@ -68,53 +68,22 @@ class StockCard extends React.Component {
         return false;
     }
 
-    handleHorizonChange = (value = null, format = true) => {
-        const {realPrediction = false} = this.props.stockData;
-        if (value !== null) {
-            let horizon = format ? getHorizonValue(value, realPrediction) : value;
+    /**
+     * Handles the stock card radio group change
+     */
+    handleStockCardRadioGroupChange = (value = null, key) => {
+        if (value != null) {
             this.props.modifyStockData({
                 ...this.props.stockData,
-                horizon
+                [key]: value
             });
         }
     }
 
-    handleTargetChange = (targetIndex = null, format = true) => {
-        const {valueTypePct = true} = this.props.stockData;
-        if (targetIndex !== null) {
-            let stockData = this.props.stockData;
-            let target = format ? getTargetValue(targetIndex, valueTypePct, constructKvpPairs(this.getTargetItems())) : targetIndex;
-            stockData = {
-                ...stockData,
-                target,
-            };
-            this.props.modifyStockData(stockData);
-        }
-    }
-
-    handleStopLossChange = (value = null, format = true) => {
-        const {valueTypePct = true} = this.props.stockData;
-        if (value !== null) {
-            const requiredStopLoss = format ? getTargetValue(value, valueTypePct, constructKvpPairs(this.getTargetItems())) : value;
-            this.props.modifyStockData({
-                ...this.props.stockData,
-                stopLoss: requiredStopLoss
-            });
-        }
-    }
-
-    handleInvestmentChange = (value = null, format = true) => {
-        const {realPrediction = false} = this.props.stockData;
-
-        if (value !== null) {
-            const requiredInvestment = format ? getInvestmentValue(value, realPrediction, constructKvpPairs(this.getInvestmentItems())) : value;
-            this.props.modifyStockData({
-                ...this.props.stockData,
-                investment: requiredInvestment
-            });
-        }
-    }
-
+    /**
+     * Updates the conditional type in StockData from the RadioGroup change
+     * conditional types are ['NOW', 'CROSS', 'LIMIT']
+     */
     updateConditionalChange = (value = null) => {
         if (value !== null) {
             const requiredCondition = conditionalTypeItems[value];
@@ -125,6 +94,12 @@ class StockCard extends React.Component {
         }
     }
 
+    /**
+     * Handles the prediction type change, either real or simulated prediction
+     * With the change in prediction type, we also change
+     * 1. investment value
+     * 2. stopLoss value
+     */
     handlePredictionTypeChange = e => {
         const value = e.target.checked;
         const investmentItems = this.getInvestmentItems(value);
@@ -146,40 +121,21 @@ class StockCard extends React.Component {
         });
     }
 
-    conditionalChange = (value = null, custom = false) => {
-        const {valueTypePct = true} = this.props.stockData;
-        if (value !== null) {
-            const requiredCondition = custom ? value : getConditionValue(value, valueTypePct, constructKvpPairs(this.getConditionalItems()));
-            this.props.modifyStockData({
-                ...this.props.stockData,
-                conditionalValue: requiredCondition
-            });
-        }
-    }
-
-    renderViewMode = () => {
-        const {horizon = 1, target = 2, stopLoss = 2} = this.props.stockData;
-
-        return (
-            <React.Fragment>
-                <MetricPreview 
-                    label='Target'
-                    value={`${target}%`}
-                />
-                <MetricPreview 
-                    label='Horizon'
-                    value={`${horizon} days`}
-                    style={{marginLeft: '40px'}}
-                />
-            </React.Fragment>
-        );
-    }
-
+    /**
+     * Gets the readable date based on the horizon provided.
+     * It adds the horizon value to the current date and formats the date to 
+     * a readable date format
+     */
     getReadableDateForHorizon = horizon => {
         const currentDate = moment().format('YYYY-MM-DD');
         return moment(getNextNonHolidayWeekday(currentDate, horizon)).format(readableDateFormat)
     }
 
+    /**
+     * Gets the target items based on the value type.
+     * If value type is percentage, it gets the normal value from the targetKvp
+     * If value type is not percentage, it gets roundedValue based on the lastPrice
+     */
     getTargetItems = () => {
         const {lastPrice = 0, valueTypePct = true} = this.props.stockData;
         let targetItems = targetKvp.map(target => {
@@ -189,6 +145,12 @@ class StockCard extends React.Component {
         return _.uniqBy(targetItems, 'key');
     }
 
+    /**
+     * Gets the conditional items based on the value type.
+     * If value type is percentage, it gets the normal value from the conditionalKvp
+     * If value type is not percentage, it gets roundedValue based on the lastPrice, rounded
+     * off to 0.25
+     */
     getConditionalItems = () => {
         const {lastPrice = 0, valueTypePct = true} = this.props.stockData;
 
@@ -200,11 +162,17 @@ class StockCard extends React.Component {
         return conditionalItems;
     }
 
+    /**
+     * Gets investment items based on the realPrediction value
+     * If real prediction, then it sets investment items to the number of shares based on the investmentKvpReal
+     * item values.
+     * If simulated prediction, then it sets investment items to the investment values in the investmentKvp
+     */
     getInvestmentItems = (realPrediction = _.get(this.props, 'stockData.realPrediction', false)) => {
         const {lastPrice = 0} = this.props.stockData;
         let investmentItems = [];
         if (realPrediction) {
-            investmentItems = investmentKvpReal.map(investment => ({key: getShares(investment.value, lastPrice)}));
+            investmentItems = investmentKvpReal.map(investment => ({key: getNumSharesFromInvestment(investment.value, lastPrice)}));
         } else {
             investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         }
@@ -212,6 +180,9 @@ class StockCard extends React.Component {
         return investmentItems;
     }
 
+    /**
+     * Renders the edit view for the stockcard
+     */
     renderEditMode = () => {
         let {
             horizon = 2, 
@@ -227,20 +198,44 @@ class StockCard extends React.Component {
         } = this.props.stockData;
         const conditionalMax = 100;
         
+        /**
+         * Getting required targetItems, investmentItems, conditionalItems to be rendered
+         * in the StockCardRadioGroup
+         */
         const targetItems = this.getTargetItems();
+        const investmentItems = this.getInvestmentItems();
+        const conditionalItems = this.getConditionalItems();
+
+        /**
+         * Getting the max value for the Target selection slider or text field.
+         * Max value is 30% of the lastPrice, rounded off to the nearest 5
+         */
         const stockCardTargetRadioGroupMax = valueTypePct ? 30 : getMaxValue(lastPrice);
+
+        /**
+         * Getting the max for the StopLoss selection slider or text field.
+         * If value type is % - then based on if it's real prediction it's 10 or 30
+         * If valie type is not % - then it is 10% of the lastPrice, rounded off the to the nearest 5
+         */
         const stockCardStopLossRadioGroupMax = valueTypePct
             ?   realPrediction ? 10 : 30
             :   getMaxValue(lastPrice, 5, 10)
         
-        const investmentItems = this.getInvestmentItems();
-
-        const conditionalItems = this.getConditionalItems();
-
+        /**
+         * Getting the investment max value.
+         * If realPrediction, then max is based on shares, where the max notional is 50,000
+         * If not realPredictions, then it's the last value from the investmentItems obtained above
+         */
         const investmentMaxValue = realPrediction 
-            ? getShares(50000, lastPrice)
+            ? getNumSharesFromInvestment(50000, lastPrice)
             : investmentItems[investmentItems.length - 1].key;
         
+        /**
+         * Getting the conditional max value
+         * If value is percentage based then max value is 2
+         * If value is not percentage based then max value is 5% of the lastPrice rounded off 
+         * to the nearest 0.5 with the math.ceil operation
+         */
         const conditionalMaxValue = getConditionalMaxValue(lastPrice, valueTypePct);
 
         if (realPrediction) {
@@ -263,7 +258,10 @@ class StockCard extends React.Component {
             conditionalValue = conditionalItems[1].key;
         }
 
-        
+        /**
+         * Modifying horizon items based on the realPredictions value
+         * If realPrediction is true then horizonKvpReal is chosen else horizonKvp
+         */
         let horizonItems = (realPrediction ? horizonKvpReal : horizonKvp).map(horizon => (
             {key: horizon.value, label: this.getReadableDateForHorizon(horizon.value)}
         ));
@@ -319,7 +317,7 @@ class StockCard extends React.Component {
                         <Grid item xs={12}>
                             <StockCardRadioGroup 
                                 items={horizonItems}
-                                onChange={this.handleHorizonChange}
+                                onChange={value => this.handleStockCardRadioGroupChange(value, 'horizon')}
                                 defaultSelected={horizon}
                                 getIndex={getHorizon}
                                 getValue={getHorizonValue}
@@ -376,7 +374,7 @@ class StockCard extends React.Component {
                                             valueTypePct
                                         ).toFixed(2)}
                                 </ConditionValue>
-                                -
+                                <Bar style={{marginBottom: '5px'}}>-</Bar>
                                 <ConditionValue 
                                         style={{
                                             color: '#0acc53',
@@ -398,7 +396,7 @@ class StockCard extends React.Component {
                         <Grid item xs={12}>
                             <StockCardRadioGroup 
                                 items={targetItems}
-                                onChange={this.handleTargetChange}
+                                onChange={value => this.handleStockCardRadioGroupChange(value, 'target')}
                                 defaultSelected={target}
                                 getIndex={getTarget}
                                 getValue={getTargetValue}
@@ -449,7 +447,7 @@ class StockCard extends React.Component {
                                 >
                                     {this.getRequiredStopLoss(false)}
                                 </ConditionValue>
-                                -
+                                <Bar style={{marginBottom: '5px'}}>-</Bar>
                                 <ConditionValue 
                                         style={{
                                             color: '#0acc53',
@@ -465,7 +463,7 @@ class StockCard extends React.Component {
                         <Grid item xs={12}>
                             <StockCardRadioGroup 
                                 items={targetItems}
-                                onChange={this.handleStopLossChange}
+                                onChange={value => this.handleStockCardRadioGroupChange(value, 'stopLoss')}
                                 defaultSelected={stopLoss}
                                 getIndex={getTarget}
                                 checkIfCustom={checkIfCustomTarget}
@@ -500,7 +498,7 @@ class StockCard extends React.Component {
                         <Grid item xs={12}>
                             <StockCardRadioGroup 
                                 items={investmentItems}
-                                onChange={this.handleInvestmentChange}
+                                onChange={value => this.handleStockCardRadioGroupChange(value, 'investment')}
                                 defaultSelected={investment}
                                 getIndex={getInvestment}
                                 getValue={getInvestmentValue}
@@ -556,7 +554,7 @@ class StockCard extends React.Component {
                         <Grid item xs={12} style={selectorsContainerStyle}>
                             <StockCardRadioGroup 
                                 items={conditionalItems}
-                                onChange={this.conditionalChange}
+                                onChange={value => this.handleStockCardRadioGroupChange(value, 'conditionalValue')}
                                 defaultSelected={conditionalValue}
                                 getIndex={getCondition}
                                 getValue={getConditionValue}
@@ -633,32 +631,9 @@ class StockCard extends React.Component {
         );
     }
 
-    toggleEditMode = () => {
-        this.setState({editMode: !this.props.editMode});
-    }
-
     skipStock = () => {
         this.setState({editMode: false});
         this.props.skipStock();
-    }
-
-    getLowerContainerStyleMobile = () => {
-        return ({
-            ...horizontalBox, 
-            justifyContent: 'space-around',
-            width: '100%',
-            marginTop: this.props.editMode ? '10px' : '30px'
-        });
-    }
-
-    getLowerContainerStyleDesktop = () => {
-        return ({
-            ...horizontalBox, 
-            justifyContent: 'space-around',
-            width: '70%',
-            marginTop: '50px',
-            paddingTop: '40px'
-        });
     }
 
     renderPriceMetricsDesktop = () => {
@@ -698,28 +673,19 @@ class StockCard extends React.Component {
         );
     }
 
-    renderPriceMetricsMobile = () => {
-        const {
-            lastPrice = 0,
-            changePct = 0,
-            change = 0,
-        } = this.props.stockData;
-        const changeColor = change > 0 
-            ? metricColor.positive 
-            : change === 0 
-                ? metricColor.neutral 
-                : metricColor.negative;
-
-        return (
-            <div style={{...horizontalBox, justifyContent: 'flex-end'}}>
-                <MainText style={{marginRight: '5px'}}>
-                    ₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}
-                </MainText>
-                <Change color={changeColor}>{changePct.toFixed(2)}%</Change>
-            </div>
-        );
-    }
-
+    /**
+     * Get required Last Price
+     * if buy is false
+     *      if conditional type is 'NOW', lastPrice is the actual lastPrice
+     *      else lastPrice will be manipulated based on the conditional value,
+     *          if conditionalValue is 'LIMIT' it will be higher than the lastPrice
+     *          else it will be the lower than the lastPrice
+     *  if buy is true
+     *      if conditional type is 'NOW', lastPrice is the actual lastPrice
+     *      else lastPrice will be manipulated based on the conditional value
+     *          if conditionalValue is 'LIMIT' it will be lower than the lastPrice
+     *          else it will be the higher than the lastPrice
+     */
     getRequiredLastPrice = (buy = true) => {
         const {
             lastPrice = 0, 
@@ -752,6 +718,21 @@ class StockCard extends React.Component {
         }
     }
 
+    /**
+     * Get required Stop Loss
+     * If buy is false
+     *      avgPrice is obtained using the getConditionalNetValue(),
+     *      if conditiaonType is 'LIMIT', it is higher than the lastPrice
+     *      else it is lower than the lastPrice
+     * else
+     *      avgPrice is obtained using the getConditionalNetValue(),
+     *      if conditiaonType is 'LIMIT', it is higher than the lastPrice
+     *      else it is lower than the lastPrice
+     * stopLossDiff - the difference to be deducted from avgPrice to get the required stopLoss
+     * If buy is true, then stopLossDiff is deducted from the avgPrice
+     * else buy is false, then stopLossDiff is added to the avgPrice.
+     * The aboce 2 steps produces the required stopLoss
+     */
     getRequiredStopLoss = (buy = true) => {
         let {
             lastPrice = 0, 
@@ -785,18 +766,11 @@ class StockCard extends React.Component {
 
     renderContent = () => {
         const {
-            name = '', 
-            symbol = '', 
-            lastPrice = 0, 
             target = 2,
             horizon = 1,
-            conditional = false,
-            conditionalType = conditionalTypeItems[0],
             valueTypePct = true,
             realPrediction = false
         } = this.props.stockData;
-        const editMode = isDesktop || this.props.editMode;
-        const {bottomSheet = false} = this.props;
         const actionButtonContainerStyle = {
             ...horizontalBox, 
             justifyContent: 'space-around',
@@ -946,9 +920,6 @@ class StockCard extends React.Component {
             name = '', 
             symbol = '', 
             lastPrice = 0, 
-            target = 2,
-            horizon = 1,
-            conditional = false,
             changePct = 0,
             change = 0
         } = this.props.stockData;
@@ -1123,15 +1094,6 @@ const Success = ({text = null}) => {
     );
 }
 
-const MetricPreview = ({label, value, style={}}) => {
-    return (
-        <div style={{...horizontalBox, justifyContent: 'flex-start', ...style}}>
-            <MetricLabel>{label}</MetricLabel>
-            <MetricValue style={{marginLeft: '4px'}}>{value}</MetricValue>
-        </div>
-    );
-}
-
 const nameStyle = {
     ...nameEllipsisStyle,
     width: isDesktop ? '300px' : '150px',
@@ -1141,29 +1103,6 @@ const nameStyle = {
     fontFamily: 'Lato, sans-serif',
     fontWeight: 500,
     fontSize: isDesktop ? '16px' : '14px'
-};
-
-const skipButtonStyle = {
-    marginTop: '30px',
-    padding: '4px 8px',
-    minWidth: '54px',
-    minHeight: '26px',
-    color: '#898989',
-    border: '1px solid #898989',
-    borderRadius: '2px',
-    fontSize: '14px',
-    fontFamily: 'Lato, sans-serif'
-};
-
-const editButtonStyle = {
-    padding: '4px 8px',
-    minWidth: '54px',
-    minHeight: '26px',
-    color: '#5F64ED',
-    border: '1px solid #5F64ED',
-    borderRadius: '2px',
-    fontSize: '12px',
-    fontFamily: 'Lato, sans-serif'
 };
 
 const Container = styled(Grid)`
@@ -1199,14 +1138,6 @@ const MetricLabel = styled.h3`
     font-weight: 600;
     text-align: start;
     font-weight: 400;
-    font-family: 'Lato', sans-serif;
-`;
-
-const MetricValue = styled.h3`
-    font-size: 18px;
-    color: #525252;
-    font-weight: 700;
-    text-align: start;
     font-family: 'Lato', sans-serif;
 `;
 
@@ -1256,4 +1187,10 @@ const ConditionValueLabel = styled.h3`
     font-size: 12px;
     font-weight: 500;
     font-family: 'Lato', sans-serif;
+`;
+
+const Bar = styled.h3`
+    color: #848484;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
 `;

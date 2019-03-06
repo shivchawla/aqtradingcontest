@@ -26,12 +26,10 @@ import {
     checkIfCustomTarget, 
     getInvestment, 
     getInvestmentValue,
-    constructKvpPairs,
     roundToValue
 } from '../../utils';
 import {
     targetKvp, 
-    targetKvpValue,
     horizonKvp, 
     investmentKvp, 
     conditionalTypeItems, 
@@ -81,45 +79,14 @@ class DefaultSettings extends React.Component {
         });
     }
 
-    handleHorizonChange = (value = null, format = true) => {
-        if (value !== null) {
-            const requiredHorizon = format ? getHorizonValue(value) : value;
+    /**
+     * Handles the stock card radio group change
+     */
+    handleStockCardRadioGroupChange = (value = null, key) => {
+        if (value != null) {
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
-                horizon: requiredHorizon
-            });
-        }
-    }
-
-    handleTargetChange = (value = null, format = true) => {
-        let {valueTypePct = true} = this.props.defaultStockData;
-        if (value !== null) {
-            const requiredTarget = format ? getTargetValue(value, valueTypePct, constructKvpPairs(this.getTargetItems())) : value;
-            this.props.modifyDefaultStockData({
-                ...this.props.defaultStockData,
-                target: requiredTarget
-            });
-        }
-    }
-
-    handleStopLossChange = (value = null, format = true) => {
-        let {valueTypePct = true} = this.props.defaultStockData;
-
-        if (value !== null) {
-            const requiredStopLoss = format ? getTargetValue(value, valueTypePct, constructKvpPairs(this.getTargetItems())) : value;
-            this.props.modifyDefaultStockData({
-                ...this.props.defaultStockData,
-                stopLoss: requiredStopLoss
-            });
-        }
-    }
-
-    handleInvestmentChange = (value = null) => {
-        if (value !== null) {
-            const requiredInvestment = getInvestmentValue(value);
-            this.props.modifyDefaultStockData({
-                ...this.props.defaultStockData,
-                investment: requiredInvestment
+                [key]: value
             });
         }
     }
@@ -300,11 +267,13 @@ class DefaultSettings extends React.Component {
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={horizonItems}
-                                    onChange={this.handleHorizonChange}
+                                    onChange={value => this.handleStockCardRadioGroupChange(value, 'horizon')}
                                     defaultSelected={horizon}
                                     getIndex={getHorizon}
                                     checkIfCustom={checkIfCustomHorizon}
+                                    getValue={getHorizonValue}
                                     showSlider
+                                    customValues={false}
                                     label='Days'
                                     date={true}
                                     max={15}
@@ -316,10 +285,11 @@ class DefaultSettings extends React.Component {
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
-                                    onChange={this.handleTargetChange}
+                                    onChange={value => this.handleStockCardRadioGroupChange(value, 'target')}
                                     defaultSelected={target}
                                     hideLabel={true}
                                     getIndex={getTarget}
+                                    getValue={getTargetValue}
                                     checkIfCustom={checkIfCustomTarget}
                                     valueTypePct={valueTypePct}
                                     showSlider
@@ -333,10 +303,11 @@ class DefaultSettings extends React.Component {
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
-                                    onChange={this.handleStopLossChange}
+                                    onChange={value => this.handleStockCardRadioGroupChange(value, 'stopLoss')}
                                     defaultSelected={stopLoss}
                                     hideLabel={true}
                                     getIndex={getTarget}
+                                    getValue={getTargetValue}
                                     valueTypePct={valueTypePct}
                                     checkIfCustom={checkIfCustomTarget}
                                     showSlider
@@ -350,13 +321,15 @@ class DefaultSettings extends React.Component {
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={investmentItems}
-                                    onChange={this.handleInvestmentChange}
+                                    onChange={value => this.handleStockCardRadioGroupChange(value, 'investment')}
                                     defaultSelected={investment}
                                     hideLabel={true}
                                     getIndex={getInvestment}
+                                    getValue={getInvestmentValue}
                                     label='%'
                                     hideSlider={true}
                                     formatValue={Utils.formatInvestmentValueNormal}
+                                    customValues={false}
                                 />
                             </div>
                             <div style={radioGroupStyle}>

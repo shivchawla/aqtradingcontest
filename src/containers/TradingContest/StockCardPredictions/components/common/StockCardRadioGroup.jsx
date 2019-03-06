@@ -56,8 +56,12 @@ class StockCardRadioGroup extends React.Component {
 
     handleChange = value => {
         const {customValues = true, items = []} = this.props;
-        this.setState({selected: this.props.getValue ? this.props.getValue(value, customValues, constructKvpPairs(items)) : value});
-        this.props.onChange && this.props.onChange(value);
+        const requiredValue = this.props.getValue 
+            ? this.props.getValue(value, customValues, constructKvpPairs(items)) 
+            : value
+        this.setState({selected: requiredValue});
+
+        this.props.onChange && this.props.onChange(requiredValue);
     }
 
     handleSliderChange = (e, value) => {

@@ -14,9 +14,9 @@ import LoginBottomSheet from '../LoginBottomSheet';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction, getConditionalNetValue, getConditionalMaxValue, getConditionalItems} from './utils';
-import {getDailyContestPredictions, getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
+import {getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
 import {onPredictionCreated, onSettingsClicked} from '../constants/events';
-import {conditionalTypeItems, conditionalKvp} from './constants';
+import {conditionalTypeItems} from './constants';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
@@ -370,6 +370,13 @@ class StockCardPredictions extends React.Component {
         })
     }
 
+    /**
+     * Getting the conditional net value, i.e avgPrice, when conditional is true
+     * Gets the max allowed conditionalValue
+     * If conditionalValue is > max 
+     * then conditional value is the last value obtained from the getConditionalItems() method call
+     * Required net value is obtained from the getConditionalNetValue() method call
+     */
     getConditionalNetValue = (positive = true, valueTypePct = true) => {
         let {lastPrice = 0, conditionalValue} = this.state.stockData;
         const conditionalMaxValue = getConditionalMaxValue(lastPrice, valueTypePct);
