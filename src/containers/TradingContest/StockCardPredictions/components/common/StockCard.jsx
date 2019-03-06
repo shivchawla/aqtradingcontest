@@ -445,7 +445,7 @@ class StockCard extends React.Component {
                                             marginRight: '5px'
                                         }}
                                 >
-                                    {this.getRequiredStopLoss(false)}
+                                    {this.getRequiredStopLoss(false).toFixed(2)}
                                 </ConditionValue>
                                 <Bar style={{marginBottom: '5px'}}>-</Bar>
                                 <ConditionValue 
@@ -456,7 +456,7 @@ class StockCard extends React.Component {
                                             marginLeft: '5px'
                                         }}
                                 >
-                                    {this.getRequiredStopLoss()}
+                                    {this.getRequiredStopLoss().toFixed(2)}
                                 </ConditionValue>
                             </div>
                         </Grid>
