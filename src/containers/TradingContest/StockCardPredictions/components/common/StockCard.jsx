@@ -34,7 +34,6 @@ import {
     getCondition, 
     checkIfCustomCondition,
     roundToValue,
-    constructKvpPairs,
     getNumSharesFromInvestment,
     checkIfCustomInvestment,
     getMaxValue,
@@ -42,11 +41,9 @@ import {
 } from '../../utils';
 import {
     targetKvp, 
-    targetKvpValue,
     horizonKvp, 
     investmentKvp, 
     conditionalKvp, 
-    conditionalKvpValue,
     conditionalTypeItems,
     investmentKvpReal,
     horizonKvpReal
@@ -365,8 +362,8 @@ class StockCard extends React.Component {
                                             fontSize: '12px',
                                             marginRight: '5px'
                                         }}
-                                >
-                                    {
+                                >   
+                                    ₹ {
                                         getPercentageModifiedValue(
                                             target, 
                                             this.getRequiredLastPrice(false), 
@@ -383,7 +380,7 @@ class StockCard extends React.Component {
                                             marginLeft: '5px'
                                         }}
                                 >
-                                    {
+                                    ₹ {
                                         getPercentageModifiedValue(
                                             target, 
                                             this.getRequiredLastPrice(), 
@@ -445,7 +442,7 @@ class StockCard extends React.Component {
                                             marginRight: '5px'
                                         }}
                                 >
-                                    {this.getRequiredStopLoss(false).toFixed(2)}
+                                    ₹ {this.getRequiredStopLoss(false).toFixed(2)}
                                 </ConditionValue>
                                 <Bar style={{marginBottom: '5px'}}>-</Bar>
                                 <ConditionValue 
@@ -456,7 +453,7 @@ class StockCard extends React.Component {
                                             marginLeft: '5px'
                                         }}
                                 >
-                                    {this.getRequiredStopLoss().toFixed(2)}
+                                    ₹ {this.getRequiredStopLoss().toFixed(2)}
                                 </ConditionValue>
                             </div>
                         </Grid>
@@ -779,16 +776,27 @@ class StockCard extends React.Component {
         const isDesktop = this.props.windowWidth > 800;
 
         return (
-            <Grid container>
+            <Grid 
+                    container
+                    style={{
+                        paddingTop: 0
+                    }}
+            >
                 <Grid 
                         item 
                         xs={12} 
                         style={{
                             ...horizontalBox, 
                             justifyContent: 'flex-start',
+                            paddingTop: 0
                         }}
                 >
-                    <Grid container>
+                    <Grid 
+                            container
+                            style={{
+                                paddingTop: '0'
+                            }}
+                    >
                         {
                             this.renderEditMode()
                         }
@@ -904,7 +912,14 @@ class StockCard extends React.Component {
                         success={this.props.showSuccess}
                     />
                 }
-                <Grid item xs={12} style={{padding: 10}}>
+                <Grid 
+                        item 
+                        xs={12} 
+                        style={{
+                            padding: 10,
+                            paddingTop: '0'
+                        }}
+                >
                     {
                         noData
                         ? this.renderNoContent()
@@ -1113,7 +1128,7 @@ const Container = styled(Grid)`
     position: relative;
     transition: all 0.4s ease-in-out;
     padding: 10px 0;
-    padding-top: 0;
+    padding-top: 0px;
 `;
 
 const MainText = styled.h3`
