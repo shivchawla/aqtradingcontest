@@ -110,31 +110,29 @@ export const constructPrediction = (stockData, type = 'buy', conditionalType = c
     const stopLossDiff = valueTypePct ? ((stopLoss * lastPrice) / 100) : stopLoss;
     stopLoss = type === 'sell' ? (Number(avgPrice) + stopLossDiff) : (Number(avgPrice) - stopLossDiff)
 
-    return [
-        {
-            position: {
-                security: {
-                    ticker: symbol,
-                    securityType: "EQ",
-                    country: "IN",
-                    exchange: "NSE"
-                },
-                investment: !realPrediction
-                    ?   (type === 'buy' ? 1 : -1) * (investment / 1000)
-                    :   0,
-                quantity: realPrediction 
-                    ?   (type === 'buy' ? 1 : -1) * investment
-                    :   0,
-                avgPrice: conditional ?  Number(avgPrice) : 0
+    return {
+        position: {
+            security: {
+                ticker: symbol,
+                securityType: "EQ",
+                country: "IN",
+                exchange: "NSE"
             },
-            startDate,
-            endDate,
-            target: targetValue,
-            stopLoss,
-            real: realPrediction,
-            conditionalType: conditional ? conditionalType : 'NOW'
-        }
-    ];
+            investment: !realPrediction
+                ?   (type === 'buy' ? 1 : -1) * (investment / 1000)
+                :   0,
+            quantity: realPrediction 
+                ?   (type === 'buy' ? 1 : -1) * investment
+                :   0,
+            avgPrice: conditional ?  Number(avgPrice) : 0
+        },
+        startDate,
+        endDate,
+        target: targetValue,
+        stopLoss,
+        real: realPrediction,
+        conditionalType: conditional ? conditionalType : 'NOW'
+    };
 }
 
 export const getTargetFromLastPrice = (lastPrice, percentage, type = 'buy', valueTypePct = true) => {
