@@ -49,7 +49,7 @@ export const createPredictions = (predictions = []) => {
     return axios({
         method: 'POST',
         url,
-        data: {predictions},
+        data: predictions,
         headers: Utils.getAuthTokenHeader()
     })
 }
