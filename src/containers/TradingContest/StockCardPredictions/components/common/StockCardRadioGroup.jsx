@@ -218,7 +218,7 @@ class StockCardRadioGroup extends React.Component {
                                     >
                                         <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
                                             {(this.state.sliderValue || 0).toFixed(2)} 
-                                            {this.props.label}
+                                            &nbsp;{this.props.label}
                                             {
                                                 this.props.date &&
                                                 <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>

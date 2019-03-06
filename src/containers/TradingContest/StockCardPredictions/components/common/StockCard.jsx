@@ -504,6 +504,7 @@ class StockCard extends React.Component {
                                 customValues={realPrediction}
                                 max={investmentMaxValue}
                                 checkIfCustom={checkIfCustomInvestment}
+                                label={''}
                                 formatValue={realPrediction ? null : Utils.formatInvestmentValueNormal}
                             />
                         </Grid>
@@ -561,6 +562,7 @@ class StockCard extends React.Component {
                                 customValues={valueTypePct}
                                 max={conditionalMaxValue}
                                 min={0}
+                                label={(!valueTypePct ||realPrediction) ? '' : '%'}
                                 step={0.01}
                                 disabled={conditionalType.toUpperCase() === 'NOW'}
                             />
