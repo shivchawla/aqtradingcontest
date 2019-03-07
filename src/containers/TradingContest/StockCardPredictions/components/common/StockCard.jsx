@@ -65,6 +65,68 @@ class StockCard extends React.Component {
         return false;
     }
 
+    componentWillReceiveProps(nextProps, nextState) {
+        if (!_.isEqual(nextProps, nextState)) {
+            const nextStockData = _.get(nextProps, 'stockData', {});
+            const nextSymbol = _.get(nextStockData, 'symbol', null);
+            const currentSymbol = _.get(this.props, 'stockData.symbol', null);
+            const openStatus = _.get(nextProps, 'open', false);
+            const isRealPrediction = _.get(nextProps, 'stockData.realPrediction', false);
+
+            if ((currentSymbol !== nextSymbol) && openStatus) {
+                let {
+                    horizon = 2, 
+                    target = 2, 
+                    stopLoss = 2, 
+                    investment = 50000, 
+                    conditionalValue = 0.25, 
+                    realPrediction = false
+                } = nextStockData;
+                /**
+                 * Getting required targetItems, investmentItems, conditionalItems to be rendered
+                 * in the StockCardRadioGroup
+                 */
+                const targetItems = this.getTargetItems(nextStockData);
+                const investmentItems = this.getInvestmentItems(isRealPrediction, nextStockData);
+                const conditionalItems = this.getConditionalItems(nextStockData);
+
+                const stockCardTargetRadioGroupMax = this.getTargetMaxValue(nextStockData);
+                const investmentMaxValue = this.getInvestmentMaxValue(nextStockData);
+                const stopLossMaxValue = this.getStopLossMaxValue(nextStockData);
+                const conditionalMaxValue = this.getConditionalMaxValue(nextStockData);
+
+                if (realPrediction) {
+                    horizon = horizon < 2 ? 2 : horizon;
+                }
+                
+                if (target > stockCardTargetRadioGroupMax) {
+                    target = targetItems[0].key;
+                }
+
+                if (stopLoss > stopLossMaxValue) {
+                    stopLoss = targetItems[0].key;
+                }
+
+                if (investment > investmentMaxValue) {
+                    investment = investmentItems[0].key;
+                }
+
+                if (conditionalValue > conditionalMaxValue) {
+                    conditionalValue = conditionalItems[1].key;
+                }
+
+                this.props.modifyStockData({
+                    ...nextStockData,
+                    horizon,
+                    target,
+                    stopLoss,
+                    investment,
+                    conditionalValue
+                })
+            }
+        }
+    }
+
     /**
      * Handles the stock card radio group change
      */
@@ -133,8 +195,8 @@ class StockCard extends React.Component {
      * If value type is percentage, it gets the normal value from the targetKvp
      * If value type is not percentage, it gets roundedValue based on the lastPrice
      */
-    getTargetItems = () => {
-        const {lastPrice = 0, valueTypePct = true} = this.props.stockData;
+    getTargetItems = (stockData = this.props.stockData) => {
+        const {lastPrice = 0, valueTypePct = true} = stockData;
         let targetItems = targetKvp.map(target => {
             const requiredValue = roundToValue(lastPrice, target.value);
             return {key: valueTypePct ? target.value:  requiredValue, label: null};
@@ -148,8 +210,8 @@ class StockCard extends React.Component {
      * If value type is not percentage, it gets roundedValue based on the lastPrice, rounded
      * off to 0.25
      */
-    getConditionalItems = () => {
-        const {lastPrice = 0, valueTypePct = true} = this.props.stockData;
+    getConditionalItems = (stockData = this.props.stockData) => {
+        const {lastPrice = 0, valueTypePct = true} = stockData;
 
         const conditionalItems = conditionalKvp.map(condition => {
             const requiredValue = roundToValue(lastPrice, condition.value, 0.25);
@@ -165,8 +227,8 @@ class StockCard extends React.Component {
      * item values.
      * If simulated prediction, then it sets investment items to the investment values in the investmentKvp
      */
-    getInvestmentItems = (realPrediction = _.get(this.props, 'stockData.realPrediction', false)) => {
-        const {lastPrice = 0} = this.props.stockData;
+    getInvestmentItems = (realPrediction = _.get(this.props, 'stockData.realPrediction', false), stockData = this.props.stockData) => {
+        const {lastPrice = 0} = stockData;
         let investmentItems = [];
         if (realPrediction) {
             investmentItems = investmentKvpReal.map(investment => ({key: getNumSharesFromInvestment(investment.value, lastPrice)}));
@@ -175,6 +237,70 @@ class StockCard extends React.Component {
         }
         
         return investmentItems;
+    }
+
+    /**
+     * Getting the max value for the Target selection slider or text field.
+     * Max value is 30% of the lastPrice, rounded off to the nearest 5
+     */
+    getTargetMaxValue = (stockData = this.props.stockData) => {
+        const {
+            valueTypePct = true,
+            lastPrice = 0
+        } = stockData;
+
+        return valueTypePct ? 30 : getMaxValue(lastPrice);
+    }
+
+    /**
+     * Getting the max for the StopLoss selection slider or text field.
+     * If value type is % - then based on if it's real prediction it's 10 or 30
+     * If valie type is not % - then it is 10% of the lastPrice, rounded off the to the nearest 5
+     */
+    getStopLossMaxValue = (stockData = this.props.stockData) => {
+        const {
+            valueTypePct = true,
+            lastPrice = 0,
+            realPrediction = false
+        } = stockData;
+        const maxStopLoss = valueTypePct
+            ?   realPrediction ? 10 : 30
+            :   getMaxValue(lastPrice, 5, 10)
+        
+        return maxStopLoss;
+    }
+
+    /**
+     * Getting the investment max value.
+     * If realPrediction, then max is based on shares, where the max notional is 50,000
+     * If not realPredictions, then it's the last value from the investmentItems obtained above
+     */
+    getInvestmentMaxValue = (stockData = this.props.stockData) => {
+        const {
+            lastPrice = 0,
+            realPrediction = false
+        } = stockData;
+        const investmentItems = this.getInvestmentItems(realPrediction, stockData);
+        const investmentMaxValue = realPrediction 
+            ? getNumSharesFromInvestment(50000, lastPrice)
+            : investmentItems[investmentItems.length - 1].key;
+
+        return investmentMaxValue;
+    }
+
+    /**
+     * Getting the conditional max value
+     * If value is percentage based then max value is 2
+     * If value is not percentage based then max value is 5% of the lastPrice rounded off 
+     * to the nearest 0.5 with the math.ceil operation
+     */
+    getConditionalMaxValue = (stockData = this.props.stockData) => {
+        const {
+            lastPrice = 0,
+            valueTypePct = true
+        } = stockData;
+
+        return getConditionalMaxValue(lastPrice, valueTypePct);
     }
 
     /**
@@ -193,8 +319,7 @@ class StockCard extends React.Component {
             valueTypePct = true,
             realPrediction = false
         } = this.props.stockData;
-        const conditionalMax = 100;
-        
+
         /**
          * Getting required targetItems, investmentItems, conditionalItems to be rendered
          * in the StockCardRadioGroup
@@ -203,57 +328,10 @@ class StockCard extends React.Component {
         const investmentItems = this.getInvestmentItems();
         const conditionalItems = this.getConditionalItems();
 
-        /**
-         * Getting the max value for the Target selection slider or text field.
-         * Max value is 30% of the lastPrice, rounded off to the nearest 5
-         */
-        const stockCardTargetRadioGroupMax = valueTypePct ? 30 : getMaxValue(lastPrice);
-
-        /**
-         * Getting the max for the StopLoss selection slider or text field.
-         * If value type is % - then based on if it's real prediction it's 10 or 30
-         * If valie type is not % - then it is 10% of the lastPrice, rounded off the to the nearest 5
-         */
-        const stockCardStopLossRadioGroupMax = valueTypePct
-            ?   realPrediction ? 10 : 30
-            :   getMaxValue(lastPrice, 5, 10)
-        
-        /**
-         * Getting the investment max value.
-         * If realPrediction, then max is based on shares, where the max notional is 50,000
-         * If not realPredictions, then it's the last value from the investmentItems obtained above
-         */
-        const investmentMaxValue = realPrediction 
-            ? getNumSharesFromInvestment(50000, lastPrice)
-            : investmentItems[investmentItems.length - 1].key;
-        
-        /**
-         * Getting the conditional max value
-         * If value is percentage based then max value is 2
-         * If value is not percentage based then max value is 5% of the lastPrice rounded off 
-         * to the nearest 0.5 with the math.ceil operation
-         */
-        const conditionalMaxValue = getConditionalMaxValue(lastPrice, valueTypePct);
-
-        if (realPrediction) {
-            horizon = horizon < 2 ? 2 : horizon;
-        }
-        
-        if (target > stockCardTargetRadioGroupMax) {
-            target = targetItems[0].key;
-        }
-
-        if (stopLoss > stockCardTargetRadioGroupMax) {
-            stopLoss = targetItems[0].key;
-        }
-
-        if (investment > investmentMaxValue) {
-            investment = investmentItems[0].key;
-        }
-
-        if (conditionalValue > conditionalMax) {
-            conditionalValue = conditionalItems[1].key;
-        }
+        const stockCardTargetRadioGroupMax = this.getTargetMaxValue();
+        const stockCardStopLossRadioGroupMax = this.getStopLossMaxValue();
+        const investmentMaxValue = this.getInvestmentMaxValue();
+        const conditionalMaxValue = this.getConditionalMaxValue();
 
         /**
          * Modifying horizon items based on the realPredictions value
