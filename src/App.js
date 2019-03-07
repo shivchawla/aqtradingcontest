@@ -18,31 +18,31 @@ import {Utils} from './utils';
 import './App.css';
 
 const {gaTrackingId = null} = require('./localConfig');
-// const ServerError = React.lazy(() => import('./containers/ErrorPages/ServerError'));
-// const ApiDoc = React.lazy(() => import('./containers/ReDoc'));
+const ServerError = React.lazy(() => import('./containers/ErrorPages/ServerError'));
+const ApiDoc = React.lazy(() => import('./containers/ReDoc'));
 const AppHome = React.lazy(() => import('./containers/HomeFrame'));
-// const DailyContestHome = React.lazy(() => import('./containers/DailyContestHomeFrame'));
+const DailyContestHome = React.lazy(() => import('./containers/DailyContestHomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
 const AdminPages = React.lazy(() => import('./containers/AdminPages'));
-// const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
-// const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
-// const TradingContestLeaderboard = React.lazy(() => import('./containers/TradingContestLeaderboard'));
-// const TradingContestTopPicks = React.lazy(() => import('./containers/TradingContestTopPicks'));
-// const Login = React.lazy(() => import('./containers/AuthPages/Login'));
-// const Signup = React.lazy(() => import('./containers/AuthPages/SignUp'));
-// const ForgotPassword = React.lazy(() => import('./containers/AuthPages/ForgotPassword'));
-// const ForbiddenAccess = React.lazy(() => import('./containers/ErrorPages/ForbiddenAccess'));
-// const ResetPassword = React.lazy(() => import('./containers/AuthPages/ResetPassword'));
-// const AuthFeedback = React.lazy(() => import('./containers/AuthPages/AuthFeedback'));
-// const StockDetail = React.lazy(() => import('./containers/StockDetail'));
-// const NotAuthorized = React.lazy(() => import('./containers/ErrorPages/NotAuthorized'));
-// const DailyContestTnc = React.lazy(() => import('./containers/TradingContest/TnC/DailyContestTnC'));
+const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
+const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
+const TradingContestLeaderboard = React.lazy(() => import('./containers/TradingContestLeaderboard'));
+const TradingContestTopPicks = React.lazy(() => import('./containers/TradingContestTopPicks'));
+const Login = React.lazy(() => import('./containers/AuthPages/Login'));
+const Signup = React.lazy(() => import('./containers/AuthPages/SignUp'));
+const ForgotPassword = React.lazy(() => import('./containers/AuthPages/ForgotPassword'));
+const ForbiddenAccess = React.lazy(() => import('./containers/ErrorPages/ForbiddenAccess'));
+const ResetPassword = React.lazy(() => import('./containers/AuthPages/ResetPassword'));
+const AuthFeedback = React.lazy(() => import('./containers/AuthPages/AuthFeedback'));
+const StockDetail = React.lazy(() => import('./containers/StockDetail'));
+const NotAuthorized = React.lazy(() => import('./containers/ErrorPages/NotAuthorized'));
+const DailyContestTnc = React.lazy(() => import('./containers/TradingContest/TnC/DailyContestTnC'));
 const PageNotFound = React.lazy(() => import('./containers/ErrorPages/PageNotFound'));
-// const StockResearch = React.lazy(() => import('./containers/StockResearch'));
-// const PortfolioDetail = React.lazy(() => import('./containers/PortfolioDetail'));
-// const AboutUs = React.lazy(() => import('./containers/AboutUs'));
-// const TnC = React.lazy(() => import('./containers/TnC'));
-// const Policy = React.lazy(() => import('./containers/Policy'));
+const StockResearch = React.lazy(() => import('./containers/StockResearch'));
+const PortfolioDetail = React.lazy(() => import('./containers/PortfolioDetail'));
+const AboutUs = React.lazy(() => import('./containers/AboutUs'));
+const TnC = React.lazy(() => import('./containers/TnC'));
+const Policy = React.lazy(() => import('./containers/Policy'));
 
 class App extends React.Component {
     constructor(props) {
@@ -191,7 +191,7 @@ class App extends React.Component {
                             return (
                                 <React.Suspense fallback={<Loader />}>
                                     <Switch>
-                                        {/* <Route exact={true} path='/dailycontest/home' component={DailyContestHome} /> 
+                                        <Route exact={true} path='/dailycontest/home' component={DailyContestHome} /> 
                                         <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} /> 
                                         <Route exact={true} path='/api/docs' component={ApiDoc}/> 
                                         <Route 
@@ -280,7 +280,7 @@ class App extends React.Component {
                                                     ? <StockCardPredictions />
                                                     : this.redirectToLogin('/contest')
                                             }}
-                                        /> */}
+                                        />
                                         <Route path='/dailycontest' component={TradingContest} />
                                         <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
@@ -295,7 +295,7 @@ class App extends React.Component {
                             return (
                                 <React.Suspense fallback={<Loader />}>
                                     <Switch>
-                                        {/* <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
+                                        <Route exact={true} path='/dailycontest/rules' component={DailyContestTnc} />
                                         <Route exact={true} path='/dailycontest/home' component={DailyContestHome} />
                                         <Route path='/tokenUpdate' component={TokenUpdate}/> 
                                         <Route path='/stockresearch' component={StockResearch}/> 
@@ -350,17 +350,17 @@ class App extends React.Component {
                                                     : <AuthFeedback {...props} />
                                             }}
                                         />
-                                        <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} /> */}
+                                        <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route path='/dailycontest' component={TradingContest} />
                                         <Route path='/admin' component={AdminPages} />
-                                        {/* <Route 
+                                        <Route 
                                             path='/quantresearch' 
                                             render={(props) => {
                                                 console.log(window.location.pathname);
                                                 window.location.href=window.location.pathname;
                                                 return <h3>Redirecting</h3>
                                             }} 
-                                        /> */}
+                                        />
                                         <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
