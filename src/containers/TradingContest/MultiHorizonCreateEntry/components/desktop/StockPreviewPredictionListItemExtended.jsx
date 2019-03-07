@@ -5,7 +5,6 @@ import Icon from '@material-ui/core/Icon';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import {Utils} from '../../../../../utils';
 import {isMarketOpen} from '../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
@@ -15,7 +14,7 @@ const readableDateFormat = "Do MMM 'YY";
 const DateHelper = require('../../../../../utils/date');
 const dateFormat = 'YYYY-MM-DD';
 
-export default class StockPreviewPredictionListItem extends React.Component {
+export default class StockPreviewPredictionListItemExtended extends React.Component {
     shouldComponentUpdate(nextProps, nextState) { 
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -81,7 +80,6 @@ export default class StockPreviewPredictionListItem extends React.Component {
     }
 
     render() {
-        const {preview = false} = this.props;
         const {
             horizon = 1, 
             investment = 0, 
@@ -98,12 +96,12 @@ export default class StockPreviewPredictionListItem extends React.Component {
             status ={},
             _id = null,
             triggered = false,
-            conditional = false
+            conditional = false,
+            name = ''
         } = this.props.prediction;
         const allowAfterMaketHourExit = conditional && !triggered;
         const typeBackgroundColor = '#fff';
         const typeColor = type === 'buy' ? '#009688' : '#FE6662';
-        const borderColor = type === 'buy' ? '#009688' : '#FE6662'
         const typeText = type === 'buy' ? 'HIGHER' : 'LOWER';
         const iconConfig = this.getIconConfig(status);
         const directionUnit = type === 'buy' ? 1 : -1;
@@ -116,21 +114,35 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 ? metricColor.negative
                 : metricColor.neutral;
         const isMarketTrading = !DateHelper.isHoliday();
-        const marketOpen = isMarketTrading && isMarketOpen().status;
 
         return (
             <Container container alignItems="center">
-                <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start', paddingLeft: '20px'}}>
+                <Grid 
+                        item xs={2} 
+                        style={{
+                            ...verticalBox, 
+                            alignItems: 'flex-start',
+                            paddingLeft: '10px'
+                        }}
+                        spacing={16}
+                >
+                    <MetricText>{symbol}</MetricText>
+                    <Name>{name}</Name>
+                </Grid>
+                <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start'}}>
+                    <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</MetricText>
+                </Grid>
+                <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
                     <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
                 </Grid>
-                <Grid item xs={2}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
-                <Grid item xs={2}>
+                <Grid item xs={1}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
+                <Grid item xs={1}>
                     <MetricText style={{color: typeColor}}>
                         {typeText}
                     </MetricText>
                 </Grid>
-                <Grid item xs={3} style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
                     <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
                     <Icon>arrow_right_alt</Icon>
                     <MetricText color={changedInvestmentColor}>
@@ -141,54 +153,16 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         }
                     </MetricText>
                 </Grid>
-                <Grid item xs={2}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
+                <Grid item xs={1}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
                 <Grid item xs={1} style={{...verticalBox, alignItems: 'center', justifyContent: 'center'}}>
                     <MetricText style={{color: iconConfig.color, fontWeight: 500}}>
                         {iconConfig.status}
                     </MetricText>
-                    {
-                        !preview &&
-                        (allowAfterMaketHourExit || marketOpen) &&
-                        (
-                            iconConfig.status.toLowerCase() === 'active' 
-                            || iconConfig.status.toLowerCase() === 'in-active'
-                        ) &&
-                        <StopPredictionButton 
-                                onClick={() => this.props.openDialog(_id)}
-                        >
-                            EXIT
-                        </StopPredictionButton>
-                    }
                 </Grid>
             </Container>
         );
     }
 }
-
-const StopPredictionButton = ({onClick}) => {
-    // const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
-    const background = '#fff';
-    const color = '#FF6161';
-    const fontSize = '10px';
-    const padding = '2px 8px';
-
-    return (
-        <ButtonBase 
-                style={{
-                    ...stopPredictionButtonStyle, 
-                    color,
-                    fontSize,
-                    padding,
-                    background,
-                    marginTop: '3px',
-                    border: '1px solid #FF6161'
-                }}
-                onClick={onClick}
-        >
-            <span style={{whiteSpace: 'nowrap'}}>EXIT</span>
-        </ButtonBase>
-    );
-} 
 
 const stopPredictionButtonStyle = {
     padding: '3px 12px',
@@ -216,25 +190,21 @@ const MetricText = styled.h3`
     text-align: start;
 `;
 
-const TypeTag = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 400;
-    height: 20px;
-    width: 45px;
-    color: ${props => props.color || '#fff'};
-    padding: 4px 8px;
-    border-radius: 4px;
-    background-color: ${props => props.backgroundColor || '#3EF79B'};
-    box-sizing: border-box;
-    border: 1px solid ${props => props.borderColor || props.backgroundColor || '#3EF79B'};
-`;
-
 const CallDate = styled.h3`
     font-size: 12px;
     color: #7B7B7B;
     text-align: start;
     font-weight: 400;
+`;
+
+const Name = styled.h3`
+    width: 150px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 12px;
+    color: #444;
+    font-weight: 500;
+    margin-top: 5px;
+    text-align: start;
 `;

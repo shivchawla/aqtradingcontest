@@ -7,21 +7,17 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import {withRouter} from 'react-router-dom';
-import StockList from '../common/StockList';
 import StockPreviewList from '../common/StockPreviewList';
-import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
 import NotLoggedIn from '../../../Misc/NotLoggedIn';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
+import RadioGroup from '../../../../../components/selections/RadioGroup';
+import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
 import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
 import {Utils} from '../../../../../utils';
-import {getPositionsWithNewPredictions} from '../../utils';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
-
-const dateFormat = 'YYYY-MM-DD';
 
 class CreateEntryEditScreen extends React.Component {
     constructor(props) {
@@ -87,13 +83,19 @@ class CreateEntryEditScreen extends React.Component {
         );
     }
 
+    toggleRealPredictionType = (value = 0) => {
+        const real = value > 0;
+        this.props.setRealFlag(real);
+    }
+
     renderPredictionList = () => {
         let positions = this.props.previewPositions;
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
             pnlFound = false,
-            selectedDate = moment()
+            selectedDate = moment(),
+            real = false
         } = this.props;
         const statsExpanded = (this.props.previewPositions.length === 0 || this.props.noEntryFound);
 
@@ -119,6 +121,12 @@ class CreateEntryEditScreen extends React.Component {
                                     onClick={this.onPredictionTypeMenuClicked}
                                     onClose={this.onPredictionTypeMenuClose}
                                     onMenuItemClicked={this.onPredictionTypeMenuItemClicked}
+                                />
+                                <RadioGroup 
+                                    items={['Simulated', 'Real']}
+                                    defaultSelected={real ? 1 : 0}
+                                    onChange={this.toggleRealPredictionType}
+                                    CustomRadio={CustomRadio}
                                 />
                             </div>
                             {
@@ -201,7 +209,6 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
             break;
     }
 
-    //2196F3
     return (
         <div>
             <Button

@@ -23,16 +23,16 @@ import {
     getPredictionsFromPositions, 
     createPredictions, 
     checkHorizonDuplicationStatus, 
-    getDailyContestPredictions, 
     convertPredictionsToPositions, 
     processPredictions, 
-    getPnlStats, 
-    getPortfolioStats,
     getDefaultPrediction,
     checkForUntouchedPredictionsInPositions,
     getPositionsWithNewPredictions,
     exitPrediction,
-    stopPredictionInPositions
+    stopPredictionInPositions,
+    getDailyContestPredictionsN,
+    getPnlStatsN,
+    getPortfolioStatsN
 } from './utils';
 import {onPredictionCreated, onUserLoggedIn} from '../constants/events';
 import WS from '../../../utils/websocket';
@@ -93,7 +93,8 @@ class CreateEntry extends React.Component {
             selectedPositionIndex: 0,
             stockDetailBottomSheetOpen: false,
             stopPredictionLoading: false,
-            selectedPosition: {}
+            selectedPosition: {},
+            real: false, // Flag to toggle between real and simulated predictions
         };
         this.mounted = false;
         this.webSocket = new WS();
@@ -351,16 +352,16 @@ class CreateEntry extends React.Component {
     }
 
     getDailyPredictionsOnDateChange = (selectedDate = moment(), type = this.state.selectedView) => {
+        const {real = false} = this.state;
         try {
             this.cancelFetchPredictionsRequest(predictionsCancelledMessage);
         } catch(err) {}
         let predictions = [];
-        return getDailyContestPredictions(
-            selectedDate, 
-            type, 
-            false, 
-            this.props.history, 
-            this.props.match.url, 
+
+        return getDailyContestPredictionsN(
+            {date: selectedDate, category: type, populatePnl: false, real},
+            this.props.history,
+            this.props.match.url,
             false,
             c => {
                 this.cancelFetchPredictionsRequest = c
@@ -378,17 +379,18 @@ class CreateEntry extends React.Component {
     }
 
     getDailyPnlStats = (selectedDate = moment(), type='all') => {
+        const {real = false} = this.state;
         try {
             this.cancelFetchPnLRequest(pnlCancelledMessage);
         } catch (err){}
-        return getPnlStats(
-            selectedDate, 
-            type, 
-            this.props.history, 
-            this.props.match.url, 
+
+        return getPnlStatsN(
+            {date: selectedDate, type, real},
+            this.props.history,
+            this.props.match.url,
             false,
             c => {
-                this.cancelFetchPnLRequest = c;
+                this.cancelFetchPredictionsRequest = c
             }
         )
         .then(response => {
@@ -404,16 +406,13 @@ class CreateEntry extends React.Component {
     }
 
     getDailyPortfolioStats = (selectedDate = moment()) => {
-        // if (this.state.portfolioStatsFound) {
-        //     return 'requestCompleted';
-        // }
-
+        const {real = false} = this.state;
         try {
             this.cancelFetchPortfolioStatsRequest(portfolioStatsCancelledMessage);
         } catch (err) {}
         
-        return getPortfolioStats(
-            selectedDate,
+        return getPortfolioStatsN(
+            {date: selectedDate, real},
             this.props.history,
             this.props.match.url,
             false,
@@ -453,7 +452,8 @@ class CreateEntry extends React.Component {
         let msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-prediction",
-            "category": type
+            "category": type,
+            "real": this.state.real
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
@@ -470,6 +470,7 @@ class CreateEntry extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-predictions',
             'category': type,
+            "real": this.state.real
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
@@ -576,17 +577,7 @@ class CreateEntry extends React.Component {
                 });
             }
         }
-    }
-
-    adjustPriceDifference = (lastPrice, target, type = 'buy') => {
-        const difference = lastPrice > target ? lastPrice - target : target - lastPrice;
-
-        if (type === 'buy') {
-            return lastPrice + difference;
-        }
-
-        return lastPrice - difference;
-    }   
+    }  
 
     deletePrediction = (symbol, key) => {
         const clonedPositions = _.map(this.state.positions, _.cloneDeep);
@@ -696,22 +687,23 @@ class CreateEntry extends React.Component {
     } 
 
     renderDesktopLayout = (props) => {
-        const currentDate = moment().format(dateFormat);
-        const selectedDate = this.state.selectedDate.format(dateFormat);
-        const shouldRenderEdit = currentDate === selectedDate;
-
         return <CreateEntryEditDesktop {...props} />;
     }
 
     renderMobileLayout = (props) => {
-        const {componentType = 'create'} = this.props;
-
         return (
             <React.Fragment>
                 <DisplayPredictionsMobile {...props} />
                 <CreateEntryEditMobile {...props} />
             </React.Fragment>
         )
+    }
+
+    setRealFlag = (real = false) => {
+        this.setState({real}, () => {
+            this.fetchPredictionsAndStats(this.state.selectedDate);
+            this.takeSubscriptionAction();
+        });
     }
 
     renderPortfolioPicksDetail = () => {
@@ -767,7 +759,9 @@ class CreateEntry extends React.Component {
             updateDate: this.props.updateDate,
             stopPrediction: this.stopPrediction,
             portfolioStats: this.state.portfolioStats,
-            stopPredictionLoading: this.state.stopPredictionLoading
+            stopPredictionLoading: this.state.stopPredictionLoading,
+            setRealFlag: this.setRealFlag,
+            real: this.state.real
         };
         const {mobile = false} = this.props;
 

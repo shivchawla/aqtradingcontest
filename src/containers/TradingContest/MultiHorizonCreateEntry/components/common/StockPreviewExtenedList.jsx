@@ -5,6 +5,8 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid'
 import StockPreviewListItemMobile from '../mobile/StockPreviewListItem';
 import StockPreviewListItemDesktop from '../desktop/StockPreviewListItem';
+import StockPreviewExtendedPredictionHeader from '../desktop/StockPreviewExtendedPredictionHeader';
+import StockPreviewPredictionListItemExtened from '../desktop/StockPreviewPredictionListItemExtended';
 const moment = require('moment');
 
 class StockPreviewList extends React.Component {
@@ -18,9 +20,9 @@ class StockPreviewList extends React.Component {
 
     render() {
         const isDesktop = this.props.windowWidth > 800;
-        const {positions = [], type='buy', selectedDate = moment(), preview = false} = this.props;
-        const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewListItemDesktop;
-        const errorText = 'No predictions found';
+        const {predictions = [], type='buy', selectedDate = moment()} = this.props;
+        const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewPredictionListItemExtened;
+
         return (
             <Grid 
                     item 
@@ -31,21 +33,14 @@ class StockPreviewList extends React.Component {
                         paddingBottom: '80px',
                     }}
             >
-            
+                <StockPreviewExtendedPredictionHeader />
                 {
-                    positions.map((position, index) => {
+                    predictions.map((prediction, index) => {
+                        console.log('Prediction ', prediction);
                         return (
                             <StockPreviewListItem 
-                                position={position} 
+                                prediction={prediction} 
                                 key={index} 
-                                edit 
-                                selectPosition={this.props.selectPosition}
-                                toggleStockDetailBottomSheet={this.props.toggleStockDetailBottomSheet}
-                                togglePredictionsBottomSheet={this.props.togglePredictionsBottomSheet}
-                                deletePrediction={this.props.deletePrediction}
-                                stopPredictionLoading={this.props.stopPredictionLoading}
-                                selectedDate={selectedDate}
-                                preview={preview}
                             />
                         );
                     })

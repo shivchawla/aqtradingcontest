@@ -87,6 +87,45 @@ export const getDailyContestPredictions = (date = null, category='started', popu
     return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb)
 }
 
+/**
+ * This method is created since the above method is used in a lot of places.
+ * To achieve backward compatibility, we need this method.
+ */
+export const getDailyContestPredictionsN = (
+        {date = null, category = 'started', populatePnl = false, real = false}, 
+        history, 
+        currentUrl, 
+        handleError = true, 
+        cancelCb = null
+) => {
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    const requiredDate = date === null ? moment().format(dateFormat) : date.format(dateFormat);
+    let url = `${requestUrl}/dailycontest/prediction?date=${requiredDate}&category=${category}&populatePnl=${populatePnl}&real=${real}`;
+    
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}&advisorId=${selectedAdvisorId}`;
+    }
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
+}
+
+export const getRealPredictions = (
+        {date = null, advisorId = null, category = 'started', active = true},
+        history,
+        currentUrl,
+        handleError = true,
+        cancelCb = null
+) => {
+    const requiredDate = date === null ? moment().format(dateFormat) : date.format(dateFormat);
+    let url = `${requestUrl}/dailycontest/realpredictions?date=${requiredDate}&category=${category}&active=${active}`;
+
+    if (advisorId !== null) {
+        url = `${url}&advisorId=${advisorId}`;
+    }
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
+}
+
 export const getPnlStats = (date = moment(), type = 'started', history, currentUrl, handleError = true, cancelCb = null) => {
     const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
     const requiredDate = date.format(dateFormat);
@@ -98,10 +137,52 @@ export const getPnlStats = (date = moment(), type = 'started', history, currentU
     return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
 }
 
+/**
+ * This method is created since the above method is used in a lot of places.
+ * To achieve backward compatibility, we need this method.
+ */
+export const getPnlStatsN = (
+        {date = moment(), type = 'started', real = false},
+        history,
+        currentUrl,
+        handleError = true,
+        cancelCb = null
+) => {
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    const requiredDate = date.format(dateFormat);
+    let url =`${requestUrl}/dailycontest/pnl?date=${requiredDate}&category=${type}&real=${real}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}&advisorId=${selectedAdvisorId}`;
+    }
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
+}
+
 export const getPortfolioStats = (date = moment(), history, currentUrl, handleError = true, cancelCb = null) => {
     const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
     const requiredDate = date.format(dateFormat);
     let url =`${requestUrl}/dailycontest/portfoliostats?date=${requiredDate}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}&advisorId=${selectedAdvisorId}`;
+    }
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError, cancelCb);
+}
+
+/**
+ * This method is created since the above method is used in a lot of places.
+ * To achieve backward compatibility, we need this method.
+ */
+export const getPortfolioStatsN = (
+        {date = moment(), real = true},
+        history,
+        currentUrl,
+        handleError = true,
+        cancelCb = null
+) => {
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    const requiredDate = date.format(dateFormat);
+    let url =`${requestUrl}/dailycontest/portfoliostats?date=${requiredDate}&real=${real}`;
     if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
         url = `${url}&advisorId=${selectedAdvisorId}`;
     }
@@ -242,7 +323,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
 // formats predictions obtained from the backend
 export const processPredictions = (predictions = [], locked = false, type = 'startedToday') => {
     return Promise.map(predictions, prediction => ({
-        symbol: getStockTicker(_.get(prediction, 'position', null)),
+        symbol: getStockTicker(_.get(prediction, 'position.security', null)),
         priceInterval: _.get(prediction, 'priceInterval', {}),
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),
         lastPrice: _.get(prediction, 'position.lastPrice', 0),

@@ -40,7 +40,7 @@ class StockPreviewListItem extends React.Component {
     }
     
     render() {
-        const {classes} = this.props;
+        const {classes, preview = false} = this.props;
         const {
             symbol = 'LT', 
             name = 'Larsen & Tourbo', 
@@ -119,6 +119,7 @@ class StockPreviewListItem extends React.Component {
                             modifyPrediction={this.props.modifyPrediction}
                             deletePrediction={this.props.deletePrediction}
                             stopPredictionLoading={this.props.stopPredictionLoading}
+                            preview={preview}
                         />
                     </Grid>
                 </ExpansionPanelDetails>
