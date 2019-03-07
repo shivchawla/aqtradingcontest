@@ -87,129 +87,7 @@ class CreateEntryEditScreen extends React.Component {
         );
     }
 
-    renderPredictedTodayStockList = () => {
-        const marketOpen = isMarketOpen();
-        const {
-            positions = [], 
-            staticPositions = [],
-            toggleEntryDetailBottomSheet,
-            toggleSearchStockBottomSheet,
-            showPreviousPositions,
-            submitPositions,
-            submissionLoading,
-            getRequiredMetrics,
-            positionsWithDuplicateHorizons = []
-        } = this.props;
-        const allPositionsExpanded = this.props.checkIfAllExpanded();
-        const positionsWithNewPredictions = getPositionsWithNewPredictions(this.props.positions);
-        const currentDate = moment().format(dateFormat);
-        const selectedDate = this.props.selectedDate.format(dateFormat);
-        const isToday = _.isEqual(currentDate, selectedDate);
-
-        return (
-            <React.Fragment>
-                {
-                    positionsWithNewPredictions.length > 0 &&
-                    <Grid item xs={12} style={{marginBottom: '20px'}}>
-                        <SectionHeader>Predicted Today</SectionHeader>
-                    </Grid>
-                }
-                <Grid 
-                        item 
-                        xs={4} 
-                        style={{
-                            ...horizontalBox, 
-                            justifyContent: 'flex-start',
-                            marginBottom: '20px'
-                        }}
-                >
-                    {
-                        positionsWithNewPredictions.length > 0 &&
-                        <Button 
-                                variant='contained' 
-                                style={collapseButtonStyle}
-                                size='small'
-                                onClick={this.props.toggleExpansionAll}
-                        >
-                            {allPositionsExpanded ? 'COLLAPSE ALL' : 'EXPAND ALL'}
-                            <Icon>{allPositionsExpanded ? 'unfold_less' : 'unfold_more'}</Icon>
-                        </Button>
-                    }
-                </Grid>
-                {
-                    isToday && marketOpen.status && 
-                    <Grid item xs={4} 
-                            style={{
-                                ...fabContainerStyle,
-                                justifyContent: 'flex-end',
-                                paddingRight: '30px',
-                                marginBottom: '20px'
-                            }}
-                    >
-                        {
-                            (this.props.positions.length > 0 || positions.length > 0) &&
-                            <Button 
-                                    style={{...fabButtonStyle, ...addStocksStyle}} 
-                                    size='small' 
-                                    variant="contained" 
-                                    aria-label="Delete" 
-                                    onClick={toggleSearchStockBottomSheet}
-                            >
-                                <Icon style={{marginRight: '5px'}}>add_circle</Icon>
-                                PREDICTION
-                            </Button>
-                        }
-                        {
-                            positionsWithDuplicateHorizons.length > 0 &&
-                            <ActionIcon 
-                                onClick={this.props.toggleDuplicateHorizonDialog}
-                                type='error' 
-                                color={metricColor.negative}
-                                size={22}
-                            />
-                        }
-                        {
-                            positionsWithDuplicateHorizons.length === 0 &&
-                            positionsWithNewPredictions.length > 0 &&
-                            // && !checkPositionsEquality(positions, staticPositions) &&
-                            <Button 
-                                    style={{...fabButtonStyle, ...submitButtonStyle}} 
-                                    size='small' 
-                                    variant="contained" 
-                                    aria-label="Edit" 
-                                    onClick={submitPositions}
-                                    disabled={submissionLoading}
-                            >
-                                <Icon style={{marginRight: '5px'}}>check_circle</Icon>
-                                SUBMIT
-                                {
-                                    submissionLoading && 
-                                    <CircularProgress 
-                                        style={{marginLeft: '5px', color: '#fff'}} 
-                                        size={18} 
-                                    />
-                                }
-                            </Button>
-                        }
-                    </Grid>
-                }
-                {
-                    positionsWithNewPredictions.length > 0 &&
-                    <StockList 
-                        positions={positionsWithNewPredictions} 
-                        onStockItemChange={this.props.onStockItemChange} 
-                        addPrediction={this.props.addPrediction}
-                        modifyPrediction={this.props.modifyPrediction}
-                        deletePrediction={this.props.deletePrediction}
-                        onExpansionChanged={this.props.onExpansionChanged}
-                        deletePosition={this.props.deletePosition}
-                    />
-                }
-            </React.Fragment>
-        );
-    }
-
-    renderOtherStocksList = () => {
+    renderPredictionList = () => {
         let positions = this.props.previewPositions;
         const {
             toggleEntryDetailBottomSheet,
@@ -292,7 +170,7 @@ class CreateEntryEditScreen extends React.Component {
             <Grid container justify="space-between" style={{backgroundColor:'#fff'}}>
                 {
                     Utils.isLoggedIn()
-                    ? this.renderOtherStocksList()
+                    ? this.renderPredictionList()
                     : <NotLoggedIn />
                 }
             </Grid>
