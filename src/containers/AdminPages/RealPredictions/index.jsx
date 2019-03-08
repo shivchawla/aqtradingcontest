@@ -242,7 +242,6 @@ class RealPredictions extends React.Component {
                 advisorId: selectedAdvisorId
             };
         }
-        console.log('Message ', msg);
         this.webSocket.sendWSMessage(msg);
     }
 
