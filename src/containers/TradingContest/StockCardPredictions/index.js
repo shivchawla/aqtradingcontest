@@ -303,12 +303,20 @@ class StockCardPredictions extends React.Component {
 
     updateStockDataToDefaultSettings = () => {
         const {defaultStockData, stockData} = this.state;
+        const isRealPrediction = _.get(stockData, 'realPrediction', false);
         const stockDataInvestment = _.get(stockData, 'investment', 1);
         const isRealPredictionSelected = _.get(stockData, 'realPrediction', false)
-        const horizon = _.get(defaultStockData, 'horizon', 5);
+        let horizon = _.get(defaultStockData, 'horizon', 5);
         const target = _.get(defaultStockData, 'target', 5);
         const investment = _.get(defaultStockData, 'investment', 10000);
         const stopLoss = _.get(defaultStockData, 'stopLoss', 2);
+
+        // If prediction type is real and horizon is less than 2 days then
+        // horizon should be set to 2 days
+        if (isRealPrediction) {
+            horizon = horizon < 2 ? 2: horizon;
+        }
+
         // If prediction type is real then don't update the investment, 
         // since default investment is in terms of notional 
         this.setState({
