@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
-import styled from 'styled-components';
 import Media from 'react-media';
 import {withRouter} from 'react-router';
 import {
@@ -16,6 +15,10 @@ import LayoutMobile from './components/mobile/Layout';
 import WS from '../../../utils/websocket';
 import {Utils} from '../../../utils';
 
+const URLSearchParamsPoly = require('url-search-params');
+const DateHelper = require('../../../utils/date');
+
+const defaultDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate()));
 const dateFormat = 'YYYY-MM-DD';
 const pnlCancelledMessage = 'pnlCancelled';
 const predictionsCancelledMessage = 'predictionsCancelled';
@@ -28,6 +31,7 @@ class RealPredictions extends React.Component {
         this.cancelFetchPnLRequest = null;
         this.cancelFetchPortfolioStatsRequest = null;
         this.webSocket = new WS();
+        this.params = null;
 
         this.state = {
             predictions: [], // predictions required for the selected date and type
@@ -42,10 +46,15 @@ class RealPredictions extends React.Component {
             portfolioStatsFound: false,
             portfolioStats: {}, // Daily Portfolio Stats for selected obtained due to date change
             loading: false,
-            selectedDate: props.selectedDate || moment(), // Date that's selected from the DatePicker
+            selectedDate: defaultDate, // Date that's selected from the DatePicker
             selectedView: 'all',
             activePredictionStatus: true
         };
+    }
+
+    updateDate = date => {
+        this.setState({selectedDate: date});
+        this.fetchPredictionsAndStats(date);
     }
 
     updateDailyPredictions = async (predictions = []) => {
@@ -65,7 +74,7 @@ class RealPredictions extends React.Component {
         });
     }
 
-    getDailyPredictionsOnDateChange = (selectedDate = moment(), type = this.state.selectedView) => {
+    getDailyPredictionsOnDateChange = (selectedDate = defaultDate, type = this.state.selectedView) => {
         try {
             this.cancelFetchPredictionsRequest(predictionsCancelledMessage);
         } catch(err) {}
@@ -267,7 +276,13 @@ class RealPredictions extends React.Component {
     }
 
     componentWillMount() {
-        this.fetchPredictionsAndStats(this.state.selectedDate);
+        this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
+        const date = this.params.get('date');
+        if (date !== null) {
+            const formattedSelectedDate = moment(date, dateFormat);
+            this.setState({selectedDate: formattedSelectedDate});
+            this.fetchPredictionsAndStats(formattedSelectedDate);
+        }
         this.setUpSocketConnection();
     }
 
@@ -282,7 +297,9 @@ class RealPredictions extends React.Component {
             handlePreviewListMenuItemChange: this.handlePreviewListMenuItemChange,
             loading: this.state.loading,
             handlePredictionStatusChange: this.handlePredictionStatusChange,
-            activePredictionStatus: this.state.activePredictionStatus
+            activePredictionStatus: this.state.activePredictionStatus,
+            selectedDate: this.state.selectedDate,
+            updateDate: this.updateDate
         };
 
         return (

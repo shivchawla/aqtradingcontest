@@ -22,7 +22,8 @@ class DateComponent extends React.Component {
     }
 
     componentWillMount() {
-        this.onDateChange(this.state.selectedDate);
+        const {launchOnMount = true} = this.props;
+        launchOnMount && this.onDateChange(this.state.selectedDate);
     }
 
     navigateToPreviousDate = () => {

@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import AqLayout from '../../../../../components/Layout/AqDesktopLayout';
+import DateComponent from '../../../../TradingContest/Misc/DateComponent';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import StockPreviewExtenedList from '../../../../TradingContest/MultiHorizonCreateEntry/components/common/StockPreviewExtenedList';
@@ -66,7 +67,7 @@ export default class Layout extends React.Component {
         const {
             positions = [], 
             predictions = [],
-            activePredictionStatus = true
+            activePredictionStatus = true,
         } = this.props;
 
         return (
@@ -98,6 +99,14 @@ export default class Layout extends React.Component {
                         defaultSelected={this.state.groupedList ? 0 : 1}
                         onChange={this.modifyGroupedView}
                         CustomRadio={CustomRadio}
+                    />
+                    <DateComponent 
+                        selectedDate={this.props.selectedDate}
+                        color='#1763c6'
+                        onDateChange={this.props.updateDate}
+                        type='daily'
+                        compact={true}
+                        launchOnMount={false}
                     />
                 </Grid>
                 {
