@@ -2,14 +2,28 @@ import React from 'react';
 import _ from 'lodash';
 import windowSize from 'react-window-size';
 import styled from 'styled-components';
-import Grid from '@material-ui/core/Grid'
+import Grid from '@material-ui/core/Grid';
+import SelectionMenu from '../../../../../components/Menu/SelectionMenu';
 import StockPreviewListItemMobile from '../mobile/StockPreviewListItem';
-import StockPreviewListItemDesktop from '../desktop/StockPreviewListItem';
 import StockPreviewExtendedPredictionHeader from '../desktop/StockPreviewExtendedPredictionHeader';
 import StockPreviewPredictionListItemExtened from '../desktop/StockPreviewPredictionListItemExtended';
 const moment = require('moment');
 
+const sortingMenu = [
+    {label: 'Start Date', key: 'startDate'},
+    {label: 'End Date', key: 'endDate'}
+];
+
 class StockPreviewList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedSort: {
+                label: 'Start Date',
+                key: 'startDate'
+            }
+        }
+    }
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -18,10 +32,27 @@ class StockPreviewList extends React.Component {
         return false;
     }
 
+    handleMenuChanged = menuKey => {
+        const keyIndex = _.findIndex(sortingMenu, menuItem => menuItem.key === menuKey);
+        const requiredMenuItem = sortingMenu[keyIndex];
+
+        this.setState({selectedSort: requiredMenuItem});
+    }
+
+    sortPredictionsByDate = () => {
+        const key = _.get(this.state, 'selectedSort.key', 'startDate');
+        const {predictions = []} = this.props;
+
+        return _.orderBy(predictions, prediction => {
+            return moment(prediction[key])
+        }, ['desc'])
+    }
+
     render() {
         const isDesktop = this.props.windowWidth > 800;
-        const {predictions = [], type='buy', selectedDate = moment()} = this.props;
+        let {predictions = [], type='buy', selectedDate = moment()} = this.props;
         const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewPredictionListItemExtened;
+        predictions = this.sortPredictionsByDate();
 
         return (
             <Grid 
@@ -33,6 +64,11 @@ class StockPreviewList extends React.Component {
                         paddingBottom: '80px',
                     }}
             >
+                <SelectionMenu 
+                    menuItems = {sortingMenu}
+                    buttonText={this.state.selectedSort.label}
+                    onChange={this.handleMenuChanged}
+                />
                 <StockPreviewExtendedPredictionHeader />
                 {
                     predictions.map((prediction, index) => {
