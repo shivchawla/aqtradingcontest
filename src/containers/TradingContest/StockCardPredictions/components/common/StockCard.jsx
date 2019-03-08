@@ -165,17 +165,23 @@ class StockCard extends React.Component {
         let {
             stopLoss = 2,
             valueTypePct = true,
-            lastPrice = 0
+            lastPrice = 0,
+            horizon = 1
         } = this.props.stockData;
         const maxValue = valueTypePct ? 10 : roundToValue(lastPrice, 10);
         if (value) {
             stopLoss = stopLoss > maxValue ? maxValue : stopLoss;
         }
 
+        if (value) {
+            horizon = horizon < 2 ? 2 : horizon;
+        }
+
         this.props.modifyStockData({
             ...this.props.stockData,
             realPrediction: value,
             investment: investmentItems[0].key,
+            horizon,
             stopLoss
         });
     }
