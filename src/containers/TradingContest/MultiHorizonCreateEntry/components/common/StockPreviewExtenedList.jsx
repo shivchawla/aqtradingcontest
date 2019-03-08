@@ -50,7 +50,7 @@ class StockPreviewList extends React.Component {
 
     render() {
         const isDesktop = this.props.windowWidth > 800;
-        let {predictions = [], type='buy', selectedDate = moment()} = this.props;
+        let {predictions = [], selectedDate = moment()} = this.props;
         const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewPredictionListItemExtened;
         predictions = this.sortPredictionsByDate();
 
@@ -68,6 +68,7 @@ class StockPreviewList extends React.Component {
                     menuItems = {sortingMenu}
                     buttonText={this.state.selectedSort.label}
                     onChange={this.handleMenuChanged}
+                    selectedType={this.state.selectedSort.key}
                 />
                 <StockPreviewExtendedPredictionHeader />
                 {
