@@ -1,36 +1,34 @@
 import React from 'react';
+import axios from 'axios';
 import _ from 'lodash';
 import moment from 'moment';
 import Media from 'react-media';
 import {withRouter} from 'react-router';
 import {
     getRealPredictions,
-    getPnlStatsN,
-    getPortfolioStatsN,
     processPredictions,
-    convertPredictionsToPositions
+    convertPredictionsToPositions,
 } from '../../TradingContest/MultiHorizonCreateEntry/utils';
-import {processRealtimePredictions} from './utils';
+import {processRealtimePredictions, getAllocatedAdvisors, processAdvisors} from './utils';
 import LayoutDesktop from './components/desktop/Layout';
 import LayoutMobile from './components/mobile/Layout';
 import WS from '../../../utils/websocket';
-import {Utils} from '../../../utils';
+import {Utils, handleCreateAjaxError} from '../../../utils';
 
 const URLSearchParamsPoly = require('url-search-params');
 const DateHelper = require('../../../utils/date');
+const {requestUrl} = require('../../../localConfig');
 
 const defaultDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(1, 'days').toDate()));
 const dateFormat = 'YYYY-MM-DD';
-const pnlCancelledMessage = 'pnlCancelled';
 const predictionsCancelledMessage = 'predictionsCancelled';
-const portfolioStatsCancelledMessage = 'portfolioStatsCancelled';
+const advisorsCancelledMessage = 'advisorsCancelled';
 
 class RealPredictions extends React.Component {
     constructor(props) {
         super(props);
         this.cancelFetchPredictionsRequest = null;
-        this.cancelFetchPnLRequest = null;
-        this.cancelFetchPortfolioStatsRequest = null;
+        this.cancelAllocatedAdvisorsRequest = null;
         this.webSocket = new WS();
         this.params = null;
 
@@ -45,9 +43,17 @@ class RealPredictions extends React.Component {
             portfolioStatsFound: false,
             portfolioStats: {}, // Daily Portfolio Stats for selected obtained due to date change
             loading: false,
+            advisorLoading: false,
             selectedDate: defaultDate, // Date that's selected from the DatePicker
             selectedView: 'all',
-            activePredictionStatus: true
+            activePredictionStatus: true,
+            advisors: [],
+            skip: 0,
+            limit: 10,
+            selectedAdvisor: null, // advisor id used for the UserProfile dialog
+            requiredAdvisorForPredictions: {}, // advisor used for all the N/W calls
+            updateUserStatsLoading: false,
+            updateAdvisorStatsDialogOpen: false
         };
     }
 
@@ -92,7 +98,12 @@ class RealPredictions extends React.Component {
         let predictions = [];
 
         return getRealPredictions(
-            {date: selectedDate, category: type, active: this.state.activePredictionStatus},
+            {
+                date: selectedDate, 
+                category: type, 
+                active: this.state.activePredictionStatus,
+                advisorId: _.get(this.state, 'requiredAdvisorForPredictions._id', null)
+            },
             this.props.history,
             this.props.match.url,
             false,
@@ -111,91 +122,47 @@ class RealPredictions extends React.Component {
         })
     }
 
-    updateDailyPnLStats = (pnlStats) => {
-        this.setState({
-            pnlStats: pnlStats,
-            pnlFound: true
-        });
+    /**
+     * Stoing advisors in the local state
+     */
+    updateAllocatedAdvisors = async (advisors = []) => {
+        const formattedAdvisors = await processAdvisors(advisors);
+        this.setState({advisors: formattedAdvisors});
     }
 
-    getDailyPnlStats = (selectedDate = moment(), type='all') => {
-        const {real = false} = this.props;
+    getAllocatedAdvisors = () => {
         try {
-            this.cancelFetchPnLRequest(pnlCancelledMessage);
-        } catch (err){}
-
-        return getPnlStatsN(
-            {date: selectedDate, type, real},
-            this.props.history,
-            this.props.match.url,
-            false,
-            c => {
-                this.cancelFetchPredictionsRequest = c
-            }
-        )
-        .then(response => {
-            const pnlStats = response.data;
-            this.updateDailyPnLStats(pnlStats);
-
-            return 'requestCompleted';
-        })
-        .catch(err => {
-            this.setState({pnlFound: false});
-            return err.message === pnlCancelledMessage ? 'requestPending' : 'requestCompleted';
-        }) 
-    }
-
-    updatePortfolioStats = portfolioStats => {
-        this.setState({
-            portfolioStatsFound: true,
-            portfolioStats
-        });
-    }
-
-    getDailyPortfolioStats = (selectedDate = moment()) => {
-        const {real = false} = this.props;
-        try {
-            this.cancelFetchPortfolioStatsRequest(portfolioStatsCancelledMessage);
-        } catch (err) {}
+            this.cancelAllocatedAdvisorsRequest(advisorsCancelledMessage);
+        } catch(err) {}
         
-        return getPortfolioStatsN(
-            {date: selectedDate, real},
+        this.setState({advisorLoading: true});
+        return getAllocatedAdvisors(
+            this.state.skip,
+            this.state.limit,
             this.props.history,
             this.props.match.url,
             false,
             c => {
-                this.cancelFetchPortfolioStatsRequest = c
+                this.cancelAllocatedAdvisorsRequest = c
             }
         )
-        .then(response => {
-            const portfolioStats = response.data;
-            this.updatePortfolioStats(portfolioStats);
-
-            return 'requestCompleted';
+        .then(async response => {
+            const advisors = response.data;
+            this.updateAllocatedAdvisors(advisors);
         })
-        .catch(err => {
-            this.setState({portfolioStatsFound: false});
-            return err.message === portfolioStatsCancelledMessage ? 'requestPending' : 'requestCompleted';
-        });
+        .finally(() => {
+            this.setState({advisorLoading: false});
+        })
     }
 
-    fetchPredictionsAndStats = (selectedDate = moment()) => {
+    fetchPredictionsAndStats = (selectedDate = this.state.selectedDate) => {
         this.setState({loading: true});
-        Promise.all([
-            this.getDailyPredictionsOnDateChange(selectedDate, this.state.selectedView),
-            this.getDailyPnlStats(selectedDate, this.state.selectedView),
-            this.getDailyPortfolioStats(selectedDate, this.state.selectedView)
-        ])
-        // this.getDailyPredictionsOnDateChange(selectedDate, this.state.selectedView)
-        .then((response) => {
-            if (response.filter(responseItem => responseItem === 'requestCompleted').length === 3) {
-                this.setState({loading: false});
-            } else {
-                this.setState({loading: true});
-            }
-        })
+        return this.getDailyPredictionsOnDateChange(selectedDate, this.state.selectedView)
         .catch((err) => {
             console.log(err.message);
+            this.setState({loading: false});
+        })
+        .finally(() => {
             this.setState({loading: false});
         })
     }
@@ -230,32 +197,32 @@ class RealPredictions extends React.Component {
     }
 
     subscribeToPredictions = (type = this.state.selectedView) => {
-        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        const advisorId = _.get(this.state, 'requiredAdvisorForPredictions._id', null);
         let msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-real-prediction-all",
             "category": type
         };
-        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        if (advisorId !== null && Utils.isAdmin()) {
             msg = {
                 ...msg,
-                advisorId: selectedAdvisorId
+                advisorId
             };
         }
         this.webSocket.sendWSMessage(msg);
     }
 
     unSubscribeToPredictions = (type = this.state.selectedView) => {
-        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        const advisorId = _.get(this.state, 'requiredAdvisorForPredictions._id', null);
         let msg = {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-real-prediction-all',
             'category': type,
         };
-        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        if (advisorId !== null && Utils.isAdmin()) {
             msg = {
                 ...msg,
-                advisorId: selectedAdvisorId
+                advisorId
             };
         }
         this.webSocket.sendWSMessage(msg);
@@ -287,19 +254,125 @@ class RealPredictions extends React.Component {
         }
     }
 
+    selectAdvisor = (advisor = null, cb = null) => {
+        if (advisor !== null) {
+            this.setState({selectedAdvisor: advisor}, () => {
+                cb && cb();
+            });
+        }
+    }
+
+    selectAdvisorForPredictions = (advisor = null) => {
+        if (advisor !== null) {
+            this.setState({
+                requiredAdvisorForPredictions: advisor,
+                loading: true
+            }, () => {
+                this.getDailyPredictionsOnDateChange()
+                .then(response => {
+                    if (response === 'requestCompleted') {
+                        this.setState({loading: false});
+                    } else {
+                        this.setState({loading: true});
+                    }
+                })
+                .catch(err => {
+                    this.setState({loading: false});
+                })
+            })
+        }
+    }
+
+    updateAdvisorStats = advisorStats => {
+        this.setState({requiredAdvisorForPredictions: advisorStats});
+    }
+
+    updateUserStatus = (status,notes = '') => {
+        const advisorId = _.get(this.state, 'requiredAdvisorForPredictions._id', null);
+        const url = `${requestUrl}/advisor/${advisorId}/updatestatus`;
+
+        this.setState({updateUserStatsLoading: true});
+        return axios({
+            method: 'POST',
+            url,
+            data: {
+                status,
+                notes
+            },
+            headers: Utils.getAuthTokenHeader()
+        })
+        .then(response => {
+            this.toggleUpdateAdvisorDialog();
+        })
+        .catch(error => {
+            console.log('Error ', error);
+            return handleCreateAjaxError(error, this.props.history, this.props.match.url);
+        })
+        .finally(() => {
+            this.setState({updateUserStatsLoading: false});
+        })
+    }
+
+    updateUserCash = (cash, notes = '') => {
+        const advisorId = _.get(this.state, 'requiredAdvisorForPredictions._id', null);
+        const url = `${requestUrl}/advisor/${advisorId}/updateCash`;
+
+        this.setState({updateUserStatsLoading: true});
+        return axios({
+            method: 'PUT',
+            url,
+            data: {
+                cash: Number(cash),
+                notes
+            },
+            headers: Utils.getAuthTokenHeader()
+        })
+        .then(response => {
+            console.log(response.data);
+            this.toggleUpdateAdvisorDialog();
+        })
+        .catch(error => {
+            console.log('Error ', error);
+            return handleCreateAjaxError(error, this.props.history, this.props.match.url);
+        })
+        .finally(() => {
+            this.setState({updateUserStatsLoading: false});
+        })
+    }
+
+    submitAdvisorStats = (cashSelected = true) => {
+        const requiredAdvisorForPredictions = _.get(this.state, 'requiredAdvisorForPredictions', {});
+        let status = _.get(requiredAdvisorForPredictions, 'status', false);
+        let cash = _.get(requiredAdvisorForPredictions, 'cash', 0);
+        const cashNotes = _.get(requiredAdvisorForPredictions, 'cashNotes', '');
+        const statusNotes = _.get(requiredAdvisorForPredictions, 'statusNotes', '');
+        if (cashSelected) {
+            this.updateUserCash(cash, cashNotes);
+        } else {
+            this.updateUserStatus(status, statusNotes);
+        }
+    }
+
     componentWillMount() {
         this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
         const date = this.params.get('date');
         if (date !== null) {
             const formattedSelectedDate = moment(date, dateFormat);
             this.setState({selectedDate: formattedSelectedDate});
-            this.fetchPredictionsAndStats(formattedSelectedDate);
+            Promise.all([
+                this.fetchPredictionsAndStats(formattedSelectedDate),
+                this.getAllocatedAdvisors()
+            ])
         }
         this.setUpSocketConnection();
     }
 
     componentWillUnmount() {
         this.unSubscribeToPredictions();
+    }
+
+    toggleUpdateAdvisorDialog = () => {
+        this.setState({updateAdvisorStatsDialogOpen: !this.state.updateAdvisorStatsDialogOpen});
     }
 
     render() {
@@ -311,7 +384,18 @@ class RealPredictions extends React.Component {
             handlePredictionStatusChange: this.handlePredictionStatusChange,
             activePredictionStatus: this.state.activePredictionStatus,
             selectedDate: this.state.selectedDate,
-            updateDate: this.updateDate
+            updateDate: this.updateDate,
+            advisorLoading: this.state.advisorLoading,
+            advisors: this.state.advisors,
+            selectedAdvisor: this.state.selectedAdvisor,
+            selectAdvisor: this.selectAdvisor,
+            selectAdvisorForPredictions: this.selectAdvisorForPredictions,
+            requiredAdvisorForPredictions: this.state.requiredAdvisorForPredictions,
+            updateAdvisorStats: this.updateAdvisorStats,
+            submitAdvisorStats: this.submitAdvisorStats,
+            updateUserStatsLoading: this.state.updateUserStatsLoading,
+            updateAdvisorStatsDialogOpen: this.state.updateAdvisorStatsDialogOpen,
+            toggleUpdateAdvisorDialog: this.toggleUpdateAdvisorDialog
         };
 
         return (

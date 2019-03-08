@@ -20,7 +20,7 @@ export default () => (
 );
 
 const HeaderText = styled.h3`
-    font-size: 14px;
+    font-size: 13px;
     text-align: start;
     font-weight: 400;
     color: #6F6F6F;

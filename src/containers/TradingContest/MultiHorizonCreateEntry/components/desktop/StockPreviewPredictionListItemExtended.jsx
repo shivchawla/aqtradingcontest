@@ -184,7 +184,7 @@ const Container = styled(Grid)`
 `;
 
 const MetricText = styled.h3`
-    font-size: 14px;
+    font-size: 13px;
     color: ${props => props.color || '#4B4A4A'};
     font-weight: 400;
     text-align: start;

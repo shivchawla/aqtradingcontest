@@ -6,12 +6,15 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import UserProfileDialog from '../../../../TradingContest/UserProfile';
 import AqLayout from '../../../../../components/Layout/AqDesktopLayout';
 import DateComponent from '../../../../TradingContest/Misc/DateComponent';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import StockPreviewExtenedList from '../../../../TradingContest/MultiHorizonCreateEntry/components/common/StockPreviewExtenedList';
 import StockPreviewList from '../../../../TradingContest/MultiHorizonCreateEntry/components/common/StockPreviewList';
+import AdvisorList from '../common/AdvisorList';
+import UpdateAdvisorStatsDialog from './UpdateAdvisorStats';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
 
 export default class Layout extends React.Component {
@@ -20,7 +23,9 @@ export default class Layout extends React.Component {
         this.state = {
             listView: this.props.listViewType || 'all',
             anchorEl: null,
-            groupedList: true
+            groupedList: true,
+            userProfileDialogOpenStatus: false,
+            selectedAdvisor: null,
         };
     }
 
@@ -63,6 +68,18 @@ export default class Layout extends React.Component {
         );
     }
 
+    toggleUserProfileDialog = () => {
+        this.setState({userProfileDialogOpenStatus: !this.state.userProfileDialogOpenStatus});
+    }
+
+    showUserProfile = (advisor = null) => {
+        if (advisor !== null) {
+            this.props.selectAdvisor(advisor, () => {
+                this.toggleUserProfileDialog();
+            })
+        }
+    }
+
     renderContent = () => {
         const {
             positions = [], 
@@ -74,7 +91,7 @@ export default class Layout extends React.Component {
             <React.Fragment>
                 <Grid 
                         item 
-                        xs={8}
+                        xs={12}
                         style={{
                             ...horizontalBox,
                             paddingLeft: '10px',
@@ -113,7 +130,7 @@ export default class Layout extends React.Component {
                     predictions.length === 0
                     ?   <Grid 
                                 item 
-                                xs={8}
+                                xs={12}
                                 style={{
                                     justifyContent: 'center',
                                     marginTop: '20px'
@@ -123,7 +140,7 @@ export default class Layout extends React.Component {
                         </Grid>
                     :   <Grid 
                                 item 
-                                xs={this.state.groupedList ? 8 : 10}
+                                xs={12}
                         >
                             {
                                 this.state.groupedList
@@ -137,7 +154,13 @@ export default class Layout extends React.Component {
     }
     
     render() {
-        const {loading = false} = this.props;
+        const {
+            loading = false, 
+            advisorLoading = false, 
+            advisors = [],
+            selectedAdvisor = null,
+            requiredAdvisorForPredictions = {}
+        } = this.props;
 
         return (
             <AqLayout 
@@ -146,6 +169,21 @@ export default class Layout extends React.Component {
                         minHeight: 'inherit'
                     }}
             >
+                <UserProfileDialog 
+                    open={this.state.userProfileDialogOpenStatus}
+                    onClose={this.toggleUserProfileDialog}
+                    advisor={{
+                        advisorId: selectedAdvisor
+                    }}
+                />
+                <UpdateAdvisorStatsDialog 
+                    open={this.props.updateAdvisorStatsDialogOpen}
+                    selectedAdvisor={requiredAdvisorForPredictions}
+                    onClose={this.props.toggleUpdateAdvisorDialog}
+                    updateAdvisorStats={this.props.updateAdvisorStats}
+                    submitAdvisorStats={this.props.submitAdvisorStats}
+                    loading={this.props.updateUserStatsLoading}
+                />
                 <Grid 
                         item 
                         xs={12}
@@ -156,14 +194,28 @@ export default class Layout extends React.Component {
                         className='layout-content'
                 >
                     <Grid container>
-                        {
-                            loading
-                                ? this.renderLoader()
-                                : this.renderContent()
-                        }
+                        <Grid item xs={8}>
+                            <Grid container>
+                                {
+                                    loading
+                                        ? this.renderLoader()
+                                        : this.renderContent()
+                                }
+                            </Grid>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <AdvisorList 
+                                advisors={advisors}
+                                loading={advisorLoading}
+                                showUserProfile={this.showUserProfile}
+                                selectedAdvisor={selectedAdvisor}
+                                requiredAdvisorForPredictions={requiredAdvisorForPredictions}
+                                selectAdvisorForPredictions={this.props.selectAdvisorForPredictions}
+                                toggleUpdateAdvisorDialog={this.props.toggleUpdateAdvisorDialog}
+                            />
+                        </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={4}></Grid>
             </AqLayout>
         );
     }
