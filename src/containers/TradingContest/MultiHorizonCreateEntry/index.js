@@ -9,7 +9,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 import {withRouter} from 'react-router';
 import SearchStocks from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
-import CreateEntryEditMobile from './components/mobile/CreateEntryEditScreen';
 import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
@@ -691,12 +690,7 @@ class CreateEntry extends React.Component {
     }
 
     renderMobileLayout = (props) => {
-        return (
-            <React.Fragment>
-                <DisplayPredictionsMobile {...props} />
-                <CreateEntryEditMobile {...props} />
-            </React.Fragment>
-        )
+        return <DisplayPredictionsMobile {...props} />;
     }
 
     setRealFlag = (real = false) => {

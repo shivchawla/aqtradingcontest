@@ -17,12 +17,13 @@ import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
 import DateComponent from '../../../Misc/DateComponent';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
-import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
+import {verticalBox, primaryColor, horizontalBox} from '../../../../../constants';
 import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
 import {searchPositions} from '../../utils';
 
 const DateHelper = require('../../../../../utils/date');
 const predictionTypes = ['All', 'Ended', 'Started'];
+const realSimulatedPredictionTypes = ['Simulated', 'Real'];
 
 class DisplayPredictions extends React.Component {
     constructor(props) {
@@ -236,12 +237,17 @@ class DisplayPredictions extends React.Component {
         );
     }
 
+    toggleRealPredictionType = (value = 0) => {
+        const real = value > 0;
+        this.props.setRealFlag(real);
+    }
+
     renderContent() {
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
             pnlFound = false,
-            portfolioStats = {}
+            portfolioStats = {},
         } = this.props;
         const statsExpanded = (this.props.previewPositions.length === 0 || this.props.noEntryFound);
         
@@ -264,6 +270,7 @@ class DisplayPredictions extends React.Component {
     }
 
     render() {
+        const {real = false} = this.props;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
 
@@ -277,7 +284,7 @@ class DisplayPredictions extends React.Component {
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             padding: '0 2%',
-                            marginBottom: '10px'
+                            marginBottom: '5px'
                         }}
                 >
                     <RadioGroup
@@ -298,6 +305,23 @@ class DisplayPredictions extends React.Component {
                             <Closed>Market Closed</Closed>
                         }
                     </div>
+                </Grid>
+                <Grid 
+                        item 
+                        xs={12}
+                        style={{
+                            ...horizontalBox,
+                            marginBottom: '15px',
+                            marginLeft: '10px'
+                        }}
+                >
+                    <RadioGroup 
+                        items={realSimulatedPredictionTypes}
+                        defaultSelected={real ? 1 : 0}
+                        CustomRadio={WatchlistCustomRadio}
+                        onChange={this.toggleRealPredictionType}
+                        small
+                    />
                 </Grid>
                 <Grid item xs={12}>
                     {
