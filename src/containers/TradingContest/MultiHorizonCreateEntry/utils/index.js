@@ -323,6 +323,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
 // formats predictions obtained from the backend
 export const processPredictions = (predictions = [], locked = false, type = 'startedToday') => {
     return Promise.map(predictions, prediction => ({
+        _id: _.get(prediction, '_id', null),
         symbol: getStockTicker(_.get(prediction, 'position.security', null)),
         priceInterval: _.get(prediction, 'priceInterval', {}),
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),

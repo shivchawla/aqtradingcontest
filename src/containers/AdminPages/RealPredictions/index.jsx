@@ -10,6 +10,7 @@ import {
     processPredictions,
     convertPredictionsToPositions
 } from '../../TradingContest/MultiHorizonCreateEntry/utils';
+import {processRealtimePredictions} from './utils';
 import LayoutDesktop from './components/desktop/Layout';
 import LayoutMobile from './components/mobile/Layout';
 import WS from '../../../utils/websocket';
@@ -34,12 +35,10 @@ class RealPredictions extends React.Component {
         this.params = null;
 
         this.state = {
+            unformattedPredictions: [], // predictions that are not formatted
             predictions: [], // predictions required for the selected date and type
-            stalePositions: [], // Stale Positions,
             todayDataLoaded: false,
-            previewPositions: [], // used to store the data for previewing,
             positions: [], // required positions with predictions as group
-            staticPositions: [], // This is used to compare the modified positions and the positions obtained from B.E this should be set only once
             noEntryFound: false,
             pnlStats: {}, // Daily PnL stats for the selected entry obtained due to date change
             pnlFound: false,
@@ -57,20 +56,32 @@ class RealPredictions extends React.Component {
         this.fetchPredictionsAndStats(date);
     }
 
-    updateDailyPredictions = async (predictions = []) => {
-        const rawStalePredictions = predictions;
-        const formattedPredictions = await processPredictions(predictions, true);
-        const stalePositions = convertPredictionsToPositions(rawStalePredictions, true, false);
-        const positions = convertPredictionsToPositions(predictions, true, false);
+    /**
+     * If realtime true - Unformatted predictions will be obtained from the state
+     * Else - Unformatted predictions will be obtained from the argument
+     * 
+     */
+    updateDailyPredictions = async (predictions = [], realtime = false) => {
+        const unformattedPredictions = realtime === true
+            ?   _.get(this.state, 'unformattedPredictions', [])
+            :   predictions;
+
+        /**
+         * Getting the required prediction. See the processRealtimePredictions for more detail
+         * [1]unformattedPredictions are the old predictions that are already present
+         * [2] predictions are the real-time predictions obtained from the websocket
+         */
+        const requiredPredictions = processRealtimePredictions(unformattedPredictions, predictions);
+        const formattedPredictions = await processPredictions(requiredPredictions, true);
+        const positions = convertPredictionsToPositions(requiredPredictions, true, false);
+
         this.setState({
             // If data already loaded then don't modify for predictions that are to be edited
-            predictions: formattedPredictions, 
-            stalePositions: stalePositions,
+            predictions: formattedPredictions,
+            unformattedPredictions: requiredPredictions, 
             todayDataLoaded: this.state.todayDataLoaded === false ? true : this.state.todayDataLoaded,
-            previewPositions: positions,
             positions: positions,
-            staticPositions: positions,
-            noEntryFound: predictions.length === 0
+            noEntryFound: requiredPredictions.length === 0
         });
     }
 
@@ -189,7 +200,7 @@ class RealPredictions extends React.Component {
         })
     }
 
-    handlePreviewListMenuItemChange = (type = 'started') => {
+    handlePreviewListMenuItemChange = (type = this.state.selectedView) => {
         this.setState({selectedView: type}, () => {
             this.fetchPredictionsAndStats(this.state.selectedDate);
             this.takeSubscriptionAction(type);
@@ -199,6 +210,7 @@ class RealPredictions extends React.Component {
     handlePredictionStatusChange = (active = true) => {
         this.setState({activePredictionStatus: active}, () => {
             this.fetchPredictionsAndStats(this.state.selectedDate);
+            this.takeSubscriptionAction();
         })
     }
 
@@ -230,6 +242,7 @@ class RealPredictions extends React.Component {
                 advisorId: selectedAdvisorId
             };
         }
+        console.log('Message ', msg);
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -267,7 +280,7 @@ class RealPredictions extends React.Component {
                 const realtimeData = JSON.parse(msg.data);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
-                this.setState({predictions: requiredPredictions});
+                this.updateDailyPredictions(requiredPredictions, true);
             } catch(error) {
                 console.log(error);
                 return error;

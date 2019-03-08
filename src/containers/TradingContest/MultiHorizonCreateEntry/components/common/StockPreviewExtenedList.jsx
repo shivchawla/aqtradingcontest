@@ -36,7 +36,7 @@ class StockPreviewList extends React.Component {
                 <StockPreviewExtendedPredictionHeader />
                 {
                     predictions.map((prediction, index) => {
-                        console.log('Prediction ', prediction);
+
                         return (
                             <StockPreviewListItem 
                                 prediction={prediction} 
