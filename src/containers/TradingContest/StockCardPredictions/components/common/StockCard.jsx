@@ -406,6 +406,7 @@ class StockCard extends React.Component {
                                 checkIfCustom={checkIfCustomHorizon}
                                 label='Days'
                                 customValues={realPrediction}
+                                decimal={false}
                                 date={true}
                                 max={15}
                                 min={realPrediction ? 2 : 1}
@@ -439,23 +440,29 @@ class StockCard extends React.Component {
                                         marginLeft: '20px'
                                     }}
                             >
-                                <ConditionValue 
-                                        style={{
-                                            color: '#EB5555',
-                                            marginBottom: '5px',
-                                            fontSize: '12px',
-                                            marginRight: '5px'
-                                        }}
-                                >   
-                                    ₹ {
-                                        getPercentageModifiedValue(
-                                            target, 
-                                            this.getRequiredLastPrice(false), 
-                                            false, 
-                                            valueTypePct
-                                        ).toFixed(2)}
-                                </ConditionValue>
-                                <Bar style={{marginBottom: '5px'}}>-</Bar>
+                                {
+                                    !realPrediction &&
+                                    <React.Fragment>
+                                        <ConditionValue 
+                                                style={{
+                                                    color: '#EB5555',
+                                                    marginBottom: '5px',
+                                                    fontSize: '12px',
+                                                    marginRight: '5px'
+                                                }}
+                                        >   
+                                            <span style={{color: '#222'}}>Sell - </span>
+                                            ₹ {
+                                                getPercentageModifiedValue(
+                                                    target, 
+                                                    this.getRequiredLastPrice(false), 
+                                                    false, 
+                                                    valueTypePct
+                                                ).toFixed(2)}
+                                        </ConditionValue>
+                                        <Bar style={{marginBottom: '5px'}}>|</Bar>
+                                    </React.Fragment>
+                                }
                                 <ConditionValue 
                                         style={{
                                             color: '#0acc53',
@@ -464,6 +471,7 @@ class StockCard extends React.Component {
                                             marginLeft: '5px'
                                         }}
                                 >
+                                    <span style={{color: '#222'}}>Buy - </span>
                                     ₹ {
                                         getPercentageModifiedValue(
                                             target, 
@@ -483,6 +491,7 @@ class StockCard extends React.Component {
                                 getValue={getTargetValue}
                                 checkIfCustom={checkIfCustomTarget}
                                 customValues={valueTypePct}
+                                decimal={!realPrediction}
                                 showSlider
                                 hideLabel={true}
                                 label={(!valueTypePct ||realPrediction) ? '' : '%'}
@@ -518,17 +527,23 @@ class StockCard extends React.Component {
                                         marginLeft: '20px'
                                     }}
                             >
-                                <ConditionValue 
-                                        style={{
-                                            color: '#EB5555',
-                                            marginBottom: '5px',
-                                            fontSize: '12px',
-                                            marginRight: '5px'
-                                        }}
-                                >
-                                    ₹ {this.getRequiredStopLoss(false).toFixed(2)}
-                                </ConditionValue>
-                                <Bar style={{marginBottom: '5px'}}>-</Bar>
+                                {
+                                    !realPrediction &&
+                                    <React.Fragment>
+                                        <ConditionValue 
+                                                style={{
+                                                    color: '#EB5555',
+                                                    marginBottom: '5px',
+                                                    fontSize: '12px',
+                                                    marginRight: '5px'
+                                                }}
+                                        >
+                                            <span style={{color: '#222'}}>Sell - </span>
+                                            ₹ {this.getRequiredStopLoss(false).toFixed(2)}
+                                        </ConditionValue>
+                                        <Bar style={{marginBottom: '5px'}}>|</Bar>
+                                    </React.Fragment>
+                                }
                                 <ConditionValue 
                                         style={{
                                             color: '#0acc53',
@@ -537,6 +552,7 @@ class StockCard extends React.Component {
                                             marginLeft: '5px'
                                         }}
                                 >
+                                    <span style={{color: '#222'}}>Buy - </span>
                                     ₹ {this.getRequiredStopLoss().toFixed(2)}
                                 </ConditionValue>
                             </div>
@@ -550,6 +566,7 @@ class StockCard extends React.Component {
                                 checkIfCustom={checkIfCustomTarget}
                                 getValue={getTargetValue}
                                 customValues={valueTypePct}
+                                decimal={!realPrediction}
                                 showSlider
                                 hideLabel={true}
                                 label={(!valueTypePct ||realPrediction) ? '' : '%'}
@@ -571,7 +588,7 @@ class StockCard extends React.Component {
                             >
                                 {
                                     realPrediction
-                                        ?   'Shares (#)'
+                                        ?   `Shares (#) - ₹ ${Utils.formatInvestmentValueNormal(investment * lastPrice)}`
                                         :   'Investment (₹)'
                                 }
                             </MetricLabel>  
@@ -586,6 +603,7 @@ class StockCard extends React.Component {
                                 showSlider
                                 hideLabel={true}
                                 customValues={realPrediction}
+                                decimal={!realPrediction}
                                 max={investmentMaxValue}
                                 checkIfCustom={checkIfCustomInvestment}
                                 label={''}
@@ -911,7 +929,11 @@ class StockCard extends React.Component {
                             disabled={realPrediction}
                         />
                         <SubmitButton 
-                            onClick={() => this.props.createPrediction('buy')}
+                            onClick={() => {
+                                realPrediction
+                                    ?   this.props.toggleConfirmationDialog()
+                                    :   this.props.createPrediction('buy')
+                            }}
                             target={target}
                             lastPrice={this.getRequiredLastPrice()}
                             type="buy"

@@ -100,7 +100,8 @@ class StockCardRadioGroup extends React.Component {
             min = 1,
             step = 1,
             disabled = false,
-            customValues = true
+            customValues = true,
+            decimal = true
         } = this.props;
         const isDesktop = this.props.windowWidth > 800;
         const textFieldLabel = this.props.date 
@@ -217,7 +218,7 @@ class StockCardRadioGroup extends React.Component {
                                             }}
                                     >
                                         <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
-                                            {(this.state.sliderValue || 0).toFixed(2)} 
+                                            {decimal ? (this.state.sliderValue || 0).toFixed(2) : this.state.sliderValue} 
                                             &nbsp;{this.props.label}
                                             {
                                                 this.props.date &&

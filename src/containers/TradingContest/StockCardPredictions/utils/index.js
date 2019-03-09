@@ -81,7 +81,7 @@ export const constructPrediction = (stockData, type = 'buy', conditionalType = c
     } = stockData;
     
     let targetValue = getTargetFromLastPrice(lastPrice, target, type, valueTypePct);
-    let avgPrice = 0;
+    let avgPrice = lastPrice;
     const conditionalMaxValue = getConditionalMaxValue(lastPrice, valueTypePct);
     conditionalValue = conditionalValue > conditionalMaxValue
         ?   getConditionalItems(lastPrice, valueTypePct)[1].key
@@ -108,7 +108,7 @@ export const constructPrediction = (stockData, type = 'buy', conditionalType = c
     const endDate = moment(DateHelper.getNextNonHolidayWeekday(startDate, horizon)).format(dateFormat);
     // Getting the value to be deducted from the lastPrice to get the actual stop loss 
     const stopLossDiff = valueTypePct ? ((stopLoss * lastPrice) / 100) : stopLoss;
-    stopLoss = type === 'sell' ? (Number(avgPrice) + stopLossDiff) : (Number(avgPrice) - stopLossDiff)
+    stopLoss = type === 'sell' ? (Number(avgPrice) + stopLossDiff) : (Number(avgPrice) - stopLossDiff);
 
     return {
         position: {

@@ -11,6 +11,7 @@ import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
 import Snackbar from '../../../components/Alerts/SnackbarComponent';
 import LoginBottomSheet from '../LoginBottomSheet';
+import ConfirmationDialog from './components/common/ConfirmationDialog';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction, getConditionalNetValue, getConditionalMaxValue, getConditionalItems} from './utils';
@@ -48,7 +49,8 @@ class StockCardPredictions extends React.Component {
             stockCardBottomSheetOpen: false,
             listMode: false,
             predictionsAllowed: false,
-            loginOpen: false
+            loginOpen: false,
+            confirmationDialogOpen: false
         };
     }
     
@@ -337,6 +339,7 @@ class StockCardPredictions extends React.Component {
     }
 
     createDailyContestPrediction = (type = 'buy') => {
+        this.setState({confirmationDialogOpen: false});
         const {
             conditional = false, 
             conditionalValue = 0.25, 
@@ -388,13 +391,16 @@ class StockCardPredictions extends React.Component {
      * Required net value is obtained from the getConditionalNetValue() method call
      */
     getConditionalNetValue = (positive = true, valueTypePct = true) => {
-        let {lastPrice = 0, conditionalValue} = this.state.stockData;
+        let {lastPrice = 0, conditionalValue, conditionalType = 'NOW'} = this.state.stockData;
         const conditionalMaxValue = getConditionalMaxValue(lastPrice, valueTypePct);
         conditionalValue = conditionalValue > conditionalMaxValue 
             ? getConditionalItems(lastPrice, valueTypePct)[1].key 
             : conditionalValue;
-
-        return getConditionalNetValue(positive, lastPrice, conditionalValue, valueTypePct);
+        
+        // Check this implementation
+        return conditionalType.toUpperCase() !== 'NOW' 
+            ? getConditionalNetValue(positive, lastPrice, conditionalValue, valueTypePct)
+            : lastPrice;
     }
 
     toggleSearchStocksBottomSheet = () => {
@@ -457,6 +463,10 @@ class StockCardPredictions extends React.Component {
         this.setState({loginOpen: false});
     }
 
+    toggleConfirmationDialog = () => {
+        this.setState({confirmationDialogOpen: !this.state.confirmationDialogOpen});
+    }
+
     renderStockCard = (bottomSheet = false) => {
         return (
             <StockCard 
@@ -480,6 +490,8 @@ class StockCardPredictions extends React.Component {
                 bottomSheet={bottomSheet}
                 toggleLoginBottomSheet={this.toggleLoginBottomSheet}
                 getConditionalNetValue={this.getConditionalNetValue}
+                confirmationDialogOpen={this.state.confirmationDialogOpen}
+                toggleConfirmationDialog={this.toggleConfirmationDialog}
             />
         );
     }
@@ -500,6 +512,11 @@ class StockCardPredictions extends React.Component {
                     onClose={this.toggleLoginBottomSheet}
                     dialog={this.props.windowWidth > 800}
                     eventEmitter={this.props.eventEmitter}
+                />
+                <ConfirmationDialog 
+                    open={this.state.confirmationDialogOpen}
+                    onClose={this.toggleConfirmationDialog}
+                    createPrediction={() => this.createDailyContestPrediction('buy')}
                 />
                 <DefaultSettings 
                     open={this.state.defaultSettingsOpen}
