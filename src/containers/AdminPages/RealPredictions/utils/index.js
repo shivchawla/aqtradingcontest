@@ -46,7 +46,7 @@ export const processAdvisors = (advisors = []) => {
         const userFullName = `${firstName} ${lastName}`;
         const cash = _.get(advisor, 'account.cash', 0);
         const investment = _.get(advisor, 'account.investment', 0);
-        const liquidCash = _.get(advisor, 'liquidCash', 0);
+        const liquidCash = _.get(advisor, 'account.liquidCash', 0);
         const id = _.get(advisor, '_id', null);
         const status = _.get(advisor, 'allocation.status', false)
 

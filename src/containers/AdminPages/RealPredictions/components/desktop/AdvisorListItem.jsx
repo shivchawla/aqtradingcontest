@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import { horizontalBox } from '../../../../../constants';
+import { Utils } from '../../../../../utils';
 
 export default class AdvisorListItem extends React.Component {
     render() {
@@ -41,17 +42,17 @@ export default class AdvisorListItem extends React.Component {
                     alignItems="center"
                     onClick={() => this.props.selectAdvisorForPredictions(requiredAdvisor)}
             >
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                     <UserName>{name}</UserName>
                 </Grid>
                 <Grid item xs={2}>
-                    <Metric>₹{cash.toFixed(2)}</Metric>
+                    <Metric>₹{Utils.formatInvestmentValue(cash / 1000)}</Metric>
+                </Grid>
+                <Grid item xs={3}>
+                    <Metric>₹{Utils.formatInvestmentValue(liquidCash / 1000)}</Metric>
                 </Grid>
                 <Grid item xs={2}>
-                    <Metric>₹{liquidCash.toFixed(2)}</Metric>
-                </Grid>
-                <Grid item xs={2}>
-                    <Metric>₹{investment.toFixed(2)}</Metric>
+                    <Metric>₹{Utils.formatInvestmentValue(investment)}</Metric>
                 </Grid>
                 <Grid 
                         item 
@@ -95,6 +96,10 @@ const containerStyle = {
 
 const UserName = styled.h3`
     font-size: 13px;
+    width: 100px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
     font-weight: 500;
     color: #444;
     text-align: start;

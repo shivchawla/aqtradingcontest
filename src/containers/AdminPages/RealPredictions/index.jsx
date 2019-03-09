@@ -262,12 +262,20 @@ class RealPredictions extends React.Component {
         }
     }
 
+    // Method that's called when the AdvisorListItem tile is clicked
+    // to view user's real predictions
     selectAdvisorForPredictions = (advisor = null) => {
+        const presentAdvisorId = _.get(this.state, 'requiredAdvisorForPredictions._id', null);
+        const selectedAdvisorId = _.get(advisor, '_id', null);
+
+        const shouldClearAdvisor = presentAdvisorId === selectedAdvisorId;
+
         if (advisor !== null) {
             this.setState({
-                requiredAdvisorForPredictions: advisor,
+                requiredAdvisorForPredictions: shouldClearAdvisor ? {} : advisor,
                 loading: true
             }, () => {
+                this.takeSubscriptionAction();
                 this.getDailyPredictionsOnDateChange()
                 .then(response => {
                     if (response === 'requestCompleted') {

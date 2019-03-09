@@ -2,11 +2,9 @@ import React from 'react';
 import moment from 'moment';
 import _ from 'lodash';
 import Icon from '@material-ui/core/Icon';
-import ButtonBase from '@material-ui/core/ButtonBase';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import {Utils} from '../../../../../utils';
-import {isMarketOpen} from '../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
 

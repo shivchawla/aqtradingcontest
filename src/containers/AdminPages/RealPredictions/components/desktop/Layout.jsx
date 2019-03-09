@@ -141,6 +141,7 @@ export default class Layout extends React.Component {
                     :   <Grid 
                                 item 
                                 xs={12}
+                                style={predictionContainerStyle}
                         >
                             {
                                 this.state.groupedList
@@ -203,7 +204,11 @@ export default class Layout extends React.Component {
                                 }
                             </Grid>
                         </Grid>
-                        <Grid item xs={4}>
+                        <Grid 
+                                item 
+                                xs={4}
+                                style={advisorListContainerStyle}
+                        >
                             <AdvisorList 
                                 advisors={advisors}
                                 loading={advisorLoading}
@@ -277,6 +282,18 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
             </Menu>
         </div>
     );
+}
+
+const predictionContainerStyle = {
+    height: 'calc(100vh - 131px)',
+    overflow: 'hidden',
+    overflowY: 'scroll'
+}
+
+const advisorListContainerStyle = {
+    height: 'calc(100vh - 85px)',
+    overflow: 'hidden',
+    overflowY: 'scroll'
 }
 
 const NoContent = styled.h3`

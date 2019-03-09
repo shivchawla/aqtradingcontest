@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import AdvisorListItem from '../desktop/AdvisorListItem';
+import AdvisorListHeader from '../desktop/AdvisorListHeader';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {verticalBox} from '../../../../../constants';
@@ -23,7 +24,7 @@ export default class AdvisorList extends React.Component {
             selectedAdvisor = null,
             requiredAdvisorForPredictions = null
         } = this.props;
-
+        
         return (
             <Container>
                 {
@@ -36,9 +37,11 @@ export default class AdvisorList extends React.Component {
                                         justifyContent: 'flex-start'
                                     }}
                             >
+                                <AdvisorListHeader />
                                 {
                                     advisors.map((advisor, index) => (
                                         <AdvisorListItem 
+                                            key={index}
                                             {...advisor}
                                             selectAdvisor={selectAdvisor}
                                             selectedAdvisor={selectedAdvisor}
