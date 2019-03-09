@@ -31,8 +31,6 @@ export default class EditTradeActivity extends React.Component {
 
     onPredictionItemChanged = (key, value) => {
         const {prediction = {}} = this.props;
-        console.log(key);
-        console.log(value);
         this.props.updatePredictionTradeActivity({
             ...prediction,
             [key]: value

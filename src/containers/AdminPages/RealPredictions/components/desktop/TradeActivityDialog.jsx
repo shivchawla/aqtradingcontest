@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import EditTradeActivity from './EditTradeActivity';
 import TradeActivityList from './TradeActivityList';
+import EditPrediction from './EditPrediction';
 import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import {horizontalBox} from '../../../../../constants';
 
@@ -77,20 +78,33 @@ export default class TradeActivityDialog extends React.Component {
                         >
                             <Tab label='Trade Activities'/>
                             <Tab label='Add Activity'/>
+                            <Tab label='Prediction'/>
                         </Tabs>
                     </Grid>
                     <Grid item xs={12} style={{marginTop: '20px'}}>
                         {
-                            this.state.selectedView === 0
-                                ?   <TradeActivityList 
-                                        tradeActivities={this.props.selectedPredictionTradeActivity}
-                                    />
-                                :   <EditTradeActivity 
-                                        prediction={this.props.selectedPredictionForTradeActivity}
-                                        updatePredictionTradeActivity={this.props.updatePredictionTradeActivity}
-                                        updateTradeActivity={this.props.updateTradeActivity}
-                                        updateTradeActivityLoading={this.props.updateTradeActivityLoading}
-                                    />  
+                            this.state.selectedView === 0 &&
+                            <TradeActivityList 
+                                tradeActivities={this.props.selectedPredictionTradeActivity}
+                            />
+                        }
+                        {
+                            this.state.selectedView === 1 &&
+                            <EditTradeActivity 
+                                prediction={this.props.selectedPredictionForTradeActivity}
+                                updatePredictionTradeActivity={this.props.updatePredictionTradeActivity}
+                                updateTradeActivity={this.props.updateTradeActivity}
+                                updateTradeActivityLoading={this.props.updateTradeActivityLoading}
+                            />  
+                        }
+                        {
+                            this.state.selectedView === 2 &&
+                            <EditPrediction 
+                                prediction={this.props.selectedPredictionForTradeActivity}
+                                updatePredictionTradeActivity={this.props.updatePredictionTradeActivity}
+                                updateTradeActivityLoading={this.props.updateTradeActivityLoading}
+                                updateTradePrediction={this.props.updateTradePrediction}
+                            />  
                         }
                     </Grid>
                 </Container>

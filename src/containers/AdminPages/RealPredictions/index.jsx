@@ -305,7 +305,11 @@ class RealPredictions extends React.Component {
             category: 'TRADE',
             notes: '',
             name: _.get(prediction, 'name', ''),
-            symbol: _.get(prediction, 'symbol', '')
+            symbol: _.get(prediction, 'symbol', ''),
+            investment: _.get(prediction, 'investment', 0),
+            lastPrice: _.get(prediction, 'lastPrice', 0),
+            stopLoss: _.get(prediction, 'stopLoss', 0),
+            target: _.get(prediction, 'target', 0)
         }
         this.setState({selectedPredictionForTradeActivity: selectedPrediction}, () => {
             this.toggleTradeActivityDialog();
@@ -384,6 +388,25 @@ class RealPredictions extends React.Component {
         .finally(() => {
             this.setState({updateTradeActivityLoading: false});
         })
+    }
+
+    /**
+     * Methods that updates the trade activity in the B.E
+     */
+    updateTradePrediction = () => {
+        const selectedPrediction = _.get(this.state, 'selectedPredictionForTradeActivity', {});
+        let {
+            investment = 0,
+            stopLoss = 0,
+            target = 0,
+        } = selectedPrediction;
+        const data = {
+            investment: Number(investment),
+            stopLoss: Number(stopLoss),
+            target: Number(target)
+        };
+
+        console.log('Data ', data);
     }
 
     updatePredictionReadStatus = () => {
@@ -529,7 +552,8 @@ class RealPredictions extends React.Component {
             updatePredictionTradeActivity: this.updatePredictionTradeActivity,
             updateTradeActivity: this.updateTradeActivity,
             updateTradeActivityLoading: this.state.updateTradeActivityLoading,
-            selectedPredictionTradeActivity: this.getTradeActivityForSelectedPrediction()
+            selectedPredictionTradeActivity: this.getTradeActivityForSelectedPrediction(),
+            updateTradePrediction: this.updateTradePrediction
         };
 
         return (

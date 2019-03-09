@@ -89,15 +89,22 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             advisor = null,
             _id = null,
             name = '',
-            symbol = ''
-            
+            symbol = '',
+            target = 0,
+            stopLoss = 0,
+            investment = 0,
+            lastPrice = 0
         } = this.props.prediction;
 
         return {
             advisorId: advisor,
             predictionId: _id,
             name, 
-            symbol
+            symbol,
+            target,
+            stopLoss,
+            investment,
+            lastPrice
         }
 
     }
