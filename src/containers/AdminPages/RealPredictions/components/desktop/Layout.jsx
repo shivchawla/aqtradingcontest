@@ -110,12 +110,14 @@ export default class Layout extends React.Component {
                         defaultSelected={activePredictionStatus ? 0 : 1}
                         onChange={this.onPredictionStatusChanged}
                         CustomRadio={CustomRadio}
+                        small
                     />
                     <RadioGroup 
                         items={['GROUPED', 'LIST']}
                         defaultSelected={this.state.groupedList ? 0 : 1}
                         onChange={this.modifyGroupedView}
                         CustomRadio={CustomRadio}
+                        small
                     />
                     <DateComponent 
                         selectedDate={this.props.selectedDate}

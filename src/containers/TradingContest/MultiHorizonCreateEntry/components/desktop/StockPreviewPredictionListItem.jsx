@@ -80,6 +80,12 @@ export default class StockPreviewPredictionListItem extends React.Component {
         }
     }
 
+    shouldShowUnreadStatus = () => {
+        const {readStatus = null} = this.props.prediction;
+
+        return readStatus.toLowerCase() === 'unread';
+    }
+
     render() {
         const {preview = false} = this.props;
         const {
@@ -119,7 +125,14 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const marketOpen = isMarketTrading && isMarketOpen().status;
 
         return (
-            <Container container alignItems="center">
+            <Container 
+                    container 
+                    alignItems="center"
+                    style={{
+                        border: '3px solid',
+                        borderColor: (preview && this.shouldShowUnreadStatus()) ? '#00ef00' : 'transparent'
+                    }}
+            >
                 <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start', paddingLeft: '20px'}}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
                     <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
@@ -237,4 +250,11 @@ const CallDate = styled.h3`
     color: #7B7B7B;
     text-align: start;
     font-weight: 400;
+`;
+
+const UnreadDot = styled.div`
+    width: 25px;
+    height: 25px;
+    border-radius: 20px;
+    background-color: green;
 `;

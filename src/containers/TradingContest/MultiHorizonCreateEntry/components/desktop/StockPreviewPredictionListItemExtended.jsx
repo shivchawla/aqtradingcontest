@@ -77,6 +77,12 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
         }
     }
 
+    shouldShowUnreadStatus = () => {
+        const {readStatus = null} = this.props.prediction;
+
+        return readStatus.toLowerCase() === 'unread';
+    }
+
     render() {
         const {
             horizon = 1, 
@@ -114,7 +120,14 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
         const isMarketTrading = !DateHelper.isHoliday();
 
         return (
-            <Container container alignItems="center">
+            <Container 
+                    container 
+                    alignItems="center"
+                    style={{
+                        border: '3px solid',
+                        borderColor: (this.shouldShowUnreadStatus()) ? '#5bd05b' : 'transparent'
+                    }}
+            >
                 <Grid 
                         item xs={2} 
                         style={{
