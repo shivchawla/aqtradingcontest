@@ -15,6 +15,7 @@ import StockPreviewExtenedList from '../../../../TradingContest/MultiHorizonCrea
 import StockPreviewList from '../../../../TradingContest/MultiHorizonCreateEntry/components/common/StockPreviewList';
 import AdvisorList from '../common/AdvisorList';
 import UpdateAdvisorStatsDialog from './UpdateAdvisorStats';
+import TradeActivtyDialog from './TradeActivityDialog';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
 
 export default class Layout extends React.Component {
@@ -23,7 +24,7 @@ export default class Layout extends React.Component {
         this.state = {
             listView: this.props.listViewType || 'all',
             anchorEl: null,
-            groupedList: true,
+            groupedList: false,
             userProfileDialogOpenStatus: false,
             selectedAdvisor: null,
         };
@@ -147,8 +148,15 @@ export default class Layout extends React.Component {
                         >
                             {
                                 this.state.groupedList
-                                    ?   <StockPreviewList positions={positions} preview={true} />
-                                    :   <StockPreviewExtenedList predictions={predictions} />
+                                    ?   <StockPreviewList 
+                                            positions={positions} 
+                                            preview={true}
+                                            selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
+                                        />
+                                    :   <StockPreviewExtenedList 
+                                            predictions={predictions}
+                                            selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
+                                        />
                             }
                         </Grid>
                 }
@@ -186,6 +194,15 @@ export default class Layout extends React.Component {
                     updateAdvisorStats={this.props.updateAdvisorStats}
                     submitAdvisorStats={this.props.submitAdvisorStats}
                     loading={this.props.updateUserStatsLoading}
+                />
+                <TradeActivtyDialog 
+                    open={this.props.tradeActivityDialogOpen}
+                    onClose={this.props.toggleTradeActivityDialog}
+                    selectedPredictionForTradeActivity={this.props.selectedPredictionForTradeActivity}
+                    updatePredictionTradeActivity={this.props.updatePredictionTradeActivity}
+                    updateTradeActivity={this.props.updateTradeActivity}
+                    updateTradeActivityLoading={this.props.updateTradeActivityLoading}
+                    selectedPredictionTradeActivity={this.props.selectedPredictionTradeActivity}
                 />
                 <Grid 
                         item 

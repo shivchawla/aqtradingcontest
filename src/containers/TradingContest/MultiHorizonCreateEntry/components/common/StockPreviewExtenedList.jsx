@@ -77,7 +77,8 @@ class StockPreviewList extends React.Component {
                         return (
                             <StockPreviewListItem 
                                 prediction={prediction} 
-                                key={index} 
+                                key={index}
+                                selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
                             />
                         );
                     })

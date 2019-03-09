@@ -53,7 +53,10 @@ class RealPredictions extends React.Component {
             selectedAdvisor: null, // advisor id used for the UserProfile dialog
             requiredAdvisorForPredictions: {}, // advisor used for all the N/W calls
             updateUserStatsLoading: false,
-            updateAdvisorStatsDialogOpen: false
+            updateAdvisorStatsDialogOpen: false,
+            tradeActivityDialogOpen: false,
+            selectedPredictionForTradeActivity: {}, // Prediction selected by the user for updating or viewing Trading Activity
+            updateTradeActivityLoading: false
         };
     }
 
@@ -291,8 +294,119 @@ class RealPredictions extends React.Component {
         }
     }
 
+    // Method that's when the Prediction tile is clicked to 
+    // update or view the trading activty
+    selectPredictionForTradeActivity = (prediction = {}) => {
+        const selectedPrediction = {
+            predictionId: _.get(prediction, 'predictionId', null),
+            advisorId: _.get(prediction, 'advisorId', null),
+            tradeDirection: 'BUY',
+            tradeType: 'OPEN',
+            category: 'TRADE',
+            notes: '',
+            name: _.get(prediction, 'name', ''),
+            symbol: _.get(prediction, 'symbol', '')
+        }
+        this.setState({selectedPredictionForTradeActivity: selectedPrediction}, () => {
+            this.toggleTradeActivityDialog();
+        });
+    }
+
+    getTradeActivityForSelectedPrediction = () => {
+        const {unformattedPredictions = []} = this.state;
+        const selectedPredictionId = _.get(this.state, 'selectedPredictionForTradeActivity.predictionId', null);
+
+        const selectedUnformattedPredictionIndex = _.findIndex(unformattedPredictions, unformattedPrediction => (
+                unformattedPrediction._id === selectedPredictionId
+        ));
+
+        return _.get(unformattedPredictions, `[${selectedUnformattedPredictionIndex}].tradeActivity`, []);
+    }
+
+    /**
+     * Upates the prediction that is to be required for the TradeActivity
+     */
+    updatePredictionTradeActivity = (prediction = {}) => {
+        this.setState({selectedPredictionForTradeActivity: prediction});
+    }
+
     updateAdvisorStats = advisorStats => {
         this.setState({requiredAdvisorForPredictions: advisorStats});
+    }
+
+    /**
+     * Methods that updates the trade activity in the B.E
+     */
+    updateTradeActivity = () => {
+        const selectedPrediction = _.get(this.state, 'selectedPredictionForTradeActivity', {});
+        const {
+            predictionId = null,
+            advisorId = null,
+            tradeDirection = 'BUY',
+            tradeType = 'OPEN',
+            category = 'TRADE',
+            notes = ''
+        } = selectedPrediction;
+
+        const data = {
+            predictionId,
+            advisorId,
+            tradeActivity: {
+                date: moment().format(dateFormat),
+                category,
+                tradeDirection,
+                tradeType,
+                notes
+            }
+        };
+        const url = `${requestUrl}/dailycontest/tradeactivity`;
+
+        this.setState({updateTradeActivityLoading: true});
+        return axios({
+            method: 'POST',
+            url,
+            data,
+            headers: Utils.getAuthTokenHeader()
+        })
+        .then(response => {
+            return Promise.all([
+                this.getDailyPredictionsOnDateChange(),
+                this.updatePredictionReadStatus()
+            ]);
+        })
+        .then(() => {
+            this.toggleTradeActivityDialog();
+        })
+        .catch(error => {
+            console.log('Error ', error);
+            return handleCreateAjaxError(error, this.props.history, this.props.match.url);
+        })
+        .finally(() => {
+            this.setState({updateTradeActivityLoading: false});
+        })
+    }
+
+    updatePredictionReadStatus = () => {
+        const selectedPrediction = _.get(this.state, 'selectedPredictionForTradeActivity', {});
+        const {
+            predictionId = null,
+            advisorId = null,
+        } = selectedPrediction;
+
+        const data = {
+            predictionId,
+            advisorId,
+            readStatus: 'READ/ACTED'
+        };
+
+        const url = `${requestUrl}/dailycontest/readstatus`;
+
+        return axios({
+            method: 'POST',
+            url,
+            data,
+            headers: Utils.getAuthTokenHeader()
+        });
     }
 
     updateUserStatus = (status,notes = '') => {
@@ -383,6 +497,10 @@ class RealPredictions extends React.Component {
         this.setState({updateAdvisorStatsDialogOpen: !this.state.updateAdvisorStatsDialogOpen});
     }
 
+    toggleTradeActivityDialog = () => {
+        this.setState({tradeActivityDialogOpen: !this.state.tradeActivityDialogOpen});
+    }
+
     render() {
         const layoutProps = {
             positions: this.state.positions,
@@ -403,7 +521,15 @@ class RealPredictions extends React.Component {
             submitAdvisorStats: this.submitAdvisorStats,
             updateUserStatsLoading: this.state.updateUserStatsLoading,
             updateAdvisorStatsDialogOpen: this.state.updateAdvisorStatsDialogOpen,
-            toggleUpdateAdvisorDialog: this.toggleUpdateAdvisorDialog
+            toggleUpdateAdvisorDialog: this.toggleUpdateAdvisorDialog,
+            tradeActivityDialogOpen: this.state.tradeActivityDialogOpen,
+            toggleTradeActivityDialog: this.toggleTradeActivityDialog,
+            selectPredictionForTradeActivity: this.selectPredictionForTradeActivity,
+            selectedPredictionForTradeActivity: this.state.selectedPredictionForTradeActivity,
+            updatePredictionTradeActivity: this.updatePredictionTradeActivity,
+            updateTradeActivity: this.updateTradeActivity,
+            updateTradeActivityLoading: this.state.updateTradeActivityLoading,
+            selectedPredictionTradeActivity: this.getTradeActivityForSelectedPrediction()
         };
 
         return (

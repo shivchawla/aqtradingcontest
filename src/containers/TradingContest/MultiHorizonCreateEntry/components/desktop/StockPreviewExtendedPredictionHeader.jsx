@@ -11,10 +11,9 @@ export default () => (
         <Grid item xs={2} style={{textAlign: 'start', paddingLeft: '10px'}}><HeaderText>TICKER</HeaderText></Grid>
         <Grid item xs={2} style={{textAlign: 'start'}}><HeaderText>LAST PRICE</HeaderText></Grid>
         <Grid item xs={2} style={{textAlign: 'start'}}><HeaderText>CALL PRICE</HeaderText></Grid>
-        <Grid item xs={1} style={{textAlign: 'start'}}><HeaderText>TARGET</HeaderText></Grid>
-        <Grid item xs={1} style={{textAlign: 'start'}}><HeaderText>TYPE</HeaderText></Grid>
+        <Grid item xs={2} style={{textAlign: 'start'}}><HeaderText>TARGET</HeaderText></Grid>
         <Grid item xs={2} style={{textAlign: 'start'}}><HeaderText>INVESTMENT</HeaderText></Grid>
-        <Grid item xs={1} style={{textAlign: 'start'}}><HeaderText>ENDING ON</HeaderText></Grid>
+        <Grid item xs={1} style={{textAlign: 'start'}}><HeaderText>STOP LOSS</HeaderText></Grid>
         <Grid item xs={1} style={{textAlign: 'center'}}><HeaderText style={{textAlign: 'center'}}>Status</HeaderText></Grid>
     </Grid>
 );

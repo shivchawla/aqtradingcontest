@@ -197,7 +197,6 @@ export default class UpdateAdvisorStats extends React.Component {
 }
 
 const Container = styled(Grid)`
-    /* height: calc(100vh - 50px); */
     overflow: hidden;
     overflow-y: scroll;
     padding: 10px;

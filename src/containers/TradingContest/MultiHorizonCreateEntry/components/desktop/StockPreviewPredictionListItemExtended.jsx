@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import {Utils} from '../../../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
@@ -83,6 +84,24 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
         return readStatus.toLowerCase() === 'unread';
     }
 
+    getSelectedPrediction = () => {
+        const {
+            advisor = null,
+            _id = null,
+            name = '',
+            symbol = ''
+            
+        } = this.props.prediction;
+
+        return {
+            advisorId: advisor,
+            predictionId: _id,
+            name, 
+            symbol
+        }
+
+    }
+
     render() {
         const {
             horizon = 1, 
@@ -101,7 +120,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             _id = null,
             triggered = false,
             conditional = false,
-            name = ''
+            name = '',
+            stopLoss = 0
         } = this.props.prediction;
         const allowAfterMaketHourExit = conditional && !triggered;
         const typeBackgroundColor = '#fff';
@@ -147,8 +167,12 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
                     <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
                 </Grid>
-                <Grid item xs={1}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
-                <Grid item xs={1}>
+                <Grid 
+                        item 
+                        xs={2}
+                        style={{...verticalBox, alignItems: 'flex-start'}}
+                >
+                    <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText>
                     <MetricText style={{color: typeColor}}>
                         {typeText}
                     </MetricText>
@@ -164,11 +188,19 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                         }
                     </MetricText>
                 </Grid>
-                <Grid item xs={1}><MetricText>{moment(endDate).format(readableDateFormat)}</MetricText></Grid>
+                <Grid item xs={1}>
+                    <MetricText>{stopLoss}</MetricText>
+                    <EndDate>{moment(endDate).format(readableDateFormat)}</EndDate>
+                </Grid>
                 <Grid item xs={1} style={{...verticalBox, alignItems: 'center', justifyContent: 'center'}}>
                     <MetricText style={{color: iconConfig.color, fontWeight: 500}}>
                         {iconConfig.status}
                     </MetricText>
+                    <ActionIcon 
+                        type='receipt'
+                        onClick={() => this.props.selectPredictionForTradeActivity(this.getSelectedPrediction())}
+                        size={16}
+                    />
                 </Grid>
             </Container>
         );
@@ -208,8 +240,15 @@ const CallDate = styled.h3`
     font-weight: 400;
 `;
 
+const EndDate = styled.h3`
+    font-size: 12px;
+    color: #7B7B7B;
+    text-align: start;
+    font-weight: 400;
+`;
+
 const Name = styled.h3`
-    width: 150px;
+    width: 130px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
