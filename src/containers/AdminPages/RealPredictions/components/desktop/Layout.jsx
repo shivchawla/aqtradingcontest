@@ -204,6 +204,7 @@ export default class Layout extends React.Component {
                     updateTradeActivityLoading={this.props.updateTradeActivityLoading}
                     selectedPredictionTradeActivity={this.props.selectedPredictionTradeActivity}
                     updateTradePrediction={this.props.updateTradePrediction}
+                    updatePredictionLoading={this.props.updatePredictionLoading}
                 />
                 <Grid 
                         item 

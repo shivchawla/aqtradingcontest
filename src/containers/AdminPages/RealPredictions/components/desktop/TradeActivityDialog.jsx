@@ -102,7 +102,7 @@ export default class TradeActivityDialog extends React.Component {
                             <EditPrediction 
                                 prediction={this.props.selectedPredictionForTradeActivity}
                                 updatePredictionTradeActivity={this.props.updatePredictionTradeActivity}
-                                updateTradeActivityLoading={this.props.updateTradeActivityLoading}
+                                updatePredictionLoading={this.props.updatePredictionLoading}
                                 updateTradePrediction={this.props.updateTradePrediction}
                             />  
                         }

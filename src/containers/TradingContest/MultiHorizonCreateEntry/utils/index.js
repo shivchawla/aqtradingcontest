@@ -331,6 +331,7 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         lastPrice: _.get(prediction, 'position.lastPrice', 0),
         avgPrice: _.get(prediction, 'position.avgPrice', 0),
         investment: _.get(prediction, 'position.investment', 0),
+        quantity: _.get(prediction, 'position.quantity', 0),
         startDate: _.get(prediction, 'startDate', null),
         endDate: _.get(prediction, 'endDate', null),
         targetAchieved: _.get(prediction, 'success.status', false),

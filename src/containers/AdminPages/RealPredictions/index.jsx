@@ -56,7 +56,8 @@ class RealPredictions extends React.Component {
             updateAdvisorStatsDialogOpen: false,
             tradeActivityDialogOpen: false,
             selectedPredictionForTradeActivity: {}, // Prediction selected by the user for updating or viewing Trading Activity
-            updateTradeActivityLoading: false
+            updateTradeActivityLoading: false,
+            updatePredictionLoading: false
         };
     }
 
@@ -307,9 +308,14 @@ class RealPredictions extends React.Component {
             name: _.get(prediction, 'name', ''),
             symbol: _.get(prediction, 'symbol', ''),
             investment: _.get(prediction, 'investment', 0),
+            quantity: _.get(prediction, 'quantity', 0),
             lastPrice: _.get(prediction, 'lastPrice', 0),
             stopLoss: _.get(prediction, 'stopLoss', 0),
-            target: _.get(prediction, 'target', 0)
+            target: _.get(prediction, 'target', 0),
+            oldInvestment: _.get(prediction, 'investment', 0),
+            oldQuantity: _.get(prediction, 'quantity', 0),
+            oldStopLoss: _.get(prediction, 'stopLoss', 0),
+            oldTarget: _.get(prediction, 'target', 0),
         }
         this.setState({selectedPredictionForTradeActivity: selectedPrediction}, () => {
             this.toggleTradeActivityDialog();
@@ -396,17 +402,65 @@ class RealPredictions extends React.Component {
     updateTradePrediction = () => {
         const selectedPrediction = _.get(this.state, 'selectedPredictionForTradeActivity', {});
         let {
-            investment = 0,
+            quantity = 0,
             stopLoss = 0,
             target = 0,
+            predictionId = null,
+            advisorId = null,
+            symbol = ''
         } = selectedPrediction;
-        const data = {
-            investment: Number(investment),
-            stopLoss: Number(stopLoss),
-            target: Number(target)
-        };
+        const adminAdvisorId = Utils.getUserInfo().advisor;
+        const rawPredictionIndex = _.findIndex(this.state.unformattedPredictions, unformattedPrediction => unformattedPrediction._id === predictionId);
+        const rawPrediction = this.state.unformattedPredictions[rawPredictionIndex];
+        let startDate = moment(_.get(rawPrediction, 'createdDate', null)).format(dateFormat);
+        let endDate = moment(_.get(rawPrediction, 'endDate', null)).format(dateFormat);
+        let conditionalType = _.get(rawPrediction, 'conditionalType', 'NOW');
+        const avgPrice = _.get(rawPrediction, 'position.avgPrice', 0);
+        conditionalType = conditionalType.length === 0 ? 'NOW' : conditionalType;
 
-        console.log('Data ', data);
+        this.setState({updatePredictionLoading: true});
+        const data = {
+            position: {
+              security: {
+                ticker: symbol,
+                securityType: 'EQ',
+                country: 'IN',
+                exchange: 'NSE'
+              },
+              investment: 0,
+              quantity: Number(quantity),
+              avgPrice
+            },
+            startDate,
+            endDate,
+            target: Number(target),
+            stopLoss: Number(stopLoss),
+            conditionalType,
+            real: true
+        };
+        const url = `${requestUrl}/dailycontest/prediction?advisorId=${adminAdvisorId}`;
+        return axios({
+            method: 'POST',
+            url,
+            data,
+            headers: Utils.getAuthTokenHeader()
+        })
+        .then(() => {
+            return Promise.all([
+                this.getDailyPredictionsOnDateChange(),
+                this.updatePredictionReadStatus()
+            ]);
+        })
+        .then(() => {
+            this.toggleTradeActivityDialog();
+        })
+        .catch(error => {
+            console.log('Error ', error);
+            return handleCreateAjaxError(error, this.props.history, this.props.match.url);
+        })
+        .finally(() => {
+            this.setState({updatePredictionLoading: false});
+        })
     }
 
     updatePredictionReadStatus = () => {
@@ -553,7 +607,8 @@ class RealPredictions extends React.Component {
             updateTradeActivity: this.updateTradeActivity,
             updateTradeActivityLoading: this.state.updateTradeActivityLoading,
             selectedPredictionTradeActivity: this.getTradeActivityForSelectedPrediction(),
-            updateTradePrediction: this.updateTradePrediction
+            updateTradePrediction: this.updateTradePrediction,
+            updatePredictionLoading: this.state.updatePredictionLoading
         };
 
         return (

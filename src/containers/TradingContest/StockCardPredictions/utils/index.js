@@ -124,7 +124,7 @@ export const constructPrediction = (stockData, type = 'buy', conditionalType = c
             quantity: realPrediction 
                 ?   (type === 'buy' ? 1 : -1) * investment
                 :   0,
-            avgPrice: conditional ?  Number(avgPrice) : 0
+            avgPrice: (conditional && conditionalType.toUpperCase() !== 'NOW') ?  Number(avgPrice) : 0
         },
         startDate,
         endDate,

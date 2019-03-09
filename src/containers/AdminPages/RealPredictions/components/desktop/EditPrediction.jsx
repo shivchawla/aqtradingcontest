@@ -11,7 +11,7 @@ export default class EditPrediction extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            investment: _.get(props, 'prediction.investment', 0),
+            quantity: _.get(props, 'prediction.quantity', 0),
             target: _.get(props, 'prediction.target', 0),
             stopLoss: _.get(props, 'prediction.stopLoss', 0),
         }
@@ -43,9 +43,11 @@ export default class EditPrediction extends React.Component {
     }
 
     render() {  
-        const {prediction = {}, updateTradeActivityLoading = false} = this.props;
+        const {prediction = {}, updatePredictionLoading = false} = this.props;
+        const {oldTarget = 0, oldInvestment = 0, oldStopLoss = 0, oldQuantity = 0} = prediction;
         const {
             investment = 0,
+            quantity = 0,
             stopLoss = 0,
             target = 0
         } = this.state;
@@ -53,7 +55,7 @@ export default class EditPrediction extends React.Component {
         return (
             <Grid container>
                 <MetricContainer>
-                    <InputHeader style={{marginBottom: 0}}>Target</InputHeader>
+                    <InputHeader style={{marginBottom: 0}}>Target - {oldTarget}</InputHeader>
                     <TextField
                         style={{width: '100%'}}
                         onChange={e => this.onValueChanged(e, 'target')}
@@ -67,21 +69,21 @@ export default class EditPrediction extends React.Component {
                     />
                 </MetricContainer>
                 <MetricContainer>
-                    <InputHeader style={{marginBottom: 0}}>Investment</InputHeader>
+                    <InputHeader style={{marginBottom: 0}}>Quantity - {oldQuantity}</InputHeader>
                     <TextField
                         style={{width: '100%'}}
-                        onChange={e => this.onValueChanged(e, investment)}
+                        onChange={e => this.onValueChanged(e, 'quantity')}
                         type="number"
                         InputLabelProps={{
                             shrink: true,
                         }}
                         margin="normal"
                         variant="outlined"
-                        value={investment}
+                        value={quantity}
                     />
                 </MetricContainer>
                 <MetricContainer>
-                    <InputHeader style={{marginBottom: 0}}>Stop Loss</InputHeader>
+                    <InputHeader style={{marginBottom: 0}}>Stop Loss {oldStopLoss}</InputHeader>
                     <TextField
                         style={{width: '100%'}}
                         onChange={e => this.onValueChanged(e, 'stopLoss')}
@@ -99,10 +101,10 @@ export default class EditPrediction extends React.Component {
                         color='primary'
                         style={{width: '100%', marginBottom: '20px'}}
                         onClick={this.props.updateTradePrediction}
-                        disabled={updateTradeActivityLoading}
+                        disabled={updatePredictionLoading}
                 >
                     {
-                        updateTradeActivityLoading
+                        updatePredictionLoading
                             ?   'PROCESSING'
                             :   'UPDATE PREDICTION'
                     }
