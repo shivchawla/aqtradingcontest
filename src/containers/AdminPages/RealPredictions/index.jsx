@@ -138,7 +138,7 @@ class RealPredictions extends React.Component {
         try {
             this.cancelAllocatedAdvisorsRequest(advisorsCancelledMessage);
         } catch(err) {}
-        
+        console.log('getAllocatedAdvisors called');
         this.setState({advisorLoading: true});
         return getAllocatedAdvisors(
             this.state.skip,
@@ -152,6 +152,7 @@ class RealPredictions extends React.Component {
         )
         .then(async response => {
             const advisors = response.data;
+            console.log('Advisors ', advisors);
             this.updateAllocatedAdvisors(advisors);
         })
         .finally(() => {
@@ -159,7 +160,7 @@ class RealPredictions extends React.Component {
         })
     }
 
-    fetchPredictionsAndStats = (selectedDate = this.state.selectedDate) => {
+    fetchPredictionsAndStats = (selectedDate = defaultDate) => {
         this.setState({loading: true});
         return this.getDailyPredictionsOnDateChange(selectedDate, this.state.selectedView)
         .catch((err) => {
@@ -555,14 +556,12 @@ class RealPredictions extends React.Component {
     componentWillMount() {
         this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
         const date = this.params.get('date');
-        if (date !== null) {
-            const formattedSelectedDate = moment(date, dateFormat);
-            this.setState({selectedDate: formattedSelectedDate});
-            Promise.all([
-                this.fetchPredictionsAndStats(formattedSelectedDate),
-                this.getAllocatedAdvisors()
-            ])
-        }
+        const formattedSelectedDate = moment(date, dateFormat);
+        this.setState({selectedDate: formattedSelectedDate});
+        Promise.all([
+            this.fetchPredictionsAndStats(date !== null ? formattedSelectedDate : this.state.selectedDate),
+            this.getAllocatedAdvisors()
+        ])
         this.setUpSocketConnection();
     }
 
