@@ -9,6 +9,7 @@ import {
     processPredictions,
     convertPredictionsToPositions,
 } from '../../TradingContest/MultiHorizonCreateEntry/utils';
+import SnackbarComponent from '../../../components/Alerts/SnackbarComponent';
 import {processRealtimePredictions, getAllocatedAdvisors, processAdvisors} from './utils';
 import LayoutDesktop from './components/desktop/Layout';
 import LayoutMobile from './components/mobile/Layout';
@@ -57,7 +58,11 @@ class RealPredictions extends React.Component {
             tradeActivityDialogOpen: false,
             selectedPredictionForTradeActivity: {}, // Prediction selected by the user for updating or viewing Trading Activity
             updateTradeActivityLoading: false,
-            updatePredictionLoading: false
+            updatePredictionLoading: false,
+            snackbar: {
+                open: false,
+                message: ''
+            }
         };
     }
 
@@ -138,7 +143,6 @@ class RealPredictions extends React.Component {
         try {
             this.cancelAllocatedAdvisorsRequest(advisorsCancelledMessage);
         } catch(err) {}
-        console.log('getAllocatedAdvisors called');
         this.setState({advisorLoading: true});
         return getAllocatedAdvisors(
             this.state.skip,
@@ -152,7 +156,6 @@ class RealPredictions extends React.Component {
         )
         .then(async response => {
             const advisors = response.data;
-            console.log('Advisors ', advisors);
             this.updateAllocatedAdvisors(advisors);
         })
         .finally(() => {
@@ -165,6 +168,7 @@ class RealPredictions extends React.Component {
         return this.getDailyPredictionsOnDateChange(selectedDate, this.state.selectedView)
         .catch((err) => {
             console.log(err.message);
+            this.toggleSnackbar('Error Occured while fetching predictions');
             this.setState({loading: false});
         })
         .finally(() => {
@@ -250,6 +254,7 @@ class RealPredictions extends React.Component {
             try {
                 const realtimeData = JSON.parse(msg.data);
                 const predictons = _.get(realtimeData, 'predictions', {});
+                console.log('Real Predictions ', predictons);
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
             } catch(error) {
@@ -290,6 +295,7 @@ class RealPredictions extends React.Component {
                     }
                 })
                 .catch(err => {
+                    this.toggleSnackbar('Error Occured while fetching predictions for advisor');
                     this.setState({loading: false});
                 })
             })
@@ -390,6 +396,7 @@ class RealPredictions extends React.Component {
         })
         .catch(error => {
             console.log('Error ', error);
+            this.toggleSnackbar('Error Occured while updating Trade Activity');
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
         .finally(() => {
@@ -456,7 +463,11 @@ class RealPredictions extends React.Component {
             this.toggleTradeActivityDialog();
         })
         .catch(error => {
-            console.log('Error ', error);
+            let errorMessage = _.get(error, 'response.data.message', '');
+            errorMessage = errorMessage.length === 0 
+                ? 'Error Occured while creating predictions'
+                : `Error: ${errorMessage}`
+            this.toggleSnackbar(errorMessage);
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
         .finally(() => {
@@ -506,6 +517,7 @@ class RealPredictions extends React.Component {
         })
         .catch(error => {
             console.log('Error ', error);
+            this.toggleSnackbar('Error Occured while updating read status');
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
         .finally(() => {
@@ -528,11 +540,11 @@ class RealPredictions extends React.Component {
             headers: Utils.getAuthTokenHeader()
         })
         .then(response => {
-            console.log(response.data);
             this.toggleUpdateAdvisorDialog();
         })
         .catch(error => {
             console.log('Error ', error);
+            this.toggleSnackbar('Error Occured while updating user cash');
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
         .finally(() => {
@@ -580,6 +592,22 @@ class RealPredictions extends React.Component {
         this.setState({tradeActivityDialogOpen: !this.state.tradeActivityDialogOpen});
     }
 
+    toggleSnackbar = (message = '') => {
+        this.setState({
+            snackbar: {
+                open: !this.state.snackbar.open,
+                message
+            }
+        });
+    }
+
+    onSnackbarClose = () => {
+        this.setState({
+            ...this.state.snackbar,
+            open: false
+        });
+    }
+
     render() {
         const layoutProps = {
             positions: this.state.positions,
@@ -615,6 +643,11 @@ class RealPredictions extends React.Component {
 
         return (
             <React.Fragment>
+                <SnackbarComponent 
+                    openStatus={this.state.snackbar.open}
+                    message={this.state.snackbar.message}
+                    handleClose={this.onSnackbarClose}
+                />
                 <Media 
                     query="(max-width: 800px)"
                     render={() => <LayoutMobile {...layoutProps} />}
