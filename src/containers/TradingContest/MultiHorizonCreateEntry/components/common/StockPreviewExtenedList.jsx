@@ -14,7 +14,7 @@ import { horizontalBox } from '../../../../../constants';
 const moment = require('moment');
 
 const sortingMenu = [
-    {label: 'Start Date', key: 'startDate'},
+    {label: 'Start Date', key: 'createdDate'},
     {label: 'End Date', key: 'endDate'}
 ];
 const readStatusRadioItems = ['un-read', 'read', 'all'];
@@ -23,10 +23,7 @@ class StockPreviewExtendedList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedSort: {
-                label: 'Start Date',
-                key: 'startDate'
-            },
+            selectedSort: sortingMenu[0],
             searchInput: '',
             readStatusSelected: readStatusRadioItems[0]
         }
@@ -46,10 +43,8 @@ class StockPreviewExtendedList extends React.Component {
         this.setState({selectedSort: requiredMenuItem});
     }
 
-    sortPredictionsByDate = () => {
-        console.log('sortPredictionsByDate');
-        const key = _.get(this.state, 'selectedSort.key', 'startDate');
-        const {predictions = []} = this.props;
+    sortPredictionsByDate = (predictions = []) => {
+        const key = _.get(this.state, 'selectedSort.key', 'createdDate');
 
         return _.orderBy(predictions, prediction => {
             return moment(prediction[key])
@@ -69,8 +64,7 @@ class StockPreviewExtendedList extends React.Component {
         return filteredPredictions;
     }
 
-    filterPredictionsOnReadStatus = () => {
-        const {predictions = []} = this.props;
+    filterPredictionsOnReadStatus = (predictions = []) => {
         const readStatus = this.state.readStatusSelected;
 
         return predictions.filter(prediction => {
@@ -92,8 +86,8 @@ class StockPreviewExtendedList extends React.Component {
         const isDesktop = this.props.windowWidth > 800;
         let {predictions = [], selectedDate = moment()} = this.props;
         const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewPredictionListItemExtened;
-        predictions = this.sortPredictionsByDate();
-        predictions = this.filterPredictionsOnReadStatus();
+        predictions = this.filterPredictionsOnReadStatus(predictions);
+        predictions = this.sortPredictionsByDate(predictions);
 
         return (
             <Grid 

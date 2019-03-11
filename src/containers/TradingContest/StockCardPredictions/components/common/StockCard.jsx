@@ -90,30 +90,14 @@ class StockCard extends React.Component {
                 const investmentItems = this.getInvestmentItems(isRealPrediction, nextStockData);
                 const conditionalItems = this.getConditionalItems(nextStockData);
 
-                const stockCardTargetRadioGroupMax = this.getTargetMaxValue(nextStockData);
-                const investmentMaxValue = this.getInvestmentMaxValue(nextStockData);
-                const stopLossMaxValue = this.getStopLossMaxValue(nextStockData);
-                const conditionalMaxValue = this.getConditionalMaxValue(nextStockData);
-
                 if (realPrediction) {
                     horizon = horizon < 2 ? 2 : horizon;
                 }
                 
-                if (target > stockCardTargetRadioGroupMax) {
-                    target = targetItems[0].key;
-                }
-
-                if (stopLoss > stopLossMaxValue) {
-                    stopLoss = targetItems[0].key;
-                }
-
-                if (investment > investmentMaxValue) {
-                    investment = investmentItems[0].key;
-                }
-
-                if (conditionalValue > conditionalMaxValue) {
-                    conditionalValue = conditionalItems[1].key;
-                }
+                target = targetItems[0].key;
+                stopLoss = targetItems[0].key;
+                investment = investmentItems[0].key;
+                conditionalValue = conditionalItems[1].key;
 
                 this.props.modifyStockData({
                     ...nextStockData,

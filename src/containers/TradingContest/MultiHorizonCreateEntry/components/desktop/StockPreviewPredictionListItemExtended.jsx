@@ -10,6 +10,7 @@ import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/dat
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
 
 const readableDateFormat = "Do MMM 'YY";
+const readableHourlyFormat = "HH:mm:ss";
 const DateHelper = require('../../../../../utils/date');
 const dateFormat = 'YYYY-MM-DD';
 
@@ -121,6 +122,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             locked = false, 
             avgPrice = 0, 
             startDate = null, 
+            createdDate = null,
             endDate = null,
             targetAchieved = false,
             active = false,
@@ -174,7 +176,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                 </Grid>
                 <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
-                    <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
+                    <CallDate>{moment(createdDate).format(readableDateFormat)}</CallDate>
+                    <CallDate>{moment(createdDate).format(readableHourlyFormat)}</CallDate>
                 </Grid>
                 <Grid 
                         item 
@@ -200,6 +203,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                 <Grid item xs={1}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(stopLoss)}</MetricText>
                     <EndDate>{moment(endDate).format(readableDateFormat)}</EndDate>
+                    <EndDate>{moment(endDate).format(readableHourlyFormat)}</EndDate>
                 </Grid>
                 <Grid item xs={1} style={{...verticalBox, alignItems: 'center', justifyContent: 'center'}}>
                     <MetricText style={{color: iconConfig.color, fontWeight: 500}}>
