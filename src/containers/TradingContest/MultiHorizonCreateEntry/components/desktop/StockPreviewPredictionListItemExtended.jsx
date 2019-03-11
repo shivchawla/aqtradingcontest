@@ -196,7 +196,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     </MetricText>
                 </Grid>
                 <Grid item xs={1}>
-                    <MetricText>{stopLoss}</MetricText>
+                    <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(stopLoss)}</MetricText>
                     <EndDate>{moment(endDate).format(readableDateFormat)}</EndDate>
                 </Grid>
                 <Grid item xs={1} style={{...verticalBox, alignItems: 'center', justifyContent: 'center'}}>
