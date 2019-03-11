@@ -7,6 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import EditTradeActivity from './EditTradeActivity';
 import TradeActivityList from './TradeActivityList';
+import AdminModificationsList from './AdminModificationsList';
 import EditPrediction from './EditPrediction';
 import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import {horizontalBox} from '../../../../../constants';
@@ -60,7 +61,7 @@ export default class TradeActivityDialog extends React.Component {
     }
 
     render() {
-        const {open = false} = this.props;
+        const {open = false, selectedPredictionForTradeActivity = {}} = this.props;
 
         return (
             <DialogComponent
@@ -96,6 +97,12 @@ export default class TradeActivityDialog extends React.Component {
                                 updatePredictionTradeActivity={this.props.updatePredictionTradeActivity}
                                 updateTradeActivity={this.props.updateTradeActivity}
                                 updateTradeActivityLoading={this.props.updateTradeActivityLoading}
+                            />  
+                        }
+                        {
+                            this.state.selectedView === 2 &&
+                            <AdminModificationsList 
+                                adminModifications={_.get(selectedPredictionForTradeActivity, 'adminModifications', [])}
                             />  
                         }
                         {

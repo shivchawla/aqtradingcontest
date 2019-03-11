@@ -93,7 +93,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             target = 0,
             stopLoss = 0,
             investment = 0,
-            lastPrice = 0
+            lastPrice = 0,
+            adminModifications = []
         } = this.props.prediction;
 
         return {
@@ -104,7 +105,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             target,
             stopLoss,
             investment,
-            lastPrice
+            lastPrice,
+            adminModifications
         }
 
     }

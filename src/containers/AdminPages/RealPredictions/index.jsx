@@ -322,6 +322,7 @@ class RealPredictions extends React.Component {
             oldQuantity: _.get(prediction, 'quantity', 0),
             oldStopLoss: _.get(prediction, 'stopLoss', 0),
             oldTarget: _.get(prediction, 'target', 0),
+            adminModifications: _.get(prediction, 'adminModifications', [])
         }
         this.setState({selectedPredictionForTradeActivity: selectedPrediction}, () => {
             this.toggleTradeActivityDialog();
