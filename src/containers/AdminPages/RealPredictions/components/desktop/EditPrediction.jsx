@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import ConfirmationDialog from '../common/ConfirmationDialog';
 
 let textInputTimeout = null;
 
@@ -14,6 +15,7 @@ export default class EditPrediction extends React.Component {
             quantity: _.get(props, 'prediction.quantity', 0),
             target: _.get(props, 'prediction.target', 0),
             stopLoss: _.get(props, 'prediction.stopLoss', 0),
+            confirmationDialogOpen: false
         }
     }
 
@@ -45,6 +47,10 @@ export default class EditPrediction extends React.Component {
         }, 300);
     }
 
+    toggleConfirmationDialog = () => {
+        this.setState({confirmationDialogOpen: !this.state.confirmationDialogOpen});
+    }
+
     render() {  
         const {prediction = {}, updatePredictionLoading = false} = this.props;
         const {oldTarget = 0, oldInvestment = 0, oldStopLoss = 0, oldQuantity = 0} = prediction;
@@ -57,6 +63,14 @@ export default class EditPrediction extends React.Component {
 
         return (
             <Grid container>
+                <ConfirmationDialog 
+                    open={this.state.confirmationDialogOpen}
+                    onClose={this.toggleConfirmationDialog}
+                    createPrediction={() => {
+                        this.props.updateTradePrediction();
+                        this.toggleConfirmationDialog();
+                    }}
+                />
                 <MetricContainer>
                     <InputHeader style={{marginBottom: 0}}>Target - {oldTarget}</InputHeader>
                     <TextField
@@ -103,7 +117,7 @@ export default class EditPrediction extends React.Component {
                         variant='outlined'
                         color='primary'
                         style={{width: '100%', marginBottom: '20px'}}
-                        onClick={this.props.updateTradePrediction}
+                        onClick={this.toggleConfirmationDialog}
                         disabled={updatePredictionLoading}
                 >
                     {

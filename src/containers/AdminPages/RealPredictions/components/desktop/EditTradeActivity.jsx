@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import ConfirmationDialog from '../common/ConfirmationDialog';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 
@@ -17,7 +18,8 @@ export default class EditTradeActivity extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            notes: _.get(props, 'prediction.notes', '')
+            notes: _.get(props, 'prediction.notes', ''),
+            confirmationDialogOpen: false
         }
     }
 
@@ -47,6 +49,10 @@ export default class EditTradeActivity extends React.Component {
         }, 300);
     }
 
+    toggleConfirmationDialog = () => {
+        this.setState({confirmationDialogOpen: !this.state.confirmationDialogOpen});
+    }
+
     render() {  
         const {prediction = {}, updateTradeActivityLoading = false} = this.props;
         const {
@@ -57,6 +63,14 @@ export default class EditTradeActivity extends React.Component {
 
         return (
             <Grid container>
+                <ConfirmationDialog 
+                    open={this.state.confirmationDialogOpen}
+                    onClose={this.toggleConfirmationDialog}
+                    createPrediction={() => {
+                        this.props.updateTradeActivity();
+                        this.toggleConfirmationDialog();
+                    }}
+                />
                 <MetricContainer>
                     <InputHeader>Category</InputHeader>
                     <RadioGroup 
@@ -104,7 +118,7 @@ export default class EditTradeActivity extends React.Component {
                         variant='outlined'
                         color='primary'
                         style={{width: '100%', marginBottom: '20px'}}
-                        onClick={this.props.updateTradeActivity}
+                        onClick={this.toggleConfirmationDialog}
                         disabled={updateTradeActivityLoading}
                 >
                     {

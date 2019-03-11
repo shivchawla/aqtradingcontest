@@ -46,10 +46,10 @@ export default class AdvisorListItem extends React.Component {
                     <UserName>{name}</UserName>
                 </Grid>
                 <Grid item xs={2}>
-                    <Metric>₹{Utils.formatInvestmentValue(cash / 1000)}</Metric>
+                    <Metric>₹{Utils.formatInvestmentValue(cash)}</Metric>
                 </Grid>
                 <Grid item xs={3}>
-                    <Metric>₹{Utils.formatInvestmentValue(liquidCash / 1000)}</Metric>
+                    <Metric>₹{Utils.formatInvestmentValue(liquidCash)}</Metric>
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>₹{Utils.formatInvestmentValue(investment)}</Metric>
