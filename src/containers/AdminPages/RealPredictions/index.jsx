@@ -254,7 +254,6 @@ class RealPredictions extends React.Component {
             try {
                 const realtimeData = JSON.parse(msg.data);
                 const predictons = _.get(realtimeData, 'predictions', {});
-                console.log('Real Predictions ', predictons);
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
             } catch(error) {
@@ -435,10 +434,7 @@ class RealPredictions extends React.Component {
             headers: Utils.getAuthTokenHeader()
         })
         .then(() => {
-            return Promise.all([
-                this.getDailyPredictionsOnDateChange(),
-                this.updatePredictionReadStatus()
-            ]);
+            return this.getDailyPredictionsOnDateChange();
         })
         .then(() => {
             this.toggleTradeActivityDialog();

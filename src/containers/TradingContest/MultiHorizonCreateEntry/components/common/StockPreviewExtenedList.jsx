@@ -3,12 +3,13 @@ import _ from 'lodash';
 import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
 import CustomOutlinedInput from '../../../../../components/input/CustomOutlinedInput';
 import SelectionMenu from '../../../../../components/Menu/SelectionMenu';
 import StockPreviewListItemMobile from '../mobile/StockPreviewListItem';
 import StockPreviewExtendedPredictionHeader from '../desktop/StockPreviewExtendedPredictionHeader';
 import StockPreviewPredictionListItemExtened from '../desktop/StockPreviewPredictionListItemExtended';
+import RadioGroup from '../../../../../components/selections/RadioGroup';
+import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import { horizontalBox } from '../../../../../constants';
 const moment = require('moment');
 
@@ -16,8 +17,9 @@ const sortingMenu = [
     {label: 'Start Date', key: 'startDate'},
     {label: 'End Date', key: 'endDate'}
 ];
+const readStatusRadioItems = ['un-read', 'read', 'all'];
 
-class StockPreviewList extends React.Component {
+class StockPreviewExtendedList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -25,7 +27,8 @@ class StockPreviewList extends React.Component {
                 label: 'Start Date',
                 key: 'startDate'
             },
-            searchInput: ''
+            searchInput: '',
+            readStatusSelected: readStatusRadioItems[0]
         }
     }
     shouldComponentUpdate(nextProps, nextState) {
@@ -44,6 +47,7 @@ class StockPreviewList extends React.Component {
     }
 
     sortPredictionsByDate = () => {
+        console.log('sortPredictionsByDate');
         const key = _.get(this.state, 'selectedSort.key', 'startDate');
         const {predictions = []} = this.props;
 
@@ -65,11 +69,31 @@ class StockPreviewList extends React.Component {
         return filteredPredictions;
     }
 
+    filterPredictionsOnReadStatus = () => {
+        const {predictions = []} = this.props;
+        const readStatus = this.state.readStatusSelected;
+
+        return predictions.filter(prediction => {
+            if (readStatus === 'all') {
+                return true;
+            } else if (readStatus === 'un-read') {
+                return _.get(prediction, 'readStatus', null).toUpperCase() === 'UNREAD';
+            } else {
+                return _.get(prediction, 'readStatus', null).toUpperCase() !== 'UNREAD';
+            }
+        })
+    }
+
+    onReadStatusRadioChanged = value => {
+        this.setState({readStatusSelected: readStatusRadioItems[value]});
+    }
+
     render() {
         const isDesktop = this.props.windowWidth > 800;
         let {predictions = [], selectedDate = moment()} = this.props;
         const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewPredictionListItemExtened;
         predictions = this.sortPredictionsByDate();
+        predictions = this.filterPredictionsOnReadStatus();
 
         return (
             <Grid 
@@ -86,6 +110,13 @@ class StockPreviewList extends React.Component {
                         placeholder='Symbol'
                         onChange={e => this.setState({searchInput: e.target.value})}
                         type="string"
+                    />
+                    <RadioGroup 
+                        items={readStatusRadioItems.map(radioItem => radioItem.toUpperCase())}
+                        defaultSelected={_.findIndex(readStatusRadioItems, status => status === this.state.readStatusSelected)}
+                        onChange={this.onReadStatusRadioChanged}
+                        CustomRadio={CustomRadio}
+                        small
                     />
                     <SelectionMenu 
                         menuItems = {sortingMenu}
@@ -112,7 +143,7 @@ class StockPreviewList extends React.Component {
     }
 }
 
-export default windowSize(StockPreviewList);
+export default windowSize(StockPreviewExtendedList);
 
 const EmptyPositionsText = styled.h3`
     font-size: 20px;

@@ -78,7 +78,8 @@ export default class TradeActivityDialog extends React.Component {
                         >
                             <Tab label='Trade Activities'/>
                             <Tab label='Add Activity'/>
-                            <Tab label='Prediction'/>
+                            <Tab label='Modifications'/>
+                            <Tab label='Modify'/>
                         </Tabs>
                     </Grid>
                     <Grid item xs={12} style={{marginTop: '20px'}}>
@@ -98,7 +99,7 @@ export default class TradeActivityDialog extends React.Component {
                             />  
                         }
                         {
-                            this.state.selectedView === 2 &&
+                            this.state.selectedView === 3 &&
                             <EditPrediction 
                                 prediction={this.props.selectedPredictionForTradeActivity}
                                 updatePredictionTradeActivity={this.props.updatePredictionTradeActivity}
@@ -117,7 +118,7 @@ const Container = styled(Grid)`
     overflow: hidden;
     overflow-y: scroll;
     padding: 10px;
-    min-width: 38vw;
+    min-width: 42vw;
     min-height: 54vh;
     display: flex;
     flex-direction: column;

@@ -7,13 +7,15 @@ import Button from '@material-ui/core/Button';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
+import ConfirmationDialog from '../common/ConfirmationDialog';
 import {verticalBox, horizontalBox} from '../../../../../constants';
 
 export default class UpdateAdvisorStats extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            cashViewSelected: true
+            cashViewSelected: true,
+            confirmationDialogOpen: false
         };
     }
 
@@ -61,6 +63,10 @@ export default class UpdateAdvisorStats extends React.Component {
         this.setState({cashViewSelected: value === 0});
     }
 
+    toggleConfirmationDialog = () => {
+        this.setState({confirmationDialogOpen: !this.state.confirmationDialogOpen});
+    }
+
     render() {
         const {open = false, selectedAdvisor = {}} = this.props;
         const status = _.get(selectedAdvisor, 'status', false);
@@ -78,6 +84,14 @@ export default class UpdateAdvisorStats extends React.Component {
                 onClose={this.props.onClose}
                 style={{padding: 0}}
             >
+                <ConfirmationDialog 
+                    open={this.state.confirmationDialogOpen}
+                    onClose={this.toggleConfirmationDialog}
+                    createPrediction={() => {
+                        this.props.submitAdvisorStats(this.state.cashViewSelected);
+                        this.toggleConfirmationDialog();
+                    }}
+                />
                 <Container style={{minWidth: '38vw'}}>
                     <Grid 
                             item 
@@ -180,7 +194,7 @@ export default class UpdateAdvisorStats extends React.Component {
                                     marginTop: '20px'
                                 }}
                                 color='primary'
-                                onClick={() => this.props.submitAdvisorStats(this.state.cashViewSelected)}
+                                onClick={this.toggleConfirmationDialog}
                                 disabled={this.props.loading}
                         >
                             {
