@@ -556,10 +556,13 @@ class RealPredictions extends React.Component {
     componentWillMount() {
         this.params = new URLSearchParamsPoly(_.get(this.props, 'location.search', ''));
         const date = this.params.get('date');
-        const formattedSelectedDate = moment(date, dateFormat);
+        let formattedSelectedDate = defaultDate;
+        if (date !== null) {
+            formattedSelectedDate = moment(date, dateFormat);
+        }
         this.setState({selectedDate: formattedSelectedDate});
         Promise.all([
-            this.fetchPredictionsAndStats(date !== null ? formattedSelectedDate : this.state.selectedDate),
+            this.fetchPredictionsAndStats(formattedSelectedDate),
             this.getAllocatedAdvisors()
         ])
         this.setUpSocketConnection();
