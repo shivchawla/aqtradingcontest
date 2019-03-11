@@ -35,6 +35,9 @@ export default class EditPrediction extends React.Component {
 
     onValueChanged = (e, key) => {
         const value = e.target.value;
+        if (Number(value) < 0) {
+            return;
+        }
         clearTimeout(textInputTimeout);
         this.setState({[key]: value});
         textInputTimeout = setTimeout(() => {
