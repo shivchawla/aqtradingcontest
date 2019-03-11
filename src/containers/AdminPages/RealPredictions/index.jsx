@@ -415,40 +415,21 @@ class RealPredictions extends React.Component {
             target = 0,
             predictionId = null,
             advisorId = null,
-            symbol = ''
         } = selectedPrediction;
-        const adminAdvisorId = Utils.getUserInfo().advisor;
-        const rawPredictionIndex = _.findIndex(this.state.unformattedPredictions, unformattedPrediction => unformattedPrediction._id === predictionId);
-        const rawPrediction = this.state.unformattedPredictions[rawPredictionIndex];
-        let startDate = moment(_.get(rawPrediction, 'createdDate', null)).format(dateFormat);
-        let endDate = moment(_.get(rawPrediction, 'endDate', null)).format(dateFormat);
-        let conditionalType = _.get(rawPrediction, 'conditionalType', 'NOW');
-        const avgPrice = _.get(rawPrediction, 'position.avgPrice', 0);
-        conditionalType = conditionalType.length === 0 ? 'NOW' : conditionalType;
 
         this.setState({updatePredictionLoading: true});
         const data = {
-            position: {
-              security: {
-                ticker: symbol,
-                securityType: 'EQ',
-                country: 'IN',
-                exchange: 'NSE'
-              },
-              investment: 0,
-              quantity: Number(quantity),
-              avgPrice
-            },
-            startDate,
-            endDate,
-            target: Number(target),
-            stopLoss: Number(stopLoss),
-            conditionalType,
-            real: true
+            predictionId,
+            advisorId,
+            modification: {
+                target: Number(target),
+                quantity: Number(quantity),
+                stopLoss: Number(stopLoss),
+            }
         };
-        const url = `${requestUrl}/dailycontest/prediction?advisorId=${adminAdvisorId}`;
+        const url = `${requestUrl}/dailycontest/prediction`;
         return axios({
-            method: 'POST',
+            method: 'PUT',
             url,
             data,
             headers: Utils.getAuthTokenHeader()
