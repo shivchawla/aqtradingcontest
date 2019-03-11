@@ -14,7 +14,7 @@ export default class AdminPages extends React.Component {
     }
 
     redirectToNotAuthorized = () => {
-        return <Redirect push to='/404' />
+        return <Redirect push to='/forbiddenAccess' />
     }
     
     render() {
