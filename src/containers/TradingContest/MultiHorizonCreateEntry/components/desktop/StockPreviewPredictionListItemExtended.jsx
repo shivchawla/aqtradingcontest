@@ -34,10 +34,6 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
         const profitTarget = _.get(status, 'profitTarget', false);
         const stopLoss = _.get(status, 'stopLoss', false);
         const {triggered = false} = _.get(this.props, 'prediction', {});
-        console.log('Manual Exit ', manualExit);
-        console.log('Profit Target ', profitTarget);
-        console.log('Stop Loss', stopLoss);
-        console.log('---------------------------');
   
         if (!manualExit && !profitTarget && !stopLoss) {
             if (!triggered) {
@@ -64,7 +60,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             if (manualExit) {
                 return {
                     type: 'power_settings_new',
-                    color: '#009688',
+                    color: '#F44336',
                     status: 'Exited'
                 }
             } else if (stopLoss) {
