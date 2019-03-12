@@ -37,11 +37,8 @@ export default class SelectionMenu extends React.Component {
     }
 
     render() {
-        const {
-            anchorEl, 
-            selectedType = null
-        } = this.state;
-        const {menuItems = [], buttonText = 'Menu'} = this.props;
+        const {anchorEl} = this.state;
+        const {menuItems = [], buttonText = 'Menu', selectedType = null} = this.props;
 
         return (
             <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
@@ -68,15 +65,20 @@ export default class SelectionMenu extends React.Component {
                         onClose={this.onMenuClose}
                 >
                     {
-                        menuItems.map((menu, index) => (
-                            <MenuItem
-                                    key={index}
-                                    onClick={e => this.onMenuItemClicked(e, _.get(menu, 'key', ''))}
-                                    selected={selectedType === _.get(menu, 'key', '')}
-                            >
-                                {_.get(menu, 'label', '')}
-                            </MenuItem>
-                        ))
+                        menuItems.map((menu, index) => {
+                            console.log('Selected Type ', selectedType);
+                            console.log('Menu Item Key ', _.get(menu, 'key', ''));
+                            console.log('Selected ', selectedType === _.get(menu, 'key', ''));
+                            return (
+                                <MenuItem
+                                        key={index}
+                                        onClick={e => this.onMenuItemClicked(e, _.get(menu, 'key', ''))}
+                                        selected={selectedType === _.get(menu, 'key', '')}
+                                >
+                                    {_.get(menu, 'label', '')}
+                                </MenuItem>
+                            );
+                        })
                     }
                 </Menu>
             </div>

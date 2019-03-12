@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import CustomOutlinedInput from '../../../../../components/input/CustomOutlinedInput';
 import SelectionMenu from '../../../../../components/Menu/SelectionMenu';
-import StockPreviewListItemMobile from '../mobile/StockPreviewListItem';
 import StockPreviewExtendedPredictionHeader from '../desktop/StockPreviewExtendedPredictionHeader';
 import StockPreviewPredictionListItemExtened from '../desktop/StockPreviewPredictionListItemExtended';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
@@ -85,9 +84,9 @@ class StockPreviewExtendedList extends React.Component {
     render() {
         const isDesktop = this.props.windowWidth > 800;
         let {predictions = [], selectedDate = moment()} = this.props;
-        const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewPredictionListItemExtened;
         predictions = this.filterPredictionsOnReadStatus(predictions);
         predictions = this.sortPredictionsByDate(predictions);
+        predictions = this.searchPredictions(predictions);
 
         return (
             <Grid 
@@ -124,7 +123,7 @@ class StockPreviewExtendedList extends React.Component {
                     this.searchPredictions(predictions).map((prediction, index) => {
 
                         return (
-                            <StockPreviewListItem 
+                            <StockPreviewPredictionListItemExtened 
                                 prediction={prediction} 
                                 key={index}
                                 selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
