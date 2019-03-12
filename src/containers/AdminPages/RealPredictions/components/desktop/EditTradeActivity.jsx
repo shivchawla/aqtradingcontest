@@ -7,6 +7,8 @@ import Button from '@material-ui/core/Button';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
+import DialogMetric from '../common/DialogMetrics';
+import { verticalBox, horizontalBox } from '../../../../../constants';
 
 let notesInputTimeout = null;
 
@@ -53,6 +55,12 @@ export default class EditTradeActivity extends React.Component {
         this.setState({confirmationDialogOpen: !this.state.confirmationDialogOpen});
     }
 
+    renderDialogComponent = () => {
+        const {prediction = {}} = this.props;
+
+        return <DialogComponent prediction={prediction} />;
+    }
+
     render() {  
         const {prediction = {}, updateTradeActivityLoading = false} = this.props;
         const {
@@ -70,6 +78,8 @@ export default class EditTradeActivity extends React.Component {
                         this.props.updateTradeActivity();
                         this.toggleConfirmationDialog();
                     }}
+                    renderContent={this.renderDialogComponent}
+                    question='Are you sure you want to add this Trade Activity ?'
                 />
                 <MetricContainer>
                     <InputHeader>Category</InputHeader>
@@ -132,6 +142,47 @@ export default class EditTradeActivity extends React.Component {
     }
 }
 
+const DialogComponent = (props) => {
+    const {prediction = {}} = props;
+    const {
+        category = null,
+        tradeDirection = null,
+        tradeType = null,
+        notes = ''
+    } = prediction;
+    const containerStyles = {
+        ...horizontalBox,
+        marginBottom: '10px',
+        width: '100%'
+    }
+
+    return (
+        <Grid 
+                item 
+                xs={12}
+                style={{
+                    ...verticalBox,
+                    alignItems: 'flex-start',
+                    marginTop: '30px',
+                    width: '100%'
+                }}
+        >
+            <div style={containerStyles}>
+                <DialogMetric label='Category' value={category}/>
+            </div>
+            <div style={containerStyles}>
+                <DialogMetric label='Trade Direction' value={tradeDirection}/>
+            </div>
+            <div style={containerStyles}>
+                <DialogMetric label='Trade Type' value={tradeType}/>
+            </div>
+            <div style={containerStyles}>
+                <DialogMetric label='Notes' value={notes}/>
+            </div>
+        </Grid>
+    );
+}
+
 const InputHeader = styled.h3`
     font-size: 14px;
     color: #444;
@@ -148,3 +199,4 @@ const MetricContainer = styled.div`
     width: 100%;
     margin-bottom: 20px;
 `;
+
