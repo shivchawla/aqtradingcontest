@@ -348,6 +348,7 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         advisor: _.get(prediction, 'advisor._id', null),
         stopLoss: _.get(prediction, 'stopLoss', null),
         adminModifications: _.get(prediction, 'adminModifications', []),
+        status: _.get(prediction, 'status', {}),
     }))
 }
 
