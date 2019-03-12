@@ -339,7 +339,7 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         target: _.get(prediction, 'target', 0),
         locked,
         new: false,
-        type,
+        type: _.get(prediction, 'position.investment', 0) > 0 ? 'buy' : 'sell',
         triggered: _.get(prediction, 'triggered.status', false),
         triggeredDate: _.get(prediction, 'triggered.date', null),
         conditional: _.get(prediction, 'conditional', false),
