@@ -24,7 +24,8 @@ class CreateEntryEditScreen extends React.Component {
         super(props);
         this.state = {
             listView: this.props.listViewType || 'all',
-            anchorEl: null
+            anchorEl: null,
+            isUserAllocated: _.get(Utils.getUserInfo(), 'allocationAdvisor', null) !== null
         };
     }
 
@@ -122,12 +123,15 @@ class CreateEntryEditScreen extends React.Component {
                                     onClose={this.onPredictionTypeMenuClose}
                                     onMenuItemClicked={this.onPredictionTypeMenuItemClicked}
                                 />
-                                <RadioGroup 
-                                    items={['Simulated', 'Real']}
-                                    defaultSelected={real ? 1 : 0}
-                                    onChange={this.toggleRealPredictionType}
-                                    CustomRadio={CustomRadio}
-                                />
+                                {
+                                    this.state.isUserAllocated &&
+                                    <RadioGroup 
+                                        items={['Simulated', 'Real']}
+                                        defaultSelected={real ? 1 : 0}
+                                        onChange={this.toggleRealPredictionType}
+                                        CustomRadio={CustomRadio}
+                                    />
+                                }
                             </div>
                             {
                                 pnlFound &&

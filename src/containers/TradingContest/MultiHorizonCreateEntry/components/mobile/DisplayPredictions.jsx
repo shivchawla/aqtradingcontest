@@ -20,6 +20,7 @@ import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import {verticalBox, primaryColor, horizontalBox} from '../../../../../constants';
 import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
 import {searchPositions} from '../../utils';
+import { Utils } from '../../../../../utils';
 
 const DateHelper = require('../../../../../utils/date');
 const predictionTypes = ['All', 'Ended', 'Started'];
@@ -32,7 +33,8 @@ class DisplayPredictions extends React.Component {
             listView: this.getListViewFromUrl(props.listViewType),
             anchorEl: null,
             searchInputValue: '',
-            searchInputOpen: false
+            searchInputOpen: false,
+            isUserAllocated: _.get(Utils.getUserInfo(), 'allocationAdvisor', null) !== null
         };
     }
 
@@ -306,23 +308,26 @@ class DisplayPredictions extends React.Component {
                         }
                     </div>
                 </Grid>
-                <Grid 
-                        item 
-                        xs={12}
-                        style={{
-                            ...horizontalBox,
-                            marginBottom: '15px',
-                            marginLeft: '10px'
-                        }}
-                >
-                    <RadioGroup 
-                        items={realSimulatedPredictionTypes}
-                        defaultSelected={real ? 1 : 0}
-                        CustomRadio={WatchlistCustomRadio}
-                        onChange={this.toggleRealPredictionType}
-                        small
-                    />
-                </Grid>
+                {
+                    this.state.isUserAllocated &&
+                    <Grid 
+                            item 
+                            xs={12}
+                            style={{
+                                ...horizontalBox,
+                                marginBottom: '15px',
+                                marginLeft: '10px'
+                            }}
+                    >
+                        <RadioGroup 
+                            items={realSimulatedPredictionTypes}
+                            defaultSelected={real ? 1 : 0}
+                            CustomRadio={WatchlistCustomRadio}
+                            onChange={this.toggleRealPredictionType}
+                            small
+                        />
+                    </Grid>
+                }
                 <Grid item xs={12}>
                     {
                         this.props.loading ? <LoaderComponent /> : this.renderContent()
