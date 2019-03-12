@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Select from '@material-ui/core/Select';
@@ -13,6 +14,8 @@ import FinancialDetailListHeader from './FinancialDetailListHeader';
 import FinancialDetailListItem from './FinancialDetailListItem';
 import {horizontalBox, verticalBox} from '../../../../../constants';
 import {financialAttributes} from '../../../constants';
+
+const readableDateFormat = "Do MMM 'YY";
 
 const SelectInput = withStyles(theme => ({
     input: {
@@ -127,7 +130,7 @@ export default class FinancialDetailComponent extends React.Component {
                                             value={timeline}
                                             key={index}
                                     >
-                                        {timeline}
+                                        <MenuText>{moment(timeline).format(readableDateFormat)}</MenuText>
                                     </MenuItem>
                                 ))
                             }
@@ -170,4 +173,10 @@ const Header = styled.h3`
     text-align: start;
     margin-left: -10px;
     
+`;
+
+const MenuText = styled.h3`
+    font-weight: 500;
+    font-size: 14px;
+    color: #222;
 `;
