@@ -66,9 +66,6 @@ export default class SelectionMenu extends React.Component {
                 >
                     {
                         menuItems.map((menu, index) => {
-                            console.log('Selected Type ', selectedType);
-                            console.log('Menu Item Key ', _.get(menu, 'key', ''));
-                            console.log('Selected ', selectedType === _.get(menu, 'key', ''));
                             return (
                                 <MenuItem
                                         key={index}
