@@ -190,4 +190,5 @@ const DateText = styled.span`
     font-size: 14px;
     color: ${props => props.color || '#fff'};
     margin-top: 1px;
+    cursor: pointer;
 `;
