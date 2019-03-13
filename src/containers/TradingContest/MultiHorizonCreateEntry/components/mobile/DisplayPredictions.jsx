@@ -254,7 +254,13 @@ class DisplayPredictions extends React.Component {
         const statsExpanded = (this.props.previewPositions.length === 0 || this.props.noEntryFound);
         
         return (
-            <Grid container justify="space-between">
+            <Grid 
+                    container 
+                    justify="space-between"
+                    style={{
+                        marginTop: this.state.isUserAllocated ? 0 : '10px'
+                    }}
+            >
                 {
                     pnlFound &&
                     <div style={{width:'95%', margin: '0 auto'}}>
