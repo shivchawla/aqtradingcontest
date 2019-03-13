@@ -60,7 +60,7 @@ class StockCard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isUserAllocated: _.get(Utils.getUserInfo(), 'allocationAdvisor', null) !== null
+            isUserAllocated: Utils.isUserAllocated()
         };
     }
     shouldComponentUpdate(nextProps, nextState) {

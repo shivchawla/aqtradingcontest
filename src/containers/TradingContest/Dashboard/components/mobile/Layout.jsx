@@ -10,17 +10,22 @@ import VerticalCard from './VerticalCard';
 import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
+import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import PortfolioDetail from '../../../../PortfolioDetail';
 import AutoComplete from '../../../../../components/input/AutoComplete';
 import {horizontalBox, verticalBox} from '../../../../../constants';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
+import {Utils} from '../../../../../utils';
+
+const realSimulatedPredictionTypes = ['Simulated', 'Real'];
 
 export default class Layout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             searchTopSheetOpen: false,
-            searchSymbolValue: ''
+            searchSymbolValue: '',
+            isUserAllocated: Utils.isUserAllocated()
         };
     }
 
@@ -44,6 +49,11 @@ export default class Layout extends React.Component {
         return tickers.map(ticker => ({
             value: ticker, label: ticker
         }));
+    }
+
+    toggleRealPredictionType = (value = 0) => {
+        const real = value > 0;
+        this.props.setRealFlag(real);
     }
 
     renderInternalData = () => {
@@ -155,7 +165,7 @@ export default class Layout extends React.Component {
     }
 
     renderContent() {
-        const {tickers = []} = this.props;
+        const {tickers = [], real = false} = this.props;
 
         return (
             <Grid item xs={12} style={{width: '100%'}}>
@@ -225,6 +235,8 @@ export default class Layout extends React.Component {
     }
 
     render() {
+        const {real = false} = this.props;
+
         return (
             <Container container>
                 <Grid 
@@ -236,6 +248,25 @@ export default class Layout extends React.Component {
                             width: '100%'
                         }}
                 >
+                    {
+                        this.state.isUserAllocated &&
+                        <div 
+                                style={{
+                                    ...horizontalBox, 
+                                    width: '100%',
+                                    marginBottom: '10px'
+                                }}
+                        >
+                            <RadioGroup 
+                                items={realSimulatedPredictionTypes}
+                                defaultSelected={real ? 1 : 0}
+                                CustomRadio={CustomRadio}
+                                onChange={this.toggleRealPredictionType}
+                                small
+                                disabled={this.props.loading}
+                            />
+                        </div>
+                    }
                     {
                         !this.props.loading
                         ? this.renderContent()

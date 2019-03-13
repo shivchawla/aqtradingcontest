@@ -34,7 +34,7 @@ class DisplayPredictions extends React.Component {
             anchorEl: null,
             searchInputValue: '',
             searchInputOpen: false,
-            isUserAllocated: _.get(Utils.getUserInfo(), 'allocationAdvisor', null) !== null
+            isUserAllocated: Utils.isUserAllocated()
         };
     }
 

@@ -25,7 +25,7 @@ class CreateEntryEditScreen extends React.Component {
         this.state = {
             listView: this.props.listViewType || 'all',
             anchorEl: null,
-            isUserAllocated: _.get(Utils.getUserInfo(), 'allocationAdvisor', null) !== null
+            isUserAllocated: Utils.isUserAllocated()
         };
     }
 

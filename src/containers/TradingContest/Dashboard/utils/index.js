@@ -137,6 +137,9 @@ export const getPctFromRatio = value => {
     return getPct(value / (1 + value));
 }
 
+/**
+ * This method should be removed eventually since a new implementation is there right now
+ */
 export const getDailyContestStats = (history, currentUrl, handleError = true) => {
     const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
     let url = `${requestUrl}/dailycontest/stats`;
@@ -147,9 +150,32 @@ export const getDailyContestStats = (history, currentUrl, handleError = true) =>
     return fetchAjaxPromise(url, history, currentUrl, handleError);
 }
 
+export const getDailyContestStatsN = ({real = false}, history, currentUrl, handleError = true) => {
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    let url = `${requestUrl}/dailycontest/stats?real=${real}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}?advisor=${selectedAdvisorId}`;
+    }
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError);
+}
+
+/**
+ * This method should be removed eventually since a new implementation is there right now
+ */
 export const getDailyContestStatsBySymbol = (symbol = '', history, currentUrl, handleError = true) => {
     const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
     let url = `${requestUrl}/dailycontest/stats?symbol=${symbol}`;
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+        url = `${url}&advisor=${selectedAdvisorId}`;
+    }
+
+    return fetchAjaxPromise(url, history, currentUrl, handleError);
+}
+
+export const getDailyContestStatsBySymbolN = ({symbol = '', real = false}, history, currentUrl, handleError = true) => {
+    const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    let url = `${requestUrl}/dailycontest/stats?symbol=${symbol}&real=${real}`;
     if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
         url = `${url}&advisor=${selectedAdvisorId}`;
     }

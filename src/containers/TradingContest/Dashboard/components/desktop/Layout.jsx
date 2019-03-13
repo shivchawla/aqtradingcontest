@@ -14,14 +14,18 @@ import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustom
 import AutoComplete from '../../../../../components/input/AutoComplete';
 import PortfolioDetail from '../../../../PortfolioDetail';
 import {horizontalBox, verticalBox} from '../../../../../constants';
+import {Utils} from '../../../../../utils';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
+
+const realSimulatedPredictionTypes = ['Simulated', 'Real'];
 
 export default class Layout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             searchTopSheetOpen: false,
-            searchSymbolValue: ''
+            searchSymbolValue: '',
+            isUserAllocated: Utils.isUserAllocated()
         }
     }
 
@@ -258,9 +262,37 @@ export default class Layout extends React.Component {
         );
     }
 
+    toggleRealPredictionType = (value = 0) => {
+        const real = value > 0;
+        this.props.setRealFlag(real);
+    }
+
     render() {
+        const {real} = this.props;
+        
         return (
             <Container container>
+                {
+                    this.state.isUserAllocated &&
+                    <Grid
+                            item
+                            xs={12} 
+                            style={{
+                                ...horizontalBox, 
+                                width: '100%',
+                                marginBottom: '10px'
+                            }}
+                    >
+                        <RadioGroup 
+                            items={realSimulatedPredictionTypes}
+                            defaultSelected={real ? 1 : 0}
+                            CustomRadio={CustomRadio}
+                            onChange={this.toggleRealPredictionType}
+                            small
+                            disabled={this.props.loading}
+                        />
+                    </Grid>
+                }
                 <Grid 
                         item xs={12} 
                         style={{

@@ -4,7 +4,11 @@ import Media from 'react-media';
 import {withRouter} from 'react-router-dom';
 import DashboardLayoutMobile from './components/mobile/Layout';
 import DashboardLayoutDesktop from './components/desktop/Layout';
-import {formatDailyStatsData, getDailyContestStats, getDailyContestStatsBySymbol, getDailyStatsDataForKey} from './utils';
+import {
+    formatDailyStatsData, 
+    getDailyContestStatsN, 
+    getDailyContestStatsBySymbolN
+} from './utils';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -18,19 +22,20 @@ class Dashboard extends React.Component {
             dashboardDataNotFound: { // This is used to check if the data is not present for either total or realized
                 total: false,
                 realized: false
-            }
+            },
+            real: false, // Flag to toggle between real and simulated predictions
         };
     }
 
     fetchDailyContestStats = () => {
-        return getDailyContestStats(this.props.history, this.props.match.url, false)
+        return getDailyContestStatsN({real: this.state.real}, this.props.history, this.props.match.url, false)
         .then(response => {
             return response.data;
         })
     }
 
     fetchDailyContestStatsBySymbol = (symbol = '') => {
-        return getDailyContestStatsBySymbol(symbol, this.props.history, this.props.match.url, false)
+        return getDailyContestStatsBySymbolN({symbol, real: this.state.real}, this.props.history, this.props.match.url, false)
         .then(response => {
             return response.data;
         })
@@ -104,6 +109,15 @@ class Dashboard extends React.Component {
         return allTickers;
     }
 
+    setRealFlag = (real = false) => {
+        // If real flag hasn't changed don't do the N/W call
+        if (real !== this.state.real) {
+            this.setState({real}, () => {
+                this.updateDailyContestStats();
+            });
+        }
+    }
+
     render() {
         const props = {
             dashboardData: this.state.dashboardData[this.state.selectedType],
@@ -114,7 +128,9 @@ class Dashboard extends React.Component {
             noDataFound: this.state.noDataFound, // Used to check if dailyconteststats is available for the user
             internalDataNotFound: this.state.dashboardDataNotFound[this.state.selectedType], // Used to check if total or realized is available
             updateDailyContestStats: this.updateDailyContestStats,
-            selectedType: this.state.selectedType
+            selectedType: this.state.selectedType,
+            setRealFlag: this.setRealFlag,
+            real: this.state.real
         };
 
         return (

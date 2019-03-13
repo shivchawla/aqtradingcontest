@@ -668,7 +668,7 @@ export class Utils{
 	}
 
 	static isNull(value) {
-		return value === null && value === 'null';
+		return value === null || value === 'null';
 	}
 
 	static isLocalStorageItemPresent = (item) => {
@@ -682,6 +682,31 @@ export class Utils{
 		}
 		else {
 			return null;
+		}
+	}
+
+	static getLocalStorageBooleanValue = value => {
+		if (typeof(value)=== 'boolean') {
+			return value
+		} else {
+			if (value.toLowerCase() === 'true') {
+				return true;
+			}
+
+			return false
+		}
+	}
+
+	static isUserAllocated() {
+		const isAdmin = this.isAdmin();
+		const isLoggedInUserAllocated = _.get(this.getUserInfo(), 'allocationAdvisor', null) !== null;
+		const isSelectedAdvisorAllocated = this.getLocalStorageBooleanValue(this.getFromLocalStorage('isSelectedAdvisorAllocated'));
+		const isAdvisorSelected = !this.isNull(this.getFromLocalStorage('selectedAdvisorId'));
+
+		if (isAdmin && isAdvisorSelected) {
+			return Boolean(isSelectedAdvisorAllocated);
+		} else {
+			return Boolean(isLoggedInUserAllocated);
 		}
 	}
 }
