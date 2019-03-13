@@ -251,19 +251,31 @@ export const stopPredictionInPositions = (predictionId, positions, selectedPosit
     }
 }
 
+export const getStopLoss = (prediction) => {
+    var stopLossPrice = 0;
+    if (_.get(prediction, 'stopLossType', "") != "NOTIONAL") {
+        
+        var investment = prediction.investment;
+        var lossDirection = -1 * (investment > 0 ? 1 : -1);
+        stopLossPrice = (1 + lossDirection*Math.abs(_.get(prediction, 'stopLoss', 1))) * _.get(prediction, 'position.avgPrice', 0);
+    
+    } else {
+        stopLossPrice = _.get(prediction, 'stopLoss', 0);
+    }
+
+    return stopLossPrice || _.get(prediction, 'position.avgPrice', 0);
+}
+
 // converts predictions to positions obtained from the backend
 export const convertPredictionsToPositions = (predictions = [], lockPredictions = false, newPrediction = true, active = false) => {
     let positions = [];
     predictions.map((prediction, index) => {
         const symbol = getStockTicker(_.get(prediction, 'position.security', null));
         const startDate = _.get(prediction, 'startDate', null);
-        const realStopLoss = _.get(prediction, 'stopLoss', 0);
         const endDate = _.get(prediction, 'endDate', null);
         const investment = _.get(prediction, 'position.investment', 0);
         const horizon = moment(endDate, dateFormat).diff(moment(startDate, dateFormat), 'days');
-        const stopLossDirection = investment > 0 ? -1 : 1;
-        const avgPrice = _.get(prediction, 'position.avgPrice', null);
-        const stopLoss = (1 + (stopLossDirection * Math.abs(realStopLoss))) * avgPrice;
+        const stopLoss = getStopLoss(prediction);
 
         const nPrediction = {
             horizon,
