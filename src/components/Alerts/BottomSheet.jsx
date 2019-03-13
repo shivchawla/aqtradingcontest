@@ -6,6 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import Slide from '@material-ui/core/Slide';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import Grid from '@material-ui/core/Grid';
 import {withStyles} from '@material-ui/core/styles';
 import {horizontalBox} from '../../constants';
 
@@ -31,38 +32,44 @@ class BottomSheet extends React.Component {
                 open={open}
                 onClose={this.props.onClose}
                 TransitionComponent={Transition}
-                style={{overflow: 'hidden'}}
+                // style={{overflow: 'hidden'}}
             >
                 <DialogContent
                         classes={{
                             root: classes.dialogContentRoot
                         }}
                 >
-                    <div 
-                        style={{
-                            ...horizontalBox,
-                            width: '100%',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}
-                    >
-                        {
-                            customHeader === null
-                            ?   <Header>{header}</Header>
-                            :   customHeader()
-                        }
-                        {
-                            customHeader === null &&
-                            <IconButton 
-                                    color="inherit" 
-                                    onClick={this.props.onClose} 
-                                    aria-label="Close"
-                            >
-                                <CloseIcon />
-                            </IconButton>
-                        }
-                    </div>
-                    {this.props.children}
+                    <Grid container>
+                        <Grid 
+                                item 
+                                xs={12}
+                                style={{
+                                    ...horizontalBox,
+                                    width: '100%',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}
+                        >
+                            {
+                                customHeader === null
+                                ?   <Header>{header}</Header>
+                                :   customHeader()
+                            }
+                            {
+                                customHeader === null &&
+                                <IconButton 
+                                        color="inherit" 
+                                        onClick={this.props.onClose} 
+                                        aria-label="Close"
+                                >
+                                    <CloseIcon />
+                                </IconButton>
+                            }
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12}>
+                        {this.props.children}
+                    </Grid>
                 </DialogContent>
             </Dialog>
         );
