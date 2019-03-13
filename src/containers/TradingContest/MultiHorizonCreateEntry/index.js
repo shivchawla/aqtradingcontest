@@ -14,7 +14,7 @@ import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import PredictionsBottomSheet from './components/mobile/PredictionsBottomSheet';
-import StockDetailBottomSheet from '../../TradingContest/StockDetailBottomSheet';
+import StockDetailBottomSheet from '../../ExploreStocks/Outer/BottomSheet';
 import {DailyContestmyPicksMeta} from '../metas';
 import {processSelectedPosition} from '../utils';
 import {Utils, handleCreateAjaxError} from '../../../utils';

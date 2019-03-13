@@ -2,45 +2,24 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {Utils} from '../../../utils';
+import {verticalBox, horizontalBox, nameEllipsisStyle} from '../../../constants';
+import ActionIcon from '../../TradingContest/Misc/ActionIcons';
+import BottomSheet from '../../../components/Alerts/BottomSheet';
 import StockDetail from '../StockDetail';
-import {horizontalBox, verticalBox, nameEllipsisStyle} from '../../../constants';
+import {Utils} from '../../../utils';
 
-export default class DetailPage extends React.Component {
+export default class StockDetailBottomSheet extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            stockData: {},
+            stockData: {
+                name: _.get(props, 'name', ''),
+                symbol: _.get(props, 'symbol', ''),
+                chg: _.get(props, 'chg', 0),
+                chgPct: _.get(props, 'chgPct', 0)
+            },
             loading: false
         };
-    }
-
-    componentWillMount() {
-        let {
-            name = '',
-            symbol = '',
-            lastPrice=0, 
-            chg=0,
-            chgPct=0
-        } = this.props;
-        this.setState({stockData: {
-            name, symbol, lastPrice, chg, chgPct
-        }})
-    }
-
-    componentWillReceiveProps(nextProps) {
-        if (!_.isEqual(this.props, nextProps)) {
-            let {
-                name = '',
-                symbol = '',
-                lastPrice=0, 
-                chg=0,
-                chgPct=0
-            } = nextProps;
-            this.setState({stockData: {
-                name, symbol, lastPrice, chg, chgPct
-            }})
-        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -49,17 +28,6 @@ export default class DetailPage extends React.Component {
         }
 
         return false;
-    }
-
-    updateStockData = (stockData) => {
-        this.setState({stockData: {
-            ...this.state.stockData,
-            ...stockData
-        }});
-    }
-
-    updateLoading = (loading) => {
-        this.setState({loading});
     }
 
     renderHeader = () => {
@@ -93,15 +61,17 @@ export default class DetailPage extends React.Component {
                             width: '100%'
                         }}
                 >
-                    <div 
-                            style={{
-                                ...verticalBox, 
-                                alignItems: 'flex-start',
-                                marginLeft: '10px'
-                            }}
-                    >
-                        <Symbol>{symbol}</Symbol>
-                        <h3 style={nameStyle}>{name}</h3>
+                    <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                        <ActionIcon size={24} type='close' onClick={this.props.onClose} color='#fff'/>
+                        <div 
+                                style={{
+                                    ...verticalBox, 
+                                    alignItems: 'flex-start',
+                                }}
+                        >
+                            <Symbol>{symbol}</Symbol>
+                            <h3 style={nameStyle}>{name}</h3>
+                        </div>
                     </div>
                     <div 
                             style={{
@@ -118,23 +88,39 @@ export default class DetailPage extends React.Component {
         );
     }
 
+    updateStockData = (stockData) => {
+        console.log('Update Stock Data Called', stockData);
+        this.setState({stockData: {
+            ...this.state.stockData,
+            ...stockData
+        }});
+    }
+    
+    updateLoading = (loading) => {
+        this.setState({loading});
+    }
+
     render() {
+        const {open = false} = this.props;
+
         return (
-            <Grid container>
-                {
-                    !this.state.loading &&
+            <BottomSheet
+                    open={open}
+                    onClose={this.props.onClose}
+                    customHeader={this.renderHeader}
+            >
+                <Container>
                     <Grid item xs={12}>
-                        {this.renderHeader()}
+                        <StockDetail
+                            symbol={this.props.symbol}
+                            updateStockData={this.updateStockData}
+                            updateLoading={this.updateLoading}
+                            selectStock={this.props.selectStock}
+                            stockData={this.props.stockData}
+                        />
                     </Grid>
-                }
-                <Grid item xs={12}>
-                    <StockDetail 
-                        updateLoading={this.updateLoading}
-                        updateStockData={this.updateStockData}
-                        symbol={_.get(this.props, 'match.params.symbol', 'TCS')}
-                    />
-                </Grid>
-            </Grid>
+                </Container>
+            </BottomSheet>
         );
     }
 }
@@ -147,6 +133,11 @@ const nameStyle = {
     fontWeight: 500,
     fontFamily: 'Lato, sans-serif'
 }
+
+const Container = styled(Grid)`
+    overflow: hidden;
+    overflow-y: scroll;
+`;
 
 const Symbol = styled.h3`
     font-family: 'Lato', sans-serif;

@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import StockDetail from '../../StockDetail';
-import StockDetailBottomSheet from '../StockDetailBottomSheet';
+import StockDetailBottomSheet from '../../ExploreStocks/Outer/BottomSheet';
 import StockFilter from './components/StockFilter';
 import {screenSize} from '../constants';
 import CircularProgress from '@material-ui/core/CircularProgress';

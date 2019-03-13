@@ -45,7 +45,7 @@ class StockDetail extends React.Component {
     }
 
     fetchStockStaticPerformance = () => {
-        const symbol = _.get(this.props, 'match.params.symbol', null);
+        const {symbol = 'TCS'} = this.props;
         return getStockStaticPerformance(symbol)
         .then(data => {
             const rawPerformance = data;
@@ -61,8 +61,8 @@ class StockDetail extends React.Component {
     }
 
     fetchRollingPerformance = () => {
-        const symbol = _.get(this.props, 'match.params.symbol', null);
-
+        const {symbol = 'TCS'} = this.props;
+        
         return getStockRollingPerformance(symbol)
         .then(data => {
             const rawPerformance = data;
@@ -79,7 +79,7 @@ class StockDetail extends React.Component {
     }
 
     updateHistoricalData = () => {
-        const symbol = _.get(this.props, 'match.params.symbol', null);
+        const {symbol = 'TCS'} = this.props;
         this.fetchStockHistoricalData(symbol)
         .then(response => {
             const general = _.get(response.data, 'General', {});
@@ -108,7 +108,7 @@ class StockDetail extends React.Component {
     }
 
     updateStockLatestDetail = () => {
-        const symbol = _.get(this.props, 'match.params.symbol', null);
+        const {symbol = 'TCS'} = this.props;
         this.fetchStockLatestDetail(symbol)
         .then(({priceDetail, position}) => {
             const name = _.get(position, 'Nse_Name', '');
@@ -128,7 +128,7 @@ class StockDetail extends React.Component {
     }
 
     onRollingPerformanceChange = selector => {
-        const symbol = _.get(this.props, 'match.params.symbol', null);
+        const {symbol = 'TCS'} = this.props;
         const requiredRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance, selector, symbol);
         this.setState({
             rollingPerformance: requiredRollingPerformance.chartData,
@@ -137,7 +137,7 @@ class StockDetail extends React.Component {
     }
 
     onStaticPerformanceChange = selector => {
-        const symbol = _.get(this.props, 'match.params.symbol', null);
+        const {symbol = 'TCS'} = this.props;
         const requiredStaticPerformance = processStaticPerformance(this.state.rawStaticPerformance, selector, symbol);
         this.setState({
             staticPerformance: requiredStaticPerformance
@@ -146,7 +146,7 @@ class StockDetail extends React.Component {
 
     componentWillMount() {
         this.setState({loading: true});
-        this.props.updateLoading(true);
+        this.props.updateLoading && this.props.updateLoading(true);
         Promise.all([
             this.updateStockLatestDetail(),
             this.updateHistoricalData(),
@@ -155,13 +155,13 @@ class StockDetail extends React.Component {
         ])
         .finally(() => {
             this.setState({loading: false});
-            this.props.updateLoading(false);
+            this.props.updateLoading && this.props.updateLoading(false);
         })
     }
 
     render() {
         const props = {
-            symbol: 'TCS',
+            symbol: this.props.symbol,
             financialData: this.state.financialData,
             loading: this.state.loading,
             staticPerformance: this.state.staticPerformance,

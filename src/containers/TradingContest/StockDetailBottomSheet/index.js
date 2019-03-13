@@ -247,7 +247,6 @@ const nameStyle = {
 }
 
 const Container = styled(Grid)`
-    /* height: calc(100vh - 50px); */
     overflow: hidden;
     overflow-y: scroll;
 `;
