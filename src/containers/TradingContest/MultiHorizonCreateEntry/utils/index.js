@@ -255,8 +255,8 @@ export const getStopLoss = (prediction) => {
     var stopLossPrice = 0;
     if (_.get(prediction, 'stopLossType', "") != "NOTIONAL") {
         
-        var investment = prediction.investment;
-        var lossDirection = -1 * (investment > 0 ? 1 : -1);
+        var investment = _.get(prediction, 'position.investment', 0);
+        var lossDirection = -1 * (investment > 0 ? 1 : -1);     
         stopLossPrice = (1 + lossDirection*Math.abs(_.get(prediction, 'stopLoss', 1))) * _.get(prediction, 'position.avgPrice', 0);
     
     } else {
@@ -358,7 +358,7 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         conditional: _.get(prediction, 'conditional', false),
         readStatus: _.get(prediction, 'readStatus', null),
         advisor: _.get(prediction, 'advisor._id', null),
-        stopLoss: _.get(prediction, 'stopLoss', null),
+        stopLoss: getStopLoss(prediction),
         adminModifications: _.get(prediction, 'adminModifications', []),
         status: _.get(prediction, 'status', {}),
     }))
