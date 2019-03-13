@@ -5,6 +5,9 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import ConfirmationDialog from '../common/ConfirmationDialog';
+import DialogMetric from '../common/DialogMetrics';
+import {horizontalBox, verticalBox} from '../../../../../constants';
+import {Utils} from '../../../../../utils';
 
 let textInputTimeout = null;
 
@@ -51,6 +54,12 @@ export default class EditPrediction extends React.Component {
         this.setState({confirmationDialogOpen: !this.state.confirmationDialogOpen});
     }
 
+    renderDialogComponent = () => {
+        const {prediction = {}} = this.props;
+
+        return <DialogComponent prediction={prediction} />;
+    }
+
     render() {  
         const {prediction = {}, updatePredictionLoading = false} = this.props;
         const {oldTarget = 0, oldInvestment = 0, oldStopLoss = 0, oldQuantity = 0} = prediction;
@@ -70,6 +79,8 @@ export default class EditPrediction extends React.Component {
                         this.props.updateTradePrediction();
                         this.toggleConfirmationDialog();
                     }}
+                    question='Are you sure you want to modify this Prediction ?'
+                    renderContent={this.renderDialogComponent}
                 />
                 <MetricContainer>
                     <InputHeader style={{marginBottom: 0}}>Target - {oldTarget}</InputHeader>
@@ -129,6 +140,43 @@ export default class EditPrediction extends React.Component {
             </Grid>
         );
     }
+}
+
+const DialogComponent = (props) => {
+    const {prediction = {}} = props;
+    const {
+        quantity = 0,
+        target = 0,
+        stopLoss = 0,
+    } = prediction;
+    const containerStyles = {
+        ...horizontalBox,
+        marginBottom: '10px',
+        width: '100%'
+    }
+
+    return (
+        <Grid 
+                item 
+                xs={12}
+                style={{
+                    ...verticalBox,
+                    alignItems: 'flex-start',
+                    marginTop: '30px',
+                    width: '100%'
+                }}
+        >
+            <div style={containerStyles}>
+                <DialogMetric label='Quantity' value={quantity}/>
+            </div>
+            <div style={containerStyles}>
+                <DialogMetric label='Target' value={`₹${Utils.formatMoneyValueMaxTwoDecimals(target)}`}/>
+            </div>
+            <div style={containerStyles}>
+                <DialogMetric label='Stop Loss' value={`₹${Utils.formatMoneyValueMaxTwoDecimals(stopLoss)}`}/>
+            </div>
+        </Grid>
+    );
 }
 
 const InputHeader = styled.h3`

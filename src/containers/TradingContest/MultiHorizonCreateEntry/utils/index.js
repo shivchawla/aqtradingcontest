@@ -271,6 +271,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
             key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
             symbol,
             target: _.get(prediction, 'target', 0),
+            quantity: _.get(prediction, 'position.quantity', 0),
             type: investment > 0 ? 'buy' : 'sell',
             locked: lockPredictions,
             new: newPrediction,
@@ -339,14 +340,15 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         target: _.get(prediction, 'target', 0),
         locked,
         new: false,
-        type,
+        type: _.get(prediction, 'position.investment', 0) > 0 ? 'buy' : 'sell',
         triggered: _.get(prediction, 'triggered.status', false),
         triggeredDate: _.get(prediction, 'triggered.date', null),
         conditional: _.get(prediction, 'conditional', false),
         readStatus: _.get(prediction, 'readStatus', null),
         advisor: _.get(prediction, 'advisor._id', null),
         stopLoss: _.get(prediction, 'stopLoss', null),
-        adminModifications: _.get(prediction, 'adminModifications', [])
+        adminModifications: _.get(prediction, 'adminModifications', []),
+        status: _.get(prediction, 'status', {}),
     }))
 }
 

@@ -60,7 +60,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             if (manualExit) {
                 return {
                     type: 'power_settings_new',
-                    color: '#009688',
+                    color: '#F44336',
                     status: 'Exited'
                 }
             } else if (stopLoss) {
@@ -132,7 +132,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             triggered = false,
             conditional = false,
             name = '',
-            stopLoss = 0
+            stopLoss = 0,
+            quantity = 0
         } = this.props.prediction;
         const allowAfterMaketHourExit = conditional && !triggered;
         const typeBackgroundColor = '#fff';
@@ -185,25 +186,29 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                         style={{...verticalBox, alignItems: 'flex-start'}}
                 >
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText>
-                    <MetricText style={{color: typeColor}}>
-                        {typeText}
-                    </MetricText>
+                    <EndDate>{moment(endDate).format(readableDateFormat)}</EndDate>
+                    <EndDate>{moment(endDate).format(readableHourlyFormat)}</EndDate>
+                
                 </Grid>
-                <Grid item xs={2} style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                    <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
-                    <Icon>arrow_right_alt</Icon>
-                    <MetricText color={changedInvestmentColor}>
-                        {
-                            triggered
-                                ? Utils.formatInvestmentValue(changedInvestment)
-                                : Utils.formatInvestmentValue(investment)
-                        }
-                    </MetricText>
+                <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start'}}>
+                    <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                        <MetricText>{Utils.formatInvestmentValue(investment)}</MetricText>
+                        <Icon>arrow_right_alt</Icon>
+                        <MetricText color={changedInvestmentColor}>
+                            {
+                                triggered
+                                    ? Utils.formatInvestmentValue(changedInvestment)
+                                    : Utils.formatInvestmentValue(investment)
+                            }
+                        </MetricText>
+                    </div>
+                    <Quantity>Quantity: {quantity}</Quantity>
                 </Grid>
                 <Grid item xs={1}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(stopLoss)}</MetricText>
-                    <EndDate>{moment(endDate).format(readableDateFormat)}</EndDate>
-                    <EndDate>{moment(endDate).format(readableHourlyFormat)}</EndDate>
+                    <MetricText style={{color: typeColor}}>
+                        {typeText}
+                    </MetricText>
                 </Grid>
                 <Grid item xs={1} style={{...verticalBox, alignItems: 'center', justifyContent: 'center'}}>
                     <MetricText style={{color: iconConfig.color, fontWeight: 500}}>
@@ -269,5 +274,12 @@ const Name = styled.h3`
     color: #444;
     font-weight: 500;
     margin-top: 5px;
+    text-align: start;
+`;
+
+const Quantity = styled.h3`
+    font-size: 12px;
+    color: #222;
+    font-weight: 500;
     text-align: start;
 `;
