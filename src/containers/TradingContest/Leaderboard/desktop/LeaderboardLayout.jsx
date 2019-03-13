@@ -56,7 +56,7 @@ export default class TopPicksLayout extends React.Component {
                                         }}
                                 >
                                     <RadioGroup
-                                        items={['Daily', 'Weekly', 'Overall']}
+                                        items={['Daily', 'Weekly']}
                                         defaultSelected={this.props.type}
                                         onChange={this.props.handleLeaderboardTypeChange}
                                         CustomRadio={CustomRadio}
