@@ -57,6 +57,12 @@ const readableDateFormat = 'Do MMM';
 const isDesktop = global.screen.width > 800 ? true : false;
 
 class StockCard extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isUserAllocated: _.get(Utils.getUserInfo(), 'allocationAdvisor', null) !== null
+        };
+    }
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -340,32 +346,42 @@ class StockCard extends React.Component {
 
         return (
             <React.Fragment>
+                {
+                    this.state.isUserAllocated &&
+                    <Grid 
+                            item 
+                            xs={12} 
+                            style={{
+                                ...horizontalBox,
+                                justifyContent: 'flex-start'
+                            }}
+                    >
+                        <Checkbox 
+                            checked={realPrediction}
+                            onChange={this.handlePredictionTypeChange}
+                            style={{
+                                marginLeft: '-15px'
+                            }}
+                        />
+                        <MetricLabel 
+                                style={{
+                                    marginTop: '0',
+                                    fontSize: '12px',
+                                    color: '#222'
+                                }}
+                        >
+                            Real Prediction
+                        </MetricLabel>
+                    </Grid>
+                }
                 <Grid 
                         item 
                         xs={12} 
                         style={{
-                            ...horizontalBox,
-                            justifyContent: 'flex-start'
+                            ...selectorsContainerStyle,
+                            marginTop: !this.state.isUserAllocated ? '10px' : 0
                         }}
                 >
-                    <Checkbox 
-                        checked={realPrediction}
-                        onChange={this.handlePredictionTypeChange}
-                        style={{
-                            marginLeft: '-15px'
-                        }}
-                    />
-                    <MetricLabel 
-                            style={{
-                                marginTop: '0',
-                                fontSize: '12px',
-                                color: '#222'
-                            }}
-                    >
-                        Real Prediction
-                    </MetricLabel>
-                </Grid>
-                <Grid item xs={12} style={selectorsContainerStyle}>
                     <Grid container>
                         <Grid item xs={12}>
                             <MetricLabel 
