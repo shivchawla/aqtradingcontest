@@ -79,6 +79,10 @@ class StockCard extends React.Component {
             const openStatus = _.get(nextProps, 'open', false);
             const isRealPrediction = _.get(nextProps, 'stockData.realPrediction', false);
 
+            /**
+             * If the current selected symbol is different from the old symbol and stock card
+             * bottom sheet is open, then do the following operations.
+             */
             if ((currentSymbol !== nextSymbol) && openStatus) {
                 let {
                     horizon = 2, 
@@ -100,6 +104,10 @@ class StockCard extends React.Component {
                     horizon = horizon < 2 ? 2 : horizon;
                 }
                 
+                /**
+                 * Setting target, stopLoss, investment, conditionalValue to a 
+                 * default value of the first item in the received items array.
+                 */
                 target = targetItems[0].key;
                 stopLoss = targetItems[0].key;
                 investment = investmentItems[0].key;
