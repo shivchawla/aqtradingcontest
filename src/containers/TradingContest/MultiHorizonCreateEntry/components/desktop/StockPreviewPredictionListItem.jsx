@@ -81,7 +81,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
     }
 
     shouldShowUnreadStatus = () => {
-        const {readStatus = null} = this.props.prediction;
+        const {readStatus = ''} = this.props.prediction;
 
         return readStatus.toLowerCase() === 'unread';
     }

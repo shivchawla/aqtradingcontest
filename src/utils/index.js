@@ -685,16 +685,20 @@ export class Utils{
 		}
 	}
 
-	static getLocalStorageBooleanValue = value => {
-		if (typeof(value)=== 'boolean') {
-			return value
-		} else {
-			if (value.toLowerCase() === 'true') {
-				return true;
+	static getLocalStorageBooleanValue(value) {
+		if (this.isLocalStorageItemPresent(value)) {
+			if (typeof(value)=== 'boolean') {
+				return value
+			} else {
+				if (value.toLowerCase() === 'true') {
+					return true;
+				}
+	
+				return false
 			}
-
-			return false
 		}
+
+		return false;
 	}
 
 	static isUserAllocated() {

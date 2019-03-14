@@ -301,7 +301,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
             triggered: _.get(prediction, 'triggered.status', false),
             triggeredDate: _.get(prediction, 'triggered.date', null),
             conditional: _.get(prediction, 'conditional', false),
-            readStatus: _.get(prediction, 'readStatus', null)
+            readStatus: _.get(prediction, 'readStatus', '')
         };
 
         const positionIndex = _.findIndex(positions, position => position.symbol === symbol);
@@ -356,7 +356,7 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         triggered: _.get(prediction, 'triggered.status', false),
         triggeredDate: _.get(prediction, 'triggered.date', null),
         conditional: _.get(prediction, 'conditional', false),
-        readStatus: _.get(prediction, 'readStatus', null),
+        readStatus: _.get(prediction, 'readStatus', ''),
         advisor: _.get(prediction, 'advisor._id', null),
         stopLoss: getStopLoss(prediction),
         adminModifications: _.get(prediction, 'adminModifications', []),
