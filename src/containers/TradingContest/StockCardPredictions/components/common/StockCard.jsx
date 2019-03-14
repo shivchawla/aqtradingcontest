@@ -112,6 +112,7 @@ class StockCard extends React.Component {
                 stopLoss = targetItems[0].key;
                 investment = investmentItems[0].key;
                 conditionalValue = conditionalItems[1].key;
+                console.log(conditionalValue);
 
                 this.props.modifyStockData({
                     ...nextStockData,
@@ -123,6 +124,42 @@ class StockCard extends React.Component {
                 })
             }
         }
+    }
+
+    componentWillMount() {
+        console.log('Stock Card Mounted');
+        const {stockData = {}} = this.props;
+        let {realPrediction = false, horizon = 2} = stockData;
+        /**
+         * Getting required targetItems, investmentItems, conditionalItems to be rendered
+         * in the StockCardRadioGroup
+         */
+        const targetItems = this.getTargetItems();
+        const investmentItems = this.getInvestmentItems();
+        const conditionalItems = this.getConditionalItems();
+
+        if (realPrediction) {
+            horizon = horizon < 2 ? 2 : horizon;
+        }
+        
+        /**
+         * Setting target, stopLoss, investment, conditionalValue to a 
+         * default value of the first item in the received items array.
+         */
+        const target = targetItems[0].key;
+        const stopLoss = targetItems[0].key;
+        const investment = investmentItems[0].key;
+        const conditionalValue = conditionalItems[1].key;
+        console.log(conditionalValue);
+
+        this.props.modifyStockData({
+            ...this.props.stockData,
+            horizon,
+            target,
+            stopLoss,
+            investment,
+            conditionalValue
+        })
     }
 
     /**
@@ -354,44 +391,24 @@ class StockCard extends React.Component {
 
         return (
             <React.Fragment>
-                {
-                    this.state.isUserAllocated &&
-                    <Grid 
-                            item 
-                            xs={12} 
-                            style={{
-                                ...horizontalBox,
-                                justifyContent: 'flex-start'
-                            }}
-                    >
-                        <Checkbox 
-                            checked={realPrediction}
-                            onChange={this.handlePredictionTypeChange}
-                            style={{
-                                marginLeft: '-15px'
-                            }}
-                        />
-                        <MetricLabel 
-                                style={{
-                                    marginTop: '0',
-                                    fontSize: '12px',
-                                    color: '#222'
-                                }}
-                        >
-                            Real Prediction
-                        </MetricLabel>
-                    </Grid>
-                }
                 <Grid 
                         item 
                         xs={12} 
                         style={{
                             ...selectorsContainerStyle,
-                            marginTop: !this.state.isUserAllocated ? '10px' : 0
+                            marginTop: !this.state.isUserAllocated ? '10px' : '7px'
                         }}
                 >
                     <Grid container>
-                        <Grid item xs={12}>
+                        <Grid 
+                                item 
+                                xs={12}
+                                style={{
+                                    ...horizontalBox,
+                                    justifyContent: 'space-between',
+                                    position: 'relative'
+                                }}
+                        >
                             <MetricLabel 
                                     style={{
                                         marginBottom: '5px',
@@ -402,8 +419,37 @@ class StockCard extends React.Component {
                             >
                                 Horizon in Days
                             </MetricLabel>
+                            {
+                                this.state.isUserAllocated &&
+                                <div 
+                                        style={{
+                                            ...horizontalBox,
+                                            justifyContent: 'flex-start',
+                                            position: 'absolute',
+                                            right: 0
+                                        }}
+                                >
+                                    <Checkbox 
+                                        checked={realPrediction}
+                                        onChange={this.handlePredictionTypeChange}
+                                        style={{marginRight: '-10px'}}
+                                    />
+                                    <MetricLabel 
+                                            style={{
+                                                marginTop: '0',
+                                                fontSize: '12px',
+                                                color: '#222'
+                                            }}
+                                    >
+                                        Real Prediction
+                                    </MetricLabel>
+                                </div>
+                            }
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid 
+                                item 
+                                xs={12}
+                        >
                             <StockCardRadioGroup 
                                 items={horizonItems}
                                 onChange={value => this.handleStockCardRadioGroupChange(value, 'horizon')}
@@ -459,7 +505,7 @@ class StockCard extends React.Component {
                                                     marginRight: '5px'
                                                 }}
                                         >   
-                                            <span style={{color: '#222'}}>Sell - </span>
+                                            <span style={{color: '#222'}}>Sell: </span>
                                             ₹ {
                                                 getPercentageModifiedValue(
                                                     target, 
@@ -479,7 +525,7 @@ class StockCard extends React.Component {
                                             marginLeft: '5px'
                                         }}
                                 >
-                                    <span style={{color: '#222'}}>Buy - </span>
+                                    <span style={{color: '#222'}}>Buy: </span>
                                     ₹ {
                                         getPercentageModifiedValue(
                                             target, 
@@ -546,7 +592,7 @@ class StockCard extends React.Component {
                                                     marginRight: '5px'
                                                 }}
                                         >
-                                            <span style={{color: '#222'}}>Sell - </span>
+                                            <span style={{color: '#222'}}>Sell: </span>
                                             ₹ {this.getRequiredStopLoss(false).toFixed(2)}
                                         </ConditionValue>
                                         <Bar style={{marginBottom: '5px'}}>|</Bar>
@@ -560,7 +606,7 @@ class StockCard extends React.Component {
                                             marginLeft: '5px'
                                         }}
                                 >
-                                    <span style={{color: '#222'}}>Buy - </span>
+                                    <span style={{color: '#222'}}>Buy: </span>
                                     ₹ {this.getRequiredStopLoss().toFixed(2)}
                                 </ConditionValue>
                             </div>
@@ -911,7 +957,8 @@ class StockCard extends React.Component {
                     <QuestionText
                             style={{
                                 margin: '10px',
-                                marginBottom: '7px'
+                                marginBottom: '7px',
+                                marginTop: '0px'
                             }}
                     >
                         Will the price be higher or lower in

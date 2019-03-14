@@ -705,7 +705,7 @@ export class Utils{
 		const isAdmin = this.isAdmin();
 		const isLoggedInUserAllocated = _.get(this.getUserInfo(), 'allocationAdvisor', null) !== null;
 		const isSelectedAdvisorAllocated = this.getLocalStorageBooleanValue(this.getFromLocalStorage('isSelectedAdvisorAllocated'));
-		const isAdvisorSelected = !this.isNull(this.getFromLocalStorage('selectedAdvisorId'));
+		const isAdvisorSelected = this.isLocalStorageItemPresent(this.getFromLocalStorage('selectedAdvisorId'));
 
 		// If logged user is admin and another 3rd party advisor is selected
 		if (isAdmin && isAdvisorSelected) {
