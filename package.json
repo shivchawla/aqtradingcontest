@@ -17,6 +17,7 @@
     "events": "^3.0.0",
     "formik": "^1.3.2",
     "highcharts": "6.0.7",
+    "ib": "^0.2.7",
     "impression.js": "^1.1.3",
     "lodash": "^4.17.11",
     "material-auto-rotating-carousel": "^2.0.0",
