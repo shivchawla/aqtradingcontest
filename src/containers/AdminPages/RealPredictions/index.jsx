@@ -62,7 +62,11 @@ class RealPredictions extends React.Component {
             snackbar: {
                 open: false,
                 message: ''
-            }
+            },
+            orderDialogOpen: false, // flag to open or close OrderDialog
+            selectedPredictionForOrder: {},
+            selectedPredictionForCancel: {},
+            cancelDialogOpen: false, // flag to open or close cancel dialog
         };
     }
 
@@ -250,9 +254,11 @@ class RealPredictions extends React.Component {
     processRealtimeMessage = msg => {
         const currentDate = moment().format(dateFormat);
         const selectedDate = this.state.selectedDate.format(dateFormat);
+        console.log('Realtime Data', msg);
         if (_.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
+                console.log('Realtime Data', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
@@ -328,6 +334,45 @@ class RealPredictions extends React.Component {
             this.toggleTradeActivityDialog();
         });
     }
+
+
+    // Method that's called when BUY or EXIT button is pressed in Prediction tile
+    // to open the PlaceOrder dialog
+    selectPredictionForOrder = (type = 'buy', prediction = {}) => {
+        const selectedPrediction = {
+            predictionId: _.get(prediction, 'predictionId', null),
+            advisorId: _.get(prediction, 'advisorId', null),
+            name: _.get(prediction, 'name', ''),
+            symbol: _.get(prediction, 'symbol', ''),
+            investment: _.get(prediction, 'investment', 0),
+            quantity: _.get(prediction, 'quantity', 0),
+            lastPrice: _.get(prediction, 'lastPrice', 0),
+            stopLoss: _.get(prediction, 'stopLoss', 0),
+            target: _.get(prediction, 'target', 0),
+            orderType: type
+        };
+
+        this.setState({selectedPredictionForOrder: selectedPrediction}, () => {
+            this.toggleOrderDialog();
+        })
+    }
+
+    // Method that's called when cancel button is pressed in Prediction tile
+    // to open the CancelOrder dialog
+    selectPredictionForCancel = (prediction = {}) => {
+        const selectedPrediction = {
+            predictionId: _.get(prediction, 'predictionId', null),
+            advisorId: _.get(prediction, 'advisorId', null),
+            name: _.get(prediction, 'name', ''),
+            symbol: _.get(prediction, 'symbol', ''),
+            orders: _.get(prediction, 'orders', [])
+        };
+
+        this.setState({selectedPredictionForCancel: selectedPrediction}, () => {
+            this.toggleCancelDialog();
+        });
+    }
+
 
     getTradeActivityForSelectedPrediction = () => {
         const {unformattedPredictions = []} = this.state;
@@ -570,6 +615,18 @@ class RealPredictions extends React.Component {
         this.setState({tradeActivityDialogOpen: !this.state.tradeActivityDialogOpen});
     }
 
+    toggleOrderDialog = () => {
+        this.setState({
+            orderDialogOpen: !this.state.orderDialogOpen,
+        });
+    }
+    
+    toggleCancelDialog = () => {
+        this.setState({
+            cancelDialogOpen: !this.state.cancelDialogOpen
+        });
+    }
+
     toggleSnackbar = (message = '') => {
         this.setState({
             snackbar: {
@@ -616,7 +673,15 @@ class RealPredictions extends React.Component {
             updateTradeActivityLoading: this.state.updateTradeActivityLoading,
             selectedPredictionTradeActivity: this.getTradeActivityForSelectedPrediction(),
             updateTradePrediction: this.updateTradePrediction,
-            updatePredictionLoading: this.state.updatePredictionLoading
+            updatePredictionLoading: this.state.updatePredictionLoading,
+            toggleOrderDialog: this.toggleOrderDialog,
+            orderDialogOpen: this.state.orderDialogOpen,
+            selectedPredictionForOrder: this.state.selectedPredictionForOrder,
+            selectPredictionForOrder: this.selectPredictionForOrder,
+            selectedPredictionForCancel: this.state.selectedPredictionForCancel,
+            selectPredictionForCancel: this.selectPredictionForCancel,
+            toggleCancelDialog: this.toggleCancelDialog,
+            cancelDialogOpen: this.state.cancelDialogOpen
         };
 
         return (

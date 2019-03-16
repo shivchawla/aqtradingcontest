@@ -17,6 +17,8 @@ import StockPreviewList from '../../../../TradingContest/MultiHorizonCreateEntry
 import AdvisorList from '../common/AdvisorList';
 import UpdateAdvisorStatsDialog from './UpdateAdvisorStats';
 import TradeActivtyDialog from './TradeActivityDialog';
+import CancelDialog from './CancelDialog';
+import OrderDialog from './OrderDialog';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
 
 export default class Layout extends React.Component {
@@ -157,6 +159,9 @@ export default class Layout extends React.Component {
                                     :   <StockPreviewExtenedList 
                                             predictions={predictions}
                                             selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
+                                            toggleOrderDialog={this.props.toggleOrderDialog}
+                                            selectPredictionForOrder={this.props.selectPredictionForOrder}
+                                            selectPredictionForCancel= {this.props.selectPredictionForCancel}
                                         />
                             }
                         </Grid>
@@ -206,6 +211,16 @@ export default class Layout extends React.Component {
                     selectedPredictionTradeActivity={this.props.selectedPredictionTradeActivity}
                     updateTradePrediction={this.props.updateTradePrediction}
                     updatePredictionLoading={this.props.updatePredictionLoading}
+                />
+                <OrderDialog 
+                    open={this.props.orderDialogOpen}
+                    onClose={this.props.toggleOrderDialog}
+                    selectedPredictionForOrder={this.props.selectedPredictionForOrder}
+                />
+                <CancelDialog 
+                    open={this.props.cancelDialogOpen}
+                    onClose={this.props.toggleCancelDialog}
+                    selectedPredictionForCancel={this.props.selectedPredictionForCancel}
                 />
                 <Grid 
                         item 

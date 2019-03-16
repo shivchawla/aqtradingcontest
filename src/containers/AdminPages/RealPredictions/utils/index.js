@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import {fetchAjaxPromise} from '../../../../utils';
+import axios from 'axios';
+import {fetchAjaxPromise, Utils} from '../../../../utils';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -61,4 +62,15 @@ export const processAdvisors = (advisors = []) => {
             satusNotes: ''
         };
     });
+}
+
+export const placeOrder = (data) => {
+    const url = `${requestUrl}/dailycontest/placeorder`;
+
+    return axios({
+        method: 'POST',
+        url,
+        data,
+        headers: Utils.getAuthTokenHeader()
+    })
 }

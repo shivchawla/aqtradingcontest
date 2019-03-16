@@ -361,6 +361,8 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         stopLoss: getStopLoss(prediction),
         adminModifications: _.get(prediction, 'adminModifications', []),
         status: _.get(prediction, 'status', {}),
+        orders: _.get(prediction, 'current.orders', []),
+        accumulated: _.get(prediction, 'current.accumulated', null)
     }))
 }
 

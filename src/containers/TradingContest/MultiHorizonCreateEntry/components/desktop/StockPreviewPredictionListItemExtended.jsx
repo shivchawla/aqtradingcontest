@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import {Utils} from '../../../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
@@ -95,7 +96,9 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             stopLoss = 0,
             investment = 0,
             lastPrice = 0,
-            adminModifications = []
+            quantity = 0,
+            adminModifications = [],
+            orders = []
         } = this.props.prediction;
 
         return {
@@ -107,7 +110,9 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             stopLoss,
             investment,
             lastPrice,
-            adminModifications
+            adminModifications,
+            quantity,
+            orders
         }
 
     }
@@ -133,7 +138,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             conditional = false,
             name = '',
             stopLoss = 0,
-            quantity = 0
+            quantity = 0,
+            accumulated = null
         } = this.props.prediction;
         const allowAfterMaketHourExit = conditional && !triggered;
         const typeBackgroundColor = '#fff';
@@ -150,6 +156,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                 ? metricColor.negative
                 : metricColor.neutral;
         const isMarketTrading = !DateHelper.isHoliday();
+        const shoudlShowActiveOrders = accumulated !== null;
 
         return (
             <Container 
@@ -219,6 +226,56 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                         onClick={() => this.props.selectPredictionForTradeActivity(this.getSelectedPrediction())}
                         size={16}
                     />
+                </Grid>
+                <Grid 
+                        item 
+                        xs={12}
+                        style={{
+                            ...horizontalBox,
+                            justifyContent: 'space-between',
+                            position: 'relative',
+                            height: '40px'
+                        }}
+                >
+                    {
+                        shoudlShowActiveOrders &&
+                        <Button 
+                                small 
+                                color="secondary"
+                                onClick={() => this.props.selectPredictionForCancel(this.getSelectedPrediction())}
+                        >
+                            Active Orders
+                        </Button>
+                    }
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'flex-end',
+                                position: 'absolute',
+                                right: 0
+                            }}
+                    >
+                        {
+                            accumulated > 0 &&
+                            <Button 
+                                    small 
+                                    color="secondary"
+                                    onClick={() => this.props.selectPredictionForOrder('exit', this.getSelectedPrediction())}
+                            >
+                                Exit
+                            </Button>
+                        }
+                        {
+                            quantity !== accumulated &&
+                            <Button 
+                                    small 
+                                    color="primary"
+                                    onClick={() => this.props.selectPredictionForOrder('buy', this.getSelectedPrediction())}
+                            >
+                                BUY
+                            </Button>
+                        }
+                    </div>
                 </Grid>
             </Container>
         );
