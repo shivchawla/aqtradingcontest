@@ -27,7 +27,6 @@ export default class OrderListItem extends React.Component {
                     container
                     style={containerStyle}
                     alignItems="center"
-                    onClick={() => this.props.selectOrderToCancel(orderId)}
             >
                 <Grid item xs={3}>
                     <Metric>{orderId}</Metric>
@@ -45,7 +44,7 @@ export default class OrderListItem extends React.Component {
                     <ActionIcon 
                         size={20}
                         type="stop"
-                        onClick={() => {}}
+                        onClick={() => this.props.selectOrderToCancel(orderId)}
                         color="red"
                     />
                 </Grid>
@@ -58,7 +57,6 @@ const containerStyle = {
     marginBottom: '10px',
     borderRadius: '4px',
     padding: '5px 15px',
-    cursor: 'pointer',
     transition: 'all 0.3s ease-in-out',
     backgroundColor: '#eaefff'
 }
