@@ -77,13 +77,14 @@ class StockCard extends React.Component {
             const nextSymbol = _.get(nextStockData, 'symbol', null);
             const currentSymbol = _.get(this.props, 'stockData.symbol', null);
             const openStatus = _.get(nextProps, 'open', false);
+            const currentOpenStatus = _.get(this.props, 'open', false);
             const isRealPrediction = _.get(nextProps, 'stockData.realPrediction', false);
 
             /**
              * If the current selected symbol is different from the old symbol and stock card
              * bottom sheet is open, then do the following operations.
              */
-            if ((currentSymbol !== nextSymbol) && openStatus) {
+            if ((currentSymbol !== nextSymbol) || (openStatus !== currentOpenStatus)) {
                 let {
                     horizon = 2, 
                     target = 2, 
@@ -103,7 +104,6 @@ class StockCard extends React.Component {
                 if (realPrediction) {
                     horizon = horizon < 2 ? 2 : horizon;
                 }
-                
                 /**
                  * Setting target, stopLoss, investment, conditionalValue to a 
                  * default value of the first item in the received items array.
@@ -112,7 +112,6 @@ class StockCard extends React.Component {
                 stopLoss = targetItems[0].key;
                 investment = investmentItems[0].key;
                 conditionalValue = conditionalItems[1].key;
-                console.log(conditionalValue);
 
                 this.props.modifyStockData({
                     ...nextStockData,
@@ -150,7 +149,6 @@ class StockCard extends React.Component {
         const stopLoss = targetItems[0].key;
         const investment = investmentItems[0].key;
         const conditionalValue = conditionalItems[1].key;
-        console.log(conditionalValue);
 
         this.props.modifyStockData({
             ...this.props.stockData,
@@ -239,7 +237,8 @@ class StockCard extends React.Component {
     getTargetItems = (stockData = this.props.stockData) => {
         const {lastPrice = 0, valueTypePct = true} = stockData;
         let targetItems = targetKvp.map(target => {
-            const requiredValue = roundToValue(lastPrice, target.value);
+            const nearestRoundValue = lastPrice / 10 > 5 ? 5 : 1;
+            const requiredValue = roundToValue(lastPrice, target.value, nearestRoundValue);
             return {key: valueTypePct ? target.value:  requiredValue, label: null};
         });
         return _.uniqBy(targetItems, 'key');
