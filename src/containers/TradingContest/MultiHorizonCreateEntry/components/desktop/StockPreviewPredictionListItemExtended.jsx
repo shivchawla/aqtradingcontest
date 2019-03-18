@@ -139,7 +139,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             name = '',
             stopLoss = 0,
             quantity = 0,
-            accumulated = null
+            accumulated = null,
+            orders = []
         } = this.props.prediction;
         const allowAfterMaketHourExit = conditional && !triggered;
         const typeBackgroundColor = '#fff';
@@ -156,7 +157,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                 ? metricColor.negative
                 : metricColor.neutral;
         const isMarketTrading = !DateHelper.isHoliday();
-        const shoudlShowActiveOrders = accumulated !== null;
+        const shoudlShowActiveOrders = orders.filter(order => order.activeStatus === true).length > 0;
 
         return (
             <Container 
