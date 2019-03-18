@@ -8,6 +8,8 @@ import RadioGroup from '../../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import ConfirmationDialog from '../../common/ConfirmationDialog';
 import CustomOutlinedInput from '../../../../../../components/input/CustomOutlinedInput';
+import SnackbarComponent from '../../../../../../components/Alerts/SnackbarComponent';
+import TranslucentOrder from '../../../../../../components/Loaders/TranslucentLoader';
 import DialogMetric from '../../common/DialogMetrics';
 import {InputHeader, MetricContainer} from '../../common/InputMisc';
 import {horizontalBox, verticalBox} from '../../../../../../constants';
@@ -28,7 +30,11 @@ class OrderContent extends React.Component {
             profitLimitPrice: _.get(prediction, 'target', 0),
             stopLossPrice: _.get(prediction, 'stopLoss', 0),
             confirmationDialogOpen: false,
-            loading: false
+            loading: false,
+            snackbar: {
+                open: false,
+                message: ''
+            }
         }
     }
 
@@ -110,15 +116,30 @@ class OrderContent extends React.Component {
         this.setState({loading: true});
         return placeOrder(data)
         .then(() => {
-            console.log('Order Placed Successfully');
+            this.openSnackbar('Order Placed Successfully');
         })
         .catch(error => {
+            this.openSnackbar('Error occurred while placing order');
             console.log('Error ', error);
             return handleCreateAjaxError(error, this.props.history, this.props.match.url);
         })
         .finally(() => {
             this.setState({loading: false});
         })
+    }
+
+    openSnackbar = (message = '') => {
+        this.setState({snackbar: {
+            open: true,
+            message
+        }});
+    }
+
+    closeSnackbar = () => {
+        this.setState({snackbar: {
+            ...this.state.snackbar,
+            open: false
+        }});
     }
 
     render() {
@@ -143,6 +164,11 @@ class OrderContent extends React.Component {
 
         return (
             <Grid container>
+                <SnackbarComponent 
+                    openStatus={this.state.snackbar.open}
+                    message={this.state.snackbar.message}
+                    handleClose={this.closeSnackbar}
+                />
                 <ConfirmationDialog 
                     open={this.state.confirmationDialogOpen}
                     onClose={this.toggleConfirmationDialog}
