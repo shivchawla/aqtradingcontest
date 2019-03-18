@@ -21,6 +21,7 @@ export default class OrderListItem extends React.Component {
             brokerStatus = null,
             completeStatus = false
         } = order;
+        const hideCancelButton  = brokerStatus.toLowerCase() === 'cancelled';
         
         return (
             <Grid 
@@ -41,12 +42,16 @@ export default class OrderListItem extends React.Component {
                     <Metric>{brokerStatus}</Metric>
                 </Grid>
                 <Grid item xs={2}>
-                    <ActionIcon 
-                        size={20}
-                        type="stop"
-                        onClick={() => this.props.selectOrderToCancel(orderId)}
-                        color="red"
-                    />
+                    {
+                        !hideCancelButton &&
+                        <ActionIcon 
+                            size={20}
+                            type="stop"
+                            onClick={() => this.props.selectOrderToCancel(orderId)}
+                            color="red"
+                            disabled={hideCancelButton}
+                        />
+                    }
                 </Grid>
             </Grid>
         );
@@ -58,7 +63,8 @@ const containerStyle = {
     borderRadius: '4px',
     padding: '5px 15px',
     transition: 'all 0.3s ease-in-out',
-    backgroundColor: '#eaefff'
+    backgroundColor: '#eaefff',
+    height: '64px'
 }
 
 const Metric = styled.h3`

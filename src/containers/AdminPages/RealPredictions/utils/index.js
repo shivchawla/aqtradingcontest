@@ -74,3 +74,14 @@ export const placeOrder = (data) => {
         headers: Utils.getAuthTokenHeader()
     })
 }
+
+export const cancelOrder = (data) => {
+    const url = `${requestUrl}/dailycontest/cancelorder`;
+
+    return axios({
+        method: 'POST',
+        url,
+        data,
+        headers: Utils.getAuthTokenHeader()
+    })
+}

@@ -2,18 +2,26 @@ import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
+import SnackbarComponent from '../../../../../../components/Alerts/SnackbarComponent';
 import DialogComponent from '../../../../../../components/Alerts/DialogComponent';
 import ActionIcon from '../../../../../TradingContest/Misc/ActionIcons';
 import OrderList from './OrderList';
 import ConfirmationDialog from '../../common/ConfirmationDialog';
+import TranslucentOrder from '../../../../../../components/Loaders/TranslucentLoader';
 import {horizontalBox} from '../../../../../../constants';
+import {cancelOrder} from '../../../utils';
 
 export default class CancelDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             selectedOrderId: null,
-            confirmationDialogOpen: false
+            confirmationDialogOpen: false,
+            loading: false,
+            snackbar: {
+                open: false,
+                message: ''
+            }
         }
     }
 
@@ -34,6 +42,42 @@ export default class CancelDialog extends React.Component {
 
     toggleConfirmationDialog = () => {
         this.setState({confirmationDialogOpen: !this.state.confirmationDialogOpen});
+    }
+
+    cancelOrderForPrediction = () => {
+        this.toggleConfirmationDialog();
+        const orderId = _.get(this.state, 'selectedOrderId', null);
+        const advisorId = _.get(this.props, 'selectedPredictionForCancel.advisorId', null);
+        const data = {
+            orderId,
+            advisorId
+        };
+
+        this.setState({loading: true});
+
+        cancelOrder(data)
+        .then(() => {
+            this.openSnackbar('Cancelled Successfully');
+        })
+        .catch(err => {
+            this.openSnackbar('Error occurred while cancelling order');
+            console.log(err);
+        })
+        .finally(() => this.setState({loading: false}));
+    }
+
+    openSnackbar = (message = '') => {
+        this.setState({snackbar: {
+            open: true,
+            message
+        }});
+    }
+
+    closeSnackbar = () => {
+        this.setState({snackbar: {
+            ...this.state.snackbar,
+            open: false
+        }});
     }
 
     renderDialogHeader = () => {
@@ -73,10 +117,19 @@ export default class CancelDialog extends React.Component {
                 onClose={this.props.onClose}
                 style={{padding: 0}}
             >
+                <SnackbarComponent 
+                    openStatus={this.state.snackbar.open}
+                    message={this.state.snackbar.message}
+                    handleClose={this.closeSnackbar}
+                />
+                {
+                    this.state.loading &&
+                    <TranslucentOrder />
+                }
                 <ConfirmationDialog 
                     open={this.state.confirmationDialogOpen}
                     onClose={this.toggleConfirmationDialog}
-                    createPrediction={this.toggleConfirmationDialog}
+                    createPrediction={this.cancelOrderForPrediction}
                     question={`Are you sure you want to cancel Order ${this.state.selectedOrderId} ?`}
 
                 />
