@@ -9,7 +9,6 @@ import CustomRadio from '../../../../../Watchlist/components/mobile/WatchlistCus
 import ConfirmationDialog from '../../common/ConfirmationDialog';
 import CustomOutlinedInput from '../../../../../../components/input/CustomOutlinedInput';
 import SnackbarComponent from '../../../../../../components/Alerts/SnackbarComponent';
-import TranslucentOrder from '../../../../../../components/Loaders/TranslucentLoader';
 import DialogMetric from '../../common/DialogMetrics';
 import {InputHeader, MetricContainer} from '../../common/InputMisc';
 import {horizontalBox, verticalBox} from '../../../../../../constants';
