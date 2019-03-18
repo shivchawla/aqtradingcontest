@@ -3,6 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import { Utils } from '../../../../../utils';
 
 const dateFormat = 'YYYY-MM-DD';
 
@@ -19,9 +20,9 @@ export default class AdvisorListItem extends React.Component {
         const {tradeActivity = {}} = this.props;
         const {
             notes = '',
-            category = '',
-            tradeDirection = '',
-            tradeType = '',
+            quantity = 0,
+            direction = '',
+            price = '',
             date = null
         } = tradeActivity;
         
@@ -35,13 +36,13 @@ export default class AdvisorListItem extends React.Component {
                     <Metric>{moment(date).format(dateFormat)}</Metric>
                 </Grid>
                 <Grid item xs={2}>
-                    <Metric>{category}</Metric>
+                    <Metric>₹ {Utils.formatMoneyValueMaxTwoDecimals(price)}</Metric>
                 </Grid>
+                {/* <Grid item xs={2}>
+                    <Metric>{quantity}</Metric>
+                </Grid> */}
                 <Grid item xs={2}>
-                    <Metric>{tradeDirection}</Metric>
-                </Grid>
-                <Grid item xs={2}>
-                    <Metric>{tradeType}</Metric>
+                    <Metric>{direction}</Metric>
                 </Grid>
                 <Grid item xs={3}>
                     <Metric>{notes}</Metric>

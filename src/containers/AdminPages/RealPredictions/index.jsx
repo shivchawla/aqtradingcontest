@@ -405,9 +405,9 @@ class RealPredictions extends React.Component {
             predictionId = null,
             advisorId = null,
             tradeDirection = 'BUY',
-            tradeType = 'OPEN',
-            category = 'TRADE',
-            notes = ''
+            notes = '',
+            lastPrice = 0,
+            quantity = 0
         } = selectedPrediction;
 
         const data = {
@@ -415,10 +415,10 @@ class RealPredictions extends React.Component {
             advisorId,
             tradeActivity: {
                 date: moment().format(dateFormat),
-                category,
-                tradeDirection,
-                tradeType,
-                notes
+                direction: tradeDirection,
+                notes,
+                quantity,
+                price: lastPrice
             }
         };
         const url = `${requestUrl}/dailycontest/tradeactivity`;

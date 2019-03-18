@@ -67,13 +67,13 @@ const TradeActivityListHeader = () => {
                 <HeaderText>Date</HeaderText>
             </Grid>
             <Grid item xs={2}>
-                <HeaderText>Category</HeaderText>
+                <HeaderText>Price</HeaderText>
             </Grid>
+            {/* <Grid item xs={2}>
+                <HeaderText>Quantity</HeaderText>
+            </Grid> */}
             <Grid item xs={2}>
                 <HeaderText>Direction</HeaderText>
-            </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Type</HeaderText>
             </Grid>
             <Grid item xs={3}>
                 <HeaderText>Notes</HeaderText>
