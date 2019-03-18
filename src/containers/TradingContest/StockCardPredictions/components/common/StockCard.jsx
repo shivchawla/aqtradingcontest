@@ -1116,7 +1116,8 @@ class StockCard extends React.Component {
                         <Header>₹{lastPrice.toFixed(2)}</Header>
                         <h3 
                                 style={{
-                                    ...nameStyle, 
+                                    ...nameStyle,
+                                    width: 'inherit',
                                     textAlign: 'end',
                                     color: changePct > 0 
                                         ?   '#32FFD8'
