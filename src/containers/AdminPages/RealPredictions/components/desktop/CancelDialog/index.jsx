@@ -58,6 +58,7 @@ export default class CancelDialog extends React.Component {
         cancelOrder(data)
         .then(() => {
             this.openSnackbar('Cancelled Successfully');
+            this.props.onClose();
         })
         .catch(err => {
             this.openSnackbar(JSON.stringify(_.get(err, 'response.data', 'Error occurred while cancelling order')));
