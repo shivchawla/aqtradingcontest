@@ -243,7 +243,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                         <Button 
                                 small 
                                 color="secondary"
-                                onClick={() => this.props.selectPredictionForCancel(this.getSelectedPrediction())}
+                                onClick={() => this.props.selectPredictionIdForCancel(_id)}
                         >
                             Active Orders
                         </Button>

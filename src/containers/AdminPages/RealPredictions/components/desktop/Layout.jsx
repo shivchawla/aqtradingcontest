@@ -162,6 +162,7 @@ export default class Layout extends React.Component {
                                             toggleOrderDialog={this.props.toggleOrderDialog}
                                             selectPredictionForOrder={this.props.selectPredictionForOrder}
                                             selectPredictionForCancel= {this.props.selectPredictionForCancel}
+                                            selectPredictionIdForCancel={this.props.selectPredictionIdForCancel}
                                         />
                             }
                         </Grid>

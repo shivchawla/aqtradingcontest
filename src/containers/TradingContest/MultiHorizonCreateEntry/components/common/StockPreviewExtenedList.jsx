@@ -129,7 +129,7 @@ class StockPreviewExtendedList extends React.Component {
                                 selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
                                 toggleOrderDialog={this.props.toggleOrderDialog}
                                 selectPredictionForOrder={this.props.selectPredictionForOrder}
-                                selectPredictionForCancel= {this.props.selectPredictionForCancel}
+                                selectPredictionIdForCancel={this.props.selectPredictionIdForCancel}
                             />
                         );
                     })

@@ -66,6 +66,7 @@ class RealPredictions extends React.Component {
             orderDialogOpen: false, // flag to open or close OrderDialog
             selectedPredictionForOrder: {},
             selectedPredictionForCancel: {},
+            selectedPredictionIdForCancel: null,
             cancelDialogOpen: false, // flag to open or close cancel dialog
         };
     }
@@ -359,18 +360,28 @@ class RealPredictions extends React.Component {
 
     // Method that's called when cancel button is pressed in Prediction tile
     // to open the CancelOrder dialog
-    selectPredictionForCancel = (prediction = {}) => {
-        const selectedPrediction = {
-            predictionId: _.get(prediction, 'predictionId', null),
-            advisorId: _.get(prediction, 'advisorId', null),
-            name: _.get(prediction, 'name', ''),
-            symbol: _.get(prediction, 'symbol', ''),
-            orders: _.get(prediction, 'orders', [])
-        };
-
-        this.setState({selectedPredictionForCancel: selectedPrediction}, () => {
+    selectPredictionIdForCancel = (predictionId) => {
+        this.setState({selectedPredictionIdForCancel: predictionId}, () => {
             this.toggleCancelDialog();
         });
+    }
+
+    getSelectedPreditionForCancel = () => {
+        const predictions = _.get(this.state, 'predictions', []);
+        const requiredPredictionIndex = _.findIndex(predictions, prediction => prediction._id === this.state.selectedPredictionIdForCancel);
+        if (requiredPredictionIndex > -1) {
+            const requiredPrediction = predictions[requiredPredictionIndex];
+
+            return {
+                predictionId: _.get(requiredPrediction, '_id', null),
+                advisorId: _.get(requiredPrediction, 'advisor', null),
+                name: _.get(requiredPrediction, 'name', ''),
+                symbol: _.get(requiredPrediction, 'symbol', ''),
+                orders: _.get(requiredPrediction, 'orders', [])
+            }
+        } else {
+            return {};
+        }        
     }
 
 
@@ -678,10 +689,10 @@ class RealPredictions extends React.Component {
             orderDialogOpen: this.state.orderDialogOpen,
             selectedPredictionForOrder: this.state.selectedPredictionForOrder,
             selectPredictionForOrder: this.selectPredictionForOrder,
-            selectedPredictionForCancel: this.state.selectedPredictionForCancel,
-            selectPredictionForCancel: this.selectPredictionForCancel,
+            selectedPredictionForCancel: this.getSelectedPreditionForCancel(),
             toggleCancelDialog: this.toggleCancelDialog,
-            cancelDialogOpen: this.state.cancelDialogOpen
+            cancelDialogOpen: this.state.cancelDialogOpen,
+            selectPredictionIdForCancel: this.selectPredictionIdForCancel
         };
 
         return (
