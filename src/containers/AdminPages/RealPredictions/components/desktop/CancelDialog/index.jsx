@@ -60,8 +60,7 @@ export default class CancelDialog extends React.Component {
             this.openSnackbar('Cancelled Successfully');
         })
         .catch(err => {
-            this.openSnackbar('Error occurred while cancelling order');
-            console.log(err);
+            this.openSnackbar(JSON.stringify(_.get(err, 'response.data', 'Error occurred while cancelling order')));
         })
         .finally(() => this.setState({loading: false}));
     }
