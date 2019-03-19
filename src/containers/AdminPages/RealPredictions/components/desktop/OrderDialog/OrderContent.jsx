@@ -1,5 +1,7 @@
 import React from 'react';
+import styled from 'styled-components';
 import _ from 'lodash';
+import moment from 'moment';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
@@ -11,7 +13,7 @@ import CustomOutlinedInput from '../../../../../../components/input/CustomOutlin
 import SnackbarComponent from '../../../../../../components/Alerts/SnackbarComponent';
 import DialogMetric from '../../common/DialogMetrics';
 import {InputHeader, MetricContainer} from '../../common/InputMisc';
-import {horizontalBox, verticalBox} from '../../../../../../constants';
+import {horizontalBox, verticalBox, primaryColor} from '../../../../../../constants';
 import {Utils, handleCreateAjaxError} from '../../../../../../utils';
 import {placeOrder} from '../../../utils';
 
@@ -141,6 +143,19 @@ class OrderContent extends React.Component {
         }});
     }
 
+    getLastestAdminMoficiation = (key = 'target') => {
+        let adminModifications = _.get(this.props, 'prediction.adminModifications', []);
+        adminModifications = _.orderBy(adminModifications, adminModification => {
+            return moment(adminModification.date);
+        }, ['desc']);
+        console.log('Admin Modifications ', adminModifications);
+        if (adminModifications.length > 0) {
+            return adminModifications[0][key];
+        } else {
+            return null;
+        }
+    }
+
     render() {
         const {prediction = {},orderType = 'market'} = this.props;
         const {
@@ -151,6 +166,10 @@ class OrderContent extends React.Component {
             stopLossPrice = 0,
             loading = false
         } = this.state;
+
+        const modifiedTarget = this.getLastestAdminMoficiation('target');
+        const modifiedQuantity = this.getLastestAdminMoficiation('quantity');
+        const modifiedStopLoss = this.getLastestAdminMoficiation('stopLoss');
 
         const shouldShowPrice = orderType !== 'market' && orderType !== 'marketClose';
         const shouldProfitLimitPrice = orderType === 'bracket';
@@ -190,7 +209,10 @@ class OrderContent extends React.Component {
                 </Grid>
                 <Grid item xs={6}>
                     <MetricContainer>
-                        <InputHeader>Quantity - {defaultQuantity}</InputHeader>
+                        <InputHeader style={{marginBottom: '0px'}}>Quantity - {defaultQuantity}</InputHeader>
+                        <Metric style={{color: modifiedQuantity ? primaryColor: 'transparent'}}>
+                            Modified - {modifiedQuantity}
+                        </Metric>
                         <CustomOutlinedInput
                             onChange={e => this.onValueChanged(e.target.value, 'quantity')}
                             type="number"
@@ -202,7 +224,10 @@ class OrderContent extends React.Component {
                     {
                         shouldShowPrice &&
                         <MetricContainer>
-                            <InputHeader>Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultPrice)}</InputHeader>
+                            <InputHeader style={{marginBottom: '0px'}}>Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultPrice)}</InputHeader>
+                            <Metric style={{color: 'transparent'}}>
+                                Modified - ₹{Utils.formatMoneyValueMaxTwoDecimals(modifiedTarget)}
+                            </Metric>
                             <CustomOutlinedInput
                                 onChange={e => this.onValueChanged(e.target.value, 'price')}
                                 type="number"
@@ -215,7 +240,10 @@ class OrderContent extends React.Component {
                     {
                         shouldProfitLimitPrice &&
                         <MetricContainer>
-                            <InputHeader>Profit Limit Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultProfitLimitPrice)}</InputHeader>
+                            <InputHeader style={{marginBottom: '0px'}}>Profit Limit Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultProfitLimitPrice)}</InputHeader>
+                            <Metric style={{color: modifiedQuantity ? primaryColor: 'transparent'}}>
+                                Modified - ₹{Utils.formatMoneyValueMaxTwoDecimals(modifiedTarget)}
+                            </Metric>
                             <CustomOutlinedInput
                                 onChange={e => this.onValueChanged(e.target.value, 'profitLimitPrice')}
                                 type="number"
@@ -228,7 +256,10 @@ class OrderContent extends React.Component {
                     {
                         shouldStopLossPrice &&
                         <MetricContainer>
-                            <InputHeader>Stop Loss Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultStopLossPrice)}</InputHeader>
+                            <InputHeader style={{marginBottom: '0px'}}>Stop Loss Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultStopLossPrice)}</InputHeader>
+                            <Metric style={{color: modifiedQuantity ? primaryColor: 'transparent'}}>
+                                Modified - ₹{Utils.formatMoneyValueMaxTwoDecimals(modifiedStopLoss)}
+                            </Metric>
                             <CustomOutlinedInput
                                 onChange={e => this.onValueChanged(e.target.value, 'stopLossPrice')}
                                 type="number"
@@ -335,3 +366,11 @@ const DialogComponent = (props) => {
         </Grid>
     );
 }
+
+const Metric = styled.h3`
+    font-size: 12px;
+    color: ${primaryColor};
+    font-weight: 500;
+    margin-bottom: 5px;
+    margin-top: 3px;
+`;

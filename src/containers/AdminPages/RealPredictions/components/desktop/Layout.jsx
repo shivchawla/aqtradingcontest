@@ -210,6 +210,7 @@ export default class Layout extends React.Component {
                     updateTradeActivity={this.props.updateTradeActivity}
                     updateTradeActivityLoading={this.props.updateTradeActivityLoading}
                     selectedPredictionTradeActivity={this.props.selectedPredictionTradeActivity}
+                    selectedPredictionOrderActivity={this.props.selectedPredictionOrderActivity}
                     updateTradePrediction={this.props.updateTradePrediction}
                     updatePredictionLoading={this.props.updatePredictionLoading}
                 />

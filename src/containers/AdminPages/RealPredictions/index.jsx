@@ -350,7 +350,8 @@ class RealPredictions extends React.Component {
             lastPrice: _.get(prediction, 'lastPrice', 0),
             stopLoss: _.get(prediction, 'stopLoss', 0),
             target: _.get(prediction, 'target', 0),
-            orderType: type
+            orderType: type,
+            adminModifications: _.get(prediction, 'adminModifications', [])
         };
 
         this.setState({selectedPredictionForOrder: selectedPrediction}, () => {
@@ -394,6 +395,19 @@ class RealPredictions extends React.Component {
         ));
 
         return _.get(unformattedPredictions, `[${selectedUnformattedPredictionIndex}].tradeActivity`, []);
+    }
+
+    getOrderActivityForSelectedPrediction = () => {
+        const {unformattedPredictions = []} = this.state;
+        const selectedPredictionId = _.get(this.state, 'selectedPredictionForTradeActivity.predictionId', null);
+
+        const selectedUnformattedPredictionIndex = _.findIndex(unformattedPredictions, unformattedPrediction => (
+            unformattedPrediction._id === selectedPredictionId
+        ));
+        console.log('getOrderActivityForSelectedPrediction');
+        console.log(_.get(unformattedPredictions, `[${selectedUnformattedPredictionIndex}].orderActivity`, []));
+
+        return _.get(unformattedPredictions, `[${selectedUnformattedPredictionIndex}].orderActivity`, []);
     }
 
     /**
@@ -683,6 +697,7 @@ class RealPredictions extends React.Component {
             updateTradeActivity: this.updateTradeActivity,
             updateTradeActivityLoading: this.state.updateTradeActivityLoading,
             selectedPredictionTradeActivity: this.getTradeActivityForSelectedPrediction(),
+            selectedPredictionOrderActivity: this.getOrderActivityForSelectedPrediction(),
             updateTradePrediction: this.updateTradePrediction,
             updatePredictionLoading: this.state.updatePredictionLoading,
             toggleOrderDialog: this.toggleOrderDialog,
