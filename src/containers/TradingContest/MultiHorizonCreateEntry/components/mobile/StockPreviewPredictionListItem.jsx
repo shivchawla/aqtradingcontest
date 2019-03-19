@@ -139,7 +139,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
         endDate = moment(endDate).format(dateFormat);
 
         const directionUnit = type === 'buy' ? 1 : -1;
-        const changeInvestment = ((lastPrice - avgPrice) / avgPrice) * investment;
+        const changeInvestment = avgPrice !== 0 
+            ? ((lastPrice - avgPrice) / avgPrice) * investment
+            : 0;
         const changedInvestment = investment + (changeInvestment * directionUnit);
 
         const duration = DateHelper.getTradingDays(startDate, endDate);
@@ -240,8 +242,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 >
                                     {
                                         triggered
-                                        ? Utils.formatInvestmentValue(changedInvestment)
-                                        : Utils.formatInvestmentValue(investment)
+                                            ? avgPrice === 0 
+                                                ?   '-'
+                                                :   Utils.formatInvestmentValue(changedInvestment)
+                                            : Utils.formatInvestmentValue(investment)
                                     }
                                 </MetricText>
                             </div>

@@ -44,7 +44,7 @@ import {
     horizonKvp, 
     investmentKvp, 
     conditionalKvp, 
-    conditionalTypeItems,
+    conditionalTypeItems as conditionalItems,
     investmentKvpReal,
     horizonKvpReal
 } from '../../constants';
@@ -52,9 +52,13 @@ import StockCardRadioGroup from '../common/StockCardRadioGroup';
 import ActionIcon from '../../../Misc/ActionIcons';
 import SubmitButton from '../mobile/SubmitButton';
 import { getPercentageModifiedValue } from '../../../MultiHorizonCreateEntry/utils';
+import {isMarketOpen} from '../../../utils';
+import {isHoliday} from '../../../../../utils';
 
 const readableDateFormat = 'Do MMM';
 const isDesktop = global.screen.width > 800 ? true : false;
+const marketOpen = !isHoliday() && isMarketOpen().status;
+const conditionalTypeItems = marketOpen ? conditionalItems : conditionalItems.slice(1, conditionalItems.length);
 
 class StockCard extends React.Component {
     constructor(props) {
