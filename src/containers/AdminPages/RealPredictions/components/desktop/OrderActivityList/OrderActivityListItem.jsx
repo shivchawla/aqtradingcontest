@@ -7,7 +7,7 @@ import { Utils } from '../../../../../../utils';
 
 const dateFormat = 'MM-DD HH:mm';
 
-export default class AdvisorListItem extends React.Component {
+export default class OrderActivityListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -28,6 +28,7 @@ export default class AdvisorListItem extends React.Component {
         const orderType = _.get(brokerMessage, 'order.orderType', null);
         const orderState = _.get(brokerMessage, 'orderState.status', null);
         const type = _.get(brokerMessage, 'order.action', 'BUY');
+        const quantity = _.get(brokerMessage, 'order.totalQuantity', 0);
         
         return (
             <Grid 
@@ -47,13 +48,13 @@ export default class AdvisorListItem extends React.Component {
                     <Metric>{orderId}</Metric>
                 </Grid>
                 <Grid item xs={2}>
+                    <Metric>{quantity}</Metric>
+                </Grid>
+                <Grid item xs={2}>
                     <Metric>{activityType}</Metric>
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>{status}</Metric>
-                </Grid>
-                <Grid item xs={2}>
-                    <Metric>{orderState}</Metric>
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>{orderType}</Metric>

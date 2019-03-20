@@ -73,6 +73,7 @@ export default class TradeActivityDialog extends React.Component {
                 open={open}
                 onClose={this.props.onClose}
                 style={{padding: 0}}
+                maxWidth='xl'
             >
                 {this.renderDialogHeader()}
                 <Container container>
@@ -138,7 +139,7 @@ const Container = styled(Grid)`
     overflow: hidden;
     overflow-y: scroll;
     padding: 10px;
-    min-width: 42vw;
+    min-width: 62vw;
     min-height: 54vh;
     display: flex;
     flex-direction: column;

@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import {Utils} from '../../../../../utils';
+import {getLastestAdminMoficiation} from '../../../../AdminPages/RealPredictions/utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
 
@@ -88,6 +89,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
 
     getSelectedPrediction = () => {
         const {
+            accumulated = 0,
             advisor = null,
             _id = null,
             name = '',
@@ -112,12 +114,14 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             lastPrice,
             adminModifications,
             quantity,
-            orders
+            orders,
+            accumulated
         }
 
     }
 
     render() {
+        const {prediction = {}} = this.props;
         const {
             horizon = 1, 
             investment = 0, 
@@ -140,15 +144,22 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             stopLoss = 0,
             quantity = 0,
             accumulated = null,
-            orders = []
-        } = this.props.prediction;
-        const allowAfterMaketHourExit = conditional && !triggered;
-        const typeBackgroundColor = '#fff';
+            orders = [],
+            advisorName = ''
+        } = prediction;
+
+        const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');
+        const modifiedQuantity = getLastestAdminMoficiation(prediction, 'quantity');
+        const modifiedStopLoss = getLastestAdminMoficiation(prediction, 'stopLoss');
+
         const typeColor = type === 'buy' ? '#009688' : '#FE6662';
         const typeText = type === 'buy' ? 'HIGHER' : 'LOWER';
         const iconConfig = this.getIconConfig(status);
         const directionUnit = type === 'buy' ? 1 : -1;
-        const changeInvestment = directionUnit * ((lastPrice - avgPrice) / avgPrice) * investment;
+
+        const changeInvestment = avgPrice !== 0 
+            ? directionUnit * ((lastPrice - avgPrice) / avgPrice) * investment
+            : 0;
         const changedInvestment = investment + changeInvestment;
         const requiredChangedInvestment = triggered ? changedInvestment : investment;
         const changedInvestmentColor = requiredChangedInvestment > investment
@@ -156,7 +167,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             : requiredChangedInvestment < investment 
                 ? metricColor.negative
                 : metricColor.neutral;
-        const isMarketTrading = !DateHelper.isHoliday();
+
         const shoudlShowActiveOrders = orders.filter(order => order.activeStatus === true).length > 0;
 
         return (
@@ -165,7 +176,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     alignItems="center"
                     style={{
                         border: '3px solid',
-                        borderColor: (this.shouldShowUnreadStatus()) ? '#5bd05b' : 'transparent'
+                        borderColor: (this.shouldShowUnreadStatus()) ? '#5bd05b' : 'transparent',
+                        paddingTop: '5px'
                     }}
             >
                 <Grid 
@@ -179,6 +191,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                 >
                     <MetricText>{symbol}</MetricText>
                     <Name>{name}</Name>
+                    <Name style={{color: primaryColor}}>{advisorName}</Name>
                 </Grid>
                 <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</MetricText>
@@ -193,6 +206,10 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                         xs={2}
                         style={{...verticalBox, alignItems: 'flex-start'}}
                 >
+                    {
+                        modifiedTarget &&
+                        <MetricText heavy color={primaryColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(modifiedTarget)}</MetricText>
+                    }
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText>
                     <EndDate>{moment(endDate).format(readableDateFormat)}</EndDate>
                     <EndDate>{moment(endDate).format(readableHourlyFormat)}</EndDate>
@@ -204,15 +221,31 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                         <Icon>arrow_right_alt</Icon>
                         <MetricText color={changedInvestmentColor}>
                             {
-                                triggered
-                                    ? Utils.formatInvestmentValue(changedInvestment)
-                                    : Utils.formatInvestmentValue(investment)
+                                avgPrice === 0
+                                    ?   '-'
+                                    :   triggered
+                                            ? Utils.formatInvestmentValue(changedInvestment)
+                                            : Utils.formatInvestmentValue(investment)
                             }
                         </MetricText>
                     </div>
-                    <Quantity>Quantity: {quantity}</Quantity>
+                    {
+                        modifiedQuantity &&
+                        <Quantity heavy color={primaryColor}>
+                            <span style={{color: '#222', fontWeight: 500}}>MOD Quantity</span>
+                            &nbsp;
+                            {modifiedQuantity}
+                        </Quantity>
+                    }
+                    <Quantity>OG Quantity {quantity}</Quantity>
                 </Grid>
                 <Grid item xs={1}>
+                    {
+                        modifiedStopLoss &&
+                        <MetricText heavy color={primaryColor}>
+                            ₹{Utils.formatMoneyValueMaxTwoDecimals(modifiedStopLoss)}
+                        </MetricText>
+                    }
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(stopLoss)}</MetricText>
                     <MetricText style={{color: typeColor}}>
                         {typeText}
@@ -238,16 +271,24 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                             height: '40px'
                         }}
                 >
-                    {
-                        shoudlShowActiveOrders &&
-                        <Button 
-                                small 
-                                color="secondary"
-                                onClick={() => this.props.selectPredictionIdForCancel(_id)}
-                        >
-                            Active Orders
-                        </Button>
-                    }
+                    <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                        {
+                            shoudlShowActiveOrders &&
+                            <Button 
+                                    small 
+                                    color="secondary"
+                                    onClick={() => this.props.selectPredictionIdForCancel(_id)}
+                            >
+                                Active Orders
+                            </Button>
+                        }
+                        {
+                            accumulated > 0 &&
+                            <ActivePredictionText>
+                                Active Prediction
+                            </ActivePredictionText>
+                        }
+                    </div>
                     <div 
                             style={{
                                 ...horizontalBox, 
@@ -257,7 +298,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                             }}
                     >
                         {
-                            accumulated > 0 &&
+                            // accumulated > 0 &&
                             <Button 
                                     small 
                                     color="secondary"
@@ -305,7 +346,7 @@ const Container = styled(Grid)`
 const MetricText = styled.h3`
     font-size: 13px;
     color: ${props => props.color || '#4B4A4A'};
-    font-weight: 400;
+    font-weight: ${props => props.heavy ? '700' : 400};
     text-align: start;
 `;
 
@@ -337,7 +378,12 @@ const Name = styled.h3`
 
 const Quantity = styled.h3`
     font-size: 12px;
-    color: #222;
-    font-weight: 500;
+    color: ${props => props.color || '#222'};
+    font-weight: ${props => props.heavy ? 700 : 500};
     text-align: start;
+`;
+
+const ActivePredictionText = styled.h3`
+    font-size: 12px;
+    color: #00C853;
 `;

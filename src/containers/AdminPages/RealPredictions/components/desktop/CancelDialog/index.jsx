@@ -116,6 +116,7 @@ export default class CancelDialog extends React.Component {
                 open={open}
                 onClose={this.props.onClose}
                 style={{padding: 0}}
+                maxWidth='xl'
             >
                 <SnackbarComponent 
                     openStatus={this.state.snackbar.open}

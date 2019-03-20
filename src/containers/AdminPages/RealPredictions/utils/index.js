@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import axios from 'axios';
+import moment from 'moment';
 import {fetchAjaxPromise, Utils} from '../../../../utils';
 
 const {requestUrl} = require('../../../../localConfig');
@@ -84,4 +85,17 @@ export const cancelOrder = (data) => {
         data,
         headers: Utils.getAuthTokenHeader()
     })
+}
+
+export const getLastestAdminMoficiation = (prediction = {}, key = 'target') => {
+    let adminModifications = _.get(prediction, 'adminModifications', []);
+    adminModifications = _.orderBy(adminModifications, adminModification => {
+        return moment(adminModification.date);
+    }, ['desc']);
+    
+    if (adminModifications.length > 0) {
+        return adminModifications[0][key];
+    } else {
+        return null;
+    }
 }

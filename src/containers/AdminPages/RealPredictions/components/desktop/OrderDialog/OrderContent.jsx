@@ -13,29 +13,40 @@ import CustomOutlinedInput from '../../../../../../components/input/CustomOutlin
 import SnackbarComponent from '../../../../../../components/Alerts/SnackbarComponent';
 import DialogMetric from '../../common/DialogMetrics';
 import {InputHeader, MetricContainer} from '../../common/InputMisc';
-import {horizontalBox, verticalBox, primaryColor} from '../../../../../../constants';
+import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../../../../constants';
 import {Utils, handleCreateAjaxError} from '../../../../../../utils';
-import {placeOrder} from '../../../utils';
+import {placeOrder, getLastestAdminMoficiation} from '../../../utils';
 
 const orderTypes = ['BUY', 'SELL'];
+const marketTimeTypes = ['NOW', 'CLOSE'];
 
 class OrderContent extends React.Component {
     constructor(props) {
         super(props);
         const prediction = _.get(props, 'prediction', {});
+        const direction = _.get(props, 'direction', 'buy');
+
+        const quantity = _.get(prediction, 'quantity', 0);
+        const target = _.get(prediction, 'target', 0);
+        const stopLoss = _.get(prediction, 'stopLoss', 0);
+
+        const modifiedQuantity = getLastestAdminMoficiation(prediction, 'quantity');
+        const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');
+        const modifiedStopLoss = getLastestAdminMoficiation(prediction, 'stopLoss');
         
         this.state = {
-            quantity: _.get(prediction, 'quantity', 0),
-            type: orderTypes[0],
+            quantity: modifiedQuantity || quantity,
+            type: direction === 'buy' ? orderTypes[0] : orderTypes[1],
             price: _.get(prediction, 'lastPrice', 0),
-            profitLimitPrice: _.get(prediction, 'target', 0),
-            stopLossPrice: _.get(prediction, 'stopLoss', 0),
+            profitLimitPrice: modifiedTarget || target,
+            stopLossPrice: modifiedStopLoss || stopLoss,
             confirmationDialogOpen: false,
             loading: false,
             snackbar: {
                 open: false,
                 message: ''
-            }
+            },
+            marketOrderTime: marketTimeTypes[0]
         }
     }
 
@@ -45,6 +56,11 @@ class OrderContent extends React.Component {
         }
 
         return false;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const direction = _.get(nextProps, 'direction', 'buy');
+        this.setState({type: direction === 'buy' ? orderTypes[0] : orderTypes[1]});
     }
 
     onOrderTypeRadioChanged = value => {
@@ -84,11 +100,11 @@ class OrderContent extends React.Component {
         return <DialogComponent order={order} />;
     }
 
-    placeBracketOrder = () => {
+    placeOrder = () => {
         // Closing Confirmation Dialog
         this.toggleConfirmationDialog();
 
-        const {prediction = {}, orderType = 'market'} = this.props;
+        let {prediction = {}, orderType = 'market'} = this.props;
         const {
             quantity = 0,
             price = 0,
@@ -99,6 +115,12 @@ class OrderContent extends React.Component {
         const symbol = _.get(prediction, 'symbol', '');
         const predictionId = _.get(prediction, 'predictionId', null);
         const advisorId = _.get(prediction, 'advisorId', null);
+
+        orderType = orderType === 'market'
+            ?   this.state.marketOrderTime === 'NOW'
+                    ?   'market'
+                    :   'marketClose'
+            :   orderType;
         
         const data = {
             predictionId,
@@ -143,21 +165,13 @@ class OrderContent extends React.Component {
         }});
     }
 
-    getLastestAdminMoficiation = (key = 'target') => {
-        let adminModifications = _.get(this.props, 'prediction.adminModifications', []);
-        adminModifications = _.orderBy(adminModifications, adminModification => {
-            return moment(adminModification.date);
-        }, ['desc']);
-        console.log('Admin Modifications ', adminModifications);
-        if (adminModifications.length > 0) {
-            return adminModifications[0][key];
-        } else {
-            return null;
-        }
+    onMarketOrdeTimeChange = (value = 0) => {
+        this.setState({marketOrderTime: marketTimeTypes[value]});
     }
 
     render() {
-        const {prediction = {},orderType = 'market'} = this.props;
+        const {prediction = {},orderType = 'market', direction = 'buy'} = this.props;
+        const {accumulated = null} = prediction;
         const {
             type = orderTypes[0], 
             quantity = 0,
@@ -167,11 +181,22 @@ class OrderContent extends React.Component {
             loading = false
         } = this.state;
 
-        const modifiedTarget = this.getLastestAdminMoficiation('target');
-        const modifiedQuantity = this.getLastestAdminMoficiation('quantity');
-        const modifiedStopLoss = this.getLastestAdminMoficiation('stopLoss');
+        let warningText = null;
+
+        if (direction === 'buy') {
+            warningText = (accumulated !== null && accumulated > 0)
+                ?   '* There are already buy orders present for this prediction'
+                :   null;
+        } else {
+
+        }
+
+        const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');
+        const modifiedQuantity = getLastestAdminMoficiation(prediction, 'quantity');
+        const modifiedStopLoss = getLastestAdminMoficiation(prediction, 'stopLoss');
 
         const shouldShowPrice = orderType !== 'market' && orderType !== 'marketClose';
+        const shouldShowMarketType = orderType === 'market'
         const shouldProfitLimitPrice = orderType === 'bracket';
         const shouldStopLossPrice = orderType === 'bracket';
 
@@ -179,6 +204,8 @@ class OrderContent extends React.Component {
         const defaultPrice = _.get(prediction, 'lastPrice', 0);
         const defaultProfitLimitPrice = _.get(prediction, 'target', 0);
         const defaultStopLossPrice = _.get(prediction, 'stopLoss', 0);
+
+        const disabledRadioItem = direction === 'buy' ? 1 : 0;
 
         return (
             <Grid container>
@@ -190,7 +217,7 @@ class OrderContent extends React.Component {
                 <ConfirmationDialog 
                     open={this.state.confirmationDialogOpen}
                     onClose={this.toggleConfirmationDialog}
-                    createPrediction={this.placeBracketOrder}
+                    createPrediction={this.placeOrder}
                     question='Are you sure you want to place this BRACKET order ?'
                     renderContent={this.renderDialogComponent}
 
@@ -204,9 +231,16 @@ class OrderContent extends React.Component {
                             onChange={this.onOrderTypeRadioChanged}
                             CustomRadio={CustomRadio}
                             small
+                            disabledItems={[disabledRadioItem]}
                         />
                     </MetricContainer>
                 </Grid>
+                {
+                    warningText &&
+                    <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px'}}>
+                        <Warning>{warningText}</Warning>
+                    </Grid>
+                }
                 <Grid item xs={6}>
                     <MetricContainer>
                         <InputHeader style={{marginBottom: '0px'}}>Quantity - {defaultQuantity}</InputHeader>
@@ -264,6 +298,21 @@ class OrderContent extends React.Component {
                                 onChange={e => this.onValueChanged(e.target.value, 'stopLossPrice')}
                                 type="number"
                                 value={stopLossPrice}
+                            />
+                        </MetricContainer>
+                    }
+                </Grid>
+                <Grid item xs={6}>
+                    {
+                        shouldShowMarketType &&
+                        <MetricContainer>
+                            <InputHeader>Time</InputHeader>
+                            <RadioGroup 
+                                items={marketTimeTypes}
+                                defaultSelected={this.state.marketOrderTime === 'NOW' ? 0 : 1}
+                                onChange={this.onMarketOrdeTimeChange}
+                                CustomRadio={CustomRadio}
+                                small
                             />
                         </MetricContainer>
                     }
@@ -373,4 +422,10 @@ const Metric = styled.h3`
     font-weight: 500;
     margin-bottom: 5px;
     margin-top: 3px;
+`;
+
+const Warning = styled.h3`
+    font-size: 12px;
+    color: ${metricColor.negative};
+    font-weight: 500;
 `;

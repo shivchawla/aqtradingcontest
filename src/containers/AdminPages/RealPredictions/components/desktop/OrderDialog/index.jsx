@@ -4,6 +4,8 @@ import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import RadioGroup from '../../../../../../components/selections/RadioGroup';
+import CustomRadio from '../../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import DialogComponent from '../../../../../../components/Alerts/DialogComponent';
 import ActionIcon from '../../../../../TradingContest/Misc/ActionIcons';
 import OrderContent from './OrderContent';
@@ -44,7 +46,9 @@ export default class OrderDialog extends React.Component {
                         boxSizing: 'border-box'
                     }}
             >
-                <Symbol style={{marginLeft: '10px'}}>Place {orderType.toUpperCase()} Order for - {symbol}</Symbol>
+                <Symbol style={{marginLeft: '10px'}}>
+                    Place {orderType.toUpperCase()} Order for - {symbol}
+                </Symbol>
                 <ActionIcon 
                     onClick={this.props.onClose} 
                     color='#fff'
@@ -54,7 +58,7 @@ export default class OrderDialog extends React.Component {
         );
     }
 
-    onTabChanged = (e, index) => {
+    onTabChanged = (index) => {
         this.setState({selectedView: index});
     }
 
@@ -82,29 +86,25 @@ export default class OrderDialog extends React.Component {
 
     render() {
         const {open = false, selectedPredictionForOrder = {}} = this.props;
+        const direction = _.get(selectedPredictionForOrder, 'orderType', 'buy');
+        const orderTypes = ['Bracket', 'Market', 'Limit', 'Stop Limit'];
 
         return (
             <DialogComponent
                     open={open}
                     onClose={this.props.onClose}
                     style={{padding: 0}}
+                    maxWidth='xl'
             >
                 {this.renderDialogHeader()}
                 <Container>
-                    <Grid item xs={12}>
-                        <Tabs
-                                value={this.state.selectedView}
-                                onChange={this.onTabChanged}
-                                indicatorColor="primary"
-                                variant="scrollable"
-                                scrollButtons="auto"
-                        >
-                            <Tab label='Bracket'/>
-                            <Tab label='Market'/>
-                            <Tab label='Limit'/>
-                            <Tab label='Stop Limit'/>
-                            <Tab label='Market Close'/>
-                        </Tabs>
+                    <Grid item xs={12} style={{marginTop: '20px'}}>
+                        <RadioGroup 
+                            items={orderTypes}
+                            defaultSelected={this.state.selectedView}
+                            CustomRadio={CustomRadio}
+                            onChange={this.onTabChanged}
+                        />
                     </Grid>
                     <Grid 
                             item 
@@ -114,6 +114,7 @@ export default class OrderDialog extends React.Component {
                         <OrderContent 
                             prediction={selectedPredictionForOrder}
                             orderType={this.getOrderType(this.state.selectedView)}
+                            direction={direction}
                         />
                     </Grid>
                 </Container>

@@ -26,7 +26,13 @@ export default class RadioGroup extends React.Component {
     }
 
     render() {
-        const {items = ['One', 'Two'], CustomRadio = null, disabled = false, small = false} = this.props;
+        const {
+            items = ['One', 'Two'], 
+            CustomRadio = null, 
+            disabled = false, 
+            small = false,
+            disabledItems=[]
+        } = this.props;
         const CustomRadioComponent = CustomRadio !== null ? CustomRadio : RadioComponent;
 
         return (
@@ -40,6 +46,8 @@ export default class RadioGroup extends React.Component {
             >
                 {
                     items.map((item, index) => {
+                        const isRadioItemDisabled = _.findIndex(disabledItems, disabledItem => disabledItem === index) > -1;
+
                         return (
                             <CustomRadioComponent 
                                 key={index}
@@ -47,7 +55,7 @@ export default class RadioGroup extends React.Component {
                                 checked={this.state.selected === index}
                                 onChange={() => this.handleChange(index)}
                                 fontSize={this.props.fontSize || '14px'}
-                                disabled={disabled}
+                                disabled={disabled || isRadioItemDisabled}
                                 small={small}
                             />
                         );

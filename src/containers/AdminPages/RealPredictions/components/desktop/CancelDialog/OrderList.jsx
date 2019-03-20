@@ -65,8 +65,14 @@ const OrderListHeader = () => {
                     boxSizing: 'border-box'
                 }}
         >
-            <Grid item xs={3}>
+            <Grid item xs={2}>
                 <HeaderText>Order</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Qty</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Acc.</HeaderText>
             </Grid>
             <Grid item xs={2}>
                 <HeaderText>Active</HeaderText>
@@ -74,8 +80,8 @@ const OrderListHeader = () => {
             <Grid item xs={2}>
                 <HeaderText>Complete</HeaderText>
             </Grid>
-            <Grid item xs={3}>
-                <HeaderText>Broker</HeaderText>
+            <Grid item xs={2}>
+                <HeaderText>Status</HeaderText>
             </Grid>
         </Grid>
     );

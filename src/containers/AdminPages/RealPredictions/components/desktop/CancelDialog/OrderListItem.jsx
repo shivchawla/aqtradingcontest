@@ -19,7 +19,9 @@ export default class OrderListItem extends React.Component {
             orderId,
             activeStatus = false,
             brokerStatus = null,
-            completeStatus = false
+            completeStatus = false,
+            accQuantity = 0,
+            totalQuantity
         } = order;
         const hideCancelButton  = brokerStatus.toLowerCase() === 'cancelled';
         
@@ -29,8 +31,14 @@ export default class OrderListItem extends React.Component {
                     style={containerStyle}
                     alignItems="center"
             >
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                     <Metric>{orderId}</Metric>
+                </Grid>
+                <Grid item xs={1}>
+                    <Metric>{totalQuantity}</Metric>
+                </Grid>
+                <Grid item xs={1}>
+                    <Metric>{accQuantity}</Metric>
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>{activeStatus ? 'True' : 'False'}</Metric>
@@ -38,7 +46,7 @@ export default class OrderListItem extends React.Component {
                 <Grid item xs={2}>
                     <Metric>{completeStatus ? 'True' : 'False'}</Metric>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                     <Metric>{brokerStatus}</Metric>
                 </Grid>
                 <Grid item xs={2}>

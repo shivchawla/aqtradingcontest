@@ -255,11 +255,10 @@ class RealPredictions extends React.Component {
     processRealtimeMessage = msg => {
         const currentDate = moment().format(dateFormat);
         const selectedDate = this.state.selectedDate.format(dateFormat);
-        console.log('Realtime Data', msg);
+
         if (_.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
-                console.log('Realtime Data', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
@@ -351,7 +350,9 @@ class RealPredictions extends React.Component {
             stopLoss: _.get(prediction, 'stopLoss', 0),
             target: _.get(prediction, 'target', 0),
             orderType: type,
-            adminModifications: _.get(prediction, 'adminModifications', [])
+            adminModifications: _.get(prediction, 'adminModifications', []),
+            accumulated: _.get(prediction, 'accumulated', null),
+            orders: _.get(prediction, 'orders', [])
         };
 
         this.setState({selectedPredictionForOrder: selectedPrediction}, () => {
@@ -404,8 +405,6 @@ class RealPredictions extends React.Component {
         const selectedUnformattedPredictionIndex = _.findIndex(unformattedPredictions, unformattedPrediction => (
             unformattedPrediction._id === selectedPredictionId
         ));
-        console.log('getOrderActivityForSelectedPrediction');
-        console.log(_.get(unformattedPredictions, `[${selectedUnformattedPredictionIndex}].orderActivity`, []));
 
         return _.get(unformattedPredictions, `[${selectedUnformattedPredictionIndex}].orderActivity`, []);
     }
