@@ -362,6 +362,7 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         adminModifications: _.get(prediction, 'adminModifications', []),
         status: _.get(prediction, 'status', {}),
         orders: _.get(prediction, 'current.orders', []),
+        orderActivity: _.get(prediction, 'orderActivity', []),
         adminActivity: _.get(prediction, 'adminActivity', []),
         accumulated: _.get(prediction, 'current.accumulated', null),
         advisorName: `${_.get(prediction, 'advisor.user.firstName', '')} ${_.get(prediction, 'advisor.user.lastName')}`,

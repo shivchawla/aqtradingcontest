@@ -21,17 +21,25 @@ export default class OrderListItem extends React.Component {
             brokerStatus = null,
             completeStatus = false,
             accQuantity = 0,
-            totalQuantity
+            totalQuantity,
+            direction = 'BUY',
+            orderType = null,
+            activityType = null
         } = order;
         const hideCancelButton  = brokerStatus.toLowerCase() === 'cancelled';
         
         return (
             <Grid 
                     container
-                    style={containerStyle}
+                    style={{
+                        ...containerStyle,
+                        border: direction === 'BUY'
+                            ?   '2px solid #5bd05b'
+                            :   '2px solid #ffb8b8'
+                    }}
                     alignItems="center"
             >
-                <Grid item xs={2}>
+                <Grid item xs={1}>
                     <Metric>{orderId}</Metric>
                 </Grid>
                 <Grid item xs={1}>
@@ -41,15 +49,21 @@ export default class OrderListItem extends React.Component {
                     <Metric>{accQuantity}</Metric>
                 </Grid>
                 <Grid item xs={2}>
-                    <Metric>{activeStatus ? 'True' : 'False'}</Metric>
+                    <Metric>{activityType}</Metric>
                 </Grid>
                 <Grid item xs={2}>
+                    <Metric>{orderType}</Metric>
+                </Grid>
+                <Grid item xs={1}>
+                    <Metric>{activeStatus ? 'True' : 'False'}</Metric>
+                </Grid>
+                <Grid item xs={1}>
                     <Metric>{completeStatus ? 'True' : 'False'}</Metric>
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>{brokerStatus}</Metric>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={1}>
                     {
                         !hideCancelButton &&
                         <ActionIcon 

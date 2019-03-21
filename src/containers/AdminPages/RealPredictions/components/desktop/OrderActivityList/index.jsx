@@ -71,7 +71,7 @@ const OrderActivityListHeader = () => {
                 <HeaderText>Id</HeaderText>
             </Grid>
             <Grid item xs={2}>
-            <HeaderText>Qty</HeaderText>
+                <HeaderText>Qty</HeaderText>
             </Grid>
             <Grid item xs={2}>
                 <HeaderText>Type</HeaderText>

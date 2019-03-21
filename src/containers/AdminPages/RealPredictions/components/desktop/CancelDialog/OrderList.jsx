@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import OrderListItem from './OrderListItem';
 import { horizontalBox } from '../../../../../../constants';
 
-export default class TradeActivityList extends React.Component {
+export default class OrderList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -66,7 +66,7 @@ const OrderListHeader = () => {
                     boxSizing: 'border-box'
                 }}
         >
-            <Grid item xs={2}>
+            <Grid item xs={1}>
                 <HeaderText>Order</HeaderText>
             </Grid>
             <Grid item xs={1}>
@@ -76,9 +76,15 @@ const OrderListHeader = () => {
                 <HeaderText>Acc.</HeaderText>
             </Grid>
             <Grid item xs={2}>
-                <HeaderText>Active</HeaderText>
+                <HeaderText>Activity Type</HeaderText>
             </Grid>
             <Grid item xs={2}>
+                <HeaderText>Order Type</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Active</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
                 <HeaderText>Complete</HeaderText>
             </Grid>
             <Grid item xs={2}>

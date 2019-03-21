@@ -355,7 +355,8 @@ class RealPredictions extends React.Component {
             orderType: type,
             adminModifications: _.get(prediction, 'adminModifications', []),
             accumulated: _.get(prediction, 'accumulated', null),
-            orders: _.get(prediction, 'orders', [])
+            orders: _.get(prediction, 'orders', []),
+            skippedByAdmin: _.get(prediction, 'skippedByAdmin', false)
         };
 
         this.setState({selectedPredictionForOrder: selectedPrediction}, () => {
@@ -376,13 +377,15 @@ class RealPredictions extends React.Component {
         const requiredPredictionIndex = _.findIndex(predictions, prediction => prediction._id === this.state.selectedPredictionIdForCancel);
         if (requiredPredictionIndex > -1) {
             const requiredPrediction = predictions[requiredPredictionIndex];
+            console.log('Required Prediction', requiredPrediction);
 
             return {
                 predictionId: _.get(requiredPrediction, '_id', null),
                 advisorId: _.get(requiredPrediction, 'advisor', null),
                 name: _.get(requiredPrediction, 'name', ''),
                 symbol: _.get(requiredPrediction, 'symbol', ''),
-                orders: _.get(requiredPrediction, 'orders', [])
+                orders: _.get(requiredPrediction, 'orders', []),
+                orderActivity: _.get(requiredPrediction, 'orderActivity', [])
             }
         } else {
             return {};

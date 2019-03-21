@@ -46,11 +46,13 @@ export default class CancelDialog extends React.Component {
 
     cancelOrderForPrediction = () => {
         this.toggleConfirmationDialog();
+        const predictionId = _.get(this.props, 'selectedPredictionForCancel.predictionId', null);
         const orderId = _.get(this.state, 'selectedOrderId', null);
         const advisorId = _.get(this.props, 'selectedPredictionForCancel.advisorId', null);
         const data = {
             orderId,
-            advisorId
+            advisorId,
+            predictionId
         };
 
         this.setState({loading: true});
@@ -107,9 +109,33 @@ export default class CancelDialog extends React.Component {
         );
     }
 
+    processedOrders = () => {
+        const {selectedPredictionForCancel = {}} = this.props;
+        const orders = _.get(selectedPredictionForCancel, 'orders', []);
+        const orderActivity = _.get(selectedPredictionForCancel, 'orderActivity', []);
+
+        return orders.map(order => {
+            const orderId = _.get(order, 'orderId', null);
+            const orderActivityIndex = _.findIndex(orderActivity, orderActivityItem => orderActivityItem.orderId === orderId);
+            const activityType = _.get(orderActivity, `[${orderActivityIndex}].activityType`, null);
+            const quantity = _.get(orderActivity, `[${orderActivityIndex}].brokerMessage.order.totalQuantity`, null);
+            const orderStatus = _.get(orderActivity, `[${orderActivityIndex}].brokerMessage.orderState.status`, null);
+            const direction = _.get(orderActivity, `[${orderActivityIndex}].brokerMessage.order.action`, null);
+            const orderType = _.get(orderActivity, `[${orderActivityIndex}].brokerMessage.order.orderType`, null);
+
+            return {
+                ...order,
+                activityType,
+                quantity,
+                orderStatus,
+                direction,
+                orderType
+            }
+        })
+    }
+
     render() {
         const {open = false, selectedPredictionForCancel = {}} = this.props;
-        const orders = _.get(selectedPredictionForCancel, 'orders', [])
 
         return (
             <DialogComponent
@@ -137,7 +163,7 @@ export default class CancelDialog extends React.Component {
                 {this.renderDialogHeader()}
                 <Container container>
                     <OrderList 
-                        orders={orders}
+                        orders={this.processedOrders()}
                         selectOrderToCancel={this.selectOrderToCancel}
                     />
                 </Container>
@@ -150,7 +176,7 @@ const Container = styled(Grid)`
     overflow: hidden;
     overflow-y: scroll;
     padding: 10px;
-    min-width: 42vw;
+    min-width: 62vw;
     min-height: 54vh;
     display: flex;
     flex-direction: column;

@@ -25,9 +25,9 @@ export default class AdminActivityListItem extends React.Component {
             obj = {}
         } = adminActivity;
         const direction = _.get(obj, 'tradeDirection', 'BUY');
-        const quantity = _.get(obj, 'quantity', 0);
-        const price = _.get(obj, 'price', 0);
-        const orderType = _.get(obj, 'orderType', '');
+        const quantity = _.get(obj, 'quantity', '-');
+        const price = _.get(obj, 'price', '-');
+        const orderType = _.get(obj, 'orderType', '-');
         
         return (
             <Grid 

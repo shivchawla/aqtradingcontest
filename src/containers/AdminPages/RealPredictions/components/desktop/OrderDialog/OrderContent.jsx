@@ -193,6 +193,11 @@ class OrderContent extends React.Component {
         } = this.state;
 
         let warningText = null;
+        const skippedByAdmin = _.get(prediction, 'skippedByAdmin', false);
+
+        const skippedWarningText = skippedByAdmin
+            ?   '* You have already skipped this stock'
+            :   null;
 
         if (direction === 'buy') {
             warningText = (accumulated !== null && accumulated > 0)
@@ -246,6 +251,12 @@ class OrderContent extends React.Component {
                         />
                     </MetricContainer>
                 </Grid>
+                {
+                    skippedWarningText &&
+                    <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px'}}>
+                        <Warning>{skippedWarningText}</Warning>
+                    </Grid>
+                }
                 {
                     warningText &&
                     <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px'}}>
