@@ -15,7 +15,8 @@ export default class TradeActivityList extends React.Component {
     }
 
     render() {
-        const {orders = []} = this.props;
+        let {orders = []} = this.props;
+        orders = _.orderBy(orders, 'orderId', ['asc']);
 
         return (
             <Grid container>
