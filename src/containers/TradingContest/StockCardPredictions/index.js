@@ -12,16 +12,18 @@ import LoaderComponent from '../Misc/Loader';
 import Snackbar from '../../../components/Alerts/SnackbarComponent';
 import LoginBottomSheet from '../LoginBottomSheet';
 import ConfirmationDialog from './components/common/ConfirmationDialog';
-import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
+import {fetchAjaxPromise, handleCreateAjaxError, Utils, isHoliday} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
 import {formatIndividualStock, constructPrediction, getConditionalNetValue, getConditionalMaxValue, getConditionalItems} from './utils';
 import {getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
 import {onPredictionCreated, onSettingsClicked} from '../constants/events';
 import {conditionalTypeItems} from './constants';
+import {isMarketOpen} from '../utils';
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
+const marketTrading = !isHoliday() && isMarketOpen().status;
 
 class StockCardPredictions extends React.Component {
     fetchStocks = null;
@@ -67,10 +69,14 @@ class StockCardPredictions extends React.Component {
         }
     })
 
+    /**
+     * Method that's called to initialize the default settings stored in localstorage
+     */
     initializeDefaultStockData = () => new Promise((resolve, reject) => {
         try {
             const defaultStockData = Utils.getObjectFromLocalStorage('defaultSettings');
             const valueTypePct = _.get(defaultStockData, 'valueTypePct', true);
+            // If market is not trading then conditonalType should be cross by default
 
             resolve({
                 benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_500'),
@@ -83,7 +89,9 @@ class StockCardPredictions extends React.Component {
                 investment: _.get(defaultStockData, 'investment', 50000),
                 conditional: _.get(defaultStockData, 'conditional', false),
                 conditionalValue: valueTypePct ? 0.25 : 100000, // deliberately putting a very high value such that it will be converted the second value from the items
-                conditionalType: _.get(defaultStockData, 'conditionalType', 'NOW'),
+                conditionalType: marketTrading 
+                    ?   _.get(defaultStockData, 'conditionalType', 'NOW')
+                    :   'CROSS',
                 valueTypePct: _.get(defaultStockData, 'valueTypePct', true),
                 realPrediction: false
             });
