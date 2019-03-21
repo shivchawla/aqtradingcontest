@@ -180,6 +180,43 @@ class OrderContent extends React.Component {
         this.setState({marketOrderTime: marketTimeTypes[value]});
     }
 
+    processedOrders = () => {
+        const {prediction = {}} = this.props;
+        const orders = _.get(prediction, 'orders', []);
+        const orderActivity = _.get(prediction, 'orderActivity', []);
+
+        return orders.map(order => {
+            const orderId = _.get(order, 'orderId', null);
+            const orderActivityIndex = _.findIndex(orderActivity, orderActivityItem => orderActivityItem.orderId === orderId);
+            const activityType = _.get(orderActivity, `[${orderActivityIndex}].activityType`, null);
+            const quantity = _.get(orderActivity, `[${orderActivityIndex}].brokerMessage.order.totalQuantity`, null);
+            const orderStatus = _.get(orderActivity, `[${orderActivityIndex}].brokerMessage.orderState.status`, null);
+            const direction = _.get(orderActivity, `[${orderActivityIndex}].brokerMessage.order.action`, null);
+            const orderType = _.get(orderActivity, `[${orderActivityIndex}].brokerMessage.order.orderType`, null);
+
+            return {
+                ...order,
+                activityType,
+                quantity,
+                orderStatus,
+                direction,
+                orderType
+            }
+        })
+    }
+
+    hasActiveBuyOrders = () => {
+        const orders = this.processedOrders();
+        const activeBuyOrders = orders.filter(order => {
+            const completeStatus = _.get(order, 'completeStatus', false);
+            const direction = _.get(order, 'direction', null);
+
+            return !completeStatus && direction.toUpperCase() === 'BUY';
+        });
+
+        return activeBuyOrders.length > 0;
+    }
+
     render() {
         const {prediction = {},orderType = 'market', direction = 'buy'} = this.props;
         const {accumulated = null} = prediction;
@@ -199,12 +236,10 @@ class OrderContent extends React.Component {
             ?   '* You have already skipped this stock'
             :   null;
 
-        if (direction === 'buy') {
-            warningText = (accumulated !== null && accumulated > 0)
-                ?   '* There are already buy orders present for this prediction'
-                :   null;
+        if (this.hasActiveBuyOrders()) {
+            warningText = '* There are already buy orders present for this prediction'
         } else {
-
+            warningText = null;
         }
 
         const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');

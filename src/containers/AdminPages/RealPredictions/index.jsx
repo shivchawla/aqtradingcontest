@@ -356,6 +356,7 @@ class RealPredictions extends React.Component {
             adminModifications: _.get(prediction, 'adminModifications', []),
             accumulated: _.get(prediction, 'accumulated', null),
             orders: _.get(prediction, 'orders', []),
+            orderActivity: _.get(prediction, 'orderActivity', []),
             skippedByAdmin: _.get(prediction, 'skippedByAdmin', false)
         };
 
@@ -377,7 +378,6 @@ class RealPredictions extends React.Component {
         const requiredPredictionIndex = _.findIndex(predictions, prediction => prediction._id === this.state.selectedPredictionIdForCancel);
         if (requiredPredictionIndex > -1) {
             const requiredPrediction = predictions[requiredPredictionIndex];
-            console.log('Required Prediction', requiredPrediction);
 
             return {
                 predictionId: _.get(requiredPrediction, '_id', null),

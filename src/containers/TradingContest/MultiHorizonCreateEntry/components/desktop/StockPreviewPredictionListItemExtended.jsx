@@ -103,6 +103,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             quantity = 0,
             adminModifications = [],
             orders = [],
+            orderActivity = [],
             adminActivity = [],
             skippedByAdmin = false
         } = this.props.prediction;
@@ -121,7 +122,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             orders,
             accumulated,
             adminActivity,
-            skippedByAdmin
+            skippedByAdmin,
+            orderActivity
         }
 
     }
