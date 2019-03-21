@@ -2,20 +2,19 @@ import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import EditTradeActivity from './EditTradeActivity';
 import TradeActivityList from './TradeActivityList';
 import OrderActivityList from './OrderActivityList'
+import AdminActivityList from './AdminActivityList';
 import AdminModificationsList from './AdminModificationsList';
 import EditPrediction from './EditPrediction';
 import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import {horizontalBox} from '../../../../../constants';
 
-const viewItems = ['Orders', 'Trades', 'Add Activity', 'Modifications', 'Modify'];
+const viewItems = ['Orders', 'Trades', 'Add Activity', 'Modifications', 'Modify', 'Admin Activity'];
 
 export default class TradeActivityDialog extends React.Component {
     constructor(props) {
@@ -127,6 +126,12 @@ export default class TradeActivityDialog extends React.Component {
                                 updateTradePrediction={this.props.updateTradePrediction}
                                 adminModifications={_.get(selectedPredictionForTradeActivity, 'adminModifications', [])}
                             />  
+                        }
+                        {
+                            this.state.selectedView === 5 &&
+                            <AdminActivityList 
+                                adminActivity={_.get(this.props, 'selectedPredictionForTradeActivity.adminActivity', [])}
+                            />
                         }
                     </Grid>
                 </Container>

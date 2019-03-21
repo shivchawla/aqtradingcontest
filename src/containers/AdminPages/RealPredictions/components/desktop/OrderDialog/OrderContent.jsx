@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
-import moment from 'moment';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import {withRouter} from 'react-router-dom';
@@ -19,6 +18,7 @@ import {placeOrder, getLastestAdminMoficiation} from '../../../utils';
 
 const orderTypes = ['BUY', 'SELL'];
 const marketTimeTypes = ['NOW', 'CLOSE'];
+let messageTimeout = null;
 
 class OrderContent extends React.Component {
     constructor(props) {
@@ -46,7 +46,8 @@ class OrderContent extends React.Component {
                 open: false,
                 message: ''
             },
-            marketOrderTime: marketTimeTypes[0]
+            marketOrderTime: marketTimeTypes[0],
+            message: ''
         }
     }
 
@@ -56,6 +57,14 @@ class OrderContent extends React.Component {
         }
 
         return false;
+    }
+
+    onMessageInputChange = e => {
+        const value = e.target.value;
+        clearTimeout(messageTimeout);
+        messageTimeout = setTimeout(() => {
+            this.setState({message: value});
+        }, 500);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -110,7 +119,8 @@ class OrderContent extends React.Component {
             price = 0,
             stopLossPrice,
             profitLimitPrice = 0,
-            type
+            type,
+            message = ''
         } = this.state;
         const symbol = _.get(prediction, 'symbol', '');
         const predictionId = _.get(prediction, 'predictionId', null);
@@ -125,8 +135,9 @@ class OrderContent extends React.Component {
         const data = {
             predictionId,
             advisorId,
+            message,
             order: {
-                symbol: 'FB',
+                symbol,
                 orderType,
                 quantity: Number(quantity),
                 price: Number(price),
@@ -316,6 +327,15 @@ class OrderContent extends React.Component {
                             />
                         </MetricContainer>
                     }
+                </Grid>
+                <Grid item xs={12}>
+                    <MetricContainer>
+                        <InputHeader>Admin Message</InputHeader>
+                        <CustomOutlinedInput
+                            style={{width: '400px'}}
+                            onChange={this.onMessageInputChange}
+                        />
+                    </MetricContainer>
                 </Grid>
                 <div
                         style={{

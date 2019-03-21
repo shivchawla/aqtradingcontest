@@ -5,8 +5,10 @@ import Icon from '@material-ui/core/Icon';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import ErrorIcon from '@material-ui/icons/Error';
 import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import {Utils} from '../../../../../utils';
+import Tag from '../../../../../components/Display/Tag';
 import {getLastestAdminMoficiation} from '../../../../AdminPages/RealPredictions/utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
@@ -100,7 +102,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             lastPrice = 0,
             quantity = 0,
             adminModifications = [],
-            orders = []
+            orders = [],
+            adminActivity = []
         } = this.props.prediction;
 
         return {
@@ -115,37 +118,74 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             adminModifications,
             quantity,
             orders,
-            accumulated
+            accumulated,
+            adminActivity
         }
 
+    }
+
+    hasActiveOrders = () => {
+        const {prediction = {}} = this.props;
+        const {accumulated = null, orders = []} = prediction;
+
+        const shoudlShowActiveOrders = accumulated > 0 || 
+            (orders.filter(order => order.activeStatus === true).length > 0);
+
+        return shoudlShowActiveOrders;
+    }
+
+    isPredictionEndingToday = () => {
+        const {prediction = {}} = this.props;
+        const {endDate = null} = prediction;
+
+        return moment().isSame(moment(endDate));
+    }
+
+    hasPredictionEnded = () => {
+        const {prediction = {}} = this.props;
+        const {endDate = null} = prediction;
+        
+        return moment().isAfter(moment(endDate));
+    }
+
+    // If user exit is true and order active then show exclamation sign, something is going wrong
+    shouldShowUserExitedActiveOrdersWarning = () => {
+        const userExited = this.getIconConfig().status.toLowerCase() === 'exited';
+
+        return userExited && this.hasActiveOrders();
+    }
+
+    // If predictions are ending today and prediction has active orders
+    shouldShowEndingTodayActiveOrdersWarning = () => {
+        return this.isPredictionEndingToday() && this.hasActiveOrders();
+    }
+
+    // If prediction has ended and there are still active orders. Then warning should be showm
+    shouldShowPredictionEndedActiveOrdersWarning = () => {
+        return this.hasPredictionEnded() && this.hasActiveOrders();
     }
 
     render() {
         const {prediction = {}} = this.props;
         const {
-            horizon = 1, 
             investment = 0, 
             target = 1, 
             type = 'buy', 
             symbol = '', 
-            locked = false, 
             avgPrice = 0, 
-            startDate = null, 
             createdDate = null,
             endDate = null,
-            targetAchieved = false,
-            active = false,
             lastPrice = 0,
             status ={},
             _id = null,
             triggered = false,
-            conditional = false,
             name = '',
             stopLoss = 0,
             quantity = 0,
             accumulated = null,
-            orders = [],
-            advisorName = ''
+            advisorName = '',
+            advisor = null,
+            skippedByAdmin = false
         } = prediction;
 
         const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');
@@ -168,16 +208,17 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                 ? metricColor.negative
                 : metricColor.neutral;
 
-        const shoudlShowActiveOrders = orders.filter(order => order.activeStatus === true).length > 0;
-
         return (
             <Container 
                     container 
                     alignItems="center"
                     style={{
                         border: '3px solid',
-                        borderColor: (this.shouldShowUnreadStatus()) ? '#5bd05b' : 'transparent',
-                        paddingTop: '5px'
+                        borderColor: this.shouldShowUnreadStatus() ? '#5bd05b' : 'transparent',
+                        paddingTop: '5px',
+                        boxShadow: this.shouldShowUnreadStatus() 
+                            ? 'none' 
+                            : '0 4px 16px rgba(0,0,0,0.2)'
                     }}
             >
                 <Grid 
@@ -252,9 +293,6 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     </MetricText>
                 </Grid>
                 <Grid item xs={1} style={{...verticalBox, alignItems: 'center', justifyContent: 'center'}}>
-                    <MetricText style={{color: iconConfig.color, fontWeight: 500}}>
-                        {iconConfig.status}
-                    </MetricText>
                     <ActionIcon 
                         type='receipt'
                         onClick={() => this.props.selectPredictionForTradeActivity(this.getSelectedPrediction())}
@@ -272,21 +310,67 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                         }}
                 >
                     <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                        {/* Active Orders Tag */}
                         {
-                            shoudlShowActiveOrders &&
-                            <Button 
-                                    small 
-                                    color="secondary"
-                                    onClick={() => this.props.selectPredictionIdForCancel(_id)}
-                            >
-                                Active Orders
-                            </Button>
+                            this.hasActiveOrders() &&
+                            <Tag 
+                                backgroundColor="#00C853"
+                                color="#fff"
+                                label="Active Orders"
+                                onClick={() => this.props.selectPredictionIdForCancel(_id)}
+                                style={{marginLeft: '10px', boxShadow: '0 3px 8px rgba(0, 0, 0, 0.2)'}}
+                            />
                         }
+                        {/* User prediction status tag */}
+                        {
+                            <Tag 
+                                backgroundColor="#E1F5FE"
+                                color={iconConfig.color}
+                                label={`User ${iconConfig.status}`}
+                                style={{marginLeft: '10px'}}
+                            />
+                        }
+                        {/* IB prediction active status */}
                         {
                             accumulated > 0 &&
-                            <ActivePredictionText>
-                                Active Prediction
-                            </ActivePredictionText>
+                            <Tag 
+                                backgroundColor="#E0F2F1"
+                                color="#00796B"
+                                label="Active Prediction"
+                                style={{marginLeft: '10px'}}
+                            />
+                        }
+                        {/* Ending today warning tag */}
+                        {
+                            this.shouldShowEndingTodayActiveOrdersWarning() &&
+                            <Tag
+                                icon={<ErrorIcon style={{fontSize: '16px', color: '#F57C00'}}/>}
+                                backgroundColor="#FFF3E0"
+                                color="#F57C00"
+                                label="Ending Today"
+                                style={{marginLeft: '10px'}}
+                            />
+                        }
+                        {/* Ending today tag */}
+                        {
+                            this.shouldShowPredictionEndedActiveOrdersWarning() &&
+                            <Tag
+                                icon={<ErrorIcon style={{fontSize: '16px', color: '#D32F2F'}}/>}
+                                backgroundColor="#FFEBEE"
+                                color="#D32F2F"
+                                label="Ended"
+                                style={{marginLeft: '10px'}}
+                            />
+                        }
+                        {/* Skipped by the admin tag */}
+                        {
+                            skippedByAdmin &&
+                            <Tag
+                                backgroundColor="#EFEBE9"
+                                color="#5D4037"
+                                label="Admin Skipped"
+                                style={{marginLeft: '10px'}}
+                            />
                         }
                     </div>
                     <div 
@@ -298,7 +382,17 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                             }}
                     >
                         {
-                            // accumulated > 0 &&
+                            !skippedByAdmin &&
+                            <Button 
+                                    small 
+                                    color="secondary"
+                                    onClick={() => this.props.skipPrediction(_id, advisor)}
+                            >
+                                SKIP
+                            </Button>
+                        }
+                        {
+                            accumulated > 0 &&
                             <Button 
                                     small 
                                     color="secondary"

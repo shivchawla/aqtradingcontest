@@ -10,7 +10,7 @@ import {
     convertPredictionsToPositions,
 } from '../../TradingContest/MultiHorizonCreateEntry/utils';
 import SnackbarComponent from '../../../components/Alerts/SnackbarComponent';
-import {processRealtimePredictions, getAllocatedAdvisors, processAdvisors} from './utils';
+import {processRealtimePredictions, getAllocatedAdvisors, processAdvisors, skipPredictionByAdmin} from './utils';
 import LayoutDesktop from './components/desktop/Layout';
 import LayoutMobile from './components/mobile/Layout';
 import WS from '../../../utils/websocket';
@@ -67,7 +67,9 @@ class RealPredictions extends React.Component {
             selectedPredictionForOrder: {},
             selectedPredictionForCancel: {},
             selectedPredictionIdForCancel: null,
-            cancelDialogOpen: false, // flag to open or close cancel dialog
+            cancelDialogOpen: false, // flag to open or close cancel dialog,
+            cancelLoading: false,
+            skipPredictionDialogOpen: false
         };
     }
 
@@ -328,7 +330,8 @@ class RealPredictions extends React.Component {
             oldQuantity: _.get(prediction, 'quantity', 0),
             oldStopLoss: _.get(prediction, 'stopLoss', 0),
             oldTarget: _.get(prediction, 'target', 0),
-            adminModifications: _.get(prediction, 'adminModifications', [])
+            adminModifications: _.get(prediction, 'adminModifications', []),
+            adminActivity: _.get(prediction, 'adminActivity', [])
         }
         this.setState({selectedPredictionForTradeActivity: selectedPrediction}, () => {
             this.toggleTradeActivityDialog();
@@ -666,6 +669,21 @@ class RealPredictions extends React.Component {
             open: false
         });
     }
+    
+    skipPrediction = (predictionId, advisorId) => {
+        const data = {predictionId, advisorId};
+
+        this.setState({cancelLoading: true});
+        skipPredictionByAdmin(data)
+        .finally(() => {
+            this.setState({cancelLoading: false});
+            this.toggleSkipPredictionDialog();
+        });
+    }
+
+    toggleSkipPredictionDialog = () => {
+        this.setState({skipPredictionDialogOpen: !this.state.skipPredictionDialogOpen});
+    }
 
     render() {
         const layoutProps = {
@@ -706,7 +724,11 @@ class RealPredictions extends React.Component {
             selectedPredictionForCancel: this.getSelectedPreditionForCancel(),
             toggleCancelDialog: this.toggleCancelDialog,
             cancelDialogOpen: this.state.cancelDialogOpen,
-            selectPredictionIdForCancel: this.selectPredictionIdForCancel
+            selectPredictionIdForCancel: this.selectPredictionIdForCancel,
+            skipPrediction: this.skipPrediction,
+            cancelLoading: this.state.cancelLoading,
+            skipPredictionDialogOpen: this.state.skipPredictionDialogOpen,
+            toggleSkipPredictionDialog: this.toggleSkipPredictionDialog
         };
 
         return (

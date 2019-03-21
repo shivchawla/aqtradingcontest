@@ -87,6 +87,17 @@ export const cancelOrder = (data) => {
     })
 }
 
+export const skipPredictionByAdmin = (data) => {
+    const url = `${requestUrl}/dailycontest/skipPrediction`;
+
+    return axios({
+        method: 'POST',
+        url,
+        data,
+        headers: Utils.getAuthTokenHeader()
+    })
+}
+
 export const getLastestAdminMoficiation = (prediction = {}, key = 'target') => {
     let adminModifications = _.get(prediction, 'adminModifications', []);
     adminModifications = _.orderBy(adminModifications, adminModification => {

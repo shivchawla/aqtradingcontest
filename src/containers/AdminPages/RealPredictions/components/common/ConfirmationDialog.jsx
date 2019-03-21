@@ -3,10 +3,13 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
+import TranslucentLoader from '../../../../../components/Loaders/TranslucentLoader';
+import { CircularProgress } from '@material-ui/core';
+import { verticalBox } from '../../../../../constants';
 
 export default class ConfirmationDialog extends React.Component {
     render() {
-        const {open = false, question = 'Are you sure you want to complete this action ?'} = this.props;
+        const {open = false, question = 'Are you sure you want to complete this action ?', loading = false} = this.props;
 
         return (
             <DialogComponent
@@ -15,12 +18,21 @@ export default class ConfirmationDialog extends React.Component {
                     onCancel={this.props.onClose}
                     onOk={this.props.createPrediction}
                     title='Confirm'
-                    action
+                    action={loading ? false : true}
                     style={{minWidth: '32vw'}}
             >
-                <Grid item xs={12}>
-                    <Text>{question}</Text>
-                </Grid>
+                <div style={{...verticalBox, width: '100%'}}>
+                    {
+                        loading &&
+                        <CircularProgress />
+                    }                
+                </div>
+                {
+                    !loading &&
+                    <Grid item xs={12}>
+                        <Text>{question}</Text>
+                    </Grid>
+                }
                 {this.props.renderContent && this.props.renderContent()}
             </DialogComponent>
         );
