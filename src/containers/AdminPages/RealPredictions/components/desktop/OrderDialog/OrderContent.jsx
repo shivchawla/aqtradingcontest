@@ -236,7 +236,7 @@ class OrderContent extends React.Component {
             ?   '* You have already skipped this stock'
             :   null;
 
-        if (this.hasActiveBuyOrders()) {
+        if (accumulated > 0 || this.hasActiveBuyOrders()) {
             warningText = '* There are already buy orders present for this prediction'
         } else {
             warningText = null;
