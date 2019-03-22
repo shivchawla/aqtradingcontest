@@ -336,7 +336,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                             <Tag 
                                 backgroundColor="#E0F2F1"
                                 color="#00796B"
-                                label="Active Prediction"
+                                label="Active Position"
                                 style={{marginLeft: '10px'}}
                             />
                         }
@@ -369,6 +369,15 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                                 backgroundColor="#EFEBE9"
                                 color="#5D4037"
                                 label="Admin Skipped"
+                                style={{marginLeft: '10px'}}
+                            />
+                        }
+                        {/* Accumulated Tag */}
+                        {
+                            <Tag 
+                                backgroundColor='#FCE4EC'
+                                color='#C2185B'
+                                label={`Accumulated: ${accumulated ? accumulated : '-'}`}
                                 style={{marginLeft: '10px'}}
                             />
                         }
