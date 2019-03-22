@@ -77,6 +77,7 @@ class StockCardPredictions extends React.Component {
             const defaultStockData = Utils.getObjectFromLocalStorage('defaultSettings');
             const valueTypePct = _.get(defaultStockData, 'valueTypePct', true);
             // If market is not trading then conditonalType should be cross by default
+            // If market is not trading then conditional is true else it is the default value
 
             resolve({
                 benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_500'),
@@ -87,7 +88,9 @@ class StockCardPredictions extends React.Component {
                 listMode: _.get(defaultStockData, 'listMode', true),
                 stopLoss: _.get(defaultStockData, 'stopLoss', 5),
                 investment: _.get(defaultStockData, 'investment', 50000),
-                conditional: _.get(defaultStockData, 'conditional', false),
+                conditional: marketTrading 
+                    ? _.get(defaultStockData, 'conditional', false)
+                    : true,
                 conditionalValue: valueTypePct ? 0.25 : 100000, // deliberately putting a very high value such that it will be converted the second value from the items
                 conditionalType: marketTrading 
                     ?   _.get(defaultStockData, 'conditionalType', 'NOW')
