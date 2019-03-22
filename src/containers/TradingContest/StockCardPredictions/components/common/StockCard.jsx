@@ -78,6 +78,8 @@ class StockCard extends React.Component {
     componentWillReceiveProps(nextProps, nextState) {
         if (!_.isEqual(nextProps, nextState)) {
             const nextStockData = _.get(nextProps, 'stockData', {});
+            let conditional = _.get(nextStockData, 'conditional', false);
+            let conditionalType = _.get(nextStockData, 'conditionalType', false);
             const nextSymbol = _.get(nextStockData, 'symbol', null);
             const currentSymbol = _.get(this.props, 'stockData.symbol', null);
             const openStatus = _.get(nextProps, 'open', false);
@@ -116,6 +118,8 @@ class StockCard extends React.Component {
                 stopLoss = targetItems[0].key;
                 investment = investmentItems[0].key;
                 conditionalValue = conditionalItems[1].key;
+                conditional = marketOpen ? conditional : true;
+                conditionalType = marketOpen ? conditionalType : 'CROSS';
 
                 this.props.modifyStockData({
                     ...nextStockData,
@@ -123,15 +127,18 @@ class StockCard extends React.Component {
                     target,
                     stopLoss,
                     investment,
-                    conditionalValue
+                    conditionalValue,
+                    conditional,
+                    conditionalType
                 })
             }
         }
     }
 
     componentWillMount() {
-        console.log('Stock Card Mounted');
         const {stockData = {}} = this.props;
+        let conditional = _.get(stockData, 'conditional', false);
+        let conditionalType= _.get(stockData, 'conditionalType', false);
         let {realPrediction = false, horizon = 2} = stockData;
         /**
          * Getting required targetItems, investmentItems, conditionalItems to be rendered
@@ -140,6 +147,8 @@ class StockCard extends React.Component {
         const targetItems = this.getTargetItems();
         const investmentItems = this.getInvestmentItems();
         const conditionalItems = this.getConditionalItems();
+        conditional = marketOpen ? conditional : true;
+        conditionalType = marketOpen ? conditionalType : 'CROSS'
 
         if (realPrediction) {
             horizon = horizon < 2 ? 2 : horizon;
@@ -160,7 +169,9 @@ class StockCard extends React.Component {
             target,
             stopLoss,
             investment,
-            conditionalValue
+            conditionalValue,
+            conditional,
+            conditionalType
         })
     }
 

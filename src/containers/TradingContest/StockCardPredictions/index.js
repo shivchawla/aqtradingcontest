@@ -88,13 +88,9 @@ class StockCardPredictions extends React.Component {
                 listMode: _.get(defaultStockData, 'listMode', true),
                 stopLoss: _.get(defaultStockData, 'stopLoss', 5),
                 investment: _.get(defaultStockData, 'investment', 50000),
-                conditional: marketTrading 
-                    ? _.get(defaultStockData, 'conditional', false)
-                    : true,
+                conditional: _.get(defaultStockData, 'conditional', false),
                 conditionalValue: valueTypePct ? 0.25 : 100000, // deliberately putting a very high value such that it will be converted the second value from the items
-                conditionalType: marketTrading 
-                    ?   _.get(defaultStockData, 'conditionalType', 'NOW')
-                    :   'CROSS',
+                conditionalType: _.get(defaultStockData, 'conditionalType', 'NOW'),
                 valueTypePct: _.get(defaultStockData, 'valueTypePct', true),
                 realPrediction: false
             });
