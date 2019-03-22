@@ -358,7 +358,14 @@ class OrderContent extends React.Component {
                         />
                     </MetricContainer>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid 
+                        item 
+                        xs={6}
+                        style={{
+                            ...horizontalBox,
+                            justifyContent: 'flex-start'
+                        }}
+                >
                     {
                         shouldShowPrice &&
                         <MetricContainer>
@@ -372,6 +379,14 @@ class OrderContent extends React.Component {
                                 value={price}
                             />
                         </MetricContainer>
+                    }
+                    {
+                        shouldProfitLimitPrice &&
+                        <RadioGroup 
+                            items={['Limit', 'Market']}
+                            small
+                            CustomRadio={CustomRadio}
+                        />
                     }
                 </Grid>
                 <Grid item xs={6}>
