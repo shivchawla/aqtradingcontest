@@ -18,6 +18,7 @@ import {placeOrder, getLastestAdminMoficiation, mergeOrderAndOrderActivity} from
 
 const orderTypes = ['BUY', 'SELL'];
 const marketTimeTypes = ['NOW', 'CLOSE'];
+const firstOrderTypes = ['LIMIT', 'MARKET'];
 let messageTimeout = null;
 
 class OrderContent extends React.Component {
@@ -46,6 +47,7 @@ class OrderContent extends React.Component {
                 open: false,
                 message: ''
             },
+            bracketFirstOrderType: firstOrderTypes[0],
             marketOrderTime: marketTimeTypes[0],
             message: ''
         }
@@ -139,6 +141,7 @@ class OrderContent extends React.Component {
             order: {
                 symbol,
                 orderType,
+                bracketFirstOrderType: this.state.bracketFirstOrderType,
                 quantity: Number(quantity),
                 price: Number(price),
                 tradeDirection: type,
@@ -233,6 +236,10 @@ class OrderContent extends React.Component {
         });
 
         return activeBuyOrders.length > 0;
+    }
+
+    handleFirstOrderTypeChange = value => {
+        this.setState({bracketFirstOrderType: firstOrderTypes[value]});
     }
 
     render() {
@@ -363,12 +370,13 @@ class OrderContent extends React.Component {
                         xs={6}
                         style={{
                             ...horizontalBox,
-                            justifyContent: 'flex-start'
+                            justifyContent: 'flex-start',
+                            alignItems: 'flex-start'
                         }}
                 >
                     {
                         shouldShowPrice &&
-                        <MetricContainer>
+                        <MetricContainer style={{width: 'inherit'}}>
                             <InputHeader style={{marginBottom: '0px'}}>Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultPrice)}</InputHeader>
                             <Metric style={{color: 'transparent'}}>
                                 Modified - ₹{Utils.formatMoneyValueMaxTwoDecimals(modifiedTarget)}
@@ -383,8 +391,10 @@ class OrderContent extends React.Component {
                     {
                         shouldProfitLimitPrice &&
                         <RadioGroup 
-                            items={['Limit', 'Market']}
+                            items={firstOrderTypes}
+                            defaultSelected={this.state.bracketFirstOrderType === 'LIMIT' ? 0 : 1}
                             small
+                            onChange={this.handleFirstOrderTypeChange}
                             CustomRadio={CustomRadio}
                         />
                     }
