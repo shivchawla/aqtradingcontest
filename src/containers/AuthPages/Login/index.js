@@ -12,6 +12,7 @@ import {Form} from 'formik';
 import NavLink from '../components/NavLinkButton';
 import Header from '../../Header';
 import AqLayoutMobile from '../../../components/ui/AqLayout';
+import TranslucentLoader from '../../../components/Loaders/TranslucentLoader';
 import CustomForm from '../../../components/input/Form';
 import InputComponent from '../../../components/input/Form/components/InputComponent';
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../constants';
@@ -147,14 +148,7 @@ class Login extends React.Component {
                             variant="contained"
                             style={submitButtonStyle}
                     >
-                        {
-                            this.state.loading
-                            ?   <CircularProgress 
-                                    style={{marginLeft: '5px', color: '#fff'}} 
-                                    size={18} 
-                                />
-                            :   'LOG IN'
-                        }
+                        LOG IN
                     </Button>
                 </div>
             </Form>
@@ -180,6 +174,7 @@ class Login extends React.Component {
                                 item xs={12} 
                                 style={verticalBox}
                         >
+                            {this.state.loading && <TranslucentLoader />}
                             <Logo src={advicequbeLogo} />
                             {/* Name Container Starts*/}
                             <div style={companyNameContainer}> 
@@ -238,6 +233,7 @@ class Login extends React.Component {
 
         return (
             <AqLayoutMobile pageTitle='Login' lightMode={true} noHeader={noHeader}>
+                {this.state.loading && <TranslucentLoader />}
                 <Container container>
                     <Grid 
                             item xs={12} 
