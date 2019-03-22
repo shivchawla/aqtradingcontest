@@ -208,11 +208,13 @@ class OrderContent extends React.Component {
     hasActiveBuyOrders = () => {
         const {prediction = {}} = this.props;
         const orders = mergeOrderAndOrderActivity(prediction);
+        console.log('Orders ', orders);
         const activeBuyOrders = orders.filter(order => {
             const completeStatus = _.get(order, 'completeStatus', false);
+            const activeStatus = _.get(order, 'activeStatus', false);
             const direction = _.get(order, 'direction', null);
 
-            return !completeStatus && direction.toUpperCase() === 'BUY';
+            return activeStatus && direction.toUpperCase() === 'BUY';
         });
 
         return activeBuyOrders.length > 0;
@@ -238,7 +240,7 @@ class OrderContent extends React.Component {
             :   null;
 
         if (accumulated > 0 || this.hasActiveBuyOrders()) {
-            warningText = '* There are already buy orders present for this prediction'
+            warningText = '* There are already active buy orders present for this prediction'
         } else {
             warningText = null;
         }

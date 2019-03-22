@@ -16,7 +16,7 @@ export default class OrderActivityList extends React.Component {
 
     render() {
         let {orderActivities = []} = this.props;
-        orderActivities = _.orderBy(orderActivities, 'orderId', ['asc']);
+        orderActivities = _.orderBy(orderActivities, 'orderId', ['desc']);
 
         return (
             <Grid container>
@@ -32,6 +32,7 @@ export default class OrderActivityList extends React.Component {
                                             <OrderActivityListItem 
                                                 orderActivity={orderActivity}
                                                 key={index}
+                                                orderActivities={orderActivities}
                                             />
                                         ))
                                     }

@@ -76,7 +76,7 @@ const TradeActivityListHeader = () => {
                 <HeaderText>Quantity</HeaderText>
             </Grid>
             <Grid item xs={2}>
-                <HeaderText>Direction</HeaderText>
+                <HeaderText>Order</HeaderText>
             </Grid>
             <Grid item xs={2}>
                 <HeaderText>Notes</HeaderText>

@@ -17,6 +17,7 @@ export default class OrderList extends React.Component {
     render() {
         let {orders = []} = this.props;
         orders = _.orderBy(orders, 'orderId', ['asc']);
+        orders = orders.filter(order => order.activeStatus === true);
 
         return (
             <Grid container>

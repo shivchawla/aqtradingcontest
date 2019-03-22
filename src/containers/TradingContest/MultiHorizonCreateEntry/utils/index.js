@@ -462,3 +462,15 @@ export const searchPositions = (searchInput = '', positions = []) => {
 
     return filteredArray;
 }
+
+/**
+ * Returns truen if there are active orders in a prediction
+ */
+export const hasActiveOrders = (prediction = {}) => {
+    const {accumulated = null, orders = []} = prediction;
+
+    const shoudlShowActiveOrders = accumulated > 0 || 
+        (orders.filter(order => order.activeStatus === true).length > 0);
+    
+    return shoudlShowActiveOrders;
+}

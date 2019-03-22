@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import ErrorIcon from '@material-ui/icons/Error';
 import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import {Utils} from '../../../../../utils';
+import {hasActiveOrders} from '../../utils';
 import Tag from '../../../../../components/Display/Tag';
 import {getLastestAdminMoficiation} from '../../../../AdminPages/RealPredictions/utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
@@ -128,45 +129,40 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
 
     }
 
-    hasActiveOrders = () => {
-        const {prediction = {}} = this.props;
-        const {accumulated = null, orders = []} = prediction;
-
-        const shoudlShowActiveOrders = accumulated > 0 || 
-            (orders.filter(order => order.activeStatus === true).length > 0);
-
-        return shoudlShowActiveOrders;
-    }
-
     isPredictionEndingToday = () => {
         const {prediction = {}} = this.props;
         const {endDate = null} = prediction;
+        const currentDate = moment().format(dateFormat);
 
-        return moment().isSame(moment(endDate));
+        return moment(currentDate, dateFormat).isSame(moment(endDate, dateFormat));
     }
 
     hasPredictionEnded = () => {
         const {prediction = {}} = this.props;
         const {endDate = null} = prediction;
+        const currentDate = moment().format(dateFormat);
         
-        return moment().isAfter(moment(endDate));
+        return moment(currentDate, dateFormat).isAfter(moment(endDate, dateFormat));
     }
 
     // If user exit is true and order active then show exclamation sign, something is going wrong
     shouldShowUserExitedActiveOrdersWarning = () => {
+        const {prediction = {}} = this.props;
         const userExited = this.getIconConfig().status.toLowerCase() === 'exited';
 
-        return userExited && this.hasActiveOrders();
+        return userExited && hasActiveOrders(prediction);
     }
 
     // If predictions are ending today and prediction has active orders
     shouldShowEndingTodayActiveOrdersWarning = () => {
-        return this.isPredictionEndingToday() && this.hasActiveOrders();
+        const {prediction = {}} = this.props;
+        return this.isPredictionEndingToday() && hasActiveOrders(prediction);
     }
 
     // If prediction has ended and there are still active orders. Then warning should be showm
     shouldShowPredictionEndedActiveOrdersWarning = () => {
-        return this.hasPredictionEnded() && this.hasActiveOrders();
+        const {prediction = {}} = this.props;
+        return this.hasPredictionEnded() && hasActiveOrders(prediction);
     }
 
     render() {
@@ -316,7 +312,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
                         {/* Active Orders Tag */}
                         {
-                            this.hasActiveOrders() &&
+                            hasActiveOrders(prediction) &&
                             <Tag 
                                 backgroundColor="#00C853"
                                 color="#fff"

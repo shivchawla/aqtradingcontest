@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import { Utils } from '../../../../../utils';
 
-const dateFormat = 'YYYY-MM-DD';
+const dateFormat = "Do MMM - HH:mm";
 
 export default class TradeActivityListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -27,6 +27,7 @@ export default class TradeActivityListItem extends React.Component {
             brokerMessage = {}
         } = tradeActivity;
         const avgPrice = _.get(brokerMessage, 'execution.avgPrice', null);
+        const orderId = _.get(brokerMessage, 'orderId', '-')
         
         return (
             <Grid 
@@ -40,7 +41,7 @@ export default class TradeActivityListItem extends React.Component {
                     alignItems="center"
             >
                 <Grid item xs={2}>
-                    <Metric>{moment.unix(date).format(dateFormat)}</Metric>
+                    <Metric>{moment(date).format(dateFormat)}</Metric>
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>₹ {Utils.formatMoneyValueMaxTwoDecimals(price)}</Metric>
@@ -58,7 +59,7 @@ export default class TradeActivityListItem extends React.Component {
                     <Metric>{quantity}</Metric>
                 </Grid>
                 <Grid item xs={2}>
-                    <Metric>{direction}</Metric>
+                    <Metric>{orderId}</Metric>
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>{notes}</Metric>

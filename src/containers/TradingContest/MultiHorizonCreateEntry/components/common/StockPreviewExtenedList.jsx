@@ -9,14 +9,16 @@ import StockPreviewExtendedPredictionHeader from '../desktop/StockPreviewExtende
 import StockPreviewPredictionListItemExtened from '../desktop/StockPreviewPredictionListItemExtended';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
+import TranslucentLoader from '../../../../../components/Loaders/TranslucentLoader';
 import { horizontalBox } from '../../../../../constants';
+import { hasActiveOrders } from '../../utils';
 const moment = require('moment');
 
 const sortingMenu = [
     {label: 'Start Date', key: 'createdDate'},
     {label: 'End Date', key: 'endDate'}
 ];
-const readStatusRadioItems = ['un-read', 'read', 'all'];
+const readStatusRadioItems = ['un-read', 'read', 'active', 'all'];
 
 class StockPreviewExtendedList extends React.Component {
     constructor(props) {
@@ -24,7 +26,8 @@ class StockPreviewExtendedList extends React.Component {
         this.state = {
             selectedSort: sortingMenu[0],
             searchInput: '',
-            readStatusSelected: readStatusRadioItems[0]
+            readStatusSelected: readStatusRadioItems[0],
+            loading: false
         }
     }
     shouldComponentUpdate(nextProps, nextState) {
@@ -67,12 +70,15 @@ class StockPreviewExtendedList extends React.Component {
         const readStatus = this.state.readStatusSelected;
 
         return predictions.filter(prediction => {
-            if (readStatus === 'all') {
-                return true;
-            } else if (readStatus === 'un-read') {
+            if (readStatus === 'un-read') {
                 return _.get(prediction, 'readStatus', null).toUpperCase() === 'UNREAD';
-            } else {
+            } else if (readStatus === 'read'){
                 return _.get(prediction, 'readStatus', null).toUpperCase() !== 'UNREAD';
+            } else if (readStatus === 'active') {
+                return hasActiveOrders(prediction);
+            } 
+            else {
+                return true;
             }
         })
     }
@@ -118,22 +124,27 @@ class StockPreviewExtendedList extends React.Component {
                         selectedType={this.state.selectedSort.key}
                     />
                 </div>
-                <StockPreviewExtendedPredictionHeader />
                 {
-                    this.searchPredictions(predictions).map((prediction, index) => {
-
-                        return (
-                            <StockPreviewPredictionListItemExtened 
-                                prediction={prediction} 
-                                key={index}
-                                selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
-                                toggleOrderDialog={this.props.toggleOrderDialog}
-                                selectPredictionForOrder={this.props.selectPredictionForOrder}
-                                selectPredictionIdForCancel={this.props.selectPredictionIdForCancel}
-                                skipPrediction={this.props.skipPrediction}
-                            />
-                        );
-                    })
+                    this.state.loading
+                    ?   <TranslucentLoader />
+                    :   <React.Fragment>
+                            <StockPreviewExtendedPredictionHeader />
+                            {
+                                predictions.map((prediction, index) => {
+                                    return (
+                                        <StockPreviewPredictionListItemExtened 
+                                            prediction={prediction} 
+                                            key={index}
+                                            selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
+                                            toggleOrderDialog={this.props.toggleOrderDialog}
+                                            selectPredictionForOrder={this.props.selectPredictionForOrder}
+                                            selectPredictionIdForCancel={this.props.selectPredictionIdForCancel}
+                                            skipPrediction={this.props.skipPrediction}
+                                        />
+                                    );
+                                })
+                            }
+                        </React.Fragment>
                 }
             </Grid>
         );

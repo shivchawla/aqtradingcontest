@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import {getRequiredPrice} from '../../../utils';
 import { Utils } from '../../../../../../utils';
 
-const dateFormat = 'MM-DD HH:mm';
+const dateFormat = "Do MMM - HH:mm";
 
 export default class OrderActivityListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -15,6 +15,30 @@ export default class OrderActivityListItem extends React.Component {
         }
 
         return false;
+    }
+
+    getAction = (orderId) => {
+        const {orderActivities = []} = this.props;
+        const requiredOrderActivityIndex = _.findIndex(orderActivities, orderActivityItem => {
+            const orderActivityItemOrderId = _.get(orderActivityItem, 'orderId', null);
+            const orderActivityItemActivityType = _.get(orderActivityItem, 'activityType', '').toLowerCase();
+
+            return (orderActivityItemOrderId === orderId && orderActivityItemActivityType === "openorder"); 
+        });
+
+        if (requiredOrderActivityIndex > -1) {
+            const requiredOrderItem = orderActivities[requiredOrderActivityIndex];
+
+            return {
+                activityType: _.get(requiredOrderItem, 'brokerMessage.order.action', '-'),
+                orderType: _.get(requiredOrderItem, 'brokerMessage.order.orderType', '-')
+            }
+        }
+
+        return {
+            activityType: '-',
+            orderType: '-'
+        }
     }
 
     render() {
@@ -26,10 +50,21 @@ export default class OrderActivityListItem extends React.Component {
             status = null,
             brokerMessage = {}
         } = orderActivity;
-        const orderType = _.get(brokerMessage, 'order.orderType', '-');
-        const type = _.get(brokerMessage, 'order.action', 'BUY');
+        let orderType = _.get(brokerMessage, 'order.orderType', null);
+        let type = _.get(brokerMessage, 'order.action', null);
         const quantity = _.get(brokerMessage, 'order.totalQuantity', 0);
         const price = getRequiredPrice(brokerMessage);
+        
+        console.log('Order Type ', orderType);
+
+        if (orderType === null) {
+            console.log('Order Type is null');
+            const requiredOrder = this.getAction(orderId);
+            orderType = requiredOrder.orderType;
+            type = requiredOrder.activityType;
+            console.log('Order Type Extracted ', orderType);
+            console.log('Action Type Extracted ', type);
+        }
         
         return (
             <Grid 
@@ -39,7 +74,9 @@ export default class OrderActivityListItem extends React.Component {
                         ...containerStyle,
                         border: type === 'BUY'
                             ?   '2px solid #5bd05b'
-                            :   '2px solid #ffb8b8'
+                            :   type !== null 
+                                    ?   '2px solid #ffb8b8'
+                                    :   '2px solid #444'
                     }}
             >
                 <Grid item xs={2}>
