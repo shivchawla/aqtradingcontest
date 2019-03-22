@@ -220,6 +220,21 @@ class OrderContent extends React.Component {
         return activeBuyOrders.length > 0;
     }
 
+    hasActiveSellOrders = () => {
+        const {prediction = {}} = this.props;
+        const orders = mergeOrderAndOrderActivity(prediction);
+        console.log('Orders ', orders);
+        const activeBuyOrders = orders.filter(order => {
+            const completeStatus = _.get(order, 'completeStatus', false);
+            const activeStatus = _.get(order, 'activeStatus', false);
+            const direction = _.get(order, 'direction', null);
+
+            return activeStatus && direction.toUpperCase() === 'SELL';
+        });
+
+        return activeBuyOrders.length > 0;
+    }
+
     render() {
         const {prediction = {},orderType = 'market', direction = 'buy'} = this.props;
         const {accumulated = null} = prediction;
@@ -233,16 +248,30 @@ class OrderContent extends React.Component {
         } = this.state;
 
         let warningText = null;
+        let accumulatedWarningText = null;
+
         const skippedByAdmin = _.get(prediction, 'skippedByAdmin', false);
 
         const skippedWarningText = skippedByAdmin
             ?   '* You have already skipped this stock'
             :   null;
 
-        if (accumulated > 0 || this.hasActiveBuyOrders()) {
-            warningText = '* There are already active buy orders present for this prediction'
+        if (direction === 'buy') {
+            if (this.hasActiveBuyOrders()) {
+                warningText = '* There are already active buy orders present for this prediction'
+            }
+    
+            if (accumulated > 0) {
+                accumulatedWarningText = '* Accumulated for this prediction is already greater than 0'
+            }            
         } else {
-            warningText = null;
+            if (this.hasActiveSellOrders()) {
+                warningText = '* There are already active sell orders present for this prediction'
+            }
+    
+            if (accumulated === 0) {
+                accumulatedWarningText = '* Accumulated for this prediction is already 0'
+            }  
         }
 
         const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');
@@ -276,31 +305,46 @@ class OrderContent extends React.Component {
                     renderContent={this.renderDialogComponent}
 
                 />
-                <Grid item xs={12}>
-                    <MetricContainer>
-                        <InputHeader>Type</InputHeader>
-                        <RadioGroup 
-                            items={orderTypes}
-                            defaultSelected={type === 'BUY' ? 0 : 1}
-                            onChange={this.onOrderTypeRadioChanged}
-                            CustomRadio={CustomRadio}
-                            small
-                            disabledItems={[disabledRadioItem]}
-                        />
-                    </MetricContainer>
+                <Grid 
+                        item 
+                        xs={12}
+                >
+                    <Grid container>
+                        <Grid item xs={6}>
+                            <MetricContainer>
+                                <InputHeader>Type</InputHeader>
+                                <RadioGroup 
+                                    items={orderTypes}
+                                    defaultSelected={type === 'BUY' ? 0 : 1}
+                                    onChange={this.onOrderTypeRadioChanged}
+                                    CustomRadio={CustomRadio}
+                                    small
+                                    disabledItems={[disabledRadioItem]}
+                                />
+                            </MetricContainer>
+                        </Grid>
+                        <Grid item xs={6}>
+                        {
+                            skippedWarningText &&
+                            <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px'}}>
+                                <Warning>{skippedWarningText}</Warning>
+                            </Grid>
+                        }
+                        {
+                            warningText &&
+                            <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px'}}>
+                                <Warning>{warningText}</Warning>
+                            </Grid>
+                        }
+                        {
+                            accumulatedWarningText &&
+                            <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px'}}>
+                                <Warning>{accumulatedWarningText}</Warning>
+                            </Grid>
+                        }
+                        </Grid>
+                    </Grid>
                 </Grid>
-                {
-                    skippedWarningText &&
-                    <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px'}}>
-                        <Warning>{skippedWarningText}</Warning>
-                    </Grid>
-                }
-                {
-                    warningText &&
-                    <Grid item xs={12} style={{...horizontalBox, marginBottom: '10px'}}>
-                        <Warning>{warningText}</Warning>
-                    </Grid>
-                }
                 <Grid item xs={6}>
                     <MetricContainer>
                         <InputHeader style={{marginBottom: '0px'}}>Quantity - {defaultQuantity}</InputHeader>
@@ -494,7 +538,7 @@ const Metric = styled.h3`
 `;
 
 const Warning = styled.h3`
-    font-size: 12px;
+    font-size: 14px;
     color: ${metricColor.negative};
     font-weight: 500;
 `;
