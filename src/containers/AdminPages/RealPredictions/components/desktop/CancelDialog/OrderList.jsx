@@ -76,10 +76,10 @@ const OrderListHeader = () => {
                 <HeaderText>Acc.</HeaderText>
             </Grid>
             <Grid item xs={2}>
-                <HeaderText>Activity Type</HeaderText>
+                <HeaderText>Activity</HeaderText>
             </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Order Type</HeaderText>
+            <Grid item xs={1}>
+                <HeaderText>Order</HeaderText>
             </Grid>
             <Grid item xs={1}>
                 <HeaderText>Active</HeaderText>
@@ -89,6 +89,9 @@ const OrderListHeader = () => {
             </Grid>
             <Grid item xs={2}>
                 <HeaderText>Status</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Price</HeaderText>
             </Grid>
         </Grid>
     );

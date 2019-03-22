@@ -110,3 +110,48 @@ export const getLastestAdminMoficiation = (prediction = {}, key = 'target') => {
         return null;
     }
 }
+
+/**
+ * Merges both order and orderActivity
+ */
+export const mergeOrderAndOrderActivity = (prediction = {}) => {
+    const orders = _.get(prediction, 'orders', []);
+    const orderActivity = _.get(prediction, 'orderActivity', []);
+
+    return orders.map(order => {
+        const orderId = _.get(order, 'orderId', null);
+        const orderActivityIndex = _.findIndex(orderActivity, orderActivityItem => orderActivityItem.orderId === orderId);
+        const orderActivityItem = _.get(orderActivity, `[${orderActivityIndex}]`, {});
+        const activityType = _.get(orderActivityItem, `activityType`, null);
+        const brokerMessage = _.get(orderActivityItem, 'brokerMessage', {});
+        const quantity = _.get(orderActivityItem, `brokerMessage.order.totalQuantity`, null);
+        const orderStatus = _.get(orderActivityItem, `brokerMessage.orderState.status`, null);
+        const direction = _.get(orderActivityItem, `brokerMessage.order.action`, null);
+        const orderType = _.get(orderActivityItem, `brokerMessage.order.orderType`, null);
+
+        return {
+            ...order,
+            activityType,
+            quantity,
+            orderStatus,
+            direction,
+            orderType,
+            brokerMessage
+        }
+    });
+}
+
+export const getRequiredPrice = (brokerMessage) => {
+    const orderType = _.get(brokerMessage, 'order.orderType', null);
+    let priceKey = 'price';
+
+    if (orderType) {
+        if (orderType.toUpperCase() === 'LMT') {
+            priceKey = 'lmtPrice';
+        } else if (orderType.toUpperCase() === 'STP') {
+            priceKey = 'auxPrice';
+        }
+    }
+
+    return _.get(brokerMessage, `order.${priceKey}`, null);
+}

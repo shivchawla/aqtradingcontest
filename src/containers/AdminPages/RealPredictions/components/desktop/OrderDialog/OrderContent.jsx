@@ -14,7 +14,7 @@ import DialogMetric from '../../common/DialogMetrics';
 import {InputHeader, MetricContainer} from '../../common/InputMisc';
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../../../../constants';
 import {Utils, handleCreateAjaxError} from '../../../../../../utils';
-import {placeOrder, getLastestAdminMoficiation} from '../../../utils';
+import {placeOrder, getLastestAdminMoficiation, mergeOrderAndOrderActivity} from '../../../utils';
 
 const orderTypes = ['BUY', 'SELL'];
 const marketTimeTypes = ['NOW', 'CLOSE'];
@@ -206,7 +206,8 @@ class OrderContent extends React.Component {
     }
 
     hasActiveBuyOrders = () => {
-        const orders = this.processedOrders();
+        const {prediction = {}} = this.props;
+        const orders = mergeOrderAndOrderActivity(prediction);
         const activeBuyOrders = orders.filter(order => {
             const completeStatus = _.get(order, 'completeStatus', false);
             const direction = _.get(order, 'direction', null);

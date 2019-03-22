@@ -3,6 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import {getRequiredPrice} from '../../../utils';
 import { Utils } from '../../../../../../utils';
 
 const dateFormat = 'MM-DD HH:mm';
@@ -25,10 +26,10 @@ export default class OrderActivityListItem extends React.Component {
             status = null,
             brokerMessage = {}
         } = orderActivity;
-        const orderType = _.get(brokerMessage, 'order.orderType', null);
-        const orderState = _.get(brokerMessage, 'orderState.status', null);
+        const orderType = _.get(brokerMessage, 'order.orderType', '-');
         const type = _.get(brokerMessage, 'order.action', 'BUY');
         const quantity = _.get(brokerMessage, 'order.totalQuantity', 0);
+        const price = getRequiredPrice(brokerMessage);
         
         return (
             <Grid 
@@ -44,10 +45,10 @@ export default class OrderActivityListItem extends React.Component {
                 <Grid item xs={2}>
                     <Metric>{moment(date).format(dateFormat)}</Metric>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={1}>
                     <Metric>{orderId}</Metric>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={1}>
                     <Metric>{quantity}</Metric>
                 </Grid>
                 <Grid item xs={2}>
@@ -58,6 +59,15 @@ export default class OrderActivityListItem extends React.Component {
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>{orderType}</Metric>
+                </Grid>
+                <Grid item xs={2}>
+                    <Metric>
+                        {
+                            price !== null
+                                ?   `₹ ${Utils.formatMoneyValueMaxTwoDecimals(price)}`
+                                :   '-'
+                        }
+                    </Metric>
                 </Grid>
             </Grid>
         );

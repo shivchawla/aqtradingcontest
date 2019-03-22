@@ -7,7 +7,7 @@ import { Utils } from '../../../../../utils';
 
 const dateFormat = 'YYYY-MM-DD';
 
-export default class AdvisorListItem extends React.Component {
+export default class TradeActivityListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -23,28 +23,44 @@ export default class AdvisorListItem extends React.Component {
             quantity = 0,
             direction = '',
             price = '',
-            date = null
+            date = null,
+            brokerMessage = {}
         } = tradeActivity;
+        const avgPrice = _.get(brokerMessage, 'execution.avgPrice', null);
         
         return (
             <Grid 
                     container
-                    style={containerStyle}
+                    style={{
+                        ...containerStyle,
+                        border: direction === 'BUY'
+                            ?   '2px solid #5bd05b'
+                            :   '2px solid #ffb8b8'
+                    }}
                     alignItems="center"
             >
-                <Grid item xs={3}>
-                    <Metric>{moment(date).format(dateFormat)}</Metric>
+                <Grid item xs={2}>
+                    <Metric>{moment.unix(date).format(dateFormat)}</Metric>
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>₹ {Utils.formatMoneyValueMaxTwoDecimals(price)}</Metric>
                 </Grid>
-                {/* <Grid item xs={2}>
+                <Grid item xs={2}>
+                    <Metric>
+                        {
+                            avgPrice !== null
+                                ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(price)}`
+                                : '-'
+                        }
+                    </Metric>
+                </Grid>
+                <Grid item xs={2}>
                     <Metric>{quantity}</Metric>
-                </Grid> */}
+                </Grid>
                 <Grid item xs={2}>
                     <Metric>{direction}</Metric>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                     <Metric>{notes}</Metric>
                 </Grid>
             </Grid>

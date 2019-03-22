@@ -3,6 +3,8 @@ import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ActionIcon from '../../../../../TradingContest/Misc/ActionIcons';
+import { getRequiredPrice } from '../../../utils';
+import { Utils } from '../../../../../../utils';
 
 export default class OrderListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -23,10 +25,12 @@ export default class OrderListItem extends React.Component {
             accQuantity = 0,
             totalQuantity,
             direction = 'BUY',
-            orderType = null,
-            activityType = null
+            orderType = '-',
+            activityType = null,
+            brokerMessage = {}
         } = order;
         const hideCancelButton  = brokerStatus.toLowerCase() === 'cancelled';
+        const price = getRequiredPrice(brokerMessage);
         
         return (
             <Grid 
@@ -51,7 +55,7 @@ export default class OrderListItem extends React.Component {
                 <Grid item xs={2}>
                     <Metric>{activityType}</Metric>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={1}>
                     <Metric>{orderType}</Metric>
                 </Grid>
                 <Grid item xs={1}>
@@ -62,6 +66,15 @@ export default class OrderListItem extends React.Component {
                 </Grid>
                 <Grid item xs={2}>
                     <Metric>{brokerStatus}</Metric>
+                </Grid>
+                <Grid item xs={1}>
+                    <Metric>
+                        {
+                            price !== null
+                                ?   `₹ ${Utils.formatMoneyValueMaxTwoDecimals(price)}`
+                                :   '-'
+                        }
+                    </Metric>
                 </Grid>
                 <Grid item xs={1}>
                     {

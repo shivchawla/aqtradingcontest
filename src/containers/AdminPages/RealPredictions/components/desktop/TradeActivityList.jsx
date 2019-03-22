@@ -63,19 +63,22 @@ const TradeActivityListHeader = () => {
                     boxSizing: 'border-box'
                 }}
         >
-            <Grid item xs={3}>
+            <Grid item xs={2}>
                 <HeaderText>Date</HeaderText>
             </Grid>
             <Grid item xs={2}>
                 <HeaderText>Price</HeaderText>
             </Grid>
-            {/* <Grid item xs={2}>
+            <Grid item xs={2}>
+                <HeaderText>Avg. Price</HeaderText>
+            </Grid>
+            <Grid item xs={2}>
                 <HeaderText>Quantity</HeaderText>
-            </Grid> */}
+            </Grid>
             <Grid item xs={2}>
                 <HeaderText>Direction</HeaderText>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={2}>
                 <HeaderText>Notes</HeaderText>
             </Grid>
         </Grid>
