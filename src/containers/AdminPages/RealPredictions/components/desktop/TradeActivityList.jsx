@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import TradeActivityListItem from './TradeActivityListItem';
@@ -15,7 +16,10 @@ export default class TradeActivityList extends React.Component {
     }
 
     render() {
-        const {tradeActivities = []} = this.props;
+        let {tradeActivities = []} = this.props;
+        tradeActivities = _.orderBy(tradeActivities, tradeActivity => {
+            return [moment(tradeActivity.date), tradeActivity.orderId];
+        }, ['desc']);
 
         return (
             <Grid container>

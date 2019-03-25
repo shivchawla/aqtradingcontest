@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import OrderActivityListItem from './OrderActivityListItem';
@@ -16,7 +17,9 @@ export default class OrderActivityList extends React.Component {
 
     render() {
         let {orderActivities = []} = this.props;
-        orderActivities = _.orderBy(orderActivities, 'orderId', ['desc']);
+        orderActivities = _.orderBy(orderActivities, orderActivity => {
+            return [moment(orderActivity.date), orderActivity.orderId];
+        }, ['desc']);
 
         return (
             <Grid container>
@@ -47,7 +50,7 @@ export default class OrderActivityList extends React.Component {
                                         justifyContent: 'center'
                                     }}
                             >
-                                <NoData>No Trade Activites Yet</NoData>
+                                <NoData>No Order Activites Yet</NoData>
                             </Grid>
                 }
             </Grid>
