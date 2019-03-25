@@ -1,10 +1,14 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ActionIcon from '../../../../../TradingContest/Misc/ActionIcons';
 import { getRequiredPrice } from '../../../utils';
 import { Utils } from '../../../../../../utils';
+import { horizontalBox } from '../../../../../../constants';
+
+const dateFormat = "Do MMM - HH:mm";
 
 export default class OrderListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -27,7 +31,8 @@ export default class OrderListItem extends React.Component {
             direction = 'BUY',
             orderType = '-',
             activityType = null,
-            brokerMessage = {}
+            brokerMessage = {},
+            date = null
         } = order;
         const hideCancelButton  = brokerStatus.toLowerCase() === 'cancelled';
         const price = getRequiredPrice(brokerMessage);
@@ -43,6 +48,9 @@ export default class OrderListItem extends React.Component {
                     }}
                     alignItems="center"
             >
+                <Grid item xs={2}>
+                    <Metric>{moment(date).format(dateFormat)}</Metric>
+                </Grid>
                 <Grid item xs={1}>
                     <Metric>{orderId}</Metric>
                 </Grid>
@@ -52,7 +60,7 @@ export default class OrderListItem extends React.Component {
                 <Grid item xs={1}>
                     <Metric>{accQuantity}</Metric>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={1}>
                     <Metric>{activityType}</Metric>
                 </Grid>
                 <Grid item xs={1}>
@@ -64,10 +72,17 @@ export default class OrderListItem extends React.Component {
                 <Grid item xs={1}>
                     <Metric>{completeStatus ? 'True' : 'False'}</Metric>
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={1}>
                     <Metric>{brokerStatus}</Metric>
                 </Grid>
-                <Grid item xs={1}>
+                <Grid 
+                        item 
+                        xs={1}
+                        style={{
+                            ...horizontalBox,
+                            justifyContent: 'space-between'
+                        }}
+                >
                     <Metric>
                         {
                             price !== null

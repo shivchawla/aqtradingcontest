@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import OrderListItem from './OrderListItem';
@@ -16,8 +17,10 @@ export default class OrderList extends React.Component {
 
     render() {
         let {orders = []} = this.props;
-        orders = _.orderBy(orders, 'orderId', ['asc']);
         orders = orders.filter(order => order.activeStatus === true);
+        orders = _.orderBy(orders, order => {
+            return [moment(order.date), order.orderId];
+        }, ['desc']);
 
         return (
             <Grid container>
@@ -67,6 +70,9 @@ const OrderListHeader = () => {
                     boxSizing: 'border-box'
                 }}
         >
+            <Grid item xs={2}>
+                <HeaderText>Date</HeaderText>
+            </Grid>
             <Grid item xs={1}>
                 <HeaderText>Order</HeaderText>
             </Grid>
@@ -76,7 +82,7 @@ const OrderListHeader = () => {
             <Grid item xs={1}>
                 <HeaderText>Acc.</HeaderText>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={1}>
                 <HeaderText>Activity</HeaderText>
             </Grid>
             <Grid item xs={1}>
@@ -88,7 +94,7 @@ const OrderListHeader = () => {
             <Grid item xs={1}>
                 <HeaderText>Complete</HeaderText>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={1}>
                 <HeaderText>Status</HeaderText>
             </Grid>
             <Grid item xs={1}>

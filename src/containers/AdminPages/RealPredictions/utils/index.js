@@ -128,6 +128,7 @@ export const mergeOrderAndOrderActivity = (prediction = {}) => {
         const orderStatus = _.get(orderActivityItem, `brokerMessage.orderState.status`, null);
         const direction = _.get(orderActivityItem, `brokerMessage.order.action`, null);
         const orderType = _.get(orderActivityItem, `brokerMessage.order.orderType`, null);
+        const date = _.get(orderActivityItem, 'date', null);
 
         return {
             ...order,
@@ -136,7 +137,8 @@ export const mergeOrderAndOrderActivity = (prediction = {}) => {
             orderStatus,
             direction,
             orderType,
-            brokerMessage
+            brokerMessage,
+            date
         }
     });
 }
