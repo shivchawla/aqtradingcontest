@@ -377,7 +377,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                             <Tag 
                                 backgroundColor='#FCE4EC'
                                 color='#C2185B'
-                                label={`Accumulated: ${accumulated ? accumulated : '-'}`}
+                                label={`Accumulated: ${accumulated !== null ? accumulated : '-'}`}
                                 style={{marginLeft: '10px'}}
                             />
                         }

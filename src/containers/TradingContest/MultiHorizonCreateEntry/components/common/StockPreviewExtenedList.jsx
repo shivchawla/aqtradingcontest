@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
@@ -9,10 +10,12 @@ import StockPreviewExtendedPredictionHeader from '../desktop/StockPreviewExtende
 import StockPreviewPredictionListItemExtened from '../desktop/StockPreviewPredictionListItemExtended';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
-import TranslucentLoader from '../../../../../components/Loaders/TranslucentLoader';
-import { horizontalBox } from '../../../../../constants';
+import { horizontalBox, primaryColor } from '../../../../../constants';
 import { hasActiveOrders, hasSkippedOrders} from '../../utils';
-const moment = require('moment');
+import { CircularProgress } from '@material-ui/core';
+
+let predictionTimeout = null;
+let searchInput = null;
 
 const sortingMenu = [
     {label: 'Start Date', key: 'createdDate'},
@@ -27,9 +30,12 @@ class StockPreviewExtendedList extends React.Component {
             selectedSort: sortingMenu[0],
             searchInput: '',
             readStatusSelected: readStatusRadioItems[0],
-            loading: false
+            loading: false,
+            predictions: [],
+            predictionsLength: 0
         }
     }
+
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(nextState, this.state)) {
             return true;
@@ -38,67 +44,125 @@ class StockPreviewExtendedList extends React.Component {
         return false;
     }
 
+    componentWillReceiveProps(nextProps, nextState) {
+        const oldPredictions = _.get(this.props, 'predictions', []);
+        const newPredictions = _.get(nextProps, 'predictions', []);
+        if (!_.isEqual(oldPredictions, newPredictions)) {
+            this.updatePredictionsList(newPredictions);
+        }
+    }
+
     handleMenuChanged = menuKey => {
         const keyIndex = _.findIndex(sortingMenu, menuItem => menuItem.key === menuKey);
         const requiredMenuItem = sortingMenu[keyIndex];
 
-        this.setState({selectedSort: requiredMenuItem});
+        this.setState({selectedSort: requiredMenuItem}, () => {
+            this.updatePredictionsList();
+        });
     }
 
-    sortPredictionsByDate = (predictions = []) => {
+    getPredictionAccordingToReadStatus = prediction => {
+        const readStatus = this.state.readStatusSelected;
+        
+        if (readStatus === 'un-read') {
+
+            return _.get(prediction, 'readStatus', null).toUpperCase() === 'UNREAD';
+
+        } else if (readStatus === 'read'){
+
+            return _.get(prediction, 'readStatus', null).toUpperCase() !== 'UNREAD';
+
+        } else if (readStatus === 'active') {
+
+            return hasActiveOrders(prediction);
+
+        } else if (readStatus === 'skipped') {
+
+            return hasSkippedOrders(prediction);
+
+        } else {
+
+            return true;
+        }
+    }
+
+    getUpdatedPredictions = async (predictions = []) => {
         const key = _.get(this.state, 'selectedSort.key', 'createdDate');
-
-        return _.orderBy(predictions, prediction => {
-            return moment(prediction[key])
-        }, ['desc'])
-    }
-
-    searchPredictions = (predictions = []) => {
         const {searchInput = ''} = this.state;
-
         const regExp = new RegExp(`${searchInput}`, 'i');
 
-        const filteredPredictions = predictions.filter(prediction => {
+        return await _.chain(predictions)
+        .filter(prediction => {
             const symbol = _.get(prediction, 'symbol', '');
-            return symbol.search(regExp) > -1;
-        });
-    
-        return filteredPredictions;
+
+            return this.getPredictionAccordingToReadStatus(prediction) && symbol.search(regExp) > -1;
+        })
+        .orderBy(prediction => {
+            return moment(prediction[key]);
+        }, ['desc'])
+        .value();
     }
 
-    filterPredictionsOnReadStatus = (predictions = []) => {
-        const readStatus = this.state.readStatusSelected;
+    updatePredictionsList = (predictions = _.get(this.props, 'predictions', [])) => {
+        this.setState({loading: true, predictionsLength: 0}, () => {
+            this.getUpdatedPredictions(predictions)
+            .then(predictions => {
+                this.recursiveUpdateToList(predictions);
+            })
+            .finally(() => {
+                this.setState({loading: false});
+            });
+        });
+    }
 
-        return predictions.filter(prediction => {
-            if (readStatus === 'un-read') {
-                return _.get(prediction, 'readStatus', null).toUpperCase() === 'UNREAD';
-            } else if (readStatus === 'read'){
-                return _.get(prediction, 'readStatus', null).toUpperCase() !== 'UNREAD';
-            } else if (readStatus === 'active') {
-                return hasActiveOrders(prediction);
-            } else if (readStatus === 'skipped') {
-                return hasSkippedOrders(prediction);
+    recursiveUpdateToList = (predictions = []) => {
+        this.setState({loading: true});
+        clearTimeout(predictionTimeout);
+        predictionTimeout = setTimeout(() => {
+            let hasMore = this.state.predictionsLength + 1 < predictions.length;
+            this.setState( (prev, props) => {
+                const requiredPredictions = predictions.slice(0, prev.predictions.length + 1);
+
+                return {
+                    predictions: requiredPredictions,
+                    predictionsLength: requiredPredictions.length
+                };
+            });
+            if (hasMore) {
+                this.recursiveUpdateToList(predictions)
+            } else {
+                this.setState({loading: false});
             }
-            else {
-                return true;
-            }
-        })
+        }, 0);
     }
 
     onReadStatusRadioChanged = value => {
-        this.setState({readStatusSelected: readStatusRadioItems[value]});
+        this.setState({readStatusSelected: readStatusRadioItems[value]}, () => {
+            this.updatePredictionsList();
+        });
+    }
+
+    onSearchInputChange = e => {
+        const value = _.get(e, 'target.value', 'blah');
+        clearTimeout(searchInput);
+        searchInput = setTimeout(() => {
+            this.setState({searchInput: value}, () => {
+                this.updatePredictionsList();
+            });
+        }, 300);
+    }
+
+    componentWillMount() {
+        this.updatePredictionsList();
     }
 
     render() {
         const isDesktop = this.props.windowWidth > 800;
-        let {predictions = [], selectedDate = moment()} = this.props;
-        predictions = this.filterPredictionsOnReadStatus(predictions);
-        predictions = this.sortPredictionsByDate(predictions);
-        predictions = this.searchPredictions(predictions);
+        const {predictions = []} = this.state;
 
         return (
             <Grid 
-                    item 
+                    item
                     className='stock-list' 
                     xs={12} 
                     style={{
@@ -107,11 +171,24 @@ class StockPreviewExtendedList extends React.Component {
                     }}
             >
                 <div style={{...horizontalBox, justifyContent: 'space-between'}}>
-                    <CustomOutlinedInput
-                        placeholder='Symbol'
-                        onChange={e => this.setState({searchInput: e.target.value})}
-                        type="string"
-                    />
+                    <div style={{
+                            ...horizontalBox, 
+                            justifyContent: 'flex-start'
+                        }}
+                    >
+                        <CustomOutlinedInput
+                            placeholder='Symbol'
+                            onChange={this.onSearchInputChange}
+                            type="string"
+                        />
+                        <CircularProgress 
+                            size={16}
+                            style={{
+                                marginLeft: '10px',
+                                color: this.state.loading ? primaryColor : 'transparent'
+                            }}
+                        />
+                    </div>
                     <RadioGroup 
                         items={readStatusRadioItems.map(radioItem => radioItem.toUpperCase())}
                         defaultSelected={_.findIndex(readStatusRadioItems, status => status === this.state.readStatusSelected)}
@@ -126,27 +203,21 @@ class StockPreviewExtendedList extends React.Component {
                         selectedType={this.state.selectedSort.key}
                     />
                 </div>
+                <StockPreviewExtendedPredictionHeader />
                 {
-                    this.state.loading
-                    ?   <TranslucentLoader />
-                    :   <React.Fragment>
-                            <StockPreviewExtendedPredictionHeader />
-                            {
-                                predictions.map((prediction, index) => {
-                                    return (
-                                        <StockPreviewPredictionListItemExtened 
-                                            prediction={prediction} 
-                                            key={index}
-                                            selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
-                                            toggleOrderDialog={this.props.toggleOrderDialog}
-                                            selectPredictionForOrder={this.props.selectPredictionForOrder}
-                                            selectPredictionIdForCancel={this.props.selectPredictionIdForCancel}
-                                            skipPrediction={this.props.skipPrediction}
-                                        />
-                                    );
-                                })
-                            }
-                        </React.Fragment>
+                    predictions.map((prediction, index) => {
+                        return (
+                            <StockPreviewPredictionListItemExtened 
+                                prediction={prediction} 
+                                key={index}
+                                selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
+                                toggleOrderDialog={this.props.toggleOrderDialog}
+                                selectPredictionForOrder={this.props.selectPredictionForOrder}
+                                selectPredictionIdForCancel={this.props.selectPredictionIdForCancel}
+                                skipPrediction={this.props.skipPrediction}
+                            />
+                        );
+                    })
                 }
             </Grid>
         );
