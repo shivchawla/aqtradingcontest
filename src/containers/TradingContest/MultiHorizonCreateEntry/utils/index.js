@@ -464,7 +464,7 @@ export const searchPositions = (searchInput = '', positions = []) => {
 }
 
 /**
- * Returns truen if there are active orders in a prediction
+ * Returns true if there are active orders in a prediction
  */
 export const hasActiveOrders = (prediction = {}) => {
     const {accumulated = null, orders = []} = prediction;
@@ -473,4 +473,13 @@ export const hasActiveOrders = (prediction = {}) => {
         (orders.filter(order => order.activeStatus === true).length > 0);
     
     return shoudlShowActiveOrders;
+}
+
+/**
+ * Returns true if it is skipped by admin
+ */
+export const hasSkippedOrders = (prediction = {}) => {
+    const {skippedByAdmin = false} = prediction;
+
+    return skippedByAdmin;
 }

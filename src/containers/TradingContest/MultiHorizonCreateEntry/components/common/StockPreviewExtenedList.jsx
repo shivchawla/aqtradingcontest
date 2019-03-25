@@ -11,14 +11,14 @@ import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import TranslucentLoader from '../../../../../components/Loaders/TranslucentLoader';
 import { horizontalBox } from '../../../../../constants';
-import { hasActiveOrders } from '../../utils';
+import { hasActiveOrders, hasSkippedOrders} from '../../utils';
 const moment = require('moment');
 
 const sortingMenu = [
     {label: 'Start Date', key: 'createdDate'},
     {label: 'End Date', key: 'endDate'}
 ];
-const readStatusRadioItems = ['un-read', 'read', 'active', 'all'];
+const readStatusRadioItems = ['un-read', 'read', 'active', 'skipped', 'all'];
 
 class StockPreviewExtendedList extends React.Component {
     constructor(props) {
@@ -76,7 +76,9 @@ class StockPreviewExtendedList extends React.Component {
                 return _.get(prediction, 'readStatus', null).toUpperCase() !== 'UNREAD';
             } else if (readStatus === 'active') {
                 return hasActiveOrders(prediction);
-            } 
+            } else if (readStatus === 'skipped') {
+                return hasSkippedOrders(prediction);
+            }
             else {
                 return true;
             }
