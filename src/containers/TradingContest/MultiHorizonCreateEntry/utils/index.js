@@ -456,3 +456,13 @@ export const searchPositions = (searchInput = '', positions = []) => {
 
     return filteredArray;
 }
+
+export const hasEndDatePassed = (endDate) => {
+    const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
+    const todayDate = moment().format(dateTimeFormat);
+    let endTime = moment(endDate, dateFormat).hours(DateHelper.getMarketCloseHour()).minutes(DateHelper.getMarketCloseMinute());
+    endTime = endTime.format(dateTimeFormat);
+    const endDatePassed = moment(todayDate, dateTimeFormat).isAfter(moment(endTime, dateTimeFormat));
+
+    return endDatePassed;
+}

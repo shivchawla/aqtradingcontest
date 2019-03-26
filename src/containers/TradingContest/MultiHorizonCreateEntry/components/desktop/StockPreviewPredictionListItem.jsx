@@ -10,6 +10,7 @@ import {Utils} from '../../../../../utils';
 import {isMarketOpen} from '../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
+import {hasEndDatePassed} from '../../utils';
 
 const readableDateFormat = "Do MMM 'YY";
 const DateHelper = require('../../../../../utils/date');
@@ -123,6 +124,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 : metricColor.neutral;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
+        const endDatePassed = hasEndDatePassed(endDate);
 
         return (
             <Container 
@@ -160,6 +162,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         {iconConfig.status}
                     </MetricText>
                     {
+                        !endDatePassed &&
                         !preview &&
                         (allowAfterMaketHourExit || marketOpen) &&
                         (
