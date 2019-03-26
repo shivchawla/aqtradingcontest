@@ -87,6 +87,17 @@ export const cancelOrder = (data) => {
     })
 }
 
+export const modifyOrder = (data) => {
+    const url = `${requestUrl}/dailycontest/modifyorder`;
+
+    return axios({
+        method: 'POST',
+        url,
+        data,
+        headers: Utils.getAuthTokenHeader()
+    })
+}
+
 export const skipPredictionByAdmin = (data) => {
     const url = `${requestUrl}/dailycontest/skipPrediction`;
 

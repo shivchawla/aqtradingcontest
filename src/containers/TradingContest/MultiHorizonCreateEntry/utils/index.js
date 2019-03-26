@@ -342,6 +342,8 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         priceInterval: _.get(prediction, 'priceInterval', {}),
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),
         lastPrice: _.get(prediction, 'position.lastPrice', 0),
+        change: _.get(prediction, 'position.security.latestDetailRT.change', null) || _.get(prediction, 'position.security.latestDetail.Change', null),
+        changePct: _.get(prediction, 'position.security.latestDetailRT.changePct', null) || _.get(prediction, 'position.security.latestDetail.ChangePct', null),
         avgPrice: _.get(prediction, 'position.avgPrice', 0),
         investment: _.get(prediction, 'position.investment', 0),
         quantity: _.get(prediction, 'position.quantity', 0),

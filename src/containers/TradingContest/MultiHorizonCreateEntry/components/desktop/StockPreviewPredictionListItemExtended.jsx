@@ -176,6 +176,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             createdDate = null,
             endDate = null,
             lastPrice = 0,
+            change = 0,
+            changePct = 0,
             status ={},
             _id = null,
             triggered = false,
@@ -207,6 +209,11 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             : requiredChangedInvestment < investment 
                 ? metricColor.negative
                 : metricColor.neutral;
+        const changeColor = change > 0 
+            ?   metricColor.positive
+            :   change === 0 
+                    ?   metricColor.neutral
+                    :   metricColor.negative;
 
         return (
             <Container 
@@ -236,6 +243,11 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                 </Grid>
                 <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</MetricText>
+                    <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)}</Change>
+                        &nbsp;|&nbsp;
+                        <Change color={changeColor}>{((changePct || 0) * 100).toFixed(2)}%</Change>
+                    </div>
                 </Grid>
                 <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
@@ -312,11 +324,14 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
                         {/* Active Orders Tag */}
                         {
-                            hasActiveOrders(prediction) &&
                             <Tag 
-                                backgroundColor="#00C853"
+                                backgroundColor={
+                                    hasActiveOrders(prediction) 
+                                        ? "#00C853"
+                                        : "#6e6e6e"
+                                    }
                                 color="#fff"
-                                label="Active Orders"
+                                label={hasActiveOrders(prediction) ? "Active Orders" : "Orders"}
                                 onClick={() => this.props.selectPredictionIdForCancel(_id)}
                                 style={{marginLeft: '10px', boxShadow: '0 3px 8px rgba(0, 0, 0, 0.2)'}}
                             />
@@ -456,6 +471,13 @@ const MetricText = styled.h3`
 const CallDate = styled.h3`
     font-size: 12px;
     color: #7B7B7B;
+    text-align: start;
+    font-weight: 400;
+`;
+
+const Change = styled.h3`
+    font-size: 12px;
+    color: ${props => props.color || '#7B7B7B'};
     text-align: start;
     font-weight: 400;
 `;

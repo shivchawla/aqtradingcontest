@@ -17,7 +17,7 @@ export default class OrderList extends React.Component {
 
     render() {
         let {orders = []} = this.props;
-        orders = orders.filter(order => order.activeStatus === true);
+        // orders = orders.filter(order => order.activeStatus === true);
         orders = _.orderBy(orders, order => {
             return [moment(order.date), order.orderId];
         }, ['desc']);
@@ -37,6 +37,7 @@ export default class OrderList extends React.Component {
                                                 order={order}
                                                 key={index}
                                                 selectOrderToCancel={this.props.selectOrderToCancel}
+                                                selectOrderToModify={this.props.selectOrderToModify}
                                             />
                                         ))
                                     }
@@ -81,9 +82,6 @@ const OrderListHeader = () => {
             </Grid>
             <Grid item xs={1}>
                 <HeaderText>Acc.</HeaderText>
-            </Grid>
-            <Grid item xs={1}>
-                <HeaderText>Activity</HeaderText>
             </Grid>
             <Grid item xs={1}>
                 <HeaderText>Order</HeaderText>

@@ -8,16 +8,19 @@ import ActionIcon from '../../../../../TradingContest/Misc/ActionIcons';
 import OrderList from './OrderList';
 import ConfirmationDialog from '../../common/ConfirmationDialog';
 import TranslucentOrder from '../../../../../../components/Loaders/TranslucentLoader';
+import ModifyOrderDialog from './ModifyOrderDialog';
 import {horizontalBox} from '../../../../../../constants';
-import {cancelOrder, mergeOrderAndOrderActivity} from '../../../utils';
+import {cancelOrder, mergeOrderAndOrderActivity, modifyOrder} from '../../../utils';
 
 export default class CancelDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             selectedOrderId: null,
+            selectedOrderIdToModify: null,
             confirmationDialogOpen: false,
             loading: false,
+            modifyDialogOpen: false,
             snackbar: {
                 open: false,
                 message: ''
@@ -34,9 +37,19 @@ export default class CancelDialog extends React.Component {
         return false;
     }
 
+    toggleModifyDialog = () => {
+        this.setState({modifyDialogOpen: !this.state.modifyDialogOpen});
+    }
+
     selectOrderToCancel = (orderId = null) => {
         this.setState({selectedOrderId: orderId}, () => {
             this.toggleConfirmationDialog();
+        })
+    }
+
+    selectOrderToModify = (orderId = null) => {
+        this.setState({selectedOrderIdToModify: orderId}, () => {
+            this.toggleModifyDialog();
         })
     }
 
@@ -80,6 +93,48 @@ export default class CancelDialog extends React.Component {
             ...this.state.snackbar,
             open: false
         }});
+    }
+
+    modifyOrder = (order, price, quantity) => {
+        this.toggleModifyDialog();
+        const {selectedPredictionForCancel} = this.props;
+        const orderId = _.get(order, 'orderId', null);
+        const advisorId = _.get(selectedPredictionForCancel, 'advisorId', null);
+        const predictionId = _.get(selectedPredictionForCancel, 'predictionId', null);
+        const stock = _.get(selectedPredictionForCancel, 'symbol', null);
+        const tradeDirection = _.get(order, 'direction', null);
+        const orderType = _.get(order, 'orderType', null);
+        const tif = 'GTC';
+
+        const data = {
+            advisorId,
+            predictionId,
+            orderId,
+            stock,
+            tradeDirection,
+            orderType,
+            tif,
+            price,
+            quantity
+        };
+        this.setState({loading: true});
+        modifyOrder(data)
+        .then(() => {
+            this.openSnackbar('Modified Successfully');
+        })
+        .catch(err => {
+            this.openSnackbar(JSON.stringify(_.get(err, 'response.data', 'Error occurred while modifying order')));
+        })
+        .finally(() => this.setState({loading: false}));
+    }
+
+    getSelectedOrderToModify = () => {
+        const {selectedPredictionForCancel = {}} = this.props;
+        const {selectedOrderIdToModify = null} = this.state;
+        const orders = mergeOrderAndOrderActivity(selectedPredictionForCancel);
+        const requiredOrderIndex = _.findIndex(orders, order => order.orderId === selectedOrderIdToModify);
+
+        return orders[requiredOrderIndex];
     }
 
     renderDialogHeader = () => {
@@ -129,6 +184,13 @@ export default class CancelDialog extends React.Component {
                     this.state.loading &&
                     <TranslucentOrder />
                 }
+                <ModifyOrderDialog 
+                    open={this.state.modifyDialogOpen}
+                    onClose={this.toggleModifyDialog}
+                    selectedOrderToModify={this.getSelectedOrderToModify()}
+                    orderId={this.state.selectedOrderIdToModify}
+                    modifyOrder={this.modifyOrder}
+                />
                 <ConfirmationDialog 
                     open={this.state.confirmationDialogOpen}
                     onClose={this.toggleConfirmationDialog}
@@ -141,6 +203,7 @@ export default class CancelDialog extends React.Component {
                     <OrderList 
                         orders={orders}
                         selectOrderToCancel={this.selectOrderToCancel}
+                        selectOrderToModify={this.selectOrderToModify}
                     />
                 </Container>
             </DialogComponent>

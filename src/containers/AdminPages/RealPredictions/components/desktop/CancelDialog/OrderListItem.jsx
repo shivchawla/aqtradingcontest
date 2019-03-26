@@ -61,9 +61,6 @@ export default class OrderListItem extends React.Component {
                     <Metric>{accQuantity}</Metric>
                 </Grid>
                 <Grid item xs={1}>
-                    <Metric>{activityType}</Metric>
-                </Grid>
-                <Grid item xs={1}>
                     <Metric>{orderType}</Metric>
                 </Grid>
                 <Grid item xs={1}>
@@ -94,12 +91,25 @@ export default class OrderListItem extends React.Component {
                 <Grid item xs={1}>
                     {
                         !hideCancelButton &&
+                        !completeStatus &&
                         <ActionIcon 
                             size={20}
                             type="stop"
                             onClick={() => this.props.selectOrderToCancel(orderId)}
                             color="red"
                             disabled={hideCancelButton}
+                        />
+                    }
+                </Grid>
+                <Grid item xs={1}>
+                    {
+                        !hideCancelButton &&
+                        !completeStatus &&
+                        <ActionIcon 
+                            size={20}
+                            type="edit"
+                            onClick={() => this.props.selectOrderToModify(orderId)}
+                            color="#222"
                         />
                     }
                 </Grid>
