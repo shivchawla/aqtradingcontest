@@ -13,8 +13,6 @@ export default class StockDetailBottomSheet extends React.Component {
         super(props);
         this.state = {
             stockData: {
-                name: _.get(props, 'name', ''),
-                symbol: _.get(props, 'symbol', ''),
                 chg: _.get(props, 'chg', 0),
                 chgPct: _.get(props, 'chgPct', 0)
             },
@@ -30,13 +28,30 @@ export default class StockDetailBottomSheet extends React.Component {
         return false;
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (!_.isEqual(this.props, nextProps)) {
+            let {
+                symbol = '',
+                name = '',
+                chg = 0,
+                chgPct = 0
+            } = nextProps;
+            this.setState({
+                stockData: {
+                    chg,
+                    chgPct
+                }
+            });
+        }
+    }
+
     renderHeader = () => {
         const positiveColor = '#32FFD8';
         const negativeColor = '#FF7B7B';
         const neutralCOlor = '#DFDFDF';
+        let {symbol = '', name = ''} = this.props;
+
         let {
-            name = '',
-            symbol = '',
             lastPrice=0, 
             chg=0,
             chgPct=0
@@ -89,7 +104,6 @@ export default class StockDetailBottomSheet extends React.Component {
     }
 
     updateStockData = (stockData) => {
-        console.log('Update Stock Data Called', stockData);
         this.setState({stockData: {
             ...this.state.stockData,
             ...stockData
