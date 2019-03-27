@@ -33,6 +33,19 @@ export default class ModifyOrder extends React.Component {
         };
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (!_.isEqual(nextProps.selectedOrderToModify, this.props.selectedOrderToModify)) {
+            const order = _.get(nextProps, 'selectedOrderToModify', {});
+            const brokerMessage = _.get(order, 'brokerMessage', {});
+            const requiredPrice = getRequiredPrice(brokerMessage);
+            const requiredQuantity = _.get(order, 'totalQuantity', 0);
+            this.setState({
+                price: requiredPrice,
+                quantity: requiredQuantity
+            });
+        }
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -81,13 +94,17 @@ export default class ModifyOrder extends React.Component {
 
     render() {
         const {open = false, selctedOrderToModify = {}} = this.props;
+        const brokerMessage = _.get(selctedOrderToModify, 'brokerMessage', {});
+        const requiredPrice = getRequiredPrice(brokerMessage);
+        const requiredQuantity = _.get(selctedOrderToModify, 'totalQuantity', 0);
 
         return (
             <DialogComponent
                 open={open}
                 onClose={this.props.onClose}
                 style={{padding: 0}}
-                maxWidth='xl'
+                title='Modify Order'
+                maxWidth='xs'
             >
                 <SnackbarComponent 
                     openStatus={this.state.snackbar.open}
@@ -107,6 +124,7 @@ export default class ModifyOrder extends React.Component {
                 />
                 <Container container>
                     <Grid item xs={12}>
+                        <Label>Price - {requiredPrice}</Label>
                         <CustomOutlinedInput
                             placeholder='Price'
                             onChange={this.onPriceInputChange}
@@ -114,7 +132,8 @@ export default class ModifyOrder extends React.Component {
                             value={this.state.price}
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} style={{marginTop: '10px'}}>
+                        <Label>Quantity - {requiredQuantity}</Label>
                         <CustomOutlinedInput
                             placeholder='Quantity'
                             onChange={this.onQuantityInputChange}
@@ -122,8 +141,13 @@ export default class ModifyOrder extends React.Component {
                             value={this.state.quantity}
                         />
                     </Grid>
-                    <Grid item xs={12}>
-                        <Button onClick={this.modifyOrder}>Modify Order</Button>
+                    <Grid item xs={12} style={{ marginTop: '20px'}}>
+                        <Button 
+                                onClick={this.modifyOrder}
+                                style={{width: '100%'}}
+                        >
+                            Modify Order
+                        </Button>
                     </Grid>
                 </Container>
             </DialogComponent>
@@ -136,9 +160,14 @@ const Container = styled(Grid)`
     overflow: hidden;
     overflow-y: scroll;
     padding: 10px;
-    min-width: 72vw;
-    min-height: 54vh;
+    min-width: 32vw;
+    /* min-height: 54vh; */
     display: flex;
     flex-direction: column;
-    margin-top: 40px;
+`;
+
+const Label = styled.h3`
+    font-size: 12px;
+    color: #444;
+    margin-bottom: 20px;
 `;
