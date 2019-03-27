@@ -8,6 +8,7 @@ import ButtonBase from '@material-ui/core/ButtonBase';
 import Tag from '../../../../../components/Display/Tag';
 import {isMarketOpen} from '../../../utils';
 import {Utils} from '../../../../../utils';
+import {hasEndDatePassed} from '../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
 
@@ -126,7 +127,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const allowAfterMaketHourExit = conditional && !triggered;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
-        
+
+        const endDatePassed = hasEndDatePassed(endDate);
+
         const highPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'highPrice', 0));
         const lowPrice = Utils.formatMoneyValueMaxTwoDecimals(_.get(priceInterval, 'lowPrice', 0));
         const typeColor = type === 'buy' ? '#b2ffd1' : '#ffdada';
@@ -139,7 +142,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
         endDate = moment(endDate).format(dateFormat);
 
         const directionUnit = type === 'buy' ? 1 : -1;
-        const changeInvestment = ((lastPrice - avgPrice) / avgPrice) * investment;
+        const changeInvestment = avgPrice !== 0 
+            ? ((lastPrice - avgPrice) / avgPrice) * investment
+            : 0;
         const changedInvestment = investment + (changeInvestment * directionUnit);
 
         const duration = DateHelper.getTradingDays(startDate, endDate);
@@ -176,6 +181,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                             />
                         </div>
                         {
+                            !endDatePassed &&
                             (allowAfterMaketHourExit ||marketOpen) &&
                             (
                                 iconConfig.type.toLowerCase() === 'active' 
@@ -240,8 +246,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 >
                                     {
                                         triggered
-                                        ? Utils.formatInvestmentValue(changedInvestment)
-                                        : Utils.formatInvestmentValue(investment)
+                                            ? avgPrice === 0 
+                                                ?   '-'
+                                                :   Utils.formatInvestmentValue(changedInvestment)
+                                            : Utils.formatInvestmentValue(investment)
                                     }
                                 </MetricText>
                             </div>
