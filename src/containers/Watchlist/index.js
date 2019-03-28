@@ -203,6 +203,7 @@ class WatchlistComponent extends React.Component {
         if (this.mounted) {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
+                console.log('Watchlist realtime ', realtimeResponse);
                 const watchlists = [...this.state.watchlists];
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
@@ -210,9 +211,9 @@ class WatchlistComponent extends React.Component {
                     // Getting the required security to update
                     const targetSecurity = targetWatchlist.positions.filter(item => item.symbol === realtimeResponse.ticker)[0];
                     if (targetSecurity) {
-                        const validCurrentPrice = _.get(realtimeResponse, 'output.current', 0);
+                        const validCurrentPrice = _.get(realtimeResponse, 'output.close', 0);
                         const change = _.get(realtimeResponse, 'output.change', 0);
-                        const changePct = _.get(realtimeResponse, 'output.changePct', 0);
+                        const changePct = _.get(realtimeResponse, 'output.change_p', 0);
                         targetSecurity.change = change;
                         targetSecurity.price = validCurrentPrice;
                         targetSecurity.current = validCurrentPrice;
