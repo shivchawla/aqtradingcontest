@@ -17,6 +17,8 @@ import Footer from '../Footer';
 import WS from '../../utils/websocket';
 
 const {requestUrl} = require('../../localConfig');
+const stockSubscriberId = Math.random().toString(36).substring(2, 8);
+const watchlistSubscriberId = Math.random().toString(36).substring(2, 8);
 
 const styles = theme => ({
     root: {
@@ -313,7 +315,8 @@ class StockResearchImpl extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
             'type': 'stock',
-            'ticker': ticker
+            'ticker': ticker,
+            "subscriberId": stockSubscriberId
         };
         this.webSocket.sendWSMessage(msg);
     }
@@ -323,7 +326,8 @@ class StockResearchImpl extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
             'type': 'stock',
-            'ticker': ticker
+            'ticker': ticker,
+            "subscriberId": stockSubscriberId
         };
         this.webSocket.sendWSMessage(msg);
     }
@@ -333,7 +337,8 @@ class StockResearchImpl extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
             'type': 'watchlist',
-            'watchlistId': watchListId
+            'watchlistId': watchListId,
+            "subscriberId": watchlistSubscriberId
         };
         console.log('Stock Research', msg);
         this.webSocket.sendWSMessage(msg); 
@@ -344,7 +349,8 @@ class StockResearchImpl extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
             'type': 'watchlist',
-            'watchlistId': watchListId
+            'watchlistId': watchListId,
+            "subscriberId": watchlistSubscriberId
         };
         this.webSocket.sendWSMessage(msg);
     }

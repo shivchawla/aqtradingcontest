@@ -25,6 +25,8 @@ const dateFormat = 'YYYY-MM-DD';
 const predictionsCancelledMessage = 'predictionsCancelled';
 const advisorsCancelledMessage = 'advisorsCancelled';
 
+const subscriberId = Math.random().toString(36).substring(2, 8);
+
 class RealPredictions extends React.Component {
     constructor(props) {
         super(props);
@@ -217,7 +219,8 @@ class RealPredictions extends React.Component {
         let msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-real-prediction-all",
-            "category": type
+            "category": type,
+            "subscriberId": subscriberId
         };
         if (advisorId !== null && Utils.isAdmin()) {
             msg = {
@@ -234,6 +237,7 @@ class RealPredictions extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-real-prediction-all',
             'category': type,
+            "subscriberId": subscriberId
         };
         if (advisorId !== null && Utils.isAdmin()) {
             msg = {
@@ -257,7 +261,6 @@ class RealPredictions extends React.Component {
     processRealtimeMessage = msg => {
         const currentDate = moment().format(dateFormat);
         const selectedDate = this.state.selectedDate.format(dateFormat);
-
         if (_.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);

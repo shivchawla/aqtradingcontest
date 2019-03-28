@@ -7,6 +7,8 @@ import {fetchStockData, checkIfSymbolSelected} from './utils';
 import {getStockPerformance, Utils} from '../../utils';
 import WS from '../../utils/websocket';
 
+const subscriberId = Math.random().toString(36).substring(2, 8);
+
 export default class StockDetail extends React.Component {
     constructor(props) {
         super(props);
@@ -136,7 +138,8 @@ export default class StockDetail extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
             'type': 'stock',
-            'ticker': ticker
+            'ticker': ticker,
+            "subscriberId": subscriberId
         };
         this.webSocket.sendWSMessage(msg);
     }
@@ -149,7 +152,8 @@ export default class StockDetail extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
             'type': 'stock',
-            'ticker': ticker
+            'ticker': ticker,
+            "subscriberId": subscriberId
         };
         this.webSocket.sendWSMessage(msg);
     }

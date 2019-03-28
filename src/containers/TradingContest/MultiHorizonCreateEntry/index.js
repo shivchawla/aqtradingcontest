@@ -40,6 +40,7 @@ const dateFormat = 'YYYY-MM-DD';
 const pnlCancelledMessage = 'pnlCancelled';
 const predictionsCancelledMessage = 'predictionsCancelled';
 const portfolioStatsCancelledMessage = 'portfolioStatsCancelled';
+const subscriberId = Math.random().toString(36).substring(2, 8);
 
 class CreateEntry extends React.Component {
     constructor(props) {
@@ -452,7 +453,8 @@ class CreateEntry extends React.Component {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-prediction",
             "category": type,
-            "real": this.state.real
+            "real": this.state.real,
+            "subscriberId": subscriberId
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
@@ -469,7 +471,8 @@ class CreateEntry extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-predictions',
             'category': type,
-            "real": this.state.real
+            "real": this.state.real,
+            "subscriberId": subscriberId
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {

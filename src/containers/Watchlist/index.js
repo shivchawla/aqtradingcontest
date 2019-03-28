@@ -26,6 +26,7 @@ import {primaryColor, horizontalBox, metricColor} from '../../constants';
 import {onUserLoggedIn} from '../TradingContest/constants/events';
 
 const {requestUrl} = require('../../localConfig');
+const subscriberId = Math.random().toString(36).substring(2, 8);
 
 class WatchlistComponent extends React.Component {
     constructor(props) {
@@ -234,7 +235,8 @@ class WatchlistComponent extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
             'type': 'watchlist',
-            'watchlistId': watchListId
+            'watchlistId': watchListId,
+            "subscriberId": subscriberId
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
@@ -255,7 +257,8 @@ class WatchlistComponent extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
             'type': 'watchlist',
-            'watchlistId': watchListId
+            'watchlistId': watchListId,
+            "subscriberId": subscriberId
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
