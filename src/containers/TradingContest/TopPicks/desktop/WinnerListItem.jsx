@@ -36,7 +36,7 @@ export default class WinnerListItem extends React.Component {
         const {security = {}, numUsers = 1, rank = 5, lastDetail = {}, investment, type} = this.props;
         const symbol = getStockTicker(security);
         const name = _.get(security, 'detail.Nse_Name', null) || '';
-        const lastPrice = _.get(security, 'latestDetailRT.current', null) || _.get(security, 'latestDetail.Close', 0);
+        const lastPrice = _.get(security, 'latestDetailRT.close', null) || _.get(security, 'latestDetail.Close', 0);
         const change = Utils.formatMoneyValueMaxTwoDecimals(_.get(security, 'latestDetailRT.change', null) || _.get(security, 'latestDetail.Change', 0));
         const unformattedChangePct = _.get(security, 'latestDetailRT.changePct', null) ||  _.get(security, 'latestDetail.ChangePct', 0.0);
         const changePct = `(${(unformattedChangePct * 100).toFixed(2)}%)`;

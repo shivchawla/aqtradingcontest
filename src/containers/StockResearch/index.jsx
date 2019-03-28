@@ -120,13 +120,13 @@ class StockResearchImpl extends React.Component {
             latestDetail.ticker = data.ticker;
             latestDetail.exchange = data.exchange;
             latestDetail.close = data.latestDetail.Close;
-            latestDetail.latestPrice = _.get(data, 'latestDetailRT.current', 0) || data.latestDetail.Close
+            latestDetail.latestPrice = _.get(data, 'latestDetailRT.close', 0) || data.latestDetail.Close
             latestDetail.open = _.get(data, 'latestDetailRT.open', 0) || data.latestDetail.Open;
             latestDetail.low = _.get(data, 'latestDetailRT.low', 0) || data.latestDetail.Low;
             latestDetail.high = _.get(data, 'latestDetailRT.high', 0) || data.latestDetail.High;
             latestDetail.low_52w = Math.min(_.get(data, 'latestDetailRT.low', 0), data.latestDetail.Low_52w);
             latestDetail.high_52w = Math.max(_.get(data, 'latestDetailRT.high', 0), data.latestDetail.High_52w);
-            latestDetail.change = _.get(data, 'latestDetailRT.current', 0) != 0.0 ?  Number(((_.get(data, 'latestDetailRT.changePct', 0) || data.latestDetail.ChangePct)*100).toFixed(2)) : "-";
+            latestDetail.change = _.get(data, 'latestDetailRT.close', 0) != 0.0 ?  Number(((_.get(data, 'latestDetailRT.changePct', 0) || data.latestDetail.ChangePct)*100).toFixed(2)) : "-";
 
             latestDetail.name = data.detail !== undefined ? data.detail.Nse_Name : ' ';
             tickers.push({name: value, destroy: true, data: stockPricehistoryPerformance, noLoadDat: true});
