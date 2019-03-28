@@ -61,7 +61,7 @@ class StockComponent extends React.Component {
                                     marginTop: '25px'
                                 }}
                         >
-                            <LastPrice>₹{lastPrice.toFixed(2)}</LastPrice>
+                            <LastPrice>₹{(lastPrice || 0)}</LastPrice>
                         </Grid>
                         <Grid 
                                 item 
@@ -83,9 +83,9 @@ class StockComponent extends React.Component {
                                         boxSizing: 'border-box'
                                     }}
                             >
-                                <Change positive={positive}>₹{change.toFixed(2)}</Change>
+                                <Change positive={positive}>₹{(change || 0)}</Change>
                                 <Bar>|</Bar>
-                                <Change positive={positive}>{changePct.toFixed(2)}%</Change>
+                                <Change positive={positive}>{(changePct || 0)}%</Change>
                             </div>
                         </Grid>
                     </Grid>

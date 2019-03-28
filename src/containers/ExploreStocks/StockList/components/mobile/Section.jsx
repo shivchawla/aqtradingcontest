@@ -14,6 +14,20 @@ export default class Section extends React.Component {
         return false;
     }
 
+    renderStocks = () => {
+        const {stocks = []} = this.props;
+
+        return stocks.map((stock, index) => {
+            return (
+                <StockComponent
+                    key={index}
+                    {...stock}
+                    positive={false}
+                />
+            );
+        });
+    }
+
     render() {
         const {header = 'Section Header'} = this.props;
 
@@ -38,11 +52,7 @@ export default class Section extends React.Component {
                             boxSizing: 'border-box'
                         }}
                 >
-                    <StockComponent positive={false}/>
-                    <StockComponent positive={true} />
-                    <StockComponent />
-                    <StockComponent positive={false} />
-                    <StockComponent />
+                    {this.renderStocks()}
                 </Grid>
             </Grid>
         );

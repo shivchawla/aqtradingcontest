@@ -5,18 +5,33 @@ import Grid from '@material-ui/core/Grid';
 import Section from './Section';
 
 export default class Layout extends React.Component {
+    renderCategories = () => {
+        const {categories = []} = this.props;
+
+        return (
+            <React.Fragment>
+                {
+                    categories.map((categoryItem, index) => (
+                        <SGridItem 
+                                item 
+                                xs={12}
+                                key={index}
+                        >
+                            <Section 
+                                header={_.get(categoryItem, 'category', '')}
+                                stocks={_.get(categoryItem, 'stocks', [])}
+                            />
+                        </SGridItem>
+                    ))
+                }
+            </React.Fragment>
+        );
+    }
+
     render() {
         return (
             <Grid container>
-                <SGridItem item xs={12}>
-                    <Section header='High Return Stocks' />
-                </SGridItem>
-                <SGridItem item xs={12}>
-                    <Section header='High Return Stocks' />
-                </SGridItem>
-                <SGridItem item xs={12}>
-                    <Section header='High Return Stocks' />
-                </SGridItem>
+                {this.renderCategories()}
             </Grid>
         );
     }
