@@ -37,13 +37,17 @@ class OrderContent extends React.Component {
         const modifiedQuantity = getLastestAdminMoficiation(prediction, 'quantity');
         const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');
         const modifiedStopLoss = getLastestAdminMoficiation(prediction, 'stopLoss');
+
+        const requiredProfitLimitPrice = modifiedTarget || target;
+        const requiredStopLossPrice = modifiedStopLoss || stopLoss;
+        const requiredPrice = _.get(prediction, 'lastPrice', 0);
         
         this.state = {
             quantity: modifiedQuantity || quantity,
             type: direction === 'buy' ? orderTypes[0] : orderTypes[1],
-            price: _.get(prediction, 'lastPrice', 0),
-            profitLimitPrice: modifiedTarget || target,
-            stopLossPrice: modifiedStopLoss || stopLoss,
+            price: this.roundOff(requiredPrice),
+            profitLimitPrice: this.roundOff(requiredProfitLimitPrice),
+            stopLossPrice: this.roundOff(requiredStopLossPrice),
             confirmationDialogOpen: false,
             loading: false,
             snackbar: {
@@ -115,12 +119,18 @@ class OrderContent extends React.Component {
         return <DialogComponent order={order} />;
     }
 
+    roundOff = (value) => {
+        value = Number(value);
+        
+        return Math.round(value * 20) / 20;
+    }
+
     placeOrder = () => {
         // Closing Confirmation Dialog
         this.toggleConfirmationDialog();
 
         let {prediction = {}, orderType = 'market'} = this.props;
-        const {
+        let {
             quantity = 0,
             price = 0,
             stopLossPrice,
@@ -139,6 +149,10 @@ class OrderContent extends React.Component {
                             ?   'market'
                             :   'marketClose'
             :   orderType;
+
+        price = this.roundOff(price);
+        stopLossPrice = this.roundOff(stopLossPrice);
+        profitLimitPrice = this.roundOff(profitLimitPrice);
         
         const data = {
             predictionId,
