@@ -204,6 +204,7 @@ class WatchlistComponent extends React.Component {
         if (this.mounted) {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
+                console.log('Realtime Response ', realtimeResponse);
                 const watchlists = [...this.state.watchlists];
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
@@ -222,6 +223,7 @@ class WatchlistComponent extends React.Component {
                     }
                 }
             } catch(error) {
+
             }
         }
     }
@@ -244,7 +246,7 @@ class WatchlistComponent extends React.Component {
                 advisorId: selectedAdvisorId
             }
         }
-        
+        console.log('Sub Msg', msg);
         this.webSocket.sendWSMessage(msg); 
     }
 
@@ -326,7 +328,10 @@ class WatchlistComponent extends React.Component {
         const oldSelectedWatchlist = this.getSelectedWatchlist();
         const oldWatchlistId = _.get(oldSelectedWatchlist, 'id', null);
         this.unsubscribeToWatchlist(oldWatchlistId);
-        this.setState({selectedWatchlistTabIndex: selectedIndex}, () => {
+        this.setState({
+            selectedWatchlistTabIndex: selectedIndex,
+            selectedWatchlistTab: _.get(this.getSelectedWatchlist(selectedIndex), 'id', null)
+        }, () => {
             const selectedWatchlist = this.getSelectedWatchlist();
             const watchlistId = _.get(selectedWatchlist, 'id', null);
             this.subscribeToWatchList(watchlistId);
@@ -426,7 +431,7 @@ class WatchlistComponent extends React.Component {
 
     componentDidMount() {
         this.mounted = true;
-        this.setUpSocketConnection(this.webSocket);
+        this.setUpSocketConnection();
         this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureLogin);
     }
 
@@ -672,9 +677,9 @@ class WatchlistComponent extends React.Component {
         }
     }
 
-    getSelectedWatchlist = () => {
+    getSelectedWatchlist = (selectedWatchlistIndex = this.state.selectedWatchlistTabIndex) => {
         const {watchlists = []} = this.state;
-        const selectedWatchlist = watchlists[this.state.selectedWatchlistTabIndex];
+        const selectedWatchlist = watchlists[selectedWatchlistIndex];
 
         return selectedWatchlist;
     }

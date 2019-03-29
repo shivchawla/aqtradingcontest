@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
+import $ from "jquery";
 import moment from 'moment';
 import Media from 'react-media';
 import {withRouter} from 'react-router';
@@ -245,6 +246,7 @@ class RealPredictions extends React.Component {
                 advisorId
             };
         }
+        console.log('Unsubscribed to watchlist', msg);
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -264,6 +266,7 @@ class RealPredictions extends React.Component {
         if (_.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
+                console.log('Realtime Data ', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
@@ -636,7 +639,16 @@ class RealPredictions extends React.Component {
         this.setUpSocketConnection();
     }
 
+    componentDidMount() {
+        const self = this;
+        $(window).bind('beforeunload', function() {
+            self.unSubscribeToPredictions();
+            window.onbeforeunload = null;
+        });
+    }
+
     componentWillUnmount() {
+        console.log('Unsubscribed to realpredictions');
         this.unSubscribeToPredictions();
     }
 
