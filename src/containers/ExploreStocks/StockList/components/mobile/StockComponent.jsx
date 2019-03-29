@@ -36,8 +36,9 @@ class StockComponent extends React.Component {
             lastPrice = 2046.5,
             change = 20.55,
             changePct = 5.5,
-            positive = true
         } = this.props;
+        console.log('LastPrice ', lastPrice, typeof lastPrice);
+        const positive = change >= 0;
 
         return (
             <Container onClick={this.goToStockDetailPage}>
