@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import moment from 'moment';
 import _ from 'lodash';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import Checkbox from '@material-ui/core/Checkbox';
 import {withRouter} from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import RadioGroup from '../../../../../../components/selections/RadioGroup';
@@ -15,6 +17,7 @@ import {InputHeader, MetricContainer} from '../../common/InputMisc';
 import {horizontalBox, verticalBox, primaryColor, metricColor} from '../../../../../../constants';
 import {Utils, handleCreateAjaxError} from '../../../../../../utils';
 import {placeOrder, getLastestAdminMoficiation, mergeOrderAndOrderActivity} from '../../../utils';
+import DateHelper from '../../../../../../utils/date';
 
 const orderTypes = ['BUY', 'SELL'];
 const marketTimeTypes = ['NOW', 'CLOSE'];
@@ -49,7 +52,8 @@ class OrderContent extends React.Component {
             },
             bracketFirstOrderType: firstOrderTypes[0],
             marketOrderTime: marketTimeTypes[0],
-            message: ''
+            message: '',
+            marketIfTouched: false,
         }
     }
 
@@ -129,9 +133,11 @@ class OrderContent extends React.Component {
         const advisorId = _.get(prediction, 'advisorId', null);
 
         orderType = orderType === 'market'
-            ?   this.state.marketOrderTime === 'NOW'
-                    ?   'market'
-                    :   'marketClose'
+            ?   this.state.marketIfTouched
+                    ?   'marketIfTouched'
+                    :   this.state.marketOrderTime === 'NOW'
+                            ?   'market'
+                            :   'marketClose'
             :   orderType;
         
         const data = {
@@ -149,7 +155,6 @@ class OrderContent extends React.Component {
                 profitLimitPrice: Number(profitLimitPrice)
             }
         };
-
         this.setState({loading: true});
         return placeOrder(data)
         .then(() => {
@@ -211,7 +216,6 @@ class OrderContent extends React.Component {
     hasActiveBuyOrders = () => {
         const {prediction = {}} = this.props;
         const orders = mergeOrderAndOrderActivity(prediction);
-        console.log('Orders ', orders);
         const activeBuyOrders = orders.filter(order => {
             const completeStatus = _.get(order, 'completeStatus', false);
             const activeStatus = _.get(order, 'activeStatus', false);
@@ -240,6 +244,10 @@ class OrderContent extends React.Component {
 
     handleFirstOrderTypeChange = value => {
         this.setState({bracketFirstOrderType: firstOrderTypes[value]});
+    }
+
+    onMarketIfTouchedChange = e => {
+        this.setState({marketIfTouched: e.target.checked});
     }
 
     render() {
@@ -312,6 +320,18 @@ class OrderContent extends React.Component {
                     renderContent={this.renderDialogComponent}
 
                 />
+                {
+                    shouldShowMarketType &&
+                    <Grid item xs={12}>
+                        <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                            <InputHeader style={{marginBottom: 0}}>Aux Price</InputHeader>
+                            <Checkbox 
+                                value={this.state.marketIfTouched} 
+                                onChange={this.onMarketIfTouchedChange}
+                            />
+                        </div>
+                    </Grid>
+                }
                 <Grid 
                         item 
                         xs={12}
@@ -375,7 +395,7 @@ class OrderContent extends React.Component {
                         }}
                 >
                     {
-                        shouldShowPrice &&
+                        (this.state.marketIfTouched || shouldShowPrice) &&
                         <MetricContainer style={{width: 'inherit'}}>
                             <InputHeader style={{marginBottom: '0px'}}>Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultPrice)}</InputHeader>
                             <Metric style={{color: 'transparent'}}>
@@ -433,7 +453,7 @@ class OrderContent extends React.Component {
                 </Grid>
                 <Grid item xs={6}>
                     {
-                        shouldShowMarketType &&
+                        !this.state.marketIfTouched && shouldShowMarketType &&
                         <MetricContainer>
                             <InputHeader>Time</InputHeader>
                             <RadioGroup 

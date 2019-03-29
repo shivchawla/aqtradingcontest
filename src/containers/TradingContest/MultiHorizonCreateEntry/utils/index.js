@@ -311,7 +311,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
                 chgPct: _.get(prediction, 'position.security.latestDetailRT.changePct', 0) || _.get(prediction, 'position.security.latestDetail.ChangePct', 0),
                 industry: _.get(prediction, 'position.security.detail.Industry', null),
                 key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-                lastPrice: _.get(prediction, 'position.security.latestDetailRT.current', 0) || _.get(prediction, 'position.security.latestDetail.Close', 0),
+                lastPrice: _.get(prediction, 'position.security.latestDetailRT.close', 0) || _.get(prediction, 'position.security.latestDetail.Close', 0),
                 pnlLastPrice: _.get(prediction, 'position.lastPrice', 0),
                 name: _.get(prediction, 'position.security.detail.Nse_Name', null),
                 points: 10,

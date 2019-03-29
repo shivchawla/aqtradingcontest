@@ -333,7 +333,7 @@ class SearchStocks extends React.Component {
             const open = _.get(stock, 'latestDetailRT.open', 0) ||
                 _.get(stock, 'latestDetail.Open', 0);
 
-            const current = _.get(stock, 'latestDetailRT.current', 0) ||
+            const current = _.get(stock, 'latestDetailRT.close', 0) ||
                 _.get(stock, 'latestDetail.Close', 0);
 
             const shortable = _.get(stock, 'shortable', false);

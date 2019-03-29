@@ -26,6 +26,7 @@ import {primaryColor, horizontalBox, metricColor} from '../../constants';
 import {onUserLoggedIn} from '../TradingContest/constants/events';
 
 const {requestUrl} = require('../../localConfig');
+const subscriberId = Math.random().toString(36).substring(2, 8);
 
 class WatchlistComponent extends React.Component {
     constructor(props) {
@@ -203,6 +204,7 @@ class WatchlistComponent extends React.Component {
         if (this.mounted) {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
+                console.log('Realtime Response ', realtimeResponse);
                 const watchlists = [...this.state.watchlists];
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
@@ -210,9 +212,9 @@ class WatchlistComponent extends React.Component {
                     // Getting the required security to update
                     const targetSecurity = targetWatchlist.positions.filter(item => item.symbol === realtimeResponse.ticker)[0];
                     if (targetSecurity) {
-                        const validCurrentPrice = _.get(realtimeResponse, 'output.current', 0);
+                        const validCurrentPrice = _.get(realtimeResponse, 'output.close', 0);
                         const change = _.get(realtimeResponse, 'output.change', 0);
-                        const changePct = _.get(realtimeResponse, 'output.changePct', 0);
+                        const changePct = _.get(realtimeResponse, 'output.change_p', 0);
                         targetSecurity.change = change;
                         targetSecurity.price = validCurrentPrice;
                         targetSecurity.current = validCurrentPrice;
@@ -221,6 +223,7 @@ class WatchlistComponent extends React.Component {
                     }
                 }
             } catch(error) {
+
             }
         }
     }
@@ -234,7 +237,8 @@ class WatchlistComponent extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
             'type': 'watchlist',
-            'watchlistId': watchListId
+            'watchlistId': watchListId,
+            "subscriberId": subscriberId
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
@@ -242,7 +246,7 @@ class WatchlistComponent extends React.Component {
                 advisorId: selectedAdvisorId
             }
         }
-        
+        console.log('Sub Msg', msg);
         this.webSocket.sendWSMessage(msg); 
     }
 
@@ -255,7 +259,8 @@ class WatchlistComponent extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
             'type': 'watchlist',
-            'watchlistId': watchListId
+            'watchlistId': watchListId,
+            "subscriberId": subscriberId
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
@@ -285,7 +290,7 @@ class WatchlistComponent extends React.Component {
                         symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
                         change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))).toFixed(2)),
                         current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
-                        changePct: _.get(item, 'realtime.changePct', 0.0),
+                        changePct: _.get(item, 'realtime.change_p', 0.0),
                         name: _.get(item, 'detail.Nse_Name', ''),
                         shortable: _.get(item, 'shortable', false)
                     }
@@ -300,7 +305,7 @@ class WatchlistComponent extends React.Component {
             return {
                 symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
                 change: Number(((_.get(item, 'latestDetailRT.change', 0.0) || _.get(item, 'latestDetailRT.Change', 0.0))).toFixed(2)),
-                current: _.get(item, 'latestDetailRT.current', 0.0) || _.get(item, 'latestDetail.Close', 0.0),
+                current: _.get(item, 'latestDetailRT.close', 0.0) || _.get(item, 'latestDetail.Close', 0.0),
                 changePct: Number(((_.get(item, 'latestDetailRT.changePct', 0.0) || _.get(item, 'latestDetailRT.ChangePct', 0.0)))),
                 name: _.get(item, 'detail.Nse_Name', ''),
                 shortable: _.get(item, 'shortable', false)
@@ -323,7 +328,10 @@ class WatchlistComponent extends React.Component {
         const oldSelectedWatchlist = this.getSelectedWatchlist();
         const oldWatchlistId = _.get(oldSelectedWatchlist, 'id', null);
         this.unsubscribeToWatchlist(oldWatchlistId);
-        this.setState({selectedWatchlistTabIndex: selectedIndex}, () => {
+        this.setState({
+            selectedWatchlistTabIndex: selectedIndex,
+            selectedWatchlistTab: _.get(this.getSelectedWatchlist(selectedIndex), 'id', null)
+        }, () => {
             const selectedWatchlist = this.getSelectedWatchlist();
             const watchlistId = _.get(selectedWatchlist, 'id', null);
             this.subscribeToWatchList(watchlistId);
@@ -423,7 +431,7 @@ class WatchlistComponent extends React.Component {
 
     componentDidMount() {
         this.mounted = true;
-        this.setUpSocketConnection(this.webSocket);
+        this.setUpSocketConnection();
         this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureLogin);
     }
 
@@ -669,9 +677,9 @@ class WatchlistComponent extends React.Component {
         }
     }
 
-    getSelectedWatchlist = () => {
+    getSelectedWatchlist = (selectedWatchlistIndex = this.state.selectedWatchlistTabIndex) => {
         const {watchlists = []} = this.state;
-        const selectedWatchlist = watchlists[this.state.selectedWatchlistTabIndex];
+        const selectedWatchlist = watchlists[selectedWatchlistIndex];
 
         return selectedWatchlist;
     }

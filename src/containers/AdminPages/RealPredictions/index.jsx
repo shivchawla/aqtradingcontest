@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
+import $ from "jquery";
 import moment from 'moment';
 import Media from 'react-media';
 import {withRouter} from 'react-router';
@@ -24,6 +25,8 @@ const defaultDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(
 const dateFormat = 'YYYY-MM-DD';
 const predictionsCancelledMessage = 'predictionsCancelled';
 const advisorsCancelledMessage = 'advisorsCancelled';
+
+const subscriberId = Math.random().toString(36).substring(2, 8);
 
 class RealPredictions extends React.Component {
     constructor(props) {
@@ -217,7 +220,8 @@ class RealPredictions extends React.Component {
         let msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-real-prediction-all",
-            "category": type
+            "category": type,
+            "subscriberId": subscriberId
         };
         if (advisorId !== null && Utils.isAdmin()) {
             msg = {
@@ -234,6 +238,7 @@ class RealPredictions extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-real-prediction-all',
             'category': type,
+            "subscriberId": subscriberId
         };
         if (advisorId !== null && Utils.isAdmin()) {
             msg = {
@@ -241,6 +246,7 @@ class RealPredictions extends React.Component {
                 advisorId
             };
         }
+        console.log('Unsubscribed to watchlist', msg);
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -257,11 +263,10 @@ class RealPredictions extends React.Component {
     processRealtimeMessage = msg => {
         const currentDate = moment().format(dateFormat);
         const selectedDate = this.state.selectedDate.format(dateFormat);
-
         if (_.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
-                console.log('Realtime Data', realtimeData);
+                console.log('Realtime Data ', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
@@ -634,7 +639,16 @@ class RealPredictions extends React.Component {
         this.setUpSocketConnection();
     }
 
+    componentDidMount() {
+        const self = this;
+        $(window).bind('beforeunload', function() {
+            self.unSubscribeToPredictions();
+            window.onbeforeunload = null;
+        });
+    }
+
     componentWillUnmount() {
+        console.log('Unsubscribed to realpredictions');
         this.unSubscribeToPredictions();
     }
 

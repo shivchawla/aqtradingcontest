@@ -128,7 +128,7 @@ const Container = styled(Grid)`
     overflow-y: scroll;
     padding: 10px;
     /* min-width: 48vw; */
-    min-height: 54vh;
+    min-height: 60vh;
     display: flex;
     flex-direction: column;
     margin-top: 40px;

@@ -70,7 +70,7 @@ export default class StockPerformance extends React.Component {
         latestDetail.ticker = _.get(data, 'ticker', '');
         latestDetail.exchange = _.get(data, 'exchange', '');
         latestDetail.close = _.get(data, 'latestDetail.Close', 0);
-        latestDetail.latestPrice = _.get(data, 'latestDetailRT.current', 0) || data.latestDetail.Close
+        latestDetail.latestPrice = _.get(data, 'latestDetailRT.close', 0) || data.latestDetail.Close
         latestDetail.open = _.get(data, 'latestDetailRT.open', 0) || data.latestDetail.Open;
         latestDetail.low = _.get(data, 'latestDetailRT.low', 0) || data.latestDetail.Low;
         latestDetail.high = _.get(data, 'latestDetailRT.high', 0) || data.latestDetail.High;

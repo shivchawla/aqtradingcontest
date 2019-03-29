@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import $ from 'jquery';
 import styled from 'styled-components';
 import moment from 'moment';
 import Media from 'react-media';
@@ -40,6 +41,7 @@ const dateFormat = 'YYYY-MM-DD';
 const pnlCancelledMessage = 'pnlCancelled';
 const predictionsCancelledMessage = 'predictionsCancelled';
 const portfolioStatsCancelledMessage = 'portfolioStatsCancelled';
+const subscriberId = Math.random().toString(36).substring(2, 8);
 
 class CreateEntry extends React.Component {
     constructor(props) {
@@ -452,7 +454,8 @@ class CreateEntry extends React.Component {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-prediction",
             "category": type,
-            "real": this.state.real
+            "real": this.state.real,
+            "subscriberId": subscriberId
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
@@ -460,25 +463,33 @@ class CreateEntry extends React.Component {
                 advisorId: selectedAdvisorId
             };
         }
+        console.log('Subscription Message ', msg);
         this.webSocket.sendWSMessage(msg);
     }
 
-    unSubscribeToPredictions = (type = this.state.selectedView) => {
-        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
-        let msg = {
-            'aimsquant-token': Utils.getAuthToken(),
-            'action': 'unsubscribe-predictions',
-            'category': type,
-            "real": this.state.real
-        };
-        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
-            msg = {
-                ...msg,
-                advisorId: selectedAdvisorId
+    unSubscribeToPredictions = (type = this.state.selectedView) => new Promise((resolve, reject) => {
+        try {
+            const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+            let msg = {
+                'aimsquant-token': Utils.getAuthToken(),
+                'action': 'unsubscribe-predictions',
+                'category': type,
+                "real": this.state.real,
+                "subscriberId": subscriberId
             };
-        }
+            if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+                msg = {
+                    ...msg,
+                    advisorId: selectedAdvisorId
+                };
+            }
+            console.log('Unsubscribed from predictions ', msg);
+            resolve(msg);
         this.webSocket.sendWSMessage(msg);
-    }
+        } catch (err) {
+            reject(err);
+        }
+    });
 
     processRealtimeMessage = msg => {
         const currentDate = moment().format(dateFormat);
@@ -486,6 +497,7 @@ class CreateEntry extends React.Component {
         if (this.mounted && _.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
+                console.log('Realtime Data ', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const pnl = _.get(realtimeData, 'pnlStats', []);
                 this.updateDailyPredictions(predictons);
@@ -655,6 +667,14 @@ class CreateEntry extends React.Component {
 
     componentDidMount() {
         try {
+            const self = this;
+            $(window).bind('beforeunload', function() {
+                self.unSubscribeToPredictions()
+                .then(() => {
+                    window.onbeforeunload = null;
+                    return false;
+                });
+            });
             this.mounted = true;
             this.props.eventEmitter && this.props.eventEmitter.on(onPredictionCreated, this.captureEvent);
             this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureEvent);

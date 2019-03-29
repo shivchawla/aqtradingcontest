@@ -7,6 +7,8 @@ import {fetchStockData, checkIfSymbolSelected} from './utils';
 import {getStockPerformance, Utils} from '../../utils';
 import WS from '../../utils/websocket';
 
+const subscriberId = Math.random().toString(36).substring(2, 8);
+
 export default class StockDetail extends React.Component {
     constructor(props) {
         super(props);
@@ -98,9 +100,9 @@ export default class StockDetail extends React.Component {
         try {
             const realtimeResponse = JSON.parse(msg.data);
             if (realtimeResponse.type === 'stock' && realtimeResponse.ticker === this.props.symbol) {
-                var validCurrentPrice = _.get(realtimeResponse, 'output.current', 0);
+                var validCurrentPrice = _.get(realtimeResponse, 'output.close', 0);
                 const change = _.get(realtimeResponse, 'output.change', 0);
-                const changePct = _.get(realtimeResponse, 'output.changePct', 0);
+                const changePct = _.get(realtimeResponse, 'output.change_p', 0);
                 this.setState({
                     latestDetail: {
                         ...this.state.latestDetail,
@@ -136,7 +138,8 @@ export default class StockDetail extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'subscribe-mktplace',
             'type': 'stock',
-            'ticker': ticker
+            'ticker': ticker,
+            "subscriberId": subscriberId
         };
         this.webSocket.sendWSMessage(msg);
     }
@@ -149,7 +152,8 @@ export default class StockDetail extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-mktplace',
             'type': 'stock',
-            'ticker': ticker
+            'ticker': ticker,
+            "subscriberId": subscriberId
         };
         this.webSocket.sendWSMessage(msg);
     }
