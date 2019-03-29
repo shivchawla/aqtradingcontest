@@ -81,10 +81,32 @@ class RealPredictions extends React.Component {
         this.fetchPredictionsAndStats(date);
     }
 
+    checkForNewPredictions = (predictions = []) => {
+        const presentPredictions = _.get(this.state, 'predictions', []);
+        let newPredictionsCount = 0;
+        console.log('checkForNewPredictions called');
+        
+        Promise.map(predictions, prediction => {
+            // Getting the index of the current prediction in presentPredictions
+            // if index > -1 prediction already present
+            const predictionIndex = _.findIndex(presentPredictions, presentPrediction => _.isEqual(presentPrediction, prediction));
+            console.log('Prediction Index ', predictionIndex);
+            if (predictionIndex === -1) {
+                newPredictionsCount++;
+            }
+            return prediction;
+        })
+        .then(() => {
+            console.log('New Predictions Count ', newPredictionsCount);
+            if (newPredictionsCount > 0) {
+                this.toggleSnackbar(`${newPredictionsCount} New Predictions Received`);                
+            }
+        })
+    }
+
     /**
      * If realtime true - Unformatted predictions will be obtained from the state
      * Else - Unformatted predictions will be obtained from the argument
-     * 
      */
     updateDailyPredictions = async (predictions = [], realtime = false) => {
         const unformattedPredictions = realtime === true
@@ -99,6 +121,10 @@ class RealPredictions extends React.Component {
         const requiredPredictions = processRealtimePredictions(unformattedPredictions, predictions);
         const formattedPredictions = await processPredictions(requiredPredictions, true);
         const positions = convertPredictionsToPositions(requiredPredictions, true, false);
+        
+        if (realtime) {
+            this.checkForNewPredictions(formattedPredictions);
+        }
 
         this.setState({
             // If data already loaded then don't modify for predictions that are to be edited
@@ -266,7 +292,6 @@ class RealPredictions extends React.Component {
         if (_.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
-                console.log('Realtime Data ', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
@@ -398,7 +423,6 @@ class RealPredictions extends React.Component {
         }        
     }
 
-
     getTradeActivityForSelectedPrediction = () => {
         const {unformattedPredictions = []} = this.state;
         const selectedPredictionId = _.get(this.state, 'selectedPredictionForTradeActivity.predictionId', null);
@@ -427,6 +451,7 @@ class RealPredictions extends React.Component {
     updatePredictionTradeActivity = (prediction = {}) => {
         this.setState({selectedPredictionForTradeActivity: prediction});
     }
+
 
     updateAdvisorStats = advisorStats => {
         this.setState({requiredAdvisorForPredictions: advisorStats});
@@ -683,8 +708,10 @@ class RealPredictions extends React.Component {
 
     onSnackbarClose = () => {
         this.setState({
-            ...this.state.snackbar,
-            open: false
+            snackbar: {
+                ...this.state.snackbar,
+                open: false
+            }
         });
     }
     
@@ -755,6 +782,9 @@ class RealPredictions extends React.Component {
                     openStatus={this.state.snackbar.open}
                     message={this.state.snackbar.message}
                     handleClose={this.onSnackbarClose}
+                    autoHideDuration={3000}
+                    vertical='top'
+                    horizontal='right'
                 />
                 <Media 
                     query="(max-width: 800px)"
