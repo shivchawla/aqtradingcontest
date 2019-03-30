@@ -715,8 +715,8 @@ class RealPredictions extends React.Component {
         });
     }
     
-    skipPrediction = (predictionId, advisorId) => {
-        const data = {predictionId, advisorId};
+    skipPrediction = (predictionId, advisorId, message = '') => {
+        const data = {predictionId, advisorId, message};
 
         this.setState({cancelLoading: true});
         skipPredictionByAdmin(data)

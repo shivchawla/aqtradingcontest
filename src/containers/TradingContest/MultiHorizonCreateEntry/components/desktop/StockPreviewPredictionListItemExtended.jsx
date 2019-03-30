@@ -229,6 +229,21 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     }}
             >
                 <Grid 
+                        item 
+                        xs={12}
+                        style={{
+                            ...horizontalBox,
+                            marginBottom: '10px'
+                        }}
+                >
+                    <Tag 
+                        backgroundColor="#E1F5FE"
+                        color={iconConfig.color}
+                        label='Success: 50%'
+                        style={{marginLeft: '10px'}}
+                    />
+                </Grid>
+                <Grid 
                         item xs={2} 
                         style={{
                             ...verticalBox, 

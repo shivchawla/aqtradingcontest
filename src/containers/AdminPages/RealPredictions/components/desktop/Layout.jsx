@@ -21,6 +21,9 @@ import TradeActivtyDialog from './TradeActivityDialog';
 import CancelDialog from './CancelDialog';
 import OrderDialog from './OrderDialog';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
+import CustomOutlinedInput from '../../../../../components/input/CustomOutlinedInput';
+
+let skippedMessageTimeout = null;
 
 export default class Layout extends React.Component {
     constructor(props) {
@@ -33,6 +36,7 @@ export default class Layout extends React.Component {
             selectedAdvisor: null,
             toBeCancelledPredictionId: null,
             toBeCancelledAdvisorId: null,
+            skipMessage: ''
         };
     }
 
@@ -183,6 +187,14 @@ export default class Layout extends React.Component {
             </React.Fragment>
         );
     }
+
+    onSkippedMessageChanged = e => {
+        const value = e.target.value;
+        clearTimeout(skippedMessageTimeout);
+        skippedMessageTimeout = setTimeout(() => {
+            this.setState({skipMessage: value});
+        }, 300)
+    }
     
     render() {
         const {
@@ -204,8 +216,9 @@ export default class Layout extends React.Component {
                 <SkipConfirmationDialog 
                     open={this.props.skipPredictionDialogOpen}
                     onClose={this.props.toggleSkipPredictionDialog}
-                    onOk={() => this.props.skipPrediction(this.state.toBeCancelledPredictionId, this.state.toBeCancelledAdvisorId)}
+                    onOk={() => this.props.skipPrediction(this.state.toBeCancelledPredictionId, this.state.toBeCancelledAdvisorId, this.state.skipMessage)}
                     loading={cancelLoading}
+                    onMessageChange={this.onSkippedMessageChanged}
                 />
                 <UserProfileDialog 
                     open={this.state.userProfileDialogOpenStatus}
@@ -343,7 +356,19 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
     );
 }
 
-const SkipConfirmationDialog = ({open = false, onClose, onOk, loading = false}) => {
+const SkipConfirmationDialog = ({open = false, onClose, onOk, loading = false, onMessageChange}) => {
+    const renderConfirmationContent = () => (
+        <Grid container style={{marginTop: '20px'}}>
+            <Grid item xs={12}>
+                <CustomOutlinedInput 
+                    placeholder='Admin Message'
+                    onChange={onMessageChange}
+                    style={{width: '250px'}}
+                />
+            </Grid>
+        </Grid>
+    );
+
     return (
         <ConfirmationDialog 
             open={open}
@@ -351,6 +376,7 @@ const SkipConfirmationDialog = ({open = false, onClose, onOk, loading = false}) 
             createPrediction={onOk}
             question='Are you sure you want to skip this prediction ?'
             loading={loading}
+            renderContent={renderConfirmationContent}
         />
     );
 }
