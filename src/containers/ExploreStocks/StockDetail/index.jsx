@@ -7,6 +7,8 @@ import LayoutMobile from './components/mobile/Layout';
 import {fetchAjaxPromise, getStockStaticPerformance, getStockRollingPerformance, getStockData} from '../../../utils';
 import {processFinancials, processStaticPerformance, processRollingPerformance} from './utils';
 
+const {requestUrl} = require('../../../localConfig');
+
 class StockDetail extends React.Component {
     constructor(props) {
         super(props);
@@ -31,9 +33,9 @@ class StockDetail extends React.Component {
         try {
             this.cancelGetHistoricalData();
         } catch(err) {}
-        const requestUrl = `https://eodhistoricaldata.com/api/fundamentals/${symbol}.NSE?api_token=5b87e1823a5034.40596433`;
+        const historicalDataUrl = `${requestUrl}/stock/detail?ticker=${symbol}&exchange=NSE&country=IN&securityType=EQ&field=fundamentalData`;
         return fetchAjaxPromise(
-            requestUrl, 
+            historicalDataUrl, 
             this.props.history, 
             this.props.match.url, 
             false, 
@@ -82,11 +84,12 @@ class StockDetail extends React.Component {
         const {symbol = 'TCS'} = this.props;
         this.fetchStockHistoricalData(symbol)
         .then(response => {
-            const general = _.get(response.data, 'General', {});
-            const highlights = _.get(response.data, 'Highlights', {});
-            const valuation = _.get(response.data, 'Valuation');
+            const fundamentalData = _.get(response.data, 'fundamentalData.detail', {});
+            const general = _.get(fundamentalData, 'General', {});
+            const highlights = _.get(fundamentalData, 'Highlights', {});
+            const valuation = _.get(fundamentalData, 'Valuation');
             this.setState({
-                financialData: processFinancials(response.data),
+                financialData: processFinancials(fundamentalData),
                 general,
                 highlights,
                 valuation
