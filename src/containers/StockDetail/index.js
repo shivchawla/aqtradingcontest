@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import $ from 'jquery';
 import Media from 'react-media';
 import LayoutMobile from './components/mobile/Layout';
 import LayoutDesktop from './components/desktop/Layout';
