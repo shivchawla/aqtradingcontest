@@ -83,6 +83,14 @@ export default class StockDetail extends React.Component {
     }
 
     componentDidMount() {
+        const self = this;
+        $(window).bind('beforeunload', function() {
+            self.unSubscribeToStock(this.props.symbol)
+            .then(() => {
+                window.onbeforeunload = null;
+                return true;
+            });
+        });
         this.mounted = true;
         this.setUpSocketConnection();
     }

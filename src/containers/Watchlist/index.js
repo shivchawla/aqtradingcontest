@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import $ from 'jquery';
 import axios from 'axios';
 import windowSize from 'react-window-size';
 import Media from 'react-media';
@@ -250,7 +251,7 @@ class WatchlistComponent extends React.Component {
         this.webSocket.sendWSMessage(msg); 
     }
 
-    unsubscribeToWatchlist = (watchListId = 'blah') => {
+    unsubscribeToWatchlist = (watchListId = null) => {
         const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
         if (watchListId === null || watchListId === undefined || watchListId.length === 0) {
             return;
@@ -268,7 +269,7 @@ class WatchlistComponent extends React.Component {
                 advisorId: selectedAdvisorId
             }
         }
-        this.webSocket.sendWSMessage(msg);
+        return this.webSocket.sendWSMessage(msg);
     }
 
     takeAction = () => {
@@ -430,6 +431,14 @@ class WatchlistComponent extends React.Component {
     }
 
     componentDidMount() {
+        const self = this;
+        $(window).bind('beforeunload', function() {
+            self.unsubscribeToWatchlist(self.state.selectedWatchlistTab)
+            .then(() => {
+                window.onbeforeunload = null;
+                return true;
+            });
+        });
         this.mounted = true;
         this.setUpSocketConnection();
         this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureLogin);

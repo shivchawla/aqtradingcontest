@@ -53,8 +53,15 @@ export default class WSocket {
     }
 
     sendWSMessage(msg) {
-		if (this.connection && this.connection.readyState == 1) {
-            this.connection.send(JSON.stringify(msg));
-		}
+        return new Promise((resolve, reject) => {
+            try {
+                if (this.connection && this.connection.readyState == 1) {
+                    this.connection.send(JSON.stringify(msg));
+                    resolve(true);
+                }
+            } catch (err) {
+                reject(err);
+            }
+        })
 	}
 }
