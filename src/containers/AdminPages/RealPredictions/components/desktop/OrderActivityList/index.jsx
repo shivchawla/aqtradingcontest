@@ -3,10 +3,10 @@ import _ from 'lodash';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import TradeActivityListItem from './TradeActivityListItem';
-import { horizontalBox } from '../../../../../constants';
+import OrderActivityListItem from './OrderActivityListItem';
+import { horizontalBox } from '../../../../../../constants';
 
-export default class TradeActivityList extends React.Component {
+export default class OrderActivityList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -16,25 +16,26 @@ export default class TradeActivityList extends React.Component {
     }
 
     render() {
-        let {tradeActivities = []} = this.props;
-        tradeActivities = _.orderBy(tradeActivities, tradeActivity => {
-            return [moment(tradeActivity.date), tradeActivity.orderId];
+        let {orderActivities = []} = this.props;
+        orderActivities = _.orderBy(orderActivities, orderActivity => {
+            return [moment(orderActivity.date), orderActivity.orderId];
         }, ['desc']);
 
         return (
             <Grid container>
                 {
-                    tradeActivities.length > 0 
+                    orderActivities.length > 0 
                         ?   <React.Fragment>
                                 <Grid item xs={12}>
-                                    <TradeActivityListHeader />
+                                    <OrderActivityListHeader />
                                 </Grid>
                                 <Grid item xs={12}>
                                     {
-                                        tradeActivities.map((tradeActivity, index) => (
-                                            <TradeActivityListItem 
-                                                tradeActivity={tradeActivity}
+                                        orderActivities.map((orderActivity, index) => (
+                                            <OrderActivityListItem 
+                                                orderActivity={orderActivity}
                                                 key={index}
+                                                orderActivities={orderActivities}
                                             />
                                         ))
                                     }
@@ -49,7 +50,7 @@ export default class TradeActivityList extends React.Component {
                                         justifyContent: 'center'
                                     }}
                             >
-                                <NoData>No Trade Activites Yet</NoData>
+                                <NoData>No Order Activites Yet</NoData>
                             </Grid>
                 }
             </Grid>
@@ -57,7 +58,7 @@ export default class TradeActivityList extends React.Component {
     }
 }
 
-const TradeActivityListHeader = () => {
+const OrderActivityListHeader = () => {
     return (
         <Grid 
                 container 
@@ -70,20 +71,23 @@ const TradeActivityListHeader = () => {
             <Grid item xs={2}>
                 <HeaderText>Date</HeaderText>
             </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Price</HeaderText>
+            <Grid item xs={1}>
+                <HeaderText>Id</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Qty</HeaderText>
             </Grid>
             <Grid item xs={2}>
-                <HeaderText>Avg. Price</HeaderText>
+                <HeaderText>Type</HeaderText>
             </Grid>
             <Grid item xs={2}>
-                <HeaderText>Quantity</HeaderText>
+                <HeaderText>Status</HeaderText>
             </Grid>
             <Grid item xs={2}>
                 <HeaderText>Order</HeaderText>
             </Grid>
             <Grid item xs={2}>
-                <HeaderText>Notes</HeaderText>
+                <HeaderText>Price</HeaderText>
             </Grid>
         </Grid>
     );

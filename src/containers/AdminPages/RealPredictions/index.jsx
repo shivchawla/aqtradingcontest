@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import _ from 'lodash';
+import $ from "jquery";
 import moment from 'moment';
 import Media from 'react-media';
 import {withRouter} from 'react-router';
@@ -10,7 +11,7 @@ import {
     convertPredictionsToPositions,
 } from '../../TradingContest/MultiHorizonCreateEntry/utils';
 import SnackbarComponent from '../../../components/Alerts/SnackbarComponent';
-import {processRealtimePredictions, getAllocatedAdvisors, processAdvisors} from './utils';
+import {processRealtimePredictions, getAllocatedAdvisors, processAdvisors, skipPredictionByAdmin} from './utils';
 import LayoutDesktop from './components/desktop/Layout';
 import LayoutMobile from './components/mobile/Layout';
 import WS from '../../../utils/websocket';
@@ -24,6 +25,8 @@ const defaultDate = moment(DateHelper.getPreviousNonHolidayWeekday(moment().add(
 const dateFormat = 'YYYY-MM-DD';
 const predictionsCancelledMessage = 'predictionsCancelled';
 const advisorsCancelledMessage = 'advisorsCancelled';
+
+const subscriberId = Math.random().toString(36).substring(2, 8);
 
 class RealPredictions extends React.Component {
     constructor(props) {
@@ -62,7 +65,14 @@ class RealPredictions extends React.Component {
             snackbar: {
                 open: false,
                 message: ''
-            }
+            },
+            orderDialogOpen: false, // flag to open or close OrderDialog
+            selectedPredictionForOrder: {},
+            selectedPredictionForCancel: {},
+            selectedPredictionIdForCancel: null,
+            cancelDialogOpen: false, // flag to open or close cancel dialog,
+            cancelLoading: false,
+            skipPredictionDialogOpen: false
         };
     }
 
@@ -71,10 +81,32 @@ class RealPredictions extends React.Component {
         this.fetchPredictionsAndStats(date);
     }
 
+    checkForNewPredictions = (predictions = []) => {
+        const presentPredictions = _.get(this.state, 'predictions', []);
+        let newPredictionsCount = 0;
+        console.log('checkForNewPredictions called');
+        
+        Promise.map(predictions, prediction => {
+            // Getting the index of the current prediction in presentPredictions
+            // if index > -1 prediction already present
+            const predictionIndex = _.findIndex(presentPredictions, presentPrediction => _.isEqual(presentPrediction, prediction));
+            console.log('Prediction Index ', predictionIndex);
+            if (predictionIndex === -1) {
+                newPredictionsCount++;
+            }
+            return prediction;
+        })
+        .then(() => {
+            console.log('New Predictions Count ', newPredictionsCount);
+            if (newPredictionsCount > 0) {
+                this.toggleSnackbar(`${newPredictionsCount} New Predictions Received`);                
+            }
+        })
+    }
+
     /**
      * If realtime true - Unformatted predictions will be obtained from the state
      * Else - Unformatted predictions will be obtained from the argument
-     * 
      */
     updateDailyPredictions = async (predictions = [], realtime = false) => {
         const unformattedPredictions = realtime === true
@@ -89,6 +121,10 @@ class RealPredictions extends React.Component {
         const requiredPredictions = processRealtimePredictions(unformattedPredictions, predictions);
         const formattedPredictions = await processPredictions(requiredPredictions, true);
         const positions = convertPredictionsToPositions(requiredPredictions, true, false);
+        
+        if (realtime) {
+            this.checkForNewPredictions(formattedPredictions);
+        }
 
         this.setState({
             // If data already loaded then don't modify for predictions that are to be edited
@@ -210,7 +246,8 @@ class RealPredictions extends React.Component {
         let msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-real-prediction-all",
-            "category": type
+            "category": type,
+            "subscriberId": subscriberId
         };
         if (advisorId !== null && Utils.isAdmin()) {
             msg = {
@@ -227,6 +264,7 @@ class RealPredictions extends React.Component {
             'aimsquant-token': Utils.getAuthToken(),
             'action': 'unsubscribe-real-prediction-all',
             'category': type,
+            "subscriberId": subscriberId
         };
         if (advisorId !== null && Utils.isAdmin()) {
             msg = {
@@ -234,6 +272,7 @@ class RealPredictions extends React.Component {
                 advisorId
             };
         }
+        console.log('Unsubscribed to watchlist', msg);
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -322,11 +361,66 @@ class RealPredictions extends React.Component {
             oldQuantity: _.get(prediction, 'quantity', 0),
             oldStopLoss: _.get(prediction, 'stopLoss', 0),
             oldTarget: _.get(prediction, 'target', 0),
-            adminModifications: _.get(prediction, 'adminModifications', [])
+            adminModifications: _.get(prediction, 'adminModifications', []),
+            adminActivity: _.get(prediction, 'adminActivity', [])
         }
         this.setState({selectedPredictionForTradeActivity: selectedPrediction}, () => {
             this.toggleTradeActivityDialog();
         });
+    }
+
+
+    // Method that's called when BUY or EXIT button is pressed in Prediction tile
+    // to open the PlaceOrder dialog
+    selectPredictionForOrder = (type = 'buy', prediction = {}) => {
+        const selectedPrediction = {
+            predictionId: _.get(prediction, 'predictionId', null),
+            advisorId: _.get(prediction, 'advisorId', null),
+            name: _.get(prediction, 'name', ''),
+            symbol: _.get(prediction, 'symbol', ''),
+            investment: _.get(prediction, 'investment', 0),
+            quantity: _.get(prediction, 'quantity', 0),
+            lastPrice: _.get(prediction, 'lastPrice', 0),
+            stopLoss: _.get(prediction, 'stopLoss', 0),
+            target: _.get(prediction, 'target', 0),
+            orderType: type,
+            adminModifications: _.get(prediction, 'adminModifications', []),
+            accumulated: _.get(prediction, 'accumulated', null),
+            orders: _.get(prediction, 'orders', []),
+            orderActivity: _.get(prediction, 'orderActivity', []),
+            skippedByAdmin: _.get(prediction, 'skippedByAdmin', false)
+        };
+
+        this.setState({selectedPredictionForOrder: selectedPrediction}, () => {
+            this.toggleOrderDialog();
+        })
+    }
+
+    // Method that's called when cancel button is pressed in Prediction tile
+    // to open the CancelOrder dialog
+    selectPredictionIdForCancel = (predictionId) => {
+        this.setState({selectedPredictionIdForCancel: predictionId}, () => {
+            this.toggleCancelDialog();
+        });
+    }
+
+    getSelectedPreditionForCancel = () => {
+        const predictions = _.get(this.state, 'predictions', []);
+        const requiredPredictionIndex = _.findIndex(predictions, prediction => prediction._id === this.state.selectedPredictionIdForCancel);
+        if (requiredPredictionIndex > -1) {
+            const requiredPrediction = predictions[requiredPredictionIndex];
+
+            return {
+                predictionId: _.get(requiredPrediction, '_id', null),
+                advisorId: _.get(requiredPrediction, 'advisor', null),
+                name: _.get(requiredPrediction, 'name', ''),
+                symbol: _.get(requiredPrediction, 'symbol', ''),
+                orders: _.get(requiredPrediction, 'orders', []),
+                orderActivity: _.get(requiredPrediction, 'orderActivity', [])
+            }
+        } else {
+            return {};
+        }        
     }
 
     getTradeActivityForSelectedPrediction = () => {
@@ -340,12 +434,24 @@ class RealPredictions extends React.Component {
         return _.get(unformattedPredictions, `[${selectedUnformattedPredictionIndex}].tradeActivity`, []);
     }
 
+    getOrderActivityForSelectedPrediction = () => {
+        const {unformattedPredictions = []} = this.state;
+        const selectedPredictionId = _.get(this.state, 'selectedPredictionForTradeActivity.predictionId', null);
+
+        const selectedUnformattedPredictionIndex = _.findIndex(unformattedPredictions, unformattedPrediction => (
+            unformattedPrediction._id === selectedPredictionId
+        ));
+
+        return _.get(unformattedPredictions, `[${selectedUnformattedPredictionIndex}].orderActivity`, []);
+    }
+
     /**
      * Upates the prediction that is to be required for the TradeActivity
      */
     updatePredictionTradeActivity = (prediction = {}) => {
         this.setState({selectedPredictionForTradeActivity: prediction});
     }
+
 
     updateAdvisorStats = advisorStats => {
         this.setState({requiredAdvisorForPredictions: advisorStats});
@@ -360,9 +466,9 @@ class RealPredictions extends React.Component {
             predictionId = null,
             advisorId = null,
             tradeDirection = 'BUY',
-            tradeType = 'OPEN',
-            category = 'TRADE',
-            notes = ''
+            notes = '',
+            lastPrice = 0,
+            quantity = 0
         } = selectedPrediction;
 
         const data = {
@@ -370,10 +476,10 @@ class RealPredictions extends React.Component {
             advisorId,
             tradeActivity: {
                 date: moment().format(dateFormat),
-                category,
-                tradeDirection,
-                tradeType,
-                notes
+                direction: tradeDirection,
+                notes,
+                quantity,
+                price: lastPrice
             }
         };
         const url = `${requestUrl}/dailycontest/tradeactivity`;
@@ -558,7 +664,16 @@ class RealPredictions extends React.Component {
         this.setUpSocketConnection();
     }
 
+    componentDidMount() {
+        const self = this;
+        $(window).bind('beforeunload', function() {
+            self.unSubscribeToPredictions();
+            window.onbeforeunload = null;
+        });
+    }
+
     componentWillUnmount() {
+        console.log('Unsubscribed to realpredictions');
         this.unSubscribeToPredictions();
     }
 
@@ -568,6 +683,18 @@ class RealPredictions extends React.Component {
 
     toggleTradeActivityDialog = () => {
         this.setState({tradeActivityDialogOpen: !this.state.tradeActivityDialogOpen});
+    }
+
+    toggleOrderDialog = () => {
+        this.setState({
+            orderDialogOpen: !this.state.orderDialogOpen,
+        });
+    }
+    
+    toggleCancelDialog = () => {
+        this.setState({
+            cancelDialogOpen: !this.state.cancelDialogOpen
+        });
     }
 
     toggleSnackbar = (message = '') => {
@@ -581,9 +708,26 @@ class RealPredictions extends React.Component {
 
     onSnackbarClose = () => {
         this.setState({
-            ...this.state.snackbar,
-            open: false
+            snackbar: {
+                ...this.state.snackbar,
+                open: false
+            }
         });
+    }
+    
+    skipPrediction = (predictionId, advisorId, message = '') => {
+        const data = {predictionId, advisorId, message};
+
+        this.setState({cancelLoading: true});
+        skipPredictionByAdmin(data)
+        .finally(() => {
+            this.setState({cancelLoading: false});
+            this.toggleSkipPredictionDialog();
+        });
+    }
+
+    toggleSkipPredictionDialog = () => {
+        this.setState({skipPredictionDialogOpen: !this.state.skipPredictionDialogOpen});
     }
 
     render() {
@@ -615,8 +759,21 @@ class RealPredictions extends React.Component {
             updateTradeActivity: this.updateTradeActivity,
             updateTradeActivityLoading: this.state.updateTradeActivityLoading,
             selectedPredictionTradeActivity: this.getTradeActivityForSelectedPrediction(),
+            selectedPredictionOrderActivity: this.getOrderActivityForSelectedPrediction(),
             updateTradePrediction: this.updateTradePrediction,
-            updatePredictionLoading: this.state.updatePredictionLoading
+            updatePredictionLoading: this.state.updatePredictionLoading,
+            toggleOrderDialog: this.toggleOrderDialog,
+            orderDialogOpen: this.state.orderDialogOpen,
+            selectedPredictionForOrder: this.state.selectedPredictionForOrder,
+            selectPredictionForOrder: this.selectPredictionForOrder,
+            selectedPredictionForCancel: this.getSelectedPreditionForCancel(),
+            toggleCancelDialog: this.toggleCancelDialog,
+            cancelDialogOpen: this.state.cancelDialogOpen,
+            selectPredictionIdForCancel: this.selectPredictionIdForCancel,
+            skipPrediction: this.skipPrediction,
+            cancelLoading: this.state.cancelLoading,
+            skipPredictionDialogOpen: this.state.skipPredictionDialogOpen,
+            toggleSkipPredictionDialog: this.toggleSkipPredictionDialog
         };
 
         return (
@@ -625,6 +782,9 @@ class RealPredictions extends React.Component {
                     openStatus={this.state.snackbar.open}
                     message={this.state.snackbar.message}
                     handleClose={this.onSnackbarClose}
+                    autoHideDuration={3000}
+                    vertical='top'
+                    horizontal='right'
                 />
                 <Media 
                     query="(max-width: 800px)"

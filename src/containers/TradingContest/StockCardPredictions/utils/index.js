@@ -16,7 +16,7 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultInvestment = _.get(defaultStockData, 'investment', 50000);
     const name = _.get(stockData, 'detail.Nse_Name', '');
     const symbol = getStockTicker(stockData);
-    const lastPrice = _.get(stockData, 'latestDetailRT.current', null) || _.get(stockData, 'latestDetail.Close', 0);
+    const lastPrice = _.get(stockData, 'latestDetailRT.close', null) || _.get(stockData, 'latestDetail.Close', 0);
     const change = _.get(stockData, 'latestDetailRT.change', null) || _.get(stockData, 'latestDetail.Change', 0);
     let changePct = _.get(stockData, 'latestDetailRT.changePct', null) || _.get(stockData, 'latestDetail.ChangePct', 0);
     const sector = _.get(stockData, 'detail.Sector', '');

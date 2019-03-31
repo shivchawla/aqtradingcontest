@@ -311,7 +311,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
                 chgPct: _.get(prediction, 'position.security.latestDetailRT.changePct', 0) || _.get(prediction, 'position.security.latestDetail.ChangePct', 0),
                 industry: _.get(prediction, 'position.security.detail.Industry', null),
                 key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
-                lastPrice: _.get(prediction, 'position.security.latestDetailRT.current', 0) || _.get(prediction, 'position.security.latestDetail.Close', 0),
+                lastPrice: _.get(prediction, 'position.security.latestDetailRT.close', 0) || _.get(prediction, 'position.security.latestDetail.Close', 0),
                 pnlLastPrice: _.get(prediction, 'position.lastPrice', 0),
                 name: _.get(prediction, 'position.security.detail.Nse_Name', null),
                 points: 10,
@@ -342,6 +342,8 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         priceInterval: _.get(prediction, 'priceInterval', {}),
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),
         lastPrice: _.get(prediction, 'position.lastPrice', 0),
+        change: _.get(prediction, 'position.security.latestDetailRT.change', null) || _.get(prediction, 'position.security.latestDetail.Change', null),
+        changePct: _.get(prediction, 'position.security.latestDetailRT.changePct', null) || _.get(prediction, 'position.security.latestDetail.ChangePct', null),
         avgPrice: _.get(prediction, 'position.avgPrice', 0),
         investment: _.get(prediction, 'position.investment', 0),
         quantity: _.get(prediction, 'position.quantity', 0),
@@ -361,6 +363,12 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         stopLoss: getStopLoss(prediction),
         adminModifications: _.get(prediction, 'adminModifications', []),
         status: _.get(prediction, 'status', {}),
+        orders: _.get(prediction, 'current.orders', []),
+        orderActivity: _.get(prediction, 'orderActivity', []),
+        adminActivity: _.get(prediction, 'adminActivity', []),
+        accumulated: _.get(prediction, 'current.accumulated', null),
+        advisorName: `${_.get(prediction, 'advisor.user.firstName', '')} ${_.get(prediction, 'advisor.user.lastName')}`,
+        skippedByAdmin: _.get(prediction, 'skippedByAdmin', false)
     }))
 }
 
@@ -455,6 +463,27 @@ export const searchPositions = (searchInput = '', positions = []) => {
     });
 
     return filteredArray;
+}
+
+/**
+ * Returns true if there are active orders in a prediction
+ */
+export const hasActiveOrders = (prediction = {}) => {
+    const {accumulated = null, orders = []} = prediction;
+
+    const shoudlShowActiveOrders = accumulated > 0 || 
+        (orders.filter(order => order.activeStatus === true).length > 0);
+    
+    return shoudlShowActiveOrders;
+}
+
+/**
+ * Returns true if it is skipped by admin
+ */
+export const hasSkippedOrders = (prediction = {}) => {
+    const {skippedByAdmin = false} = prediction;
+
+    return skippedByAdmin;
 }
 
 export const hasEndDatePassed = (endDate) => {

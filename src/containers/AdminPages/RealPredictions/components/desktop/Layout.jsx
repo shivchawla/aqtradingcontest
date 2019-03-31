@@ -16,8 +16,14 @@ import StockPreviewExtenedList from '../../../../TradingContest/MultiHorizonCrea
 import StockPreviewList from '../../../../TradingContest/MultiHorizonCreateEntry/components/common/StockPreviewList';
 import AdvisorList from '../common/AdvisorList';
 import UpdateAdvisorStatsDialog from './UpdateAdvisorStats';
+import ConfirmationDialog from '../common/ConfirmationDialog';
 import TradeActivtyDialog from './TradeActivityDialog';
+import CancelDialog from './CancelDialog';
+import OrderDialog from './OrderDialog';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
+import CustomOutlinedInput from '../../../../../components/input/CustomOutlinedInput';
+
+let skippedMessageTimeout = null;
 
 export default class Layout extends React.Component {
     constructor(props) {
@@ -28,7 +34,19 @@ export default class Layout extends React.Component {
             groupedList: false,
             userProfileDialogOpenStatus: false,
             selectedAdvisor: null,
+            toBeCancelledPredictionId: null,
+            toBeCancelledAdvisorId: null,
+            skipMessage: ''
         };
+    }
+
+    openSkipConfirmation = (predictionId, advisorId) => {
+        this.setState({
+            toBeCancelledPredictionId: predictionId,
+            toBeCancelledAdvisorId: advisorId,
+        }, () => {
+            this.props.toggleSkipPredictionDialog();
+        });
     }
 
     onPredictionTypeMenuClicked = event => {
@@ -157,12 +175,25 @@ export default class Layout extends React.Component {
                                     :   <StockPreviewExtenedList 
                                             predictions={predictions}
                                             selectPredictionForTradeActivity={this.props.selectPredictionForTradeActivity}
+                                            toggleOrderDialog={this.props.toggleOrderDialog}
+                                            selectPredictionForOrder={this.props.selectPredictionForOrder}
+                                            selectPredictionForCancel= {this.props.selectPredictionForCancel}
+                                            selectPredictionIdForCancel={this.props.selectPredictionIdForCancel}
+                                            skipPrediction={this.openSkipConfirmation}
                                         />
                             }
                         </Grid>
                 }
             </React.Fragment>
         );
+    }
+
+    onSkippedMessageChanged = e => {
+        const value = e.target.value;
+        clearTimeout(skippedMessageTimeout);
+        skippedMessageTimeout = setTimeout(() => {
+            this.setState({skipMessage: value});
+        }, 300)
     }
     
     render() {
@@ -171,7 +202,8 @@ export default class Layout extends React.Component {
             advisorLoading = false, 
             advisors = [],
             selectedAdvisor = null,
-            requiredAdvisorForPredictions = {}
+            requiredAdvisorForPredictions = {},
+            cancelLoading = false
         } = this.props;
 
         return (
@@ -181,6 +213,13 @@ export default class Layout extends React.Component {
                         minHeight: 'inherit'
                     }}
             >
+                <SkipConfirmationDialog 
+                    open={this.props.skipPredictionDialogOpen}
+                    onClose={this.props.toggleSkipPredictionDialog}
+                    onOk={() => this.props.skipPrediction(this.state.toBeCancelledPredictionId, this.state.toBeCancelledAdvisorId, this.state.skipMessage)}
+                    loading={cancelLoading}
+                    onMessageChange={this.onSkippedMessageChanged}
+                />
                 <UserProfileDialog 
                     open={this.state.userProfileDialogOpenStatus}
                     onClose={this.toggleUserProfileDialog}
@@ -204,8 +243,19 @@ export default class Layout extends React.Component {
                     updateTradeActivity={this.props.updateTradeActivity}
                     updateTradeActivityLoading={this.props.updateTradeActivityLoading}
                     selectedPredictionTradeActivity={this.props.selectedPredictionTradeActivity}
+                    selectedPredictionOrderActivity={this.props.selectedPredictionOrderActivity}
                     updateTradePrediction={this.props.updateTradePrediction}
                     updatePredictionLoading={this.props.updatePredictionLoading}
+                />
+                <OrderDialog 
+                    open={this.props.orderDialogOpen}
+                    onClose={this.props.toggleOrderDialog}
+                    selectedPredictionForOrder={this.props.selectedPredictionForOrder}
+                />
+                <CancelDialog 
+                    open={this.props.cancelDialogOpen}
+                    onClose={this.props.toggleCancelDialog}
+                    selectedPredictionForCancel={this.props.selectedPredictionForCancel}
                 />
                 <Grid 
                         item 
@@ -303,6 +353,31 @@ const PredictionTypeMenu = ({anchorEl, type = 'started', onClick , onClose, onMe
                 </MenuItem>
             </Menu>
         </div>
+    );
+}
+
+const SkipConfirmationDialog = ({open = false, onClose, onOk, loading = false, onMessageChange}) => {
+    const renderConfirmationContent = () => (
+        <Grid container style={{marginTop: '20px'}}>
+            <Grid item xs={12}>
+                <CustomOutlinedInput 
+                    placeholder='Admin Message'
+                    onChange={onMessageChange}
+                    style={{width: '250px'}}
+                />
+            </Grid>
+        </Grid>
+    );
+
+    return (
+        <ConfirmationDialog 
+            open={open}
+            onClose={onClose}
+            createPrediction={onOk}
+            question='Are you sure you want to skip this prediction ?'
+            loading={loading}
+            renderContent={renderConfirmationContent}
+        />
     );
 }
 

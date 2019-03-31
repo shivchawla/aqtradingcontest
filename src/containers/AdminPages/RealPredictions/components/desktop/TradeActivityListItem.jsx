@@ -3,10 +3,11 @@ import _ from 'lodash';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import { Utils } from '../../../../../utils';
 
-const dateFormat = 'YYYY-MM-DD';
+const dateFormat = "Do MMM - HH:mm";
 
-export default class AdvisorListItem extends React.Component {
+export default class TradeActivityListItem extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -19,31 +20,48 @@ export default class AdvisorListItem extends React.Component {
         const {tradeActivity = {}} = this.props;
         const {
             notes = '',
-            category = '',
-            tradeDirection = '',
-            tradeType = '',
-            date = null
+            quantity = 0,
+            direction = '',
+            price = '',
+            date = null,
+            brokerMessage = {}
         } = tradeActivity;
+        const avgPrice = _.get(brokerMessage, 'execution.avgPrice', null);
+        const orderId = _.get(brokerMessage, 'orderId', '-')
         
         return (
             <Grid 
                     container
-                    style={containerStyle}
+                    style={{
+                        ...containerStyle,
+                        border: direction === 'BUY'
+                            ?   '2px solid #5bd05b'
+                            :   '2px solid #ffb8b8'
+                    }}
                     alignItems="center"
             >
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                     <Metric>{moment(date).format(dateFormat)}</Metric>
                 </Grid>
                 <Grid item xs={2}>
-                    <Metric>{category}</Metric>
+                    <Metric>₹ {Utils.formatMoneyValueMaxTwoDecimals(price)}</Metric>
                 </Grid>
                 <Grid item xs={2}>
-                    <Metric>{tradeDirection}</Metric>
+                    <Metric>
+                        {
+                            avgPrice !== null
+                                ? `₹ ${Utils.formatMoneyValueMaxTwoDecimals(price)}`
+                                : '-'
+                        }
+                    </Metric>
                 </Grid>
                 <Grid item xs={2}>
-                    <Metric>{tradeType}</Metric>
+                    <Metric>{quantity}</Metric>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
+                    <Metric>{orderId}</Metric>
+                </Grid>
+                <Grid item xs={2}>
                     <Metric>{notes}</Metric>
                 </Grid>
             </Grid>

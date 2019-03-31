@@ -2,15 +2,19 @@ import React from 'react';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
+import RadioGroup from '../../../../../components/selections/RadioGroup';
+import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import EditTradeActivity from './EditTradeActivity';
 import TradeActivityList from './TradeActivityList';
+import OrderActivityList from './OrderActivityList'
+import AdminActivityList from './AdminActivityList';
 import AdminModificationsList from './AdminModificationsList';
 import EditPrediction from './EditPrediction';
 import ActionIcon from '../../../../TradingContest/Misc/ActionIcons';
 import {horizontalBox} from '../../../../../constants';
+
+const viewItems = ['Orders', 'Trades', 'Add Activity', 'Modifications', 'Modify', 'Admin Activity'];
 
 export default class TradeActivityDialog extends React.Component {
     constructor(props) {
@@ -28,7 +32,7 @@ export default class TradeActivityDialog extends React.Component {
         return false;
     }
 
-    onTabChanged = (e, index) => {
+    onChange = index => {
         this.setState({selectedView: index});
     }
 
@@ -68,30 +72,38 @@ export default class TradeActivityDialog extends React.Component {
                 open={open}
                 onClose={this.props.onClose}
                 style={{padding: 0}}
+                maxWidth='xl'
             >
                 {this.renderDialogHeader()}
                 <Container container>
-                    <Grid item xs={12}>
-                        <Tabs
-                                value={this.state.selectedView}
-                                onChange={this.onTabChanged}
-                                indicatorColor="primary"
-                        >
-                            <Tab label='Trade Activities'/>
-                            <Tab label='Add Activity'/>
-                            <Tab label='Modifications'/>
-                            <Tab label='Modify'/>
-                        </Tabs>
+                    <Grid 
+                            item 
+                            xs={12}
+                            style={{marginTop: '20px'}}
+                    >
+                        <RadioGroup 
+                            items={viewItems}
+                            CustomRadio={CustomRadio}
+                            onChange={this.onChange}
+                            defaultSelected={this.state.selectedView}
+                            small
+                        />
                     </Grid>
                     <Grid item xs={12} style={{marginTop: '20px'}}>
                         {
                             this.state.selectedView === 0 &&
+                            <OrderActivityList 
+                                orderActivities={this.props.selectedPredictionOrderActivity}
+                            />
+                        }
+                        {
+                            this.state.selectedView === 1 &&
                             <TradeActivityList 
                                 tradeActivities={this.props.selectedPredictionTradeActivity}
                             />
                         }
                         {
-                            this.state.selectedView === 1 &&
+                            this.state.selectedView === 2 &&
                             <EditTradeActivity 
                                 prediction={this.props.selectedPredictionForTradeActivity}
                                 updatePredictionTradeActivity={this.props.updatePredictionTradeActivity}
@@ -100,19 +112,26 @@ export default class TradeActivityDialog extends React.Component {
                             />  
                         }
                         {
-                            this.state.selectedView === 2 &&
+                            this.state.selectedView === 3 &&
                             <AdminModificationsList 
                                 adminModifications={_.get(selectedPredictionForTradeActivity, 'adminModifications', [])}
                             />  
                         }
                         {
-                            this.state.selectedView === 3 &&
+                            this.state.selectedView === 4 &&
                             <EditPrediction 
                                 prediction={this.props.selectedPredictionForTradeActivity}
                                 updatePredictionTradeActivity={this.props.updatePredictionTradeActivity}
                                 updatePredictionLoading={this.props.updatePredictionLoading}
                                 updateTradePrediction={this.props.updateTradePrediction}
+                                adminModifications={_.get(selectedPredictionForTradeActivity, 'adminModifications', [])}
                             />  
+                        }
+                        {
+                            this.state.selectedView === 5 &&
+                            <AdminActivityList 
+                                adminActivity={_.get(this.props, 'selectedPredictionForTradeActivity.adminActivity', [])}
+                            />
                         }
                     </Grid>
                 </Container>
@@ -125,7 +144,7 @@ const Container = styled(Grid)`
     overflow: hidden;
     overflow-y: scroll;
     padding: 10px;
-    min-width: 42vw;
+    min-width: 62vw;
     min-height: 54vh;
     display: flex;
     flex-direction: column;

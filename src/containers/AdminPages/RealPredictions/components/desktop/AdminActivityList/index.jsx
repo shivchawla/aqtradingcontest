@@ -1,12 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
-import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import TradeActivityListItem from './TradeActivityListItem';
-import { horizontalBox } from '../../../../../constants';
+import AdminActivityListItem from './AdminActivityListItem';
+import { horizontalBox } from '../../../../../../constants';
 
-export default class TradeActivityList extends React.Component {
+export default class AdminActivityList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -16,24 +15,21 @@ export default class TradeActivityList extends React.Component {
     }
 
     render() {
-        let {tradeActivities = []} = this.props;
-        tradeActivities = _.orderBy(tradeActivities, tradeActivity => {
-            return [moment(tradeActivity.date), tradeActivity.orderId];
-        }, ['desc']);
+        let {adminActivity = []} = this.props;
 
         return (
             <Grid container>
                 {
-                    tradeActivities.length > 0 
+                    adminActivity.length > 0 
                         ?   <React.Fragment>
                                 <Grid item xs={12}>
-                                    <TradeActivityListHeader />
+                                    <AdminActivityListHeader />
                                 </Grid>
                                 <Grid item xs={12}>
                                     {
-                                        tradeActivities.map((tradeActivity, index) => (
-                                            <TradeActivityListItem 
-                                                tradeActivity={tradeActivity}
+                                        adminActivity.map((adminActivityItem, index) => (
+                                            <AdminActivityListItem 
+                                                adminActivity={adminActivityItem}
                                                 key={index}
                                             />
                                         ))
@@ -49,7 +45,7 @@ export default class TradeActivityList extends React.Component {
                                         justifyContent: 'center'
                                     }}
                             >
-                                <NoData>No Trade Activites Yet</NoData>
+                                <NoData>No Admin Activites Yet</NoData>
                             </Grid>
                 }
             </Grid>
@@ -57,7 +53,7 @@ export default class TradeActivityList extends React.Component {
     }
 }
 
-const TradeActivityListHeader = () => {
+const AdminActivityListHeader = () => {
     return (
         <Grid 
                 container 
@@ -68,22 +64,22 @@ const TradeActivityListHeader = () => {
                 }}
         >
             <Grid item xs={2}>
-                <HeaderText>Date</HeaderText>
+                <HeaderText>Activity</HeaderText>
             </Grid>
             <Grid item xs={2}>
-                <HeaderText>Price</HeaderText>
+                <HeaderText>Order Type</HeaderText>
             </Grid>
             <Grid item xs={2}>
-                <HeaderText>Avg. Price</HeaderText>
+            <HeaderText>Price</HeaderText>
             </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Quantity</HeaderText>
+            <Grid item xs={1}>
+                <HeaderText>Qty.</HeaderText>
             </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Order</HeaderText>
+            <Grid item xs={1}>
+                <HeaderText>Direction</HeaderText>
             </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Notes</HeaderText>
+            <Grid item xs={4}>
+                <HeaderText>Message</HeaderText>
             </Grid>
         </Grid>
     );

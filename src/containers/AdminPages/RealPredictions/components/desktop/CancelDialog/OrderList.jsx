@@ -3,10 +3,10 @@ import _ from 'lodash';
 import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import TradeActivityListItem from './TradeActivityListItem';
-import { horizontalBox } from '../../../../../constants';
+import OrderListItem from './OrderListItem';
+import { horizontalBox } from '../../../../../../constants';
 
-export default class TradeActivityList extends React.Component {
+export default class OrderList extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
             return true;
@@ -16,25 +16,28 @@ export default class TradeActivityList extends React.Component {
     }
 
     render() {
-        let {tradeActivities = []} = this.props;
-        tradeActivities = _.orderBy(tradeActivities, tradeActivity => {
-            return [moment(tradeActivity.date), tradeActivity.orderId];
+        let {orders = []} = this.props;
+        // orders = orders.filter(order => order.activeStatus === true);
+        orders = _.orderBy(orders, order => {
+            return [moment(order.date), order.orderId];
         }, ['desc']);
 
         return (
             <Grid container>
                 {
-                    tradeActivities.length > 0 
+                    orders.length > 0 
                         ?   <React.Fragment>
                                 <Grid item xs={12}>
-                                    <TradeActivityListHeader />
+                                    <OrderListHeader />
                                 </Grid>
                                 <Grid item xs={12}>
                                     {
-                                        tradeActivities.map((tradeActivity, index) => (
-                                            <TradeActivityListItem 
-                                                tradeActivity={tradeActivity}
+                                        orders.map((order, index) => (
+                                            <OrderListItem 
+                                                order={order}
                                                 key={index}
+                                                selectOrderToCancel={this.props.selectOrderToCancel}
+                                                selectOrderToModify={this.props.selectOrderToModify}
                                             />
                                         ))
                                     }
@@ -46,10 +49,11 @@ export default class TradeActivityList extends React.Component {
                                     style={{
                                         ...horizontalBox,
                                         width: '100%',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
+                                        marginTop: '20px'
                                     }}
                             >
-                                <NoData>No Trade Activites Yet</NoData>
+                                <NoData>No Orders Yet</NoData>
                             </Grid>
                 }
             </Grid>
@@ -57,12 +61,12 @@ export default class TradeActivityList extends React.Component {
     }
 }
 
-const TradeActivityListHeader = () => {
+const OrderListHeader = () => {
     return (
         <Grid 
                 container 
                 style={{
-                    marginBottom: '20px',
+                    margin: '20px 0',
                     padding: '0 15px',
                     boxSizing: 'border-box'
                 }}
@@ -70,20 +74,29 @@ const TradeActivityListHeader = () => {
             <Grid item xs={2}>
                 <HeaderText>Date</HeaderText>
             </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Price</HeaderText>
-            </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Avg. Price</HeaderText>
-            </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Quantity</HeaderText>
-            </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={1}>
                 <HeaderText>Order</HeaderText>
             </Grid>
-            <Grid item xs={2}>
-                <HeaderText>Notes</HeaderText>
+            <Grid item xs={1}>
+                <HeaderText>Qty</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Acc.</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Order</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Active</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Complete</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Status</HeaderText>
+            </Grid>
+            <Grid item xs={1}>
+                <HeaderText>Price</HeaderText>
             </Grid>
         </Grid>
     );

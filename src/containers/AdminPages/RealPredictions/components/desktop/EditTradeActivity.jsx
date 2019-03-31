@@ -82,16 +82,6 @@ export default class EditTradeActivity extends React.Component {
                     question='Are you sure you want to add this Trade Activity ?'
                 />
                 <MetricContainer>
-                    <InputHeader>Category</InputHeader>
-                    <RadioGroup 
-                        items={categoryRadioItems}
-                        CustomRadio={CustomRadio}
-                        small
-                        defaultSelected={_.findIndex(categoryRadioItems, categoryItem => categoryItem === category)}
-                        onChange={value => this.onPredictionItemChanged('category', categoryRadioItems[value])}
-                    />
-                </MetricContainer>
-                <MetricContainer>
                     <InputHeader>Trade Direction</InputHeader>
                     <RadioGroup 
                         items={tradeDirectionRadioItems}
@@ -99,16 +89,6 @@ export default class EditTradeActivity extends React.Component {
                         small
                         defaultSelected={_.findIndex(tradeDirectionRadioItems, tradeDirectionItem => tradeDirectionItem === tradeDirection)}
                         onChange={value => this.onPredictionItemChanged('tradeDirection', tradeDirectionRadioItems[value])}
-                    />
-                </MetricContainer>
-                <MetricContainer>
-                    <InputHeader>Trade Type</InputHeader>
-                    <RadioGroup 
-                        items={tradeTypeRadioItems}
-                        CustomRadio={CustomRadio}
-                        small
-                        defaultSelected={_.findIndex(tradeTypeRadioItems, tradeTypeItem => tradeTypeItem === tradeType)}
-                        onChange={value => this.onPredictionItemChanged('tradeType', tradeTypeRadioItems[value])}
                     />
                 </MetricContainer>
                 <MetricContainer>

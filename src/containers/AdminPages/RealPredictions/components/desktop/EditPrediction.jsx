@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
@@ -63,6 +64,7 @@ export default class EditPrediction extends React.Component {
     render() {  
         const {prediction = {}, updatePredictionLoading = false} = this.props;
         const {oldTarget = 0, oldInvestment = 0, oldStopLoss = 0, oldQuantity = 0} = prediction;
+
         const {
             investment = 0,
             quantity = 0,

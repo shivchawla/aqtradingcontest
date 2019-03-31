@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import {fetchAjaxPromise} from '../../../../utils';
+import axios from 'axios';
+import moment from 'moment';
+import {fetchAjaxPromise, Utils} from '../../../../utils';
 
 const {requestUrl} = require('../../../../localConfig');
 
@@ -61,4 +63,108 @@ export const processAdvisors = (advisors = []) => {
             satusNotes: ''
         };
     });
+}
+
+export const placeOrder = (data) => {
+    const url = `${requestUrl}/dailycontest/placeorder`;
+
+    return axios({
+        method: 'POST',
+        url,
+        data,
+        headers: Utils.getAuthTokenHeader()
+    })
+}
+
+export const cancelOrder = (data) => {
+    const url = `${requestUrl}/dailycontest/cancelorder`;
+
+    return axios({
+        method: 'POST',
+        url,
+        data,
+        headers: Utils.getAuthTokenHeader()
+    })
+}
+
+export const modifyOrder = (data) => {
+    const url = `${requestUrl}/dailycontest/modifyorder`;
+
+    return axios({
+        method: 'POST',
+        url,
+        data,
+        headers: Utils.getAuthTokenHeader()
+    })
+}
+
+export const skipPredictionByAdmin = (data) => {
+    const url = `${requestUrl}/dailycontest/skipPrediction`;
+
+    return axios({
+        method: 'POST',
+        url,
+        data,
+        headers: Utils.getAuthTokenHeader()
+    })
+}
+
+export const getLastestAdminMoficiation = (prediction = {}, key = 'target') => {
+    let adminModifications = _.get(prediction, 'adminModifications', []);
+    adminModifications = _.orderBy(adminModifications, adminModification => {
+        return moment(adminModification.date);
+    }, ['desc']);
+    
+    if (adminModifications.length > 0) {
+        return adminModifications[0][key];
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Merges both order and orderActivity
+ */
+export const mergeOrderAndOrderActivity = (prediction = {}) => {
+    const orders = _.get(prediction, 'orders', []);
+    const orderActivity = _.get(prediction, 'orderActivity', []);
+
+    return orders.map(order => {
+        const orderId = _.get(order, 'orderId', null);
+        const orderActivityIndex = _.findIndex(orderActivity, orderActivityItem => orderActivityItem.orderId === orderId);
+        const orderActivityItem = _.get(orderActivity, `[${orderActivityIndex}]`, {});
+        const activityType = _.get(orderActivityItem, `activityType`, null);
+        const brokerMessage = _.get(orderActivityItem, 'brokerMessage', {});
+        const quantity = _.get(orderActivityItem, `brokerMessage.order.totalQuantity`, null);
+        const orderStatus = _.get(orderActivityItem, `brokerMessage.orderState.status`, null);
+        const direction = _.get(orderActivityItem, `brokerMessage.order.action`, null);
+        const orderType = _.get(orderActivityItem, `brokerMessage.order.orderType`, null);
+        const date = _.get(orderActivityItem, 'date', null);
+
+        return {
+            ...order,
+            activityType,
+            quantity,
+            orderStatus,
+            direction,
+            orderType,
+            brokerMessage,
+            date
+        }
+    });
+}
+
+export const getRequiredPrice = (brokerMessage) => {
+    const orderType = _.get(brokerMessage, 'order.orderType', null);
+    let priceKey = 'price';
+
+    if (orderType) {
+        if (orderType.toUpperCase() === 'LMT') {
+            priceKey = 'lmtPrice';
+        } else if (orderType.toUpperCase() === 'STP') {
+            priceKey = 'auxPrice';
+        }
+    }
+
+    return _.get(brokerMessage, `order.${priceKey}`, null);
 }
