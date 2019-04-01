@@ -24,7 +24,7 @@ module.exports.getMarketOpen = function() {
 
 module.exports.getMarketClose = function() {
 	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
-	return moment.tz(`${cd} 20:30:00`, indiaTimeZone).tz(localTimeZone);
+	return moment.tz(`${cd} 15:30:00`, indiaTimeZone).utc();
 }
 
 module.exports.getMarketOpenHour = function() {
