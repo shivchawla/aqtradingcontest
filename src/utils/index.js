@@ -275,6 +275,10 @@ export class Utils{
 		this.localStorageSave('selectedAdviceId', null);
 		this.localStorageSave('contestId', null);
 		this.localStorageSave('contestSelectedPage', 0);
+		this.localStorageSave('selectedAdvisorId', null);
+		this.localStorageSave('selectedUserId', null);
+		this.localStorageSave('selectedUserName', null);
+		this.localStorageSave('isSelectedAdvisorAllocated', null);
 		this.setLoggedInUserInfo({});
 	}
 
