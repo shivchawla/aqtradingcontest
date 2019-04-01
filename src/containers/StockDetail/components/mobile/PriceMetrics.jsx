@@ -21,7 +21,7 @@ export default class PriceMetrics extends React.Component {
             {label: 'High', value: Utils.formatMoneyValueMaxTwoDecimals(_.get(latestDetail, 'high', 0)), money: true},
             {label: 'Low', value: Utils.formatMoneyValueMaxTwoDecimals(_.get(latestDetail, 'low', 0)), money: true},
             {label: 'Open', value: Utils.formatMoneyValueMaxTwoDecimals(_.get(latestDetail, 'open', 0)), money: true},
-            {label: 'Prev. Close', value: Utils.formatMoneyValueMaxTwoDecimals(_.get(latestDetail, 'close', 0)), money: true},
+            {label: 'Prev. Close', value: Utils.formatMoneyValueMaxTwoDecimals(_.get(latestDetail, 'prevClose', 0)), money: true},
             {label: '52W High', value: Utils.formatMoneyValueMaxTwoDecimals(_.get(latestDetail, 'high_52w', 0)), money: true},
             {label: '52W Low', value: Utils.formatMoneyValueMaxTwoDecimals(_.get(latestDetail, 'low_52w', 0)), money: true},
         ];

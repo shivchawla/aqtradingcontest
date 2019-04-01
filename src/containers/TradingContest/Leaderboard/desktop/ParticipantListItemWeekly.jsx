@@ -25,7 +25,9 @@ export default class ParticipantListItemWeekly extends React.Component {
             rank = 1, 
             pnlPct = 0, 
             netTotal = 0,
-            netTotalLastWeek='0'
+            netTotalLastWeek='0',
+            funnyName = '',
+            shouldShowFunnyName = true
         }  = this.props;
         const medal = getRankMedal(rank);
         const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? metricColor.neutral : metricColor.negative;
@@ -33,14 +35,14 @@ export default class ParticipantListItemWeekly extends React.Component {
         return (
             <SGrid 
                     container 
-                    onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(userName), advisorId)}
+                    onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(shouldShowFunnyName ? funnyName : userName), advisorId)}
                     style={{cursor: 'pointer'}}
             >
                 <Grid item xs={1} style={{textAlign: 'start'}}>
                     <img src={medal} width={26}/>
                 </Grid>
                 <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <Name>{convertNameToTitleCase(userName)}</Name>
+                    <Name>{convertNameToTitleCase(shouldShowFunnyName ? funnyName : userName)}</Name>
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={changeColor}>

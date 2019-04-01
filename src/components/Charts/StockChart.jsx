@@ -690,6 +690,8 @@ class StockChartImpl extends React.Component {
     getSeriesColor = (data = [], intraDaySelected = this.state.intraDaySelected) => {
         const lastDataPointPrice = _.get(data, `[${data.length - 1}][1]`, 0);
         const firstDataPointPrice = _.get(data, `[0][1]`, 0);
+        console.log('First Data Point ', firstDataPointPrice);
+        console.log('Last Data Point ', lastDataPointPrice);
         const prevClose = _.get(this.props, 'prevClose', 0);
         let seriesColor = '#0082c8';
 

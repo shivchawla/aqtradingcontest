@@ -33,11 +33,13 @@ export default class ParticipantListItemOverall extends React.Component {
             netValue = 0, 
             totalEarnings = 1, 
             totalReturn = 0, 
+            funnyName = '',
+            shouldShowFunnyName = true
         }  = this.props;
         const medal = getRankMedal(1);
 
         return (
-            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(name), advisorId)}>
+            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(shouldShowFunnyName ? funnyName : name), advisorId)}>
                 <Grid 
                         item 
                         xs={12}
@@ -47,7 +49,7 @@ export default class ParticipantListItemOverall extends React.Component {
                             alignItems: 'center'
                         }}
                 >
-                    <Name>{convertNameToTitleCase(name)}</Name>
+                    <Name>{convertNameToTitleCase(shouldShowFunnyName ? funnyName : name)}</Name>
                     {/* <img src={medal} width={24}/> */}
                 </Grid>
                 <Grid 

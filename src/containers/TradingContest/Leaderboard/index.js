@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import axios from 'axios';
 import Media from 'react-media';
 import moment from 'moment';
 import {withRouter} from 'react-router';
@@ -28,7 +29,8 @@ class Participants extends React.Component {
                 userName: '',
                 advisorId: null
             },
-            skip: 0
+            skip: 0,
+            funnyNames: [] // Name used as aliases
         };
     }
 
@@ -72,7 +74,7 @@ class Participants extends React.Component {
         })
         .catch(err => {
             this.setState({winners: [], winnersWeekly: []});
-            console.log(err);
+            // console.log(err);
         }) 
         .finally(() => {
             this.setState({loading: false});
@@ -114,7 +116,7 @@ class Participants extends React.Component {
             });
         })
         .catch(err => {
-            console.log(err);
+            // console.log(err);
         })
         .finally(() => {
             this.setState({[shouldConcatenate ? 'overallPageLoading' : 'loading']: false}); 
@@ -123,7 +125,7 @@ class Participants extends React.Component {
     }
 
     componentWillMount() {
-        this.fetchLeaderboard(this.state.selectedDate);
+        this.fetchLeaderboard(this.state.selectedDate)
     }
 
     captureEvent = (payload) => {

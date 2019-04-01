@@ -33,21 +33,23 @@ export default class ParticipantListItemOverall extends React.Component {
             netValue = 0, 
             totalEarnings = 1, 
             totalReturn = 0, 
-            index = 0
+            index = 0,
+            funnyName = '',
+            shouldShowFunnyName = true
         }  = this.props;
         const medal = getRankMedal(1);
         
         return (
             <SGrid 
                     container 
-                    onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(name), advisorId)}
+                    onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(shouldShowFunnyName ? funnyName : name), advisorId)}
                     style={{cursor: 'pointer'}}
             >
                 <Grid item xs={1} style={{textAlign: 'start'}}>
                     <Rank>{index + 1}</Rank>
                 </Grid>
                 <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <Name>{convertNameToTitleCase(name)}</Name>
+                    <Name>{convertNameToTitleCase(shouldShowFunnyName ? funnyName : name)}</Name>
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={this.getColor(avgPnlPct)}>
