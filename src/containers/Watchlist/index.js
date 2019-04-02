@@ -246,7 +246,6 @@ class WatchlistComponent extends React.Component {
                 advisorId: selectedAdvisorId
             }
         }
-        console.log('Sub Msg', msg);
         this.webSocket.sendWSMessage(msg); 
     }
 
