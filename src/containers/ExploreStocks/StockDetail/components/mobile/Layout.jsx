@@ -62,12 +62,12 @@ export default class Layout extends React.Component {
         const revenuePerShare = _.get(highlights, 'RevenuePerShareTTM', 0);
 
         const metrics = [
-            {label: 'Book Value', value: bookValue, noNumeric: true},
-            {label: 'Market Cap', value: numeral(Number(marketCapitalization)).format('₹ 0.00 a'), noNumeric: true},
-            {label: 'Profit Margin', value: profitMargin, noNumeric: true},
-            {label: 'Return on assets', value: returnOnAssets, noNumeric: true},
-            {label: 'Return on equity', value: returnOnEquity, noNumeric: true},
-            {label: 'Revenue per share', value: revenuePerShare, noNumeric: true},
+            {label: 'Book Val.', value: bookValue, noNumeric: true},
+            {label: 'Mkt. Cap', value: numeral(Number(marketCapitalization)).format('₹ 0.00 a'), noNumeric: true},
+            {label: 'Pft. Margin', value: profitMargin, noNumeric: true},
+            {label: 'ROA', value: returnOnAssets, noNumeric: true},
+            {label: 'ROE', value: returnOnEquity, noNumeric: true},
+            {label: 'Rev./Shr', value: revenuePerShare, noNumeric: true},
         ];
 
         return metrics;
