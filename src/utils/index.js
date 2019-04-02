@@ -74,7 +74,8 @@ export const getIntraDayStockPerformance = (tickerName, detailType='detail') => 
 			if (data.length > 0) { // Check if ticker is valid
 				const formattedData = data.map(item => {
 					const stillUtc = moment.utc(item.datetime).toDate();
-					const local = moment(stillUtc).local().add(1, 'minutes').startOf('minute').valueOf();
+					const local = moment(stillUtc).local().valueOf();
+
 					return [local, item.close];
 				})
 				const throttledData = getIntraDayThrottledPerformance(formattedData);
@@ -101,11 +102,17 @@ export const sortPerformanceData = data => {
 export const getIntraDayThrottledPerformance = (data) => {
 	const clonedData = _.map(data, _.cloneDeep);
 	const performanceArray = [];
-	for (let i=clonedData.length - 1; i >= 0; i-=5) {
+	const lastDataPoint = clonedData[clonedData.length - 1];
+	for(let i = 0; i < clonedData.length - 1; i +=5) {
 		const item = clonedData[i];
 		performanceArray.push(item);
 	}
-	return (_.reverse(performanceArray));
+
+	if (performanceArray[performanceArray.length - 1][0] !== lastDataPoint[0]) {
+		performanceArray.push(lastDataPoint);
+	}
+
+	return performanceArray;
 }
 
 export const getStockStaticPerformance = (tickerName, detailType='detail', field='staticPerformance') => {
