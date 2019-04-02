@@ -9,7 +9,7 @@ import {processFinancials, processStaticPerformance, processRollingPerformance} 
 
 const {requestUrl} = require('../../../localConfig');
 
-class StockDetail extends React.Component {
+class StockDetailComponent extends React.Component {
     constructor(props) {
         super(props);
         this.cancelGetHistoricalData = null;
@@ -50,6 +50,7 @@ class StockDetail extends React.Component {
         const {symbol = 'TCS'} = this.props;
         return getStockStaticPerformance(symbol)
         .then(data => {
+            // console.log('Data ', data);
             const rawPerformance = data;
             const requiredStaticPerformance = processStaticPerformance(data, 'returns.annualreturn', symbol);
             this.setState({
@@ -176,7 +177,10 @@ class StockDetail extends React.Component {
             general: this.state.general,
             valuation: this.state.valuation,
             latestDetail: this.state.latestDetail,
-            updateStockData: this.props.updateStockData
+            updateStockData: this.props.updateStockData,
+            selectStock: this.props.selectStock,
+            toggleStockCardBottomSheet: this.props.toggleStockCardBottomSheet,
+            stockData: this.props.stockData
         };
 
         return (
@@ -194,4 +198,4 @@ class StockDetail extends React.Component {
     }
 }
 
-export default withRouter(StockDetail);
+export default withRouter(StockDetailComponent);

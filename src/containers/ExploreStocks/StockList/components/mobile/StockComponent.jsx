@@ -77,7 +77,7 @@ class StockComponent extends React.Component {
                                 item 
                                 xs={12}
                                 style={{
-                                    marginTop: '25px'
+                                    marginTop: '15px'
                                 }}
                         >
                             <LastPrice>₹{(lastPrice || 0)}</LastPrice>
@@ -120,9 +120,9 @@ export default withRouter(StockComponent);
 const Container = styled(Grid)`
     padding: 10px;
     position: relative;
-    min-width: 130px;
-    width: 130px;
-    height: 155px;
+    min-width: 120px;
+    width: 120px;
+    height: 135px;
     margin-right: 20px;
     box-sizing: border-box;
 `;
@@ -158,7 +158,7 @@ const Symbol = styled.h3`
     color: #545454;
     font-weight: 700;
     font-family: 'Lato', sans-serif;
-    font-size: 16px;
+    font-size: 14px;
 `;
 
 const Name = styled.h3`
@@ -167,9 +167,9 @@ const Name = styled.h3`
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 100px;
+    width: 90px;
     font-family: 'Lato', sans-serif;
-    font-size: 14px;
+    font-size: 12px;
     margin-top: 7px;
     text-align: start;
 `;
@@ -177,7 +177,7 @@ const Name = styled.h3`
 const LastPrice = styled.h3`
     color: #545454;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 12px;
     font-family: 'Lato', sans-serif;
     text-align: start;
 `;

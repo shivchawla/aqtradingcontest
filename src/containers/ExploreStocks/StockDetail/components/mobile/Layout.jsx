@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import numeral from 'numeral';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import StockDetail from '../../../../StockDetail';
 import FinancialDetail from './FinancialDetail';
 import HighchartBar from '../../../../../components/Charts/HighChartBar';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CardCustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
-import {verticalBox} from '../../../../../constants';
+import {verticalBox, horizontalBox} from '../../../../../constants';
 
 export default class Layout extends React.Component {
 
@@ -72,6 +73,26 @@ export default class Layout extends React.Component {
         return metrics;
     }
 
+    predictStock = () => {
+        let {latestDetail = {}, stockData = {}, general = {}} = this.props;
+        const symbol = _.get(this.props, 'symbol', '');
+        const name = _.get(general, 'Name', '');
+        const changePct = _.get(latestDetail, 'change_p', 0);
+        const change = _.get(latestDetail, 'change', 0);
+        const lastPrice = _.get(latestDetail, 'close', 0);
+
+        stockData = {
+            ...stockData,
+            symbol,
+            name,
+            lastPrice,
+            change,
+            changePct: Number((changePct * 100).toFixed(2))
+        };
+        this.props.selectStock(stockData);
+        this.props.toggleStockCardBottomSheet();
+    }
+
     renderContent() {
         const {
             symbol = '', 
@@ -104,7 +125,24 @@ export default class Layout extends React.Component {
                             display: loading ? 'none' : 'block'
                         }}
                 >
-                    <Header>PRICE CHART</Header>
+                    <div 
+                            style={{
+                                ...horizontalBox, 
+                                justifyContent: 'space-between',
+                                alignItems: 'flex-start'
+                            }}
+                    >
+                        <Header>PRICE CHART</Header>
+                        {
+                            this.props.selectStock &&
+                            <Button 
+                                    style={predictButtonStyle}
+                                    onClick={this.predictStock}
+                            >
+                                Predict
+                            </Button>
+                        }
+                    </div>
                     <StockDetail 
                         symbol={symbol}
                         extraTab={{
@@ -127,7 +165,7 @@ export default class Layout extends React.Component {
                                             alignItems: 'flex-start',
                                         }}
                                 >
-                                    <Header>MONTHLY PERFORMANCE</Header>
+                                    <Header>YEARLY PERFORMANCE</Header>
                                     <RadioGroup 
                                         items={['Annual Return', 'Volatility', 'Max Loss']}
                                         defaultSelected={0}
@@ -214,3 +252,14 @@ const Header = styled.h3`
     padding: 7px 5px;
     text-align: start;
 `;
+
+const predictButtonStyle = {
+    color: '#fff',
+    fontWeight: 500,
+    fontFamily: 'Lato, sans-serif',
+    fontSize: '12px',
+    background: 'linear-gradient(rgb(41, 135, 249), rgb(56, 111, 255))',
+    marginRight: '10px',
+    padding: '4px 8px',
+    minHeight: '30px'
+}

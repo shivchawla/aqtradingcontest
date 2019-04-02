@@ -48,7 +48,7 @@ class WatchList extends React.Component {
 
     onStockInfoClicked = (symbol, name, lastPrice, change, changePct) => {
         this.setState({
-            selectedInfoStock: {symbol, name, lastPrice, chg: change, chgPct: changePct}
+            selectedInfoStock: {symbol, name, lastPrice, chg: change, chgPct: changePct, change, changePct}
         }, () => {
             this.toggleStockDetailBottomSheetOpen()
         });
