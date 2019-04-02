@@ -199,11 +199,6 @@ export default class Layout extends React.Component {
     }
 
     render() {
-        const {loading = false} = this.props;
-
-        // return (
-        //     loading ? this.renderLoader() : this.renderContent()
-        // );
         return this.renderContent();
     }
 }

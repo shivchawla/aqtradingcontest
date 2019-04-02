@@ -23,6 +23,7 @@ export default class Section extends React.Component {
                     key={index}
                     {...stock}
                     positive={false}
+                    toggleBottomSheet={this.props.toggleBottomSheet}
                 />
             );
         });
@@ -53,6 +54,7 @@ export default class Section extends React.Component {
                         }}
                 >
                     {this.renderStocks()}
+                    <div style={{minWidth: '1px', height: '20px'}}></div>
                 </Grid>
             </Grid>
         );

@@ -145,7 +145,8 @@ const nameStyle = {
     color: '#fff',
     fontSize: '12px',
     fontWeight: 500,
-    fontFamily: 'Lato, sans-serif'
+    fontFamily: 'Lato, sans-serif',
+    textAlign: 'start'
 }
 
 const Symbol = styled.h3`

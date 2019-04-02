@@ -13,8 +13,8 @@ export default class StockDetailBottomSheet extends React.Component {
         super(props);
         this.state = {
             stockData: {
-                chg: _.get(props, 'chg', 0),
-                chgPct: _.get(props, 'chgPct', 0)
+                change: _.get(props, 'change', 0),
+                changePct: _.get(props, 'changePct', 0)
             },
             loading: false
         };
@@ -33,13 +33,13 @@ export default class StockDetailBottomSheet extends React.Component {
             let {
                 symbol = '',
                 name = '',
-                chg = 0,
-                chgPct = 0
+                change = 0,
+                changePct = 0
             } = nextProps;
             this.setState({
                 stockData: {
-                    chg,
-                    chgPct
+                    change,
+                    changePct
                 }
             });
         }
@@ -49,15 +49,10 @@ export default class StockDetailBottomSheet extends React.Component {
         const positiveColor = '#32FFD8';
         const negativeColor = '#FF7B7B';
         const neutralCOlor = '#DFDFDF';
-        let {symbol = '', name = ''} = this.props;
+        let {symbol = '', name = '', lastPrice = 0, change = 0, changePct = 0,} = this.props;
 
-        let {
-            lastPrice=0, 
-            chg=0,
-            chgPct=0
-        } = this.state.stockData;
-        chgPct = Number((chgPct * 100).toFixed(2));
-        const changeColor = chg > 0 ? positiveColor : chg === 0 ? neutralCOlor : negativeColor;
+        changePct = Number((changePct * 100).toFixed(2));
+        const changeColor = change > 0 ? positiveColor : change === 0 ? neutralCOlor : negativeColor;
 
         return (
             <div 
@@ -96,7 +91,7 @@ export default class StockDetailBottomSheet extends React.Component {
                             }}
                     >
                         <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
-                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(chg)} ({chgPct.toFixed(2)}%)</Change>
+                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(change)} ({changePct.toFixed(2)}%)</Change>
                     </div>
                 </div>
             </div>

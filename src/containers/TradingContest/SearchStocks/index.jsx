@@ -269,7 +269,7 @@ class SearchStocks extends React.Component {
 
     renderStockList = () => {
         const {stocks = []} = this.state;
-        const {showPredict = false, watchlistPredict = false} = this.props;
+        const {showPredict = false, watchlistPredict = false, hideButtons = false} = this.props;
         const selectedStock = _.get(this.state, 'selectedStock.symbol', '');
 
         return (
@@ -287,13 +287,14 @@ class SearchStocks extends React.Component {
                     showPredict={showPredict}
                     watchlistPredict={watchlistPredict}
                     mobile={this.props.mobile}
+                    hideButtons={hideButtons}
                 />
         )
     }
 
     onStockInfoClicked = (symbol, name, lastPrice, change, changePct) => {
         this.setState({
-            selectedInfoStock: {symbol, name, lastPrice, chg: change, chgPct: changePct}
+            selectedInfoStock: {symbol, name, lastPrice, chg: change, chgPct: changePct, change, changePct}
         }, () => {
             this.toggleStockDetailBottomSheetOpen()
         });
@@ -989,9 +990,6 @@ class SearchStocks extends React.Component {
                                 xs={12}
                                 style={{...horizontalBox, justifyContent: 'center'}}
                         >
-                            {/* <SelectedText>
-                                Selected: {this.state.newStocks.length}
-                            </SelectedText> */}
                             <Button 
                                     style={submitButtonStyle}
                                     onClick={this.onDonePressed}

@@ -116,7 +116,8 @@ export default class StockListItemMobile extends React.Component {
             showPredict = false,
             watchlistPredict = false,
             hide = false,
-            onPredictIconClicked = () => {}
+            onPredictIconClicked = () => {},
+            hideButtons = false
         } = this.props;
         const itemContainerStyle = {
             borderBottom: '1px solid #eaeaea',
@@ -217,7 +218,7 @@ export default class StockListItemMobile extends React.Component {
                             </div>
                         </div>
                         {
-                            !showPredict &&
+                            !showPredict && !hideButtons &&
                             this.renderBuyActionButton()
                         }
                         {

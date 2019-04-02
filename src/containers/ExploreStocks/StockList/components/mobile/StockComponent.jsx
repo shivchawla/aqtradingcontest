@@ -15,6 +15,11 @@ const negativeColor = {
     second: '#FFF7F7'
 };
 
+const neutralColor = {
+    first: '#EFF4FF',
+    second: '#F8FAFF'
+}
+
 class StockComponent extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
         if (!_.isEqual(this.props, nextProps) || !_.isEqual(this.state, nextState)) {
@@ -25,24 +30,37 @@ class StockComponent extends React.Component {
     }
 
     goToStockDetailPage = () => {
-        const symbol = _.get(this.props, 'symbol', 'TCS').toUpperCase();
-        this.props.history.push(`/explore/detail/${symbol}`);
-    }
-
-    render() {
-        const {
+        let {
             symbol = 'TCS',
             name = 'Tata Consultancy Services',
             lastPrice = 2046.5,
             change = 20.55,
             changePct = 5.5,
         } = this.props;
-        console.log('LastPrice ', lastPrice, typeof lastPrice);
-        const positive = change >= 0;
+        const selectedStock = {symbol, name, lastPrice, change, changePct};
+        this.props.toggleBottomSheet(selectedStock);
+    }
+
+    render() {
+        let {
+            symbol = 'TCS',
+            name = 'Tata Consultancy Services',
+            lastPrice = 2046.5,
+            change = 20.55,
+            changePct = 5.5,
+        } = this.props;
+        changePct = (changePct * 100).toFixed(2);
+        const containerColor = change > 0 
+            ?   positiveColor
+            :   change === 0
+                    ?   neutralColor
+                    :   negativeColor;
+        const positive = change > 0;
+
 
         return (
             <Container onClick={this.goToStockDetailPage}>
-                <ExternalContainer item xs={12} positive={positive}>
+                <ExternalContainer item xs={12} color={containerColor}>
                     <Grid container>
                         <Grid 
                                 item 
@@ -110,7 +128,9 @@ const Container = styled(Grid)`
 `;
 
 const ExternalContainer = styled(Grid)`
-    background: ${props => `linear-gradient(to bottom, ${props.positive ? positiveColor.first : negativeColor.first}, ${props.positive ? positiveColor.second : negativeColor.second})`};
+    /* background: ${props => `linear-gradient(to bottom, ${props => props.color.first}, ${props => props.color.second}`}; */
+    /* background: ${props => `linear-gradient(to bottom, ${props.positive ? positiveColor.first : negativeColor.first}, ${props.positive ? positiveColor.second : negativeColor.second})`}; */
+    background: linear-gradient(to bottom, ${props => props.color.first}, ${props => props.color.second});
     z-index: 1000;
     position: absolute;
     left: 0;

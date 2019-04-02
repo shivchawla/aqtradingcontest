@@ -23,7 +23,7 @@ export default class StockListComponent extends React.Component {
     }
 
     render() {
-        const {stocks = [], showPredict = false, watchlistPredict = false} = this.props;
+        const {stocks = [], showPredict = false, watchlistPredict = false, hideButtons=false} = this.props;
         return (
             <React.Fragment>
                 {
@@ -44,6 +44,7 @@ export default class StockListComponent extends React.Component {
                                     isAlreadyAdded={this.isAlreadyAdded(stock)}
                                     onInfoClicked={this.props.onInfoClicked}
                                     watchlistPredict={watchlistPredict}
+                                    hideButtons={hideButtons}
                                 />
                             :   <React.Fragment key={index}>
                                     <Media 
@@ -60,6 +61,7 @@ export default class StockListComponent extends React.Component {
                                                 isAlreadyAdded={this.isAlreadyAdded(stock)}
                                                 onInfoClicked={this.props.onInfoClicked}
                                                 watchlistPredict={watchlistPredict}
+                                                hideButtons={hideButtons}
                                             />
                                         )}
                                     />
