@@ -153,7 +153,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
             ? metricColor.positive 
             : requiredChangedInvestment < investment 
                 ? metricColor.negative 
-                : metricColor.neutral;        
+                : metricColor.neutral;
+        const typeLabel = iconConfig.type.toUpperCase() === 'EXITED'
+            ?   `${iconConfig.type} - ₹${Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}`
+            :   iconConfig.type;
 
         return (
 
@@ -174,7 +177,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 backgroundColor={typeColor} 
                             />
                             <Tag 
-                                label={iconConfig.type} 
+                                label={typeLabel} 
                                 style={{marginLeft: '10px'}}
                                 color={iconConfig.color} 
                                 backgroundColor={iconConfig.backgroundColor} 
