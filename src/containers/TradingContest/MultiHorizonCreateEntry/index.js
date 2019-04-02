@@ -463,7 +463,6 @@ class CreateEntry extends React.Component {
                 advisorId: selectedAdvisorId
             };
         }
-        console.log('Subscription Message ', msg);
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -483,7 +482,6 @@ class CreateEntry extends React.Component {
                     advisorId: selectedAdvisorId
                 };
             }
-            console.log('Unsubscribed from predictions ', msg);
             resolve(msg);
         this.webSocket.sendWSMessage(msg);
         } catch (err) {
@@ -497,7 +495,6 @@ class CreateEntry extends React.Component {
         if (this.mounted && _.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
-                console.log('Realtime Data ', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const pnl = _.get(realtimeData, 'pnlStats', []);
                 this.updateDailyPredictions(predictons);
