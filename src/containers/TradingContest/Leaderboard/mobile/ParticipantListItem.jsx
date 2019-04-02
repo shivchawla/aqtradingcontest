@@ -28,15 +28,13 @@ export default class ParticipantListItem extends React.Component {
             pnlPct = 0, 
             profitFactor = 0,
             listType='long',
-            funnyName = '',
-            shouldShowFunnyName = true
         }  = this.props;
         
         const medal = getRankMedal(rank);
         const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? neutralColor : metricColor.negative;
         
         return (
-            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(shouldShowFunnyName ? funnyName : userName), advisorId)}>
+            <SGrid container onClick={() => this.props.toggleUserProfileBottomSheet(convertNameToTitleCase(userName), advisorId)}>
                 <Grid 
                         item 
                         xs={12}
@@ -46,7 +44,7 @@ export default class ParticipantListItem extends React.Component {
                             alignItems: 'center'
                         }}
                 >
-                    <Name>{convertNameToTitleCase(shouldShowFunnyName ? funnyName : userName)}</Name>
+                    <Name>{convertNameToTitleCase(userName)}</Name>
                     <img src={medal} width={24}/>
                 </Grid>
                 <Grid 

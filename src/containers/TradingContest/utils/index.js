@@ -212,8 +212,6 @@ export const processLeaderboardWinners = (leaders = []) => {
         const netTotalLastWeek = _.get(leader, 'pnlStats.netTotalLastWeek', 0);
         const cash = _.get(leader, 'pnlStats.cash', 0);
         const rank = _.get(leader, 'rank', 0);
-        const funnyName = funnyNames[index];
-        const shouldShowFunnyName = _.get(Utils.getUserInfo(), 'advisorId', null) !== advisorId;
 
         return {
             userName, 
@@ -226,8 +224,6 @@ export const processLeaderboardWinners = (leaders = []) => {
             netTotal,
             netTotalLastWeek,
             cash,
-            funnyName,
-            shouldShowFunnyName
         };
     })
 }
