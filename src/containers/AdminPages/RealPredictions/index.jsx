@@ -84,20 +84,17 @@ class RealPredictions extends React.Component {
     checkForNewPredictions = (predictions = []) => {
         const presentPredictions = _.get(this.state, 'predictions', []);
         let newPredictionsCount = 0;
-        console.log('checkForNewPredictions called');
         
         Promise.map(predictions, prediction => {
             // Getting the index of the current prediction in presentPredictions
             // if index > -1 prediction already present
             const predictionIndex = _.findIndex(presentPredictions, presentPrediction => _.isEqual(presentPrediction, prediction));
-            console.log('Prediction Index ', predictionIndex);
             if (predictionIndex === -1) {
                 newPredictionsCount++;
             }
             return prediction;
         })
         .then(() => {
-            console.log('New Predictions Count ', newPredictionsCount);
             if (newPredictionsCount > 0) {
                 this.toggleSnackbar(`${newPredictionsCount} New Predictions Received`);                
             }
@@ -272,7 +269,6 @@ class RealPredictions extends React.Component {
                 advisorId
             };
         }
-        console.log('Unsubscribed to watchlist', msg);
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -673,7 +669,6 @@ class RealPredictions extends React.Component {
     }
 
     componentWillUnmount() {
-        console.log('Unsubscribed to realpredictions');
         this.unSubscribeToPredictions();
     }
 
