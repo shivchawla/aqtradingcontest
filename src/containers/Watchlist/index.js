@@ -289,7 +289,7 @@ class WatchlistComponent extends React.Component {
                 positions: item.securities.map(item => {
                     return {
                         symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
-                        change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0))).toFixed(2)),
+                        change: Number(((_.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.Change', 0.0))).toFixed(2)),
                         current: _.get(item, 'realtime.close', 0.0) || _.get(item, 'eod.Close', 0.0),
                         changePct: _.get(item, 'realtime.change_p', 0.0) || _.get(item, 'eod.ChangePct', 0.0),
                         name: _.get(item, 'detail.Nse_Name', ''),
