@@ -228,7 +228,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                             : '0 4px 16px rgba(0,0,0,0.2)'
                     }}
             >
-                <Grid 
+                {/* <Grid 
                         item 
                         xs={12}
                         style={{
@@ -242,7 +242,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                         label='Success: 50%'
                         style={{marginLeft: '10px'}}
                     />
-                </Grid>
+                </Grid> */}
                 <Grid 
                         item xs={2} 
                         style={{
