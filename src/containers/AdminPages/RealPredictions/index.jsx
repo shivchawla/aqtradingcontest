@@ -269,7 +269,6 @@ class RealPredictions extends React.Component {
                 advisorId
             };
         }
-        console.log('Unsubscribed to watchlist', msg);
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -289,7 +288,6 @@ class RealPredictions extends React.Component {
         if (_.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
-                console.log('Realtime Data ', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
@@ -671,7 +669,6 @@ class RealPredictions extends React.Component {
     }
 
     componentWillUnmount() {
-        console.log('Unsubscribed to realpredictions');
         this.unSubscribeToPredictions();
     }
 
