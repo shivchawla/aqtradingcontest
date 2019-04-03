@@ -496,9 +496,11 @@ class CreateEntry extends React.Component {
             try {
                 const realtimeData = JSON.parse(msg.data);
                 const predictons = _.get(realtimeData, 'predictions', {});
-                const pnl = _.get(realtimeData, 'pnlStats', []);
+                const pnl = _.get(realtimeData, 'pnlStats', {});
+                const portfolioStats = _.get(realtimeData, 'portStats', {});
                 this.updateDailyPredictions(predictons);
                 this.updateDailyPnLStats(pnl);
+                this.updatePortfolioStats(portfolioStats);
             } catch(error) {
                 return error;
             }
