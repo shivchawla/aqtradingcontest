@@ -73,6 +73,9 @@ export default class Layout extends React.Component {
         return metrics;
     }
 
+    /**
+     * Method used to handle the predict button click
+     */
     predictStock = () => {
         let {latestDetail = {}, stockData = {}, general = {}} = this.props;
         const symbol = _.get(this.props, 'symbol', '');

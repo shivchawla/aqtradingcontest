@@ -19,9 +19,14 @@ import {horizontalBox, primaryColor} from '../../../constants';
 import {onPredictionCreated, onSettingsClicked, onUserLoggedIn} from '../constants/events';
 import {conditionalTypeItems} from './constants';
 
+const URLSearchParamsPoly = require('url-search-params');
+
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
+
+// Variable that stores the query param of predct from the url
+let predictQueryParam = null;
 
 class StockCardPredictions extends React.Component {
     fetchStocks = null;
@@ -51,6 +56,8 @@ class StockCardPredictions extends React.Component {
             predictionsAllowed: false,
             loginOpen: false
         };
+        const queryParams = new URLSearchParamsPoly(props.location.search);
+        predictQueryParam =  queryParams.get('predict') === 'true' ? true : false;
     }
     
     initializeSkipStocks = () => new Promise((resolve, reject) => {
@@ -273,13 +280,9 @@ class StockCardPredictions extends React.Component {
     }
 
     componentWillMount() {
+        console.log('Predict Query Param ', typeof predictQueryParam, predictQueryParam);
         this.setState({loading: true});
         this.initializeStateFromLocalStorage()
-        // .then(() => {
-        //     return Utils.isLoggedIn() 
-        //         ? this.updatePortfolioStats()
-        //         : null
-        // })
         .catch(error => {
             console.log('Error', error);
         })
@@ -290,6 +293,15 @@ class StockCardPredictions extends React.Component {
 
     modifyStockData = (stockData = this.state.stockData) => {
         this.setState({stockData});
+    }
+
+    updateStockDataWithValue = (data = {}) => {
+        if (typeof(data) === 'object') {
+            this.setState({
+                ...this.state.stockData,
+                ...data
+            });
+        }
     }
 
     showSuccess = () => {
