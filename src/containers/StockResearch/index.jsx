@@ -340,7 +340,6 @@ class StockResearchImpl extends React.Component {
             'watchlistId': watchListId,
             "subscriberId": watchlistSubscriberId
         };
-        console.log('Stock Research', msg);
         this.webSocket.sendWSMessage(msg); 
     }
 
