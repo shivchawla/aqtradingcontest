@@ -163,7 +163,6 @@ class Layout extends React.Component {
                             <HighChartBar 
                                 id='staticPerformance'
                                 series={this.props.staticPerformance}
-                                // categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Yo']}
                                 updateTimeline={true}
                             />
                         </Grid>

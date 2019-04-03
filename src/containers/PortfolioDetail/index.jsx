@@ -177,7 +177,7 @@ class PortfolioDetailImpl extends React.Component {
                 metricValue = Math.exp(Math.log(1 + annualreturn) / 12) - 1;
             }
             const metricValuePercentage = Number((metricValue * 100).toFixed(2));
-            benchmarkData.push({metricValuePercentage});
+            benchmarkData.push(metricValuePercentage);
             benchmarkTimelineData.push({
                 timeline: key,
                 value: metricValuePercentage
