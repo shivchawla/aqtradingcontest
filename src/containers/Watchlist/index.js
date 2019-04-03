@@ -180,9 +180,9 @@ class WatchlistComponent extends React.Component {
             targetWatchlist.positions = response.data.securities.map(item => {
                 return {
                     symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
-                    change: _.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.change', 0.0),
+                    change: _.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.Change', 0.0),
                     current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
-                    changePct: _.get(item, 'realtime.changePct', 0.0),
+                    changePct: _.get(item, 'realtime.change_p', 0.0) || _.get(item, 'eod.ChangePct', 0.0),
                     name: _.get(item, 'detail.Nse_Name', '')
                 }
             });
@@ -205,6 +205,7 @@ class WatchlistComponent extends React.Component {
         if (this.mounted) {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
+                console.log('Realtime Response ', realtimeResponse);
                 const watchlists = [...this.state.watchlists];
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
