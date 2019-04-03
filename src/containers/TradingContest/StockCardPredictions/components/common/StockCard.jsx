@@ -284,9 +284,16 @@ class StockCard extends React.Component {
      */
     getInvestmentItems = (realPrediction = _.get(this.props, 'stockData.realPrediction', false), stockData = this.props.stockData) => {
         const {lastPrice = 0} = stockData;
+        const allowedInvestmentItems = _.get(Utils.getUserInfo(), 'allowedInvestments', []);
+        const maxInvestment = _.get(Utils.getUserInfo(), 'maxInvestment', 50);
+        
         let investmentItems = [];
         if (realPrediction) {
-            investmentItems = investmentKvpReal.map(investment => ({key: getNumSharesFromInvestment(investment.value, lastPrice)}));
+            if (allowedInvestmentItems.length > 0) {
+                investmentItems = allowedInvestmentItems.map(investment => ({key: getNumSharesFromInvestment((investment * 1000), lastPrice, maxInvestment)}));
+            } else {
+                investmentItems = investmentKvpReal.map(investment => ({key: getNumSharesFromInvestment(investment.value, lastPrice, maxInvestment)}));
+            }
         } else {
             investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         }
