@@ -284,8 +284,29 @@ class StockCard extends React.Component {
      */
     getInvestmentItems = (realPrediction = _.get(this.props, 'stockData.realPrediction', false), stockData = this.props.stockData) => {
         const {lastPrice = 0} = stockData;
-        const allowedInvestmentItems = _.get(Utils.getUserInfo(), 'allowedInvestments', []);
-        const maxInvestment = _.get(Utils.getUserInfo(), 'maxInvestment', 50);
+        let allowedInvestmentItems = _.get(Utils.getUserInfo(), 'allowedInvestments', []);
+        let maxInvestment = _.get(Utils.getUserInfo(), 'maxInvestment', 50);
+
+        // Getting the selected advisor's  allowed investment items and maxInvestment
+        let selectedUserInvestmentItems = Utils.getFromLocalStorage('selectedUserAllowedInvestments');
+        let selectedUserMaxInvestment = Utils.getFromLocalStorage('selectedUserMaxInvestment');
+
+        // If selectedAdvisorId is not null then initialized allowedInvestmentItems with empty array
+        if (Utils.isLocalStorageItemPresent('selectedAdvisorId')) {
+            allowedInvestmentItems = [];
+        }
+
+        // If allowed investment items is present in localStorage for selected advisor
+        if (Utils.isLocalStorageItemPresent(selectedUserInvestmentItems)) {
+            selectedUserInvestmentItems = selectedUserInvestmentItems.split(',');
+            allowedInvestmentItems = selectedUserInvestmentItems;
+        }
+
+        // If max investment is present in localStorage for selected advisor
+        if (Utils.isLocalStorageItemPresent(selectedUserInvestmentItems)) {
+            selectedUserMaxInvestment = Number(selectedUserMaxInvestment);
+            maxInvestment = selectedUserMaxInvestment;
+        }
         
         let investmentItems = [];
         if (realPrediction) {

@@ -286,6 +286,8 @@ export class Utils{
 		this.localStorageSave('selectedUserId', null);
 		this.localStorageSave('selectedUserName', null);
 		this.localStorageSave('isSelectedAdvisorAllocated', null);
+		this.localStorageSave('selectedUserAllowedInvestments', null);
+		this.localStorageSave('selectedUserMaxInvestment', null);
 		this.setLoggedInUserInfo({});
 	}
 
