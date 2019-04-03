@@ -2,7 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
-import {metricColor, primaryColor} from '../../../../constants';
+import Email from '../common/Email';
+import {metricColor, primaryColor, verticalBox} from '../../../../constants';
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
 import {convertNameToTitleCase} from '../utils';
@@ -18,6 +19,7 @@ export default class ParticipantListItemWeekly extends React.Component {
     
     render() {
         const {
+            email = null,
             userName = '',
             advisorId = null,
             cash = 0, 
@@ -39,8 +41,14 @@ export default class ParticipantListItemWeekly extends React.Component {
                 <Grid item xs={1} style={{textAlign: 'start'}}>
                     <img src={medal} width={26}/>
                 </Grid>
-                <Grid item xs={2} style={{textAlign: 'start'}}>
-                    <Name>{convertNameToTitleCase(userName)}</Name>
+                <Grid item xs={3} style={{textAlign: 'start'}}>
+                    <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                        <Name>{convertNameToTitleCase(userName)}</Name>
+                        {
+                            Utils.isAdmin() && email &&
+                            <Email>{email}</Email>
+                        }
+                    </div>
                 </Grid>
                 <Grid item xs={2}>
                     <SecondaryText color={changeColor}>
@@ -52,7 +60,7 @@ export default class ParticipantListItemWeekly extends React.Component {
                         {(pnlPct * 100).toFixed(2)}%
                     </SecondaryText>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2}>
                     <SecondaryText color='#464646' fontWeight='500'>
                         ₹{Utils.formatMoneyValueMaxTwoDecimals(netTotal * 1000)}
                     </SecondaryText>
