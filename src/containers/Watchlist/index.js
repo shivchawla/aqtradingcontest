@@ -205,6 +205,7 @@ class WatchlistComponent extends React.Component {
         if (this.mounted) {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
+                console.log('Realtime Response ', realtimeResponse);
                 const watchlists = [...this.state.watchlists];
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
@@ -304,9 +305,9 @@ class WatchlistComponent extends React.Component {
         return defaultStockData.map(item => {
             return {
                 symbol: _.get(item, 'detail.NSE_ID', '') || _.get(item, 'ticker', ''),
-                change: Number(((_.get(item, 'latestDetailRT.change', 0.0) || _.get(item, 'latestDetailRT.Change', 0.0))).toFixed(2)),
+                change: Number(((_.get(item, 'latestDetailRT.change', 0.0) || _.get(item, 'latestDetail.Change', 0.0))).toFixed(2)),
                 current: _.get(item, 'latestDetailRT.close', 0.0) || _.get(item, 'latestDetail.Close', 0.0),
-                changePct: Number(((_.get(item, 'latestDetailRT.change_p', 0.0) || _.get(item, 'latestDetailRT.ChangePct', 0.0)))),
+                changePct: Number(((_.get(item, 'latestDetailRT.change_p', 0.0) || _.get(item, 'latestDetail.ChangePct', 0.0)))),
                 name: _.get(item, 'detail.Nse_Name', ''),
                 shortable: _.get(item, 'shortable', false)
             }
