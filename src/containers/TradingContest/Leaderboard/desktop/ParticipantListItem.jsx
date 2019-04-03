@@ -25,7 +25,7 @@ export default class ParticipantListItem extends React.Component {
             rank = {}, 
             pnlPct = {}, 
             profitFactor = {},
-            listType='long'
+            listType='long',
         }  = this.props;
         const medal = getRankMedal(rank);
         const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? metricColor.neutral : metricColor.negative;

@@ -14,6 +14,8 @@ import {
     getMarketOpenHour, 
     getMarketOpenMinute
 } from '../../../utils/date';
+import funnyNames from '../Leaderboard/constants/funnyNames';
+
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
 const currentDate = moment().format(dateFormat);
@@ -199,7 +201,7 @@ export const getOverallLeaderboard = (skip, limit, history, currentUrl, handleEr
 }
 
 export const processLeaderboardWinners = (leaders = []) => {
-    return Promise.map(leaders, leader => {
+    return Promise.map(leaders, (leader, index) => {
         const userName = _.get(leader, 'user.firstName', '') + ' ' + _.get(leader, 'user.lastName', '');
         const advisorId = _.get(leader, 'advisor', null);
         const pnl = _.get(leader, 'pnlStats.pnl', 0);
@@ -221,7 +223,7 @@ export const processLeaderboardWinners = (leaders = []) => {
             advisorId,
             netTotal,
             netTotalLastWeek,
-            cash
+            cash,
         };
     })
 }

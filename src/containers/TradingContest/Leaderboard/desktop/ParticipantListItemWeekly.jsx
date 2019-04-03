@@ -25,7 +25,7 @@ export default class ParticipantListItemWeekly extends React.Component {
             rank = 1, 
             pnlPct = 0, 
             netTotal = 0,
-            netTotalLastWeek='0'
+            netTotalLastWeek='0',
         }  = this.props;
         const medal = getRankMedal(rank);
         const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? metricColor.neutral : metricColor.negative;

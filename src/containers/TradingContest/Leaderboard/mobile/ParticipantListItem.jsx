@@ -27,7 +27,7 @@ export default class ParticipantListItem extends React.Component {
             rank = 0, 
             pnlPct = 0, 
             profitFactor = 0,
-            listType='long'
+            listType='long',
         }  = this.props;
         
         const medal = getRankMedal(rank);

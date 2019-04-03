@@ -33,13 +33,14 @@ export const getPriceMetrics = data => {
     latestDetail.ticker = _.get(data, 'ticker', '');
     latestDetail.exchange = _.get(data, 'exchange', '');
     latestDetail.close = _.get(data, 'latestDetailRT.close', 0) || _.get(data, 'latestDetail.Close', 0);
+    latestDetail.prevClose = _.get(data, 'latestDetailRT.previousClose', 0) || _.get(data, 'latestDetail.Close', 0);
     latestDetail.latestPrice = _.get(data, 'latestDetailRT.close', 0) || data.latestDetail.Close
     latestDetail.open = _.get(data, 'latestDetailRT.open', 0) || data.latestDetail.Open;
     latestDetail.low = _.get(data, 'latestDetailRT.low', 0) || data.latestDetail.Low;
     latestDetail.high = _.get(data, 'latestDetailRT.high', 0) || data.latestDetail.High;
     latestDetail.low_52w = Math.min(_.get(data, 'latestDetailRT.low', 0), data.latestDetail.Low_52w);
     latestDetail.high_52w = Math.max(_.get(data, 'latestDetailRT.high', 0), data.latestDetail.High_52w);
-    latestDetail.changePct = _.get(data, 'latestDetailRT.changePct', 0);
+    latestDetail.changePct = _.get(data, 'latestDetailRT.change_p', 0);
     latestDetail.change = _.get(data, 'latestDetailRT.change', 0);
     latestDetail.name = _.get(data, 'detail.Nse_Name', '');
 

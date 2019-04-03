@@ -308,7 +308,7 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
         if (positionIndex < 0) {
             positions.push({
                 chg: _.get(prediction, 'position.security.latestDetailRT.change', 0) || _.get(prediction, 'position.security.latestDetail.Change', 0),
-                chgPct: _.get(prediction, 'position.security.latestDetailRT.changePct', 0) || _.get(prediction, 'position.security.latestDetail.ChangePct', 0),
+                chgPct: _.get(prediction, 'position.security.latestDetailRT.change_p', 0) || _.get(prediction, 'position.security.latestDetail.ChangePct', 0),
                 industry: _.get(prediction, 'position.security.detail.Industry', null),
                 key: Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15),
                 lastPrice: _.get(prediction, 'position.security.latestDetailRT.close', 0) || _.get(prediction, 'position.security.latestDetail.Close', 0),
@@ -343,7 +343,7 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         name: _.get(prediction, 'position.security.detail.Nse_Name', null),
         lastPrice: _.get(prediction, 'position.lastPrice', 0),
         change: _.get(prediction, 'position.security.latestDetailRT.change', null) || _.get(prediction, 'position.security.latestDetail.Change', null),
-        changePct: _.get(prediction, 'position.security.latestDetailRT.changePct', null) || _.get(prediction, 'position.security.latestDetail.ChangePct', null),
+        changePct: _.get(prediction, 'position.security.latestDetailRT.change_p', null) || _.get(prediction, 'position.security.latestDetail.ChangePct', null),
         avgPrice: _.get(prediction, 'position.avgPrice', 0),
         investment: _.get(prediction, 'position.investment', 0),
         quantity: _.get(prediction, 'position.quantity', 0),
