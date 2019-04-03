@@ -321,7 +321,7 @@ class SearchStocks extends React.Component {
             const change = _.get(stock, 'latestDetailRT.change', 0) || 
                 _.get(stock, 'latestDetail.Change', 0);
 
-            const changePct = _.get(stock, 'latestDetailRT.changePct', 0) ||
+            const changePct = _.get(stock, 'latestDetailRT.change_p', 0) ||
                 _.get(stock, 'latestDetail.ChangePct', 0);
 
             const high = _.get(stock, 'latestDetailRT.high', 0) ||

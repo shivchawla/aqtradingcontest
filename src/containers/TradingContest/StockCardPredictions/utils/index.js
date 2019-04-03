@@ -18,7 +18,7 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     const symbol = getStockTicker(stockData);
     const lastPrice = _.get(stockData, 'latestDetailRT.close', null) || _.get(stockData, 'latestDetail.Close', 0);
     const change = _.get(stockData, 'latestDetailRT.change', null) || _.get(stockData, 'latestDetail.Change', 0);
-    let changePct = _.get(stockData, 'latestDetailRT.changePct', null) || _.get(stockData, 'latestDetail.ChangePct', 0);
+    let changePct = _.get(stockData, 'latestDetailRT.change_p', null) || _.get(stockData, 'latestDetail.ChangePct', 0);
     const sector = _.get(stockData, 'detail.Sector', '');
     const industry = _.get(stockData, 'Industry', '');
     const shortable = _.get(stockData, 'shortable', false)

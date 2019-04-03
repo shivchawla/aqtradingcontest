@@ -40,7 +40,7 @@ export const getPriceMetrics = data => {
     latestDetail.high = _.get(data, 'latestDetailRT.high', 0) || data.latestDetail.High;
     latestDetail.low_52w = Math.min(_.get(data, 'latestDetailRT.low', 0), data.latestDetail.Low_52w);
     latestDetail.high_52w = Math.max(_.get(data, 'latestDetailRT.high', 0), data.latestDetail.High_52w);
-    latestDetail.changePct = _.get(data, 'latestDetailRT.changePct', 0);
+    latestDetail.changePct = _.get(data, 'latestDetailRT.change_p', 0);
     latestDetail.change = _.get(data, 'latestDetailRT.change', 0);
     latestDetail.name = _.get(data, 'detail.Nse_Name', '');
 
