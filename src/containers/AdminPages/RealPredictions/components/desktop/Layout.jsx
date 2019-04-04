@@ -139,6 +139,10 @@ export default class Layout extends React.Component {
                         CustomRadio={CustomRadio}
                         small
                     />
+                    {
+                        this.props.showNewPredictionText &&
+                        <NewPredictionText>* New Predictions Received</NewPredictionText>
+                    }
                     <DateComponent 
                         selectedDate={this.props.selectedDate}
                         color='#1763c6'
@@ -147,12 +151,6 @@ export default class Layout extends React.Component {
                         compact={true}
                         launchOnMount={false}
                     />
-                </Grid>
-                <Grid item xs={12}>
-                    {
-                        this.props.showNewPredictionText &&
-                        <NewPredictionText>* New Predictions Received</NewPredictionText>
-                    }
                 </Grid>
                 {
                     predictions.length === 0
