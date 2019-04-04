@@ -278,8 +278,8 @@ class StockCard extends React.Component {
 
     /**
      * Gets investment items based on the realPrediction value
-     * If real prediction, then it sets investment items to the number of shares based on the investmentKvpReal
-     * item values.
+     * If real prediction, then it sets investment items to the number of shares based on the allowed investment
+     * items for the advisor or the default investment items.
      * If simulated prediction, then it sets investment items to the investment values in the investmentKvp
      */
     getInvestmentItems = (realPrediction = _.get(this.props, 'stockData.realPrediction', false), stockData = this.props.stockData) => {
