@@ -63,7 +63,7 @@ export default class PredictionsBottomSheet extends React.Component {
                             }}
                     >
                         <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
-                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(chg)} ({chgPct}%)</Change>
+                        <Change color={changeColor}>₹{Utils.formatMoneyValueMaxTwoDecimals(chg)} ({(chgPct || 0).toFixed(2)}%)</Change>
                     </div>
                 </div>
             </div>
