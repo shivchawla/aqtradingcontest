@@ -287,26 +287,24 @@ class StockCard extends React.Component {
         let allowedInvestmentItems = _.get(Utils.getUserInfo(), 'allowedInvestments', []);
         let maxInvestment = _.get(Utils.getUserInfo(), 'maxInvestment', 50);
 
-        // Getting the selected advisor's  allowed investment items and maxInvestment
+        // Getting the selected advisor's  allowed investment items, maxInvestment, advisorId
         let selectedUserInvestmentItems = Utils.getFromLocalStorage('selectedUserAllowedInvestments');
         let selectedUserMaxInvestment = Utils.getFromLocalStorage('selectedUserMaxInvestment');
         const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
 
-        // If selectedAdvisorId is not null then initialized allowedInvestmentItems with empty array
+        // If selectedAdvisorId is not null then initialize allowedInvestmentItems with empty array
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId)) {
             allowedInvestmentItems = [];
         }
 
         // If allowed investment items is present in localStorage for selected advisor
         if (Utils.isLocalStorageItemPresent(selectedUserInvestmentItems)) {
-            selectedUserInvestmentItems = selectedUserInvestmentItems.split(',');
-            allowedInvestmentItems = selectedUserInvestmentItems;
+            allowedInvestmentItems = selectedUserInvestmentItems.split(',');
         }
 
         // If max investment is present in localStorage for selected advisor
         if (Utils.isLocalStorageItemPresent(selectedUserInvestmentItems)) {
-            selectedUserMaxInvestment = Number(selectedUserMaxInvestment);
-            maxInvestment = selectedUserMaxInvestment;
+            maxInvestment = Number(selectedUserMaxInvestment);
         }
         
         let investmentItems = [];
