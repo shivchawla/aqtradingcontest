@@ -399,7 +399,8 @@ class StockCard extends React.Component {
             lastPrice = 0,
             conditionalType = conditionalTypeItems[0],
             valueTypePct = true,
-            realPrediction = false
+            realPrediction = false,
+            real = false
         } = this.props.stockData;
 
         /**
@@ -461,6 +462,7 @@ class StockCard extends React.Component {
                                 Horizon in Days
                             </MetricLabel>
                             {
+                                real &&
                                 this.state.isUserAllocated &&
                                 <div 
                                         style={{

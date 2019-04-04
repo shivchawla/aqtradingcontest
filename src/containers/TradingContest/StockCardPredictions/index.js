@@ -286,11 +286,6 @@ class StockCardPredictions extends React.Component {
     componentWillMount() {
         this.setState({loading: true});
         this.initializeStateFromLocalStorage()
-        // .then(() => {
-        //     return Utils.isLoggedIn() 
-        //         ? this.updatePortfolioStats()
-        //         : null
-        // })
         .catch(error => {
             console.log('Error', error);
         })
@@ -300,6 +295,7 @@ class StockCardPredictions extends React.Component {
     }
 
     modifyStockData = (stockData = this.state.stockData) => {
+        console.log('Stock Data ', stockData);
         this.setState({stockData});
     }
 
