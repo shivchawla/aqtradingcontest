@@ -295,7 +295,6 @@ class StockCardPredictions extends React.Component {
     }
 
     modifyStockData = (stockData = this.state.stockData) => {
-        console.log('Stock Data ', stockData);
         this.setState({stockData});
     }
 

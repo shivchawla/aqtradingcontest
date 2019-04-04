@@ -116,7 +116,6 @@ class RealPredictions extends React.Component {
          * [2] predictions are the real-time predictions obtained from the websocket
          */
         const requiredPredictions = processRealtimePredictions(unformattedPredictions, predictions);
-        console.log('Required Predictions ', requiredPredictions);
         const formattedPredictions = await processPredictions(requiredPredictions, true);
         const positions = convertPredictionsToPositions(requiredPredictions, true, false);
         
@@ -212,15 +211,19 @@ class RealPredictions extends React.Component {
 
     handlePreviewListMenuItemChange = (type = this.state.selectedView) => {
         this.setState({selectedView: type}, () => {
-            this.fetchPredictionsAndStats(this.state.selectedDate);
-            this.takeSubscriptionAction(type);
+            this.fetchPredictionsAndStats(this.state.selectedDate)
+            .then(() => {
+                this.takeSubscriptionAction(type);
+            });
         })
     }
 
     handlePredictionStatusChange = (active = true) => {
         this.setState({activePredictionStatus: active}, () => {
-            this.fetchPredictionsAndStats(this.state.selectedDate);
-            this.takeSubscriptionAction();
+            this.fetchPredictionsAndStats(this.state.selectedDate)
+            .then(() => {
+                this.takeSubscriptionAction();
+            });
         })
     }
 
@@ -253,6 +256,7 @@ class RealPredictions extends React.Component {
                 advisorId
             };
         }
+
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -658,7 +662,9 @@ class RealPredictions extends React.Component {
             this.fetchPredictionsAndStats(formattedSelectedDate),
             this.getAllocatedAdvisors()
         ])
-        this.setUpSocketConnection();
+        .then(() => {
+            this.setUpSocketConnection();
+        })
     }
 
     componentDidMount() {
