@@ -137,6 +137,9 @@ class StockPreviewExtendedList extends React.Component {
     }
 
     onReadStatusRadioChanged = value => {
+        if (value === 0) {
+            this.props.updateNewPredictionText(false);
+        }
         this.setState({readStatusSelected: readStatusRadioItems[value]}, () => {
             this.updatePredictionsList();
         });
