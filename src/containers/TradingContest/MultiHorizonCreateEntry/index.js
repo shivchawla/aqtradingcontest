@@ -500,7 +500,6 @@ class CreateEntry extends React.Component {
                 const portfolioStats = _.get(realtimeData, 'portStats', {});
                 this.updateDailyPredictions(predictons);
                 this.updateDailyPnLStats(pnl);
-                this.updatePortfolioStats(portfolioStats);
             } catch(error) {
                 return error;
             }
