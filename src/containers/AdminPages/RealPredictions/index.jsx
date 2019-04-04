@@ -116,6 +116,7 @@ class RealPredictions extends React.Component {
          * [2] predictions are the real-time predictions obtained from the websocket
          */
         const requiredPredictions = processRealtimePredictions(unformattedPredictions, predictions);
+        console.log('Required Predictions ', requiredPredictions);
         const formattedPredictions = await processPredictions(requiredPredictions, true);
         const positions = convertPredictionsToPositions(requiredPredictions, true, false);
         
