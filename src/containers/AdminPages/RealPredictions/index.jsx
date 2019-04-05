@@ -93,7 +93,10 @@ class RealPredictions extends React.Component {
         Promise.map(predictions, prediction => {
             // Getting the index of the current prediction in presentPredictions
             // if index > -1 prediction already present
-            const predictionIndex = _.findIndex(presentPredictions, presentPrediction => _.isEqual(presentPrediction, prediction));
+            const predictionIndex = _.findIndex(presentPredictions, presentPrediction => {
+                const fieldsToCompare = ['_id', 'advisor'];
+                return _.isEqual(_.pick(presentPrediction, fieldsToCompare), _.pick(prediction, fieldsToCompare));
+            });
             if (predictionIndex === -1) {
                 newPredictionsCount++;
             }
@@ -299,6 +302,7 @@ class RealPredictions extends React.Component {
         if (_.isEqual(currentDate, selectedDate)) {
             try {
                 const realtimeData = JSON.parse(msg.data);
+                console.log('Realtime Data ', realtimeData);
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
