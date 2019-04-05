@@ -382,7 +382,7 @@ class StockChartImpl extends React.Component {
             }
         } else {
             if (series.length > legendItems.length) { // Item needs to be added
-                console.log("Items will be added");
+                // console.log("Items will be added");
                 series.map(item => {
                     const seriesIndex = _.findIndex(this.chart.series, seriesItem => seriesItem.name.toUpperCase() === item.name.toUpperCase());
                     if (seriesIndex === -1) {
