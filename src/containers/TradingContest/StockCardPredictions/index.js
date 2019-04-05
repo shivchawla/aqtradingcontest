@@ -329,7 +329,8 @@ class StockCardPredictions extends React.Component {
                 horizon,
                 target,
                 investment: isRealPredictionSelected ? stockDataInvestment : investment,
-                stopLoss
+                stopLoss,
+                realPrediction: false
             }
         });
     }
