@@ -370,10 +370,16 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         accumulated: _.get(prediction, 'current.accumulated', null),
         advisorName: `${_.get(prediction, 'advisor.user.firstName', '')} ${_.get(prediction, 'advisor.user.lastName')}`,
         skippedByAdmin: _.get(prediction, 'skippedByAdmin', false),
+        // Using simulatedPnlStats for now
         winRatio: {
             total: getPctFromRatio(_.get(prediction, 'realPnlStats.total.net.winRatio', 0)),
             long: getPctFromRatio(_.get(prediction, 'realPnlStats.total.long.winRatio', 0)),
             short: getPctFromRatio(_.get(prediction, 'realPnlStats.total.short.winRatio', 0)),
+        },
+        simulatedWinRatio: {
+            total: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.net.winRatio', 0)),
+            long: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.long.winRatio', 0)),
+            short: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.short.winRatio', 0)),
         }
     }))
 }
