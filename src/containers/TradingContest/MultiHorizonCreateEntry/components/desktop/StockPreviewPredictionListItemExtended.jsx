@@ -191,6 +191,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
         } = prediction;
 
         const netSuccessPercentage = _.get(prediction, 'winRatio.total', 0);
+        const netSimulatedSuccessPercentage = _.get(prediction, 'simulatedWinRatio.total', 0);
 
         const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');
         const modifiedQuantity = getLastestAdminMoficiation(prediction, 'quantity');
@@ -241,7 +242,13 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     <Tag 
                         backgroundColor="#E1F5FE"
                         color={iconConfig.color}
-                        label={`Success: ${(netSuccessPercentage || 0).toFixed(2)}%`}
+                        label={`Real Success: ${(netSuccessPercentage || 0).toFixed(2)}%`}
+                        style={{marginLeft: '10px'}}
+                    />
+                    <Tag 
+                        backgroundColor="#ECEFF1"
+                        color='#607D8B'
+                        label={`Simulated Success: ${(netSimulatedSuccessPercentage || 0).toFixed(2)}%`}
                         style={{marginLeft: '10px'}}
                     />
                 </Grid>
