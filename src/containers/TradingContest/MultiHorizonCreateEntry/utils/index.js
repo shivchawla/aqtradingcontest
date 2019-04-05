@@ -4,6 +4,7 @@ import moment from 'moment';
 import {Utils, fetchAjaxPromise} from '../../../../utils';
 import {getStockTicker} from '../../utils';
 import {maxPredictionLimit} from '../constants';
+import {getPctFromRatio} from '../../Dashboard/utils';
 
 const {requestUrl} = require('../../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
@@ -368,7 +369,13 @@ export const processPredictions = (predictions = [], locked = false, type = 'sta
         adminActivity: _.get(prediction, 'adminActivity', []),
         accumulated: _.get(prediction, 'current.accumulated', null),
         advisorName: `${_.get(prediction, 'advisor.user.firstName', '')} ${_.get(prediction, 'advisor.user.lastName')}`,
-        skippedByAdmin: _.get(prediction, 'skippedByAdmin', false)
+        skippedByAdmin: _.get(prediction, 'skippedByAdmin', false),
+        // Using simulatedPnlStats for now
+        winRatio: {
+            total: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.net.winRatio', 0)),
+            long: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.long.winRatio', 0)),
+            short: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.short.winRatio', 0)),
+        }
     }))
 }
 

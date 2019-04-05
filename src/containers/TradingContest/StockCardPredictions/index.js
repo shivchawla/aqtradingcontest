@@ -286,11 +286,6 @@ class StockCardPredictions extends React.Component {
     componentWillMount() {
         this.setState({loading: true});
         this.initializeStateFromLocalStorage()
-        // .then(() => {
-        //     return Utils.isLoggedIn() 
-        //         ? this.updatePortfolioStats()
-        //         : null
-        // })
         .catch(error => {
             console.log('Error', error);
         })

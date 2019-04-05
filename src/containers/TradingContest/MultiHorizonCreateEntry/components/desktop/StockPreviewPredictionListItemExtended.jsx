@@ -190,6 +190,8 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             skippedByAdmin = false
         } = prediction;
 
+        const netSuccessPercentage = _.get(prediction, 'winRatio.total', 0);
+
         const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');
         const modifiedQuantity = getLastestAdminMoficiation(prediction, 'quantity');
         const modifiedStopLoss = getLastestAdminMoficiation(prediction, 'stopLoss');
@@ -228,7 +230,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                             : '0 4px 16px rgba(0,0,0,0.2)'
                     }}
             >
-                {/* <Grid 
+                <Grid 
                         item 
                         xs={12}
                         style={{
@@ -239,10 +241,10 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     <Tag 
                         backgroundColor="#E1F5FE"
                         color={iconConfig.color}
-                        label='Success: 50%'
+                        label={`Success: ${(netSuccessPercentage || 0).toFixed(2)}%`}
                         style={{marginLeft: '10px'}}
                     />
-                </Grid> */}
+                </Grid>
                 <Grid 
                         item xs={2} 
                         style={{

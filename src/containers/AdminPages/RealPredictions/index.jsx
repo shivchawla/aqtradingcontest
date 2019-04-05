@@ -72,13 +72,18 @@ class RealPredictions extends React.Component {
             selectedPredictionIdForCancel: null,
             cancelDialogOpen: false, // flag to open or close cancel dialog,
             cancelLoading: false,
-            skipPredictionDialogOpen: false
+            skipPredictionDialogOpen: false,
+            showNewPredictionText: false
         };
     }
 
     updateDate = date => {
         this.setState({selectedDate: date});
         this.fetchPredictionsAndStats(date);
+    }
+
+    updateNewPredictionText = (status = false) => {
+        this.setState({showNewPredictionText: status});
     }
 
     checkForNewPredictions = (predictions = []) => {
@@ -96,7 +101,8 @@ class RealPredictions extends React.Component {
         })
         .then(() => {
             if (newPredictionsCount > 0) {
-                this.toggleSnackbar(`${newPredictionsCount} New Predictions Received`);                
+                this.toggleSnackbar(`${newPredictionsCount} New Predictions Received`); 
+                this.updateNewPredictionText(true);               
             }
         })
     }
@@ -211,15 +217,19 @@ class RealPredictions extends React.Component {
 
     handlePreviewListMenuItemChange = (type = this.state.selectedView) => {
         this.setState({selectedView: type}, () => {
-            this.fetchPredictionsAndStats(this.state.selectedDate);
-            this.takeSubscriptionAction(type);
+            this.fetchPredictionsAndStats(this.state.selectedDate)
+            .then(() => {
+                this.takeSubscriptionAction(type);
+            });
         })
     }
 
     handlePredictionStatusChange = (active = true) => {
         this.setState({activePredictionStatus: active}, () => {
-            this.fetchPredictionsAndStats(this.state.selectedDate);
-            this.takeSubscriptionAction();
+            this.fetchPredictionsAndStats(this.state.selectedDate)
+            .then(() => {
+                this.takeSubscriptionAction();
+            });
         })
     }
 
@@ -252,6 +262,7 @@ class RealPredictions extends React.Component {
                 advisorId
             };
         }
+
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -657,7 +668,9 @@ class RealPredictions extends React.Component {
             this.fetchPredictionsAndStats(formattedSelectedDate),
             this.getAllocatedAdvisors()
         ])
-        this.setUpSocketConnection();
+        .then(() => {
+            this.setUpSocketConnection();
+        })
     }
 
     componentDidMount() {
@@ -768,7 +781,9 @@ class RealPredictions extends React.Component {
             skipPrediction: this.skipPrediction,
             cancelLoading: this.state.cancelLoading,
             skipPredictionDialogOpen: this.state.skipPredictionDialogOpen,
-            toggleSkipPredictionDialog: this.toggleSkipPredictionDialog
+            toggleSkipPredictionDialog: this.toggleSkipPredictionDialog,
+            updateNewPredictionText: this.updateNewPredictionText,
+            showNewPredictionText: this.state.showNewPredictionText
         };
 
         return (

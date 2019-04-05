@@ -338,6 +338,7 @@ class SearchStocks extends React.Component {
 
             const shortable = _.get(stock, 'shortable', false);
 
+            const real = _.get(stock, 'real', false);
 
             return {
                 symbol,
@@ -355,7 +356,8 @@ class SearchStocks extends React.Component {
                 industry: _.get(stock, 'detail.Industry', null),
                 shortable,
                 hideActions: false,
-                hide: false
+                hide: false,
+                real
             };
         }).filter(stock => stock.name !== null);;
     }

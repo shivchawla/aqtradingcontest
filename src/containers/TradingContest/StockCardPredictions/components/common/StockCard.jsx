@@ -278,15 +278,42 @@ class StockCard extends React.Component {
 
     /**
      * Gets investment items based on the realPrediction value
-     * If real prediction, then it sets investment items to the number of shares based on the investmentKvpReal
-     * item values.
+     * If real prediction, then it sets investment items to the number of shares based on the allowed investment
+     * items for the advisor or the default investment items.
      * If simulated prediction, then it sets investment items to the investment values in the investmentKvp
      */
     getInvestmentItems = (realPrediction = _.get(this.props, 'stockData.realPrediction', false), stockData = this.props.stockData) => {
         const {lastPrice = 0} = stockData;
+        let allowedInvestmentItems = _.get(Utils.getUserInfo(), 'allowedInvestments', []);
+        let maxInvestment = _.get(Utils.getUserInfo(), 'maxInvestment', 50);
+
+        // Getting the selected advisor's  allowed investment items, maxInvestment, advisorId
+        let selectedUserInvestmentItems = Utils.getFromLocalStorage('selectedUserAllowedInvestments');
+        let selectedUserMaxInvestment = Utils.getFromLocalStorage('selectedUserMaxInvestment');
+        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+
+        // If selectedAdvisorId is not null then initialize allowedInvestmentItems with empty array
+        if (Utils.isLocalStorageItemPresent(selectedAdvisorId)) {
+            allowedInvestmentItems = [];
+        }
+
+        // If allowed investment items is present in localStorage for selected advisor
+        if (Utils.isLocalStorageItemPresent(selectedUserInvestmentItems)) {
+            allowedInvestmentItems = selectedUserInvestmentItems.split(',');
+        }
+
+        // If max investment is present in localStorage for selected advisor
+        if (Utils.isLocalStorageItemPresent(selectedUserInvestmentItems)) {
+            maxInvestment = Number(selectedUserMaxInvestment);
+        }
+        
         let investmentItems = [];
         if (realPrediction) {
-            investmentItems = investmentKvpReal.map(investment => ({key: getNumSharesFromInvestment(investment.value, lastPrice)}));
+            if (allowedInvestmentItems.length > 0) {
+                investmentItems = allowedInvestmentItems.map(investment => ({key: getNumSharesFromInvestment((investment * 1000), lastPrice, maxInvestment)}));
+            } else {
+                investmentItems = investmentKvpReal.map(investment => ({key: getNumSharesFromInvestment(investment.value, lastPrice, maxInvestment)}));
+            }
         } else {
             investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         }
@@ -372,7 +399,8 @@ class StockCard extends React.Component {
             lastPrice = 0,
             conditionalType = conditionalTypeItems[0],
             valueTypePct = true,
-            realPrediction = false
+            realPrediction = false,
+            real = false
         } = this.props.stockData;
 
         /**
@@ -434,6 +462,7 @@ class StockCard extends React.Component {
                                 Horizon in Days
                             </MetricLabel>
                             {
+                                real &&
                                 this.state.isUserAllocated &&
                                 <div 
                                         style={{

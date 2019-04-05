@@ -139,6 +139,10 @@ export default class Layout extends React.Component {
                         CustomRadio={CustomRadio}
                         small
                     />
+                    {
+                        this.props.showNewPredictionText &&
+                        <NewPredictionText>* New Predictions Received</NewPredictionText>
+                    }
                     <DateComponent 
                         selectedDate={this.props.selectedDate}
                         color='#1763c6'
@@ -180,6 +184,7 @@ export default class Layout extends React.Component {
                                             selectPredictionForCancel= {this.props.selectPredictionForCancel}
                                             selectPredictionIdForCancel={this.props.selectPredictionIdForCancel}
                                             skipPrediction={this.openSkipConfirmation}
+                                            updateNewPredictionText={this.props.updateNewPredictionText}
                                         />
                             }
                         </Grid>
@@ -396,5 +401,11 @@ const advisorListContainerStyle = {
 const NoContent = styled.h3`
     font-size: 18px;
     color: ${metricColor.negative};
+    font-weight: 500;
+`;
+
+const NewPredictionText = styled.h3`
+    color: red;
+    font-size: 14px;
     font-weight: 500;
 `;
