@@ -151,7 +151,7 @@ const SymbolComponent = ({symbol, name, onClick}) => {
 const ChangeComponent = ({lastPrice, change, changePct}) => {
     const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
     let formattedChangePct = (changePct * 100).toFixed(2);
-    let formattedChange = change.toFixed(2);
+    let formattedChange = (change || 0).toFixed(2);
 
     return (
         <div style={{...verticalBox, alignItems: 'flex-start'}}>

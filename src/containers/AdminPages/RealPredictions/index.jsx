@@ -93,7 +93,10 @@ class RealPredictions extends React.Component {
         Promise.map(predictions, prediction => {
             // Getting the index of the current prediction in presentPredictions
             // if index > -1 prediction already present
-            const predictionIndex = _.findIndex(presentPredictions, presentPrediction => _.isEqual(presentPrediction, prediction));
+            const predictionIndex = _.findIndex(presentPredictions, presentPrediction => {
+                const fieldsToCompare = ['_id', 'advisor'];
+                return _.isEqual(_.pick(presentPrediction, fieldsToCompare), _.pick(prediction, fieldsToCompare));
+            });
             if (predictionIndex === -1) {
                 newPredictionsCount++;
             }
@@ -291,7 +294,23 @@ class RealPredictions extends React.Component {
         });
 
         return requiredPredictions;
-    } 
+    }
+
+    updateAdvisorPortfolioStatsForRealtimeData = realtimeData => {
+        const realtimeAdvisorId = _.get(realtimeData, 'advisorId', null);
+        let portfolioStats = _.get(realtimeData, 'portfolioStats', null);
+        const advisors = _.map(this.state.advisors, _.cloneDeep);
+        const requiredAdvisorIndex = _.findIndex(advisors, advisor => advisor._id === realtimeAdvisorId);
+        if (portfolioStats !== null && requiredAdvisorIndex > -1) {
+            // Omitting _id since the advisor._id is advisor id and not portfolio stats id
+            portfolioStats = _.omit(portfolioStats, '_id');
+            advisors[requiredAdvisorIndex] = {
+                ...advisors[requiredAdvisorIndex],
+                ...portfolioStats
+            };
+            this.setState({advisors});
+        }
+    }
 
     processRealtimeMessage = msg => {
         const currentDate = moment().format(dateFormat);
@@ -302,6 +321,7 @@ class RealPredictions extends React.Component {
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
+                this.updateAdvisorPortfolioStatsForRealtimeData(realtimeData);
             } catch(error) {
                 console.log(error);
                 return error;
@@ -330,14 +350,17 @@ class RealPredictions extends React.Component {
                 requiredAdvisorForPredictions: shouldClearAdvisor ? {} : advisor,
                 loading: true
             }, () => {
-                this.takeSubscriptionAction();
                 this.getDailyPredictionsOnDateChange()
                 .then(response => {
                     if (response === 'requestCompleted') {
                         this.setState({loading: false});
+                        return true;
                     } else {
                         this.setState({loading: true});
                     }
+                })
+                .then(() => {
+                    this.takeSubscriptionAction();
                 })
                 .catch(err => {
                     this.toggleSnackbar('Error Occured while fetching predictions for advisor');

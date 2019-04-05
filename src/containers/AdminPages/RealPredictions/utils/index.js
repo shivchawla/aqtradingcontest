@@ -15,7 +15,12 @@ export const processRealtimePredictions = (predictions = [], realtimePredictions
          * item with realtime prediction.
          * Else add the item in the predictions array
          */
-        const predictionIndex = _.findIndex(predictions, prediction => prediction._id === realtimePrediction._id);
+        const predictionIndex = _.findIndex(predictions, prediction => {
+            const predictionAdvisorId = _.get(prediction, 'advisor._id', null);
+            const realtimePredictionAdvisorId = _.get(realtimePrediction, 'advisor._id', null);
+
+            return prediction._id === realtimePrediction._id && predictionAdvisorId === realtimePredictionAdvisorId;
+        });
 
         // If item found
         if (predictionIndex > -1) {
@@ -50,6 +55,7 @@ export const processAdvisors = (advisors = []) => {
         const investment = _.get(advisor, 'account.investment', 0);
         const liquidCash = _.get(advisor, 'account.liquidCash', 0);
         const id = _.get(advisor, '_id', null);
+        console.log('Advisor Id ', id);
         const status = _.get(advisor, 'allocation.status', false)
 
         return {
