@@ -55,15 +55,15 @@ export default class OrderActivityListItem extends React.Component {
         const quantity = _.get(brokerMessage, 'order.totalQuantity', 0);
         const price = getRequiredPrice(brokerMessage);
         
-        console.log('Order Type ', orderType);
+        // console.log('Order Type ', orderType);
 
         if (orderType === null) {
             console.log('Order Type is null');
             const requiredOrder = this.getAction(orderId);
             orderType = requiredOrder.orderType;
             type = requiredOrder.activityType;
-            console.log('Order Type Extracted ', orderType);
-            console.log('Action Type Extracted ', type);
+            // console.log('Order Type Extracted ', orderType);
+            // console.log('Action Type Extracted ', type);
         }
         
         return (

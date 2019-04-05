@@ -55,7 +55,7 @@ export const processAdvisors = (advisors = []) => {
         const investment = _.get(advisor, 'account.investment', 0);
         const liquidCash = _.get(advisor, 'account.liquidCash', 0);
         const id = _.get(advisor, '_id', null);
-        console.log('Advisor Id ', id);
+        // console.log('Advisor Id ', id);
         const status = _.get(advisor, 'allocation.status', false)
 
         return {

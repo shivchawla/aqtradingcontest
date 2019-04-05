@@ -34,7 +34,7 @@ export class TradingContestLeaderboardMobile extends React.Component {
     }
 
     onListItemClick = stock => {
-        console.log('Selected Stock', stock);
+        // console.log('Selected Stock', stock);
         this.setState({selectedStock: stock}, () => {
             this.toggleStockDetailBottomSheet();
         });
