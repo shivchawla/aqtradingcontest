@@ -16,7 +16,9 @@ class StockDetailComponent extends React.Component {
         this.state = {
             financialData: {},
             rawStaticPerformance: {},
+            rawBenchmarkStaticPerformance: {},
             staticPerformance: {},
+            benchmarkStaticPerformance: {},
             rawRollingPerformance: {},
             rollingPerformance: {},
             rollingPerformanceTimelines: [],
@@ -48,14 +50,18 @@ class StockDetailComponent extends React.Component {
 
     fetchStockStaticPerformance = () => {
         const {symbol = 'TCS'} = this.props;
-        return getStockStaticPerformance(symbol)
-        .then(data => {
-            // console.log('Data ', data);
-            const rawPerformance = data;
-            const requiredStaticPerformance = processStaticPerformance(data, 'returns.annualreturn', symbol);
+        return Promise.all([
+            getStockStaticPerformance(symbol),
+            getStockStaticPerformance('NIFTY_50')
+        ])
+        .then(([stockPerformance, benchmarkPerformance]) => {
+            const rawPerformance = stockPerformance;
+            const requiredStaticPerformance = processStaticPerformance(stockPerformance, 'returns.annualreturn', symbol);
+            const requiredBenchmarkStaticPerformance = processStaticPerformance(benchmarkPerformance, 'returns.annualreturn', 'NIFTY_50');
+            
             this.setState({
-                staticPerformance: requiredStaticPerformance,
-                rawStaticPerformance: rawPerformance
+                staticPerformance: [...requiredStaticPerformance, ...requiredBenchmarkStaticPerformance],
+                rawStaticPerformance: [rawPerformance, benchmarkPerformance],
             });
         })
         .catch(err => {
@@ -65,15 +71,24 @@ class StockDetailComponent extends React.Component {
 
     fetchRollingPerformance = () => {
         const {symbol = 'TCS'} = this.props;
-        
-        return getStockRollingPerformance(symbol)
-        .then(data => {
-            const rawPerformance = data;
-            const requiredRollingPerformance = processRollingPerformance(data, 'returns.annualreturn', symbol);
+        return Promise.all([
+            getStockRollingPerformance(symbol),
+            getStockRollingPerformance('NIFTY_50'),
+        ])
+        .then(([stockPerformance, benchmarkPerformance]) => {
+            const rawPerformance = stockPerformance;
+            const requiredRollingPerformance = processRollingPerformance(stockPerformance, 'returns.annualreturn', symbol);
+            const requiredBenchmarkRollingPerformance = processRollingPerformance(benchmarkPerformance, 'returns.annualreturn', 'NIFTY_50')
+            
+            console.log('requiredRollingPerformance ', requiredRollingPerformance);
+
             this.setState({
-                rollingPerformance: requiredRollingPerformance.chartData,
+                rollingPerformance: [
+                    ...requiredRollingPerformance.chartData, 
+                    ...requiredBenchmarkRollingPerformance.chartData
+                ],
                 rollingPerformanceTimelines: requiredRollingPerformance.timelines,
-                rawRollingPerformance: rawPerformance
+                rawRollingPerformance: [rawPerformance, benchmarkPerformance]
             });
         })
         .catch(err => {
@@ -133,18 +148,23 @@ class StockDetailComponent extends React.Component {
 
     onRollingPerformanceChange = selector => {
         const {symbol = 'TCS'} = this.props;
-        const requiredRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance, selector, symbol);
+        const requiredRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[0], selector, symbol);
+        const requiredBenchmarkRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[1], selector, 'NIFTY_50');
         this.setState({
-            rollingPerformance: requiredRollingPerformance.chartData,
+            rollingPerformance: [
+                ...requiredRollingPerformance.chartData, 
+                ...requiredBenchmarkRollingPerformance.chartData
+            ],
             rollingPerformanceTimelines: requiredRollingPerformance.timelines
         });
     }
 
     onStaticPerformanceChange = selector => {
         const {symbol = 'TCS'} = this.props;
-        const requiredStaticPerformance = processStaticPerformance(this.state.rawStaticPerformance, selector, symbol);
+        const stockStaticPerformance = processStaticPerformance(this.state.rawStaticPerformance[0], selector, symbol);
+        const benchmarkStaticPerformance = processStaticPerformance(this.state.rawStaticPerformance[1], selector, 'NIFTY_50');
         this.setState({
-            staticPerformance: requiredStaticPerformance
+            staticPerformance: [...stockStaticPerformance, ...benchmarkStaticPerformance]
         });
     }
 
@@ -169,6 +189,7 @@ class StockDetailComponent extends React.Component {
             financialData: this.state.financialData,
             loading: this.state.loading,
             staticPerformance: this.state.staticPerformance,
+            benchmarkStaticPerformance: this.state.benchmarkStaticPerformance,
             rollingPerformance: this.state.rollingPerformance,
             rollingPerformanceTimelines: this.state.rollingPerformanceTimelines,
             onRollingPerformanceChange: this.onRollingPerformanceChange,
