@@ -6,13 +6,14 @@ import {withRouter} from 'react-router-dom';
 import {horizontalBox, verticalBox} from '../../../../../constants';
 
 const positiveColor = {
-    first: '#E7FFF4',
-    second: '#F0FFF8'
+    first: '#d7ffed',
+    second: '#dffff0',
+    borderColor: '#cbffe7'
 };
 
 const negativeColor = {
-    first: '#FFECEC',
-    second: '#FFF7F7'
+    first: '#ffecec',
+    second: '#ffe9e9'
 };
 
 const neutralColor = {
@@ -60,7 +61,7 @@ class StockComponent extends React.Component {
 
         return (
             <Container onClick={this.goToStockDetailPage}>
-                <ExternalContainer item xs={12} color={containerColor}>
+                <ExternalContainer item xs={12}>
                     <Grid container>
                         <Grid 
                                 item 
@@ -90,22 +91,11 @@ class StockComponent extends React.Component {
                                     alignItems: 'flex-start'
                                 }}
                         >
-                            <div
-                                    style={{
-                                        ...horizontalBox,
-                                        justifyContent: 'space-between',
-                                        backgroundColor: '#E2EEFF',
-                                        borderRadius: '4px',
-                                        padding: '7px 10px',
-                                        marginTop: '10px',
-                                        width: '100%',
-                                        boxSizing: 'border-box'
-                                    }}
-                            >
+                            <PriceContainer color={containerColor}>
                                 <Change positive={positive}>₹{(change || 0)}</Change>
                                 <Bar>|</Bar>
                                 <Change positive={positive}>{(changePct || 0)}%</Change>
-                            </div>
+                            </PriceContainer>
                         </Grid>
                     </Grid>
                 </ExternalContainer>
@@ -128,9 +118,7 @@ const Container = styled(Grid)`
 `;
 
 const ExternalContainer = styled(Grid)`
-    /* background: ${props => `linear-gradient(to bottom, ${props => props.color.first}, ${props => props.color.second}`}; */
-    /* background: ${props => `linear-gradient(to bottom, ${props.positive ? positiveColor.first : negativeColor.first}, ${props.positive ? positiveColor.second : negativeColor.second})`}; */
-    background: linear-gradient(to bottom, ${props => props.color.first}, ${props => props.color.second});
+    background: #fff;
     z-index: 1000;
     position: absolute;
     left: 0;
@@ -192,4 +180,17 @@ const Change = styled.h3`
 const Bar = styled.h3`
     font-weight: 400;
     color: #d0e0ff;
+`;
+
+const PriceContainer = styled.div`
+    background: linear-gradient(to bottom, ${props => props.color.first}, ${props => props.color.second});
+    display: flex;
+    flex-direction: horizontal;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 4px;
+    padding: 7px 10px;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
 `;
