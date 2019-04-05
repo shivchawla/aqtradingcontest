@@ -633,7 +633,8 @@ class WatchlistComponent extends React.Component {
             lastPrice: _.get(stock, 'current', ''),
             change: _.get(stock, 'change', ''),
             changePct: Number((_.get(stock, 'changePct', 0) * 100).toFixed(2)),
-            shortable: _.get(stock, 'shortable', false)
+            shortable: _.get(stock, 'shortable', false),
+            real: _.get(stock, 'real', false)
         }
         this.props.selectStock(stockData);
         this.props.toggleStockCardBottomSheet();
