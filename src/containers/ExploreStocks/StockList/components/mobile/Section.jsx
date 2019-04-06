@@ -63,7 +63,7 @@ export default class Section extends React.Component {
 
 const SectionHeader = styled.h3`
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 700;
     font-family: 'Lato', sans-serif;
     color: #545454;
     padding: 10px;

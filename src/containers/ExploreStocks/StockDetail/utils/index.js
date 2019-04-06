@@ -113,11 +113,51 @@ export const processStaticPerformance = (data, field = 'returns.annualreturn', t
     }];
 };
 
-export const processRollingPerformance = (performance, field = 'returns.annualreturn', tickerName = 'Ticker') => {
+export const processStaticPerformanceMonthly = (data, field = 'returns.annualreturn', tickerName = 'Ticker') => {
+    const monthFormat = 'YYYY_M';
+    const monthlyPerformance = _.get(data, 'monthly', {});
+
+    const monthlyKeys = Object.keys(monthlyPerformance);
+    const dateOneYearBack = moment().subtract(1, 'years');
+    let monthsOneYearFromNow = monthlyKeys.filter(dateKey => moment(dateKey, monthFormat).isSameOrAfter(dateOneYearBack));
+    monthsOneYearFromNow = sortDates(monthsOneYearFromNow, monthFormat);
+
+    const currentData = [];
+    const currentTimelineData = [];
+
+    monthsOneYearFromNow.map(monthKey => {
+        let metricValue = _.get(monthlyPerformance, `${monthKey}.${field}`, 0) || 0;
+        const metricValuePercentage = Number((metricValue * 100).toFixed(2));
+        currentData.push(metricValuePercentage);
+        currentTimelineData.push({
+            timeline: monthKey,
+            value: metricValuePercentage
+        });
+    });    
+
+    return [{
+        name: tickerName,
+        data: currentData,
+        timelineData: currentTimelineData,
+        categories: currentTimelineData.map(item => item.timeline)
+    }];
+}
+
+export const sortDates = (dates, format) => {
+    return dates.sort((a, b) => (
+        moment(a, format).isSameOrAfter(moment(b, format)) ? 1 : -1
+    ));
+}
+
+export const processRollingPerformance = (performance, field = 'returns.annualreturn', tickerName = 'Ticker', yearly = true) => {
     let performanceKeys = Object.keys(performance);
     const timelineData = [];
-    let timelines = ['wtd', '1wk', 'mtd', '1m', '2m', '3m', '6m', 'ytd', '1y', '2y', '5y']
-    
+    let timelines = []
+    if (yearly) {
+        timelines = ['ytd', '1y', '2y', '5y']
+    } else {
+        timelines = ['wtd', '1wk', 'mtd', '1m', '2m', '3m', '6m'];
+    }    
 
     timelines = timelines.filter(timelineItem => {
         const timelineIndex = performanceKeys.indexOf(timelineItem);

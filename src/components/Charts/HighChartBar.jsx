@@ -79,7 +79,7 @@ export default class HighChartBar extends React.Component {
     componentWillReceiveProps(nextProps, nextState) {
         if (nextProps.series !== this.props.series) {
             try {
-                this.updateSeries(nextProps.series);
+                this.updateSeries(nextProps.series, nextProps);
             } catch(err) {}
         }
     }
@@ -103,15 +103,15 @@ export default class HighChartBar extends React.Component {
         } catch(err) {} 
     }
 
-    updateSeries = series => {
-        const {graphColor = currentPerformanceColor} = this.props;
+    updateSeries = (series, props = this.props) => {
+        const {graphColor = currentPerformanceColor} = props;
 
         if (series.length > 0) {
             this.clearSeries()
             series.map((item, index) => {
                 this.chart.addSeries({
                     name: item.name,
-                    data: this.props.updateTimeline 
+                    data: props.updateTimeline 
                         ? item.timelineData.map(itemValue  => itemValue.value)
                         : item.data,
                 });
@@ -125,8 +125,8 @@ export default class HighChartBar extends React.Component {
             this.chart.update({
                 xAxis: {
                     gridLineColor: 'transparent',
-                    categories: this.props.categories 
-                            ? this.props.categories 
+                    categories: props.categories 
+                            ? props.categories 
                             : series[0].timelineData.map(item => item.timeline.format('MMM YY'))
                 }
             })
