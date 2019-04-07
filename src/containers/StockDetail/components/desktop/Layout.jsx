@@ -43,7 +43,7 @@ export default class LayoutMobile extends React.Component {
 
     renderContent = () => {
         const {series, noDataFound = false, intraDaySeries, symbol=null, latestDetail = {}} = this.props;
-        const prevClose = _.get(latestDetail, 'close', 0);
+        const prevClose = _.get(latestDetail, 'prevClose', 0);
 
         return (
             (noDataFound || !checkIfSymbolSelected(symbol))

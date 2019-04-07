@@ -336,47 +336,77 @@ export const convertPredictionsToPositions = (predictions = [], lockPredictions 
 }
 
 // formats predictions obtained from the backend
-export const processPredictions = (predictions = [], locked = false, type = 'startedToday') => {
-    return Promise.map(predictions, prediction => ({
-        _id: _.get(prediction, '_id', null),
-        symbol: getStockTicker(_.get(prediction, 'position.security', null)),
-        priceInterval: _.get(prediction, 'priceInterval', {}),
-        name: _.get(prediction, 'position.security.detail.Nse_Name', null),
-        lastPrice: _.get(prediction, 'position.lastPrice', 0),
-        change: _.get(prediction, 'position.security.latestDetailRT.change', null) || _.get(prediction, 'position.security.latestDetail.Change', null),
-        changePct: _.get(prediction, 'position.security.latestDetailRT.change_p', null) || _.get(prediction, 'position.security.latestDetail.ChangePct', null),
-        avgPrice: _.get(prediction, 'position.avgPrice', 0),
-        investment: _.get(prediction, 'position.investment', 0),
-        quantity: _.get(prediction, 'position.quantity', 0),
-        startDate: _.get(prediction, 'startDate', null),
-        endDate: _.get(prediction, 'endDate', null),
-        createdDate: _.get(prediction, 'createdDate', null),
-        targetAchieved: _.get(prediction, 'success.status', false),
-        target: _.get(prediction, 'target', 0),
-        locked,
-        new: false,
-        type: _.get(prediction, 'position.investment', 0) > 0 ? 'buy' : 'sell',
-        triggered: _.get(prediction, 'triggered.status', false),
-        triggeredDate: _.get(prediction, 'triggered.date', null),
-        conditional: _.get(prediction, 'conditional', false),
-        readStatus: _.get(prediction, 'readStatus', ''),
-        advisor: _.get(prediction, 'advisor._id', null),
-        stopLoss: getStopLoss(prediction),
-        adminModifications: _.get(prediction, 'adminModifications', []),
-        status: _.get(prediction, 'status', {}),
-        orders: _.get(prediction, 'current.orders', []),
-        orderActivity: _.get(prediction, 'orderActivity', []),
-        adminActivity: _.get(prediction, 'adminActivity', []),
-        accumulated: _.get(prediction, 'current.accumulated', null),
-        advisorName: `${_.get(prediction, 'advisor.user.firstName', '')} ${_.get(prediction, 'advisor.user.lastName')}`,
-        skippedByAdmin: _.get(prediction, 'skippedByAdmin', false),
-        // Using simulatedPnlStats for now
-        winRatio: {
-            total: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.net.winRatio', 0)),
-            long: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.long.winRatio', 0)),
-            short: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.short.winRatio', 0)),
-        }
-    }))
+export const processPredictions = (predictions = [], locked = false, calculateAvgPrice = false) => {
+    return Promise.map(predictions, prediction => {
+        const buyAvgPrice = calculateAvgPrice 
+            ? calculateTradeActivityAvgPrice(_.get(prediction, 'tradeActivity', []), 'BUY')
+            : null;
+
+        const sellAvgPrice = calculateAvgPrice
+            ? calculateTradeActivityAvgPrice(_.get(prediction, 'tradeActivity', []), 'SELL')
+            : null;
+
+        return {
+            _id: _.get(prediction, '_id', null),
+            symbol: getStockTicker(_.get(prediction, 'position.security', null)),
+            priceInterval: _.get(prediction, 'priceInterval', {}),
+            name: _.get(prediction, 'position.security.detail.Nse_Name', null),
+            lastPrice: _.get(prediction, 'position.lastPrice', 0),
+            change: _.get(prediction, 'position.security.latestDetailRT.change', null) || _.get(prediction, 'position.security.latestDetail.Change', null),
+            changePct: _.get(prediction, 'position.security.latestDetailRT.change_p', null) || _.get(prediction, 'position.security.latestDetail.ChangePct', null),
+            avgPrice: _.get(prediction, 'position.avgPrice', 0),
+            investment: _.get(prediction, 'position.investment', 0),
+            quantity: _.get(prediction, 'position.quantity', 0),
+            startDate: _.get(prediction, 'startDate', null),
+            endDate: _.get(prediction, 'endDate', null),
+            createdDate: _.get(prediction, 'createdDate', null),
+            targetAchieved: _.get(prediction, 'success.status', false),
+            target: _.get(prediction, 'target', 0),
+            locked,
+            new: false,
+            type: _.get(prediction, 'position.investment', 0) > 0 ? 'buy' : 'sell',
+            triggered: _.get(prediction, 'triggered.status', false),
+            triggeredDate: _.get(prediction, 'triggered.date', null),
+            conditional: _.get(prediction, 'conditional', false),
+            readStatus: _.get(prediction, 'readStatus', ''),
+            advisor: _.get(prediction, 'advisor._id', null),
+            stopLoss: getStopLoss(prediction),
+            adminModifications: _.get(prediction, 'adminModifications', []),
+            status: _.get(prediction, 'status', {}),
+            orders: _.get(prediction, 'current.orders', []),
+            orderActivity: _.get(prediction, 'orderActivity', []),
+            adminActivity: _.get(prediction, 'adminActivity', []),
+            accumulated: _.get(prediction, 'current.accumulated', null),
+            advisorName: `${_.get(prediction, 'advisor.user.firstName', '')} ${_.get(prediction, 'advisor.user.lastName')}`,
+            skippedByAdmin: _.get(prediction, 'skippedByAdmin', false),
+            winRatio: {
+                total: getPctFromRatio(_.get(prediction, 'realPnlStats.total.net.winRatio', 0)),
+                long: getPctFromRatio(_.get(prediction, 'realPnlStats.total.long.winRatio', 0)),
+                short: getPctFromRatio(_.get(prediction, 'realPnlStats.total.short.winRatio', 0)),
+            },
+            simulatedWinRatio: {
+                total: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.net.winRatio', 0)),
+                long: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.long.winRatio', 0)),
+                short: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.short.winRatio', 0)),
+            },
+            buyAvgPrice,
+            sellAvgPrice
+        };
+    })
+}
+
+export const calculateTradeActivityAvgPrice = (tradeActivity = [], type = 'BUY') => {
+    const requiredTrades = tradeActivity.filter(tradeActivityItem => tradeActivityItem.direction === type);
+    if (requiredTrades.length === 0) {
+        return null;
+    }
+    const quantitySummation = _.sum(requiredTrades.map(trade => trade.quantity));
+    const priceSummation = _.sum(requiredTrades.map(trade => {
+        return trade.price * trade.quantity;
+    }));
+    const avgPrice = priceSummation / quantitySummation;
+
+    return avgPrice;
 }
 
 // compare positions and static positions to check if they are identical

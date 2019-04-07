@@ -329,7 +329,8 @@ class StockCardPredictions extends React.Component {
                 horizon,
                 target,
                 investment: isRealPredictionSelected ? stockDataInvestment : investment,
-                stopLoss
+                stopLoss,
+                realPrediction: false
             }
         });
     }
@@ -450,7 +451,16 @@ class StockCardPredictions extends React.Component {
     }
 
     toggleStockCardBottomSheet = () => {
-        this.setState({stockCardBottomSheetOpen: !this.state.stockCardBottomSheetOpen});
+        this.setState({stockCardBottomSheetOpen: !this.state.stockCardBottomSheetOpen}, () => {
+            if (!this.state.stockCardBottomSheetOpen) {
+                this.setState({
+                    stockData: {
+                        ...this.state.stockData,
+                        realPrediction: false
+                    }
+                })
+            }
+        });
     }
 
     closeStockCardBottomSheet = () => {
