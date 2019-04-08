@@ -3,9 +3,11 @@ import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
 import {targetKvp, horizonKvp, investmentKvp, conditionalKvp, conditionalTypeItems, conditionalKvpValue, targetKvpValue, horizonKvpReal} from '../constants';
 import {getStockTicker} from '../../utils';
+import { fetchAjaxPromise } from '../../../../utils';
 const dateFormat = 'YYYY-MM-DD';
 
 const DateHelper = require('../../../../utils/date');
+const {requestUrl} = require('../../../../localConfig');
 
 export const formatIndividualStock = (stockData, defaultStockData) => {
     const defaultTarget = _.get(defaultStockData, 'target', 2);
@@ -313,4 +315,10 @@ export const getConditionalItems = (lastPrice, valueTypePct) => {
     });
 
     return conditionalItems;
+}
+
+export const getAdvisorAllocation = (advisorId, history, redirectUrl) => {
+    const url = `${requestUrl}/advisor/${advisorId}/allocation`;
+
+    return fetchAjaxPromise(url, history, redirectUrl, false);
 }
