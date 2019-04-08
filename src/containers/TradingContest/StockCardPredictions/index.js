@@ -14,7 +14,7 @@ import LoginBottomSheet from '../LoginBottomSheet';
 import ConfirmationDialog from './components/common/ConfirmationDialog';
 import {fetchAjaxPromise, handleCreateAjaxError, Utils, isHoliday} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
-import {formatIndividualStock, constructPrediction, getConditionalNetValue, getConditionalMaxValue, getConditionalItems} from './utils';
+import {formatIndividualStock, constructPrediction, getConditionalNetValue, getConditionalMaxValue, getConditionalItems, getAdvisorAllocation} from './utils';
 import {getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
 import {onPredictionCreated, onSettingsClicked} from '../constants/events';
 import {conditionalTypeItems} from './constants';
@@ -283,9 +283,36 @@ class StockCardPredictions extends React.Component {
         })
     }
 
+    updateAdvisorAllocation = () => {
+        const advisorId = _.get(Utils.getUserInfo(), 'advisor', null);
+        getAdvisorAllocation(advisorId, this.props.history, this.props.match.url)
+        .then(response => {
+            let userInfo = Utils.getUserInfo();
+            const allocation = _.get(response.data, 'allocation', {});
+            const allowedInvestments = _.get(allocation, 'allowedInvestments', []);
+            const maxInvestment = _.get(allocation, 'maxInvestment', 0);
+            const allocationStatus = _.get(allocation, 'status', false);
+            
+            userInfo = {
+                ...userInfo,
+                allowedInvestments,
+                maxInvestment,
+                allocationStatus
+            };
+            Utils.localStorageSaveObject(Utils.userInfoString, userInfo);
+
+        })
+        .catch(err => {
+            console.log('Error ', err.message);
+        })
+    }
+
     componentWillMount() {
         this.setState({loading: true});
-        this.initializeStateFromLocalStorage()
+        Promise.all([
+            this.initializeStateFromLocalStorage(),
+            this.updateAdvisorAllocation()
+        ])
         .catch(error => {
             console.log('Error', error);
         })
