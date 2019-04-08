@@ -21,7 +21,7 @@ class AdvisorListItem extends React.Component {
         const advisorAllocation = _.get(advisor, 'allocation', null);
         const allowedInvestments = _.get(advisorAllocation, 'allowedInvestments', []);
         const maxInvestment = _.get(advisorAllocation, 'maxInvestment', 50);
-        const isAdvisorAllocated = advisorAllocation !== null;
+        const isAdvisorAllocated = _.get(advisorAllocation, 'status', false);
 
         Utils.localStorageSave('selectedAdvisorId', advisorId);
         Utils.localStorageSave('selectedUserId', userId);
