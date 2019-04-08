@@ -40,7 +40,7 @@ class OrderContent extends React.Component {
 
         const requiredProfitLimitPrice = modifiedTarget || target;
         const requiredStopLossPrice = modifiedStopLoss || stopLoss;
-        const requiredPrice = _.get(prediction, 'lastPrice', 0);
+        const requiredPrice = _.get(prediction, 'avgPrice', 0);
         
         this.state = {
             quantity: modifiedQuantity || quantity,
@@ -313,7 +313,7 @@ class OrderContent extends React.Component {
         const shouldStopLossPrice = orderType === 'bracket';
 
         const defaultQuantity = _.get(prediction, 'quantity', 0);
-        const defaultPrice = _.get(prediction, 'lastPrice', 0);
+        const defaultPrice = _.get(prediction, 'avgPrice', 0);
         const defaultProfitLimitPrice = _.get(prediction, 'target', 0);
         const defaultStopLossPrice = _.get(prediction, 'stopLoss', 0);
 

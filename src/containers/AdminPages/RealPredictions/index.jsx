@@ -385,6 +385,7 @@ class RealPredictions extends React.Component {
             investment: _.get(prediction, 'investment', 0),
             quantity: _.get(prediction, 'quantity', 0),
             lastPrice: _.get(prediction, 'lastPrice', 0),
+            avgPrice: _.get(prediction, 'avgPrice', 0),
             stopLoss: _.get(prediction, 'stopLoss', 0),
             target: _.get(prediction, 'target', 0),
             oldInvestment: _.get(prediction, 'investment', 0),
@@ -406,6 +407,7 @@ class RealPredictions extends React.Component {
         const selectedPrediction = {
             predictionId: _.get(prediction, 'predictionId', null),
             advisorId: _.get(prediction, 'advisorId', null),
+            avgPrice: _.get(prediction, 'avgPrice', 0),
             name: _.get(prediction, 'name', ''),
             symbol: _.get(prediction, 'symbol', ''),
             investment: _.get(prediction, 'investment', 0),

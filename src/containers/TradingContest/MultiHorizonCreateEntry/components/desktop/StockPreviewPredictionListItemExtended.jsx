@@ -92,6 +92,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
 
     getSelectedPrediction = () => {
         const {
+            avgPrice = 0,
             accumulated = 0,
             advisor = null,
             _id = null,
@@ -110,6 +111,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
         } = this.props.prediction;
 
         return {
+            avgPrice,
             advisorId: advisor,
             predictionId: _id,
             name, 
