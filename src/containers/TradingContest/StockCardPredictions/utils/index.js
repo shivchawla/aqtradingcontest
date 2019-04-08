@@ -3,7 +3,7 @@ import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
 import {targetKvp, horizonKvp, investmentKvp, conditionalKvp, conditionalTypeItems, conditionalKvpValue, targetKvpValue, horizonKvpReal} from '../constants';
 import {getStockTicker} from '../../utils';
-import { fetchAjaxPromise } from '../../../../utils';
+import { fetchAjaxPromise, Utils } from '../../../../utils';
 const dateFormat = 'YYYY-MM-DD';
 
 const DateHelper = require('../../../../utils/date');
@@ -319,7 +319,11 @@ export const getConditionalItems = (lastPrice, valueTypePct) => {
 }
 
 export const getAdvisorAllocation = (advisorId, history, redirectUrl) => {
-    const url = `${requestUrl}/advisor/${advisorId}/allocation`;
+    let selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId)) {
+        advisorId = selectedAdvisorId;;
+    }
+    let url = `${requestUrl}/advisor/${advisorId}/allocation`;
 
     return fetchAjaxPromise(url, history, redirectUrl, false);
 }
