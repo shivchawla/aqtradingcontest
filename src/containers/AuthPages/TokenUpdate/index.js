@@ -7,7 +7,7 @@ import {primaryColor} from '../../../constants';
 const URLSearchParamsPoly = require('url-search-params');
 
 
-const {requestUrl} = require('../../../localConfig');
+const {requestUrl, researchDomain} = require('../../../localConfig');
 
 
 class TokenUpdateImpl extends Component {
@@ -22,7 +22,8 @@ class TokenUpdateImpl extends Component {
     if(props.location.search){
       const queryParams = new URLSearchParamsPoly(props.location.search);
       if (queryParams && queryParams.get('redirectUrl')){
-        this.redirectUrl = decodeURIComponent(queryParams.get('redirectUrl'));
+				this.redirectUrl = decodeURIComponent(queryParams.get('redirectUrl'));
+				this.shouldRedirectToResearch = decodeURIComponent(queryParams.get('research')) === 'true';
         if (!this.redirectUrl){
           this.redirectUrl = '/';
         }
@@ -43,9 +44,17 @@ class TokenUpdateImpl extends Component {
 			if(response.data && response.data.token) {
 				Utils.updateUserToken(response.data.token);
 				if (this.redirectUrl){
-					this.props.history.push(this.redirectUrl);
+					if (this.shouldRedirectToResearch) {
+						window.location.href = `${researchDomain}${this.redirectUrl}`;
+					} else {
+						this.props.history.push(this.redirectUrl);
+					}
 				} else {
-					this.props.history.push('/research');
+					if (this.shouldRedirectToResearch) {
+						window.location.href = `${researchDomain}/research`;
+					} else {
+						this.props.history.push('/research');
+					}
 				}
 			} else {
 				Utils.logoutUser();
@@ -65,8 +74,7 @@ class TokenUpdateImpl extends Component {
 
   	componentDidMount(){
 		this._mounted = true;
-		if (Utils.getShouldUpdateToken() === 'true' ||
-			Utils.getShouldUpdateToken() === true){
+		if (Utils.getShouldUpdateToken() === 'true' || Utils.getShouldUpdateToken() === true){
 			this.updateToken();
 		} else {
 			this.props.history.push('/');

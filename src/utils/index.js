@@ -170,11 +170,11 @@ export class Utils{
 	}
 
 	static setShouldUpdateToken(status){
-		this.localStorageSave('SHOULDUPDATETOKEN', status);
+		this.cookieStorageSave('SHOULDUPDATETOKEN', status);
 	}
 
 	static getShouldUpdateToken(){
-		return this.getFromLocalStorage('SHOULDUPDATETOKEN');
+		return cookie.load('SHOULDUPDATETOKEN');
 	}
 
 	static getAnnouncementUrl(){
