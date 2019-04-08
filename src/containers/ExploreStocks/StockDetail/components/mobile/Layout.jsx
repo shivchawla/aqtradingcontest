@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import numeral from 'numeral';
+import moment from 'moment';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -12,8 +13,6 @@ import HighchartBar from '../../../../../components/Charts/HighChartBar';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CardCustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import {verticalBox, horizontalBox} from '../../../../../constants';
-
-const periodicPerformanceItems = ['Annual Return', 'Volatility', 'Max Loss'];
 
 export default class Layout extends React.Component {
     shouldComponentUpdate(nextProps, nextState) {
@@ -45,12 +44,16 @@ export default class Layout extends React.Component {
     }
 
     handleStaticPerformanceChange = value => {
-        const requiredPerformanceSelectors = ['returns.annualreturn', 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
+        const {selectedStaticPerformanceYearly = false} = this.props;
+        const returnMetric = selectedStaticPerformanceYearly ? 'returns.annualreturn' : 'returns.totalreturn';
+        const requiredPerformanceSelectors = [returnMetric, 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
         this.props.onStaticPerformanceChange(requiredPerformanceSelectors[value]);
     }
 
     handleRollingPerformanceChange = value => {
-        const requiredPerformanceSelectors = ['returns.annualreturn', 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
+        const {selectedRollingPerformanceMonthly = false} = this.props;
+        const returnMetric = !selectedRollingPerformanceMonthly ? 'returns.annualreturn' : 'returns.totalreturn';
+        const requiredPerformanceSelectors = [returnMetric, 'deviation.annualstandarddeviation', 'drawdown.maxdrawdown'];
         this.props.onRollingPerformanceChange(requiredPerformanceSelectors[value]);
     }
 
@@ -116,6 +119,16 @@ export default class Layout extends React.Component {
             rollingPerformance = {},
             rollingPerformanceTimelines = []
         } = this.props;
+        const staticPerformanceRadioItems = [
+            this.props.selectedStaticPerformanceYearly ? 'Annual Return' : 'Total Return', 
+            'Volatility', 
+            'Max Loss'
+        ];
+        const rollingPerformanceRadioItems = [
+            !this.props.selectedRollingPerformanceMonthly ? 'Annual Return' : 'Total Return', 
+            'Volatility', 
+            'Max Loss'
+        ]
 
         const containerCardStyle = {
             paddingTop: '10px',
@@ -182,7 +195,7 @@ export default class Layout extends React.Component {
                                 >
                                     <Header>STATIC PERFORMANCE</Header>
                                     <RadioGroup 
-                                        items={['Annual Return', 'Volatility', 'Max Loss']}
+                                        items={staticPerformanceRadioItems}
                                         defaultSelected={0}
                                         small
                                         CustomRadio={CardCustomRadio}
@@ -192,12 +205,19 @@ export default class Layout extends React.Component {
                                         }}
                                         onChange={this.handleStaticPerformanceChange}
                                     />
-                                    <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                                    <div 
+                                            style={{
+                                                ...horizontalBox, 
+                                                justifyContent: 'flex-end',
+                                                width: '100%',
+                                                marginTop: '-10px'
+                                            }}
+                                    >
+                                        <CheckboxLabel>YEARLY</CheckboxLabel>
                                         <Checkbox 
                                             onChange={this.handleStaticPerformanceTimelineChange}
                                             checked={this.props.selectedStaticPerformanceYearly}
                                         />
-                                        <CheckboxLabel>YEARLY</CheckboxLabel>
                                     </div>
                                     <HighchartBar
                                         id='staticPerformance'
@@ -219,7 +239,7 @@ export default class Layout extends React.Component {
                                 >
                                     <Header>ROLLING PERFORMANCE</Header>
                                     <RadioGroup 
-                                        items={periodicPerformanceItems}
+                                        items={rollingPerformanceRadioItems}
                                         defaultSelected={0}
                                         small
                                         CustomRadio={CardCustomRadio}
@@ -229,12 +249,19 @@ export default class Layout extends React.Component {
                                         }}
                                         onChange={this.handleRollingPerformanceChange}
                                     />
-                                    <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
+                                    <div 
+                                            style={{
+                                                ...horizontalBox, 
+                                                justifyContent: 'flex-end',
+                                                width: '100%',
+                                                marginTop: '-10px'
+                                            }}
+                                    >
+                                        <CheckboxLabel>{moment().format('YYYY')}</CheckboxLabel>
                                         <Checkbox 
                                             onChange={this.handleRollingPerformanceTimelineChange}
-                                            checked={this.props.selectedRollingPerformanceYearly}
+                                            checked={this.props.selectedRollingPerformanceMonthly}
                                         />
-                                        <CheckboxLabel>Annual</CheckboxLabel>
                                     </div>
                                     <HighchartBar
                                         id='rollingPerformance'
@@ -283,10 +310,11 @@ const Header = styled.h3`
 `;
 
 const CheckboxLabel = styled.h3`
-    font-size: 12px;
+    font-size: 14px;
     color: #222;
     font-weight: 400;
-    margin-left: -10px;
+    margin-left: 10px;
+    margin-right: -10px;
 `;
 
 const predictButtonStyle = {

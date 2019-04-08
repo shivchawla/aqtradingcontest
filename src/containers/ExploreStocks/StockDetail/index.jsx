@@ -28,8 +28,9 @@ class StockDetailComponent extends React.Component {
             latestDetail: {},
             position: {},
             loading: false,
-            selectedRollingPerformanceMetric: 'returns.annualreturn',
+            selectedRollingPerformanceMetric: 'returns.totalreturn',
             selectedRollingPerformanceYearly: false,
+            selectedRollingPerformanceMonthly: true,
             selectedStaticPerformanceMetric: 'returns.annualreturn',
             selectedStaticPerformanceYearly: true
         }
@@ -92,11 +93,9 @@ class StockDetailComponent extends React.Component {
         ])
         .then(([stockPerformance, benchmarkPerformance]) => {
             const rawPerformance = stockPerformance;
-            const requiredRollingPerformance = processRollingPerformance(stockPerformance, 'returns.annualreturn', symbol, this.state.selectedRollingPerformanceYearly);
-            const requiredBenchmarkRollingPerformance = processRollingPerformance(benchmarkPerformance, 'returns.annualreturn', 'NIFTY_50', this.state.selectedRollingPerformanceYearly)
+            const requiredRollingPerformance = processRollingPerformance(stockPerformance, this.state.selectedRollingPerformanceMetric, symbol, this.state.selectedRollingPerformanceMonthly);
+            const requiredBenchmarkRollingPerformance = processRollingPerformance(benchmarkPerformance, this.state.selectedRollingPerformanceMetric, 'NIFTY_50', this.state.selectedRollingPerformanceMonthly)
             
-            console.log('requiredRollingPerformance ', requiredRollingPerformance);
-
             this.setState({
                 rollingPerformance: [
                     ...requiredRollingPerformance.chartData, 
@@ -162,10 +161,11 @@ class StockDetailComponent extends React.Component {
     }
 
     onRollingPerformanceChange = selector => {
-        const yearly = this.state.selectedRollingPerformanceYearly;
+        console.log('Selector ', selector);
+        const monthly = this.state.selectedRollingPerformanceMonthly;
         const {symbol = 'TCS'} = this.props;
-        const requiredRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[0], selector, symbol, yearly);
-        const requiredBenchmarkRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[1], selector, 'NIFTY_50', yearly);
+        const requiredRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[0], selector, symbol, monthly);
+        const requiredBenchmarkRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[1], selector, 'NIFTY_50', monthly);
         this.setState({
             rollingPerformance: [
                 ...requiredRollingPerformance.chartData, 
@@ -198,24 +198,34 @@ class StockDetailComponent extends React.Component {
         });
     }
 
-    onRollingPerformanceTimelineChange = yearly => {
-        const selector = this.state.selectedRollingPerformanceMetric;
+    onRollingPerformanceTimelineChange = monthly => {
+        let selector = this.state.selectedRollingPerformanceMetric;
+        if (!monthly) {
+            selector = selector === 'returns.totalreturn' ? 'returns.annualreturn' : selector;
+        } else {
+            selector = selector === 'returns.annualreturn' ? 'returns.totalreturn' : selector;
+        }
         const {symbol = 'TCS'} = this.props;
-        const requiredRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[0], selector, symbol, yearly);
-        const requiredBenchmarkRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[1], selector, 'NIFTY_50', yearly);
+        const requiredRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[0], selector, symbol, monthly);
+        const requiredBenchmarkRollingPerformance = processRollingPerformance(this.state.rawRollingPerformance[1], selector, 'NIFTY_50', monthly);
         this.setState({
             rollingPerformance: [
                 ...requiredRollingPerformance.chartData, 
                 ...requiredBenchmarkRollingPerformance.chartData
             ],
             rollingPerformanceTimelines: requiredRollingPerformance.timelines,
-            selectedRollingPerformanceYearly: yearly
+            selectedRollingPerformanceMonthly: monthly
         });
     }
 
     onStaticPerformanceTimelineChange = yearly => {
-        const selector = this.state.selectedStaticPerformanceMetric;
+        let selector = this.state.selectedStaticPerformanceMetric;
         const {symbol = 'TCS'} = this.props;
+        if (yearly) {
+            selector = selector === 'returns.totalreturn' ? 'returns.annualreturn' : selector;
+        } else {
+            selector = selector === 'returns.annualreturn' ? 'returns.totalreturn' : selector;
+        }
 
         const requiredStaticPerformance = yearly 
             ? processStaticPerformance(this.state.rawStaticPerformance[0], selector, symbol)
@@ -224,9 +234,6 @@ class StockDetailComponent extends React.Component {
             ? processStaticPerformance(this.state.rawStaticPerformance[1], selector, 'NIFTY_50')
             : processStaticPerformanceMonthly(this.state.rawStaticPerformance[1], selector, 'NIFTY_50')
         
-        console.log('requiredStaticPerformance ', requiredStaticPerformance);
-        console.log('requiredBenchmarkStaticPerformance ', requiredBenchmarkStaticPerformance);
-
         this.setState({
             staticPerformance: [
                 ...requiredStaticPerformance, 
@@ -272,7 +279,7 @@ class StockDetailComponent extends React.Component {
             selectStock: this.props.selectStock,
             toggleStockCardBottomSheet: this.props.toggleStockCardBottomSheet,
             stockData: this.props.stockData,
-            selectedRollingPerformanceYearly: this.state.selectedRollingPerformanceYearly,
+            selectedRollingPerformanceMonthly: this.state.selectedRollingPerformanceMonthly,
             selectedStaticPerformanceYearly: this.state.selectedStaticPerformanceYearly
         };
 

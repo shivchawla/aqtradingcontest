@@ -149,14 +149,14 @@ export const sortDates = (dates, format) => {
     ));
 }
 
-export const processRollingPerformance = (performance, field = 'returns.annualreturn', tickerName = 'Ticker', yearly = true) => {
+export const processRollingPerformance = (performance, field = 'returns.annualreturn', tickerName = 'Ticker', monthly = true) => {
     let performanceKeys = Object.keys(performance);
     const timelineData = [];
     let timelines = []
-    if (yearly) {
-        timelines = ['ytd', '1y', '2y', '5y']
-    } else {
+    if (monthly) {
         timelines = ['wtd', '1wk', 'mtd', '1m', '2m', '3m', '6m'];
+    } else {
+        timelines = ['ytd', '1y', '2y', '5y']
     }    
 
     timelines = timelines.filter(timelineItem => {
