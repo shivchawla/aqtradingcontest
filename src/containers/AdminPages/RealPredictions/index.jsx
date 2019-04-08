@@ -72,13 +72,18 @@ class RealPredictions extends React.Component {
             selectedPredictionIdForCancel: null,
             cancelDialogOpen: false, // flag to open or close cancel dialog,
             cancelLoading: false,
-            skipPredictionDialogOpen: false
+            skipPredictionDialogOpen: false,
+            showNewPredictionText: false
         };
     }
 
     updateDate = date => {
         this.setState({selectedDate: date});
         this.fetchPredictionsAndStats(date);
+    }
+
+    updateNewPredictionText = (status = false) => {
+        this.setState({showNewPredictionText: status});
     }
 
     checkForNewPredictions = (predictions = []) => {
@@ -88,7 +93,10 @@ class RealPredictions extends React.Component {
         Promise.map(predictions, prediction => {
             // Getting the index of the current prediction in presentPredictions
             // if index > -1 prediction already present
-            const predictionIndex = _.findIndex(presentPredictions, presentPrediction => _.isEqual(presentPrediction, prediction));
+            const predictionIndex = _.findIndex(presentPredictions, presentPrediction => {
+                const fieldsToCompare = ['_id', 'advisor'];
+                return _.isEqual(_.pick(presentPrediction, fieldsToCompare), _.pick(prediction, fieldsToCompare));
+            });
             if (predictionIndex === -1) {
                 newPredictionsCount++;
             }
@@ -96,7 +104,8 @@ class RealPredictions extends React.Component {
         })
         .then(() => {
             if (newPredictionsCount > 0) {
-                this.toggleSnackbar(`${newPredictionsCount} New Predictions Received`);                
+                this.toggleSnackbar(`${newPredictionsCount} New Predictions Received`); 
+                this.updateNewPredictionText(true);               
             }
         })
     }
@@ -116,7 +125,7 @@ class RealPredictions extends React.Component {
          * [2] predictions are the real-time predictions obtained from the websocket
          */
         const requiredPredictions = processRealtimePredictions(unformattedPredictions, predictions);
-        const formattedPredictions = await processPredictions(requiredPredictions, true);
+        const formattedPredictions = await processPredictions(requiredPredictions, true, true);
         const positions = convertPredictionsToPositions(requiredPredictions, true, false);
         
         if (realtime) {
@@ -211,15 +220,19 @@ class RealPredictions extends React.Component {
 
     handlePreviewListMenuItemChange = (type = this.state.selectedView) => {
         this.setState({selectedView: type}, () => {
-            this.fetchPredictionsAndStats(this.state.selectedDate);
-            this.takeSubscriptionAction(type);
+            this.fetchPredictionsAndStats(this.state.selectedDate)
+            .then(() => {
+                this.takeSubscriptionAction(type);
+            });
         })
     }
 
     handlePredictionStatusChange = (active = true) => {
         this.setState({activePredictionStatus: active}, () => {
-            this.fetchPredictionsAndStats(this.state.selectedDate);
-            this.takeSubscriptionAction();
+            this.fetchPredictionsAndStats(this.state.selectedDate)
+            .then(() => {
+                this.takeSubscriptionAction();
+            });
         })
     }
 
@@ -252,6 +265,7 @@ class RealPredictions extends React.Component {
                 advisorId
             };
         }
+
         this.webSocket.sendWSMessage(msg);
     }
 
@@ -280,7 +294,23 @@ class RealPredictions extends React.Component {
         });
 
         return requiredPredictions;
-    } 
+    }
+
+    updateAdvisorPortfolioStatsForRealtimeData = realtimeData => {
+        const realtimeAdvisorId = _.get(realtimeData, 'advisorId', null);
+        let portfolioStats = _.get(realtimeData, 'portfolioStats', null);
+        const advisors = _.map(this.state.advisors, _.cloneDeep);
+        const requiredAdvisorIndex = _.findIndex(advisors, advisor => advisor._id === realtimeAdvisorId);
+        if (portfolioStats !== null && requiredAdvisorIndex > -1) {
+            // Omitting _id since the advisor._id is advisor id and not portfolio stats id
+            portfolioStats = _.omit(portfolioStats, '_id');
+            advisors[requiredAdvisorIndex] = {
+                ...advisors[requiredAdvisorIndex],
+                ...portfolioStats
+            };
+            this.setState({advisors});
+        }
+    }
 
     processRealtimeMessage = msg => {
         const currentDate = moment().format(dateFormat);
@@ -291,6 +321,7 @@ class RealPredictions extends React.Component {
                 const predictons = _.get(realtimeData, 'predictions', {});
                 const requiredPredictions = this.getPredictions(predictons, this.state.activePredictionStatus);
                 this.updateDailyPredictions(requiredPredictions, true);
+                this.updateAdvisorPortfolioStatsForRealtimeData(realtimeData);
             } catch(error) {
                 console.log(error);
                 return error;
@@ -319,14 +350,17 @@ class RealPredictions extends React.Component {
                 requiredAdvisorForPredictions: shouldClearAdvisor ? {} : advisor,
                 loading: true
             }, () => {
-                this.takeSubscriptionAction();
                 this.getDailyPredictionsOnDateChange()
                 .then(response => {
                     if (response === 'requestCompleted') {
                         this.setState({loading: false});
+                        return true;
                     } else {
                         this.setState({loading: true});
                     }
+                })
+                .then(() => {
+                    this.takeSubscriptionAction();
                 })
                 .catch(err => {
                     this.toggleSnackbar('Error Occured while fetching predictions for advisor');
@@ -657,7 +691,9 @@ class RealPredictions extends React.Component {
             this.fetchPredictionsAndStats(formattedSelectedDate),
             this.getAllocatedAdvisors()
         ])
-        this.setUpSocketConnection();
+        .then(() => {
+            this.setUpSocketConnection();
+        })
     }
 
     componentDidMount() {
@@ -768,7 +804,9 @@ class RealPredictions extends React.Component {
             skipPrediction: this.skipPrediction,
             cancelLoading: this.state.cancelLoading,
             skipPredictionDialogOpen: this.state.skipPredictionDialogOpen,
-            toggleSkipPredictionDialog: this.toggleSkipPredictionDialog
+            toggleSkipPredictionDialog: this.toggleSkipPredictionDialog,
+            updateNewPredictionText: this.updateNewPredictionText,
+            showNewPredictionText: this.state.showNewPredictionText
         };
 
         return (

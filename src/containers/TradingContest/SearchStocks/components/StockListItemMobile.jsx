@@ -127,7 +127,11 @@ export default class StockListItemMobile extends React.Component {
             width: '100%'
         };
 
-        const changeColor = change < 0 ? metricColor.negative : metricColor.positive;
+        const changeColor = change < 0 
+            ? metricColor.negative 
+            : change === 0 
+                ? metricColor.neutral 
+                : metricColor.positive;
         const changeIcon = change < 0 ? 'arrow_drop_down' : 'arrow_drop_up';
         const nChangePct = (changePct * 100).toFixed(2);
 

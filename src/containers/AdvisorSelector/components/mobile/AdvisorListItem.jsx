@@ -19,12 +19,18 @@ class AdvisorListItem extends React.Component {
     onAdvisorClicked = (advisorId, userId, userName) => {
         const {advisor = {}} = this.props;
         const advisorAllocation = _.get(advisor, 'allocation', null);
+        const allowedInvestments = _.get(advisorAllocation, 'allowedInvestments', []);
+        const maxInvestment = _.get(advisorAllocation, 'maxInvestment', 50);
         const isAdvisorAllocated = advisorAllocation !== null;
+
         Utils.localStorageSave('selectedAdvisorId', advisorId);
         Utils.localStorageSave('selectedUserId', userId);
         Utils.localStorageSave('selectedUserName', userName);
         Utils.localStorageSave('isSelectedAdvisorAllocated', isAdvisorAllocated);
-        this.props.history.push('/dailycontest/stockpredictions')
+        Utils.localStorageSave('selectedUserAllowedInvestments', allowedInvestments);
+        Utils.localStorageSave('selectedUserMaxInvestment', maxInvestment);
+        this.props.history.push('/dailycontest/stockpredictions');
+
     }
 
     render() {

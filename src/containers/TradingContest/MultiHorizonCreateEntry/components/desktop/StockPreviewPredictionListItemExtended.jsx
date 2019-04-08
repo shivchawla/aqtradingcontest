@@ -187,8 +187,13 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             accumulated = null,
             advisorName = '',
             advisor = null,
-            skippedByAdmin = false
+            skippedByAdmin = false,
+            buyAvgPrice = null,
+            sellAvgPrice = null
         } = prediction;
+
+        const netSuccessPercentage = _.get(prediction, 'winRatio.total', 0);
+        const netSimulatedSuccessPercentage = _.get(prediction, 'simulatedWinRatio.total', 0);
 
         const modifiedTarget = getLastestAdminMoficiation(prediction, 'target');
         const modifiedQuantity = getLastestAdminMoficiation(prediction, 'quantity');
@@ -228,7 +233,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                             : '0 4px 16px rgba(0,0,0,0.2)'
                     }}
             >
-                {/* <Grid 
+                <Grid 
                         item 
                         xs={12}
                         style={{
@@ -239,10 +244,34 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     <Tag 
                         backgroundColor="#E1F5FE"
                         color={iconConfig.color}
-                        label='Success: 50%'
+                        label={`Real Success: ${(netSuccessPercentage || 0).toFixed(2)}%`}
                         style={{marginLeft: '10px'}}
                     />
-                </Grid> */}
+                    <Tag 
+                        backgroundColor="#ECEFF1"
+                        color='#607D8B'
+                        label={`Simulated Success: ${(netSimulatedSuccessPercentage || 0).toFixed(2)}%`}
+                        style={{marginLeft: '10px'}}
+                    />
+                    {
+                        buyAvgPrice !== null &&
+                        <Tag 
+                            backgroundColor="#E8F5E9"
+                            color='#388E3C'
+                            label={`Buy Avg: ₹ ${(buyAvgPrice || 0).toFixed(2)}`}
+                            style={{marginLeft: '10px'}}
+                        />
+                    }
+                    {
+                        sellAvgPrice !== null &&
+                        <Tag 
+                            backgroundColor="#FFEBEE"
+                            color='#F44336'
+                            label={`Sell Avg: ₹ ${(sellAvgPrice || 0).toFixed(2)}`}
+                            style={{marginLeft: '10px'}}
+                        />
+                    }
+                </Grid>
                 <Grid 
                         item xs={2} 
                         style={{

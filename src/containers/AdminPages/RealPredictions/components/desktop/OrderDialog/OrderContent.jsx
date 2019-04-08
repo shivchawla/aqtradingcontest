@@ -244,7 +244,7 @@ class OrderContent extends React.Component {
     hasActiveSellOrders = () => {
         const {prediction = {}} = this.props;
         const orders = mergeOrderAndOrderActivity(prediction);
-        console.log('Orders ', orders);
+        // console.log('Orders ', orders);
         const activeBuyOrders = orders.filter(order => {
             const completeStatus = _.get(order, 'completeStatus', false);
             const activeStatus = _.get(order, 'activeStatus', false);

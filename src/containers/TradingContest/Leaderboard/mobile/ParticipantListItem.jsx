@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import Email from '../common/Email';
 import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../../constants';
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
@@ -21,6 +22,7 @@ export default class ParticipantListItem extends React.Component {
     render() {
         const {
             userName = '',
+            email = null,
             advisorId = null,
             cost = 0, 
             pnl = 0, 
@@ -44,7 +46,13 @@ export default class ParticipantListItem extends React.Component {
                             alignItems: 'center'
                         }}
                 >
-                    <Name>{convertNameToTitleCase(userName)}</Name>
+                    <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                        <Name>{convertNameToTitleCase(userName)}</Name>
+                        {
+                            Utils.isAdmin() && email &&
+                            <Email>{email}</Email>
+                        }
+                    </div>
                     <img src={medal} width={24}/>
                 </Grid>
                 <Grid 

@@ -286,11 +286,6 @@ class StockCardPredictions extends React.Component {
     componentWillMount() {
         this.setState({loading: true});
         this.initializeStateFromLocalStorage()
-        // .then(() => {
-        //     return Utils.isLoggedIn() 
-        //         ? this.updatePortfolioStats()
-        //         : null
-        // })
         .catch(error => {
             console.log('Error', error);
         })
@@ -334,7 +329,8 @@ class StockCardPredictions extends React.Component {
                 horizon,
                 target,
                 investment: isRealPredictionSelected ? stockDataInvestment : investment,
-                stopLoss
+                stopLoss,
+                realPrediction: false
             }
         });
     }
@@ -455,7 +451,16 @@ class StockCardPredictions extends React.Component {
     }
 
     toggleStockCardBottomSheet = () => {
-        this.setState({stockCardBottomSheetOpen: !this.state.stockCardBottomSheetOpen});
+        this.setState({stockCardBottomSheetOpen: !this.state.stockCardBottomSheetOpen}, () => {
+            if (!this.state.stockCardBottomSheetOpen) {
+                this.setState({
+                    stockData: {
+                        ...this.state.stockData,
+                        realPrediction: false
+                    }
+                })
+            }
+        });
     }
 
     closeStockCardBottomSheet = () => {

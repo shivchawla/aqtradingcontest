@@ -138,6 +138,8 @@ class DefaultSettings extends React.Component {
         Utils.localStorageSave('selectedAdvisorId', null);
         Utils.localStorageSave('selectedUserId', null);
         Utils.localStorageSave('selectedUserName', null);
+        Utils.localStorageSave('selectedUserAllowedInvestments', null);
+		Utils.localStorageSave('selectedUserMaxInvestment', null);
     }
 
     resetToPercentageDefaultSettings = (valueTypePct = true) => {
