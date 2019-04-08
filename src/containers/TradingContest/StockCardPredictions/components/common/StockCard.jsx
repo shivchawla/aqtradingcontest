@@ -385,6 +385,16 @@ class StockCard extends React.Component {
         return getConditionalMaxValue(lastPrice, valueTypePct);
     }
 
+    isNiftyStock = () => {
+        const {symbol = ''} = this.props.stockData;
+        const firstPart = symbol.split('_');
+        if (firstPart[0].toLowerCase() === 'nifty') {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Renders the edit view for the stockcard
      */
@@ -400,7 +410,8 @@ class StockCard extends React.Component {
             conditionalType = conditionalTypeItems[0],
             valueTypePct = true,
             realPrediction = false,
-            real = false
+            real = false,
+            allowed = false
         } = this.props.stockData;
 
         /**
@@ -462,7 +473,8 @@ class StockCard extends React.Component {
                                 Horizon in Days
                             </MetricLabel>
                             {
-                                real &&
+                                !this.isNiftyStock() &&
+                                allowed &&
                                 this.state.isUserAllocated &&
                                 <div 
                                         style={{

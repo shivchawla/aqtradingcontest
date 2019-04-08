@@ -292,7 +292,8 @@ class WatchlistComponent extends React.Component {
                         changePct: _.get(item, 'realtime.change_p', 0.0) || _.get(item, 'eod.ChangePct', 0.0),
                         name: _.get(item, 'detail.Nse_Name', ''),
                         shortable: _.get(item, 'shortable', false),
-                        real: _.get(item, 'real', false)
+                        real: _.get(item, 'real', false),
+                        allowed: _.get(item, 'allowed', false)
                     }
                 }),
                 id: item._id
@@ -309,7 +310,8 @@ class WatchlistComponent extends React.Component {
                 changePct: Number(((_.get(item, 'latestDetailRT.change_p', 0.0) || _.get(item, 'latestDetail.ChangePct', 0.0)))),
                 name: _.get(item, 'detail.Nse_Name', ''),
                 shortable: _.get(item, 'shortable', false),
-                real: _.get(item, 'real', false)
+                real: _.get(item, 'real', false),
+                allowed: _.get(item, 'allowed', false)
             }
         });
     }
@@ -634,7 +636,8 @@ class WatchlistComponent extends React.Component {
             change: _.get(stock, 'change', ''),
             changePct: Number((_.get(stock, 'changePct', 0) * 100).toFixed(2)),
             shortable: _.get(stock, 'shortable', false),
-            real: _.get(stock, 'real', false)
+            real: _.get(stock, 'real', false),
+            allowed: _.get(stock, 'allowed', false)
         }
         this.props.selectStock(stockData);
         this.props.toggleStockCardBottomSheet();

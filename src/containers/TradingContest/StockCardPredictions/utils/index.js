@@ -23,7 +23,8 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     let changePct = _.get(stockData, 'latestDetailRT.change_p', null) || _.get(stockData, 'latestDetail.ChangePct', 0);
     const sector = _.get(stockData, 'detail.Sector', '');
     const industry = _.get(stockData, 'Industry', '');
-    const shortable = _.get(stockData, 'shortable', false)
+    const shortable = _.get(stockData, 'shortable', false);
+    const allowed = _.get(stockData, 'allowed', false);
 
     const target = defaultTarget;
     const horizon = defaultHorizon;

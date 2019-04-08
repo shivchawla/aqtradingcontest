@@ -86,7 +86,7 @@ export default class StockListItemMobile extends React.Component {
 
     checkIfAllowerNiftyIndex = (ticker) => {
         let tickerParts = ticker.split('_');
-        const allowedIndex = ['50', 'it', 'bank'];
+        const allowedIndex = ['50', 'bank'];
 
         if (tickerParts.length > 1 && _.get(tickerParts, '[0]', '').toLowerCase() === 'nifty') {
             const secondPart = _.get(tickerParts, '[1]', null);
@@ -103,6 +103,7 @@ export default class StockListItemMobile extends React.Component {
 
     render() {
         const {
+            allowed = false,
             symbol, 
             name, 
             change, 
