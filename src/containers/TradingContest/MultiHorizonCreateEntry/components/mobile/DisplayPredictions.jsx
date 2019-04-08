@@ -24,7 +24,7 @@ import { Utils } from '../../../../../utils';
 
 const DateHelper = require('../../../../../utils/date');
 const predictionTypes = ['All', 'Ended', 'Started'];
-const realSimulatedPredictionTypes = ['Simulated', 'Real'];
+const realSimulatedPredictionTypes = ['Virtual', 'Real'];
 
 class DisplayPredictions extends React.Component {
     constructor(props) {

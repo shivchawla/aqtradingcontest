@@ -126,7 +126,7 @@ class CreateEntryEditScreen extends React.Component {
                                 {
                                     this.state.isUserAllocated &&
                                     <RadioGroup 
-                                        items={['Simulated', 'Real']}
+                                        items={['Virtual', 'Real']}
                                         defaultSelected={real ? 1 : 0}
                                         onChange={this.toggleRealPredictionType}
                                         CustomRadio={CustomRadio}

@@ -17,7 +17,7 @@ import {horizontalBox, verticalBox} from '../../../../../constants';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
 import {Utils} from '../../../../../utils';
 
-const realSimulatedPredictionTypes = ['Simulated', 'Real'];
+const realSimulatedPredictionTypes = ['Virtual', 'Real'];
 
 export default class Layout extends React.Component {
     constructor(props) {
