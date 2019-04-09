@@ -50,7 +50,7 @@ class RealPredictions extends React.Component {
             advisorLoading: false,
             selectedDate: defaultDate, // Date that's selected from the DatePicker
             selectedView: 'all',
-            activePredictionStatus: true,
+            activePredictionStatus: null,
             advisors: [],
             skip: 0,
             limit: 10,

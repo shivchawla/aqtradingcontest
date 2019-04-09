@@ -194,6 +194,11 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             sellAvgPrice = null
         } = prediction;
 
+        const simulatedCountPositive = _.get(prediction, 'simulatedCount.countPositive', null);
+        const simulatedCountNegative = _.get(prediction, 'simulatedCount.countNegative', null);
+        const realCountPositive = _.get(prediction, 'realCount.countPositive', null);
+        const realCountNegative = _.get(prediction, 'realCount.countNegative', null);
+    
         const netSuccessPercentage = _.get(prediction, 'winRatio.total', 0);
         const netSimulatedSuccessPercentage = _.get(prediction, 'simulatedWinRatio.total', 0);
 
@@ -270,6 +275,24 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                             backgroundColor="#FFEBEE"
                             color='#F44336'
                             label={`Sell Avg: ₹ ${(sellAvgPrice || 0).toFixed(2)}`}
+                            style={{marginLeft: '10px'}}
+                        />
+                    }
+                    {
+                        simulatedCountPositive !== null &&
+                        <Tag 
+                            backgroundColor="#F9FBE7"
+                            color='#00695C'
+                            label={`Sim. Count +ve: ${simulatedCountPositive} | -ve: ${simulatedCountNegative}`}
+                            style={{marginLeft: '10px'}}
+                        />
+                    }
+                    {
+                        realCountPositive !== null &&
+                        <Tag 
+                            backgroundColor="#F9FBE7"
+                            color='#00695C'
+                            label={`Real. Count +ve: ${realCountPositive} | -ve: ${realCountNegative}`}
                             style={{marginLeft: '10px'}}
                         />
                     }
