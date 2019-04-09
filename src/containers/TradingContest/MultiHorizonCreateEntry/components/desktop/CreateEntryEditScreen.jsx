@@ -46,8 +46,11 @@ class CreateEntryEditScreen extends React.Component {
     }
 
     onPredictionTypeMenuItemClicked = (event, listView) => {
+        const oldValue = this.state.listView;
         this.setState({anchorEl: null, listView}, () => {
-            this.props.handlePreviewListMenuItemChange(listView)
+            if (oldValue !== listView) {
+                this.props.handlePreviewListMenuItemChange(listView);
+            }
         });
     }
 
@@ -85,8 +88,11 @@ class CreateEntryEditScreen extends React.Component {
     }
 
     toggleRealPredictionType = (value = 0) => {
+        const presentReal = _.get(this.props, 'real', false);
         const real = value > 0;
-        this.props.setRealFlag(real);
+        if (real !== presentReal) {
+            this.props.setRealFlag(real);
+        }
     }
 
     renderPredictionList = () => {
