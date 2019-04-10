@@ -77,7 +77,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
             } else {
                 return {
                     type: 'thumb_up_alt',
-                    color: '#3EF79B',
+                    color: '#2E7D32',
                     status: 'Hit'
                 };
             }
