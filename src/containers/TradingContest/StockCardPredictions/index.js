@@ -292,15 +292,23 @@ class StockCardPredictions extends React.Component {
             const allowedInvestments = _.get(allocation, 'allowedInvestments', []);
             const maxInvestment = _.get(allocation, 'maxInvestment', 0);
             const allocationStatus = _.get(allocation, 'status', false);
-            
-            userInfo = {
-                ...userInfo,
-                allowedInvestments,
-                maxInvestment,
-                allocationStatus
-            };
-            Utils.localStorageSaveObject(Utils.userInfoString, userInfo);
 
+            let selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+            if (Utils.isLocalStorageItemPresent(selectedAdvisorId)) {
+                console.log('3rd party selected');
+                // Localstorage will be saved for 3rd party user
+                Utils.localStorageSave('isSelectedAdvisorAllocated', allocationStatus);
+                Utils.localStorageSave('selectedUserAllowedInvestments', allowedInvestments);
+                Utils.localStorageSave('selectedUserMaxInvestment', maxInvestment);
+            } else {
+                userInfo = {
+                    ...userInfo,
+                    allowedInvestments,
+                    maxInvestment,
+                    allocationStatus
+                };
+                Utils.cookieStorageSave(Utils.userInfoString, userInfo);
+            }
         })
         .catch(err => {
             console.log('Error ', err.message);

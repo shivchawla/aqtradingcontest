@@ -17,7 +17,7 @@ import {horizontalBox, verticalBox} from '../../../../../constants';
 import {Utils} from '../../../../../utils';
 import notFoundLogo from '../../../../../assets/NoDataFound.svg';
 
-const realSimulatedPredictionTypes = ['Simulated', 'Real'];
+const realSimulatedPredictionTypes = ['Virtual', 'Real'];
 
 export default class Layout extends React.Component {
     constructor(props) {
@@ -61,7 +61,7 @@ export default class Layout extends React.Component {
     }
 
     renderInternalData = () => {
-        const {dashboardData = {}} = this.props;
+        const {dashboardData = {}, real = false} = this.props;
         const {
             avgPnlPct = {}, 
             profitFactor = {}, 
@@ -181,7 +181,7 @@ export default class Layout extends React.Component {
                             />                     
                         </Grid>
                         <Grid item xs={12}>
-                            <PortfolioDetail />
+                            <PortfolioDetail real={real}/>
                         </Grid>
                     </Grid>
         );

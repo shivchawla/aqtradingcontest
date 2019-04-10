@@ -58,7 +58,7 @@ export default class OrderActivityListItem extends React.Component {
         // console.log('Order Type ', orderType);
 
         if (orderType === null) {
-            console.log('Order Type is null');
+            // console.log('Order Type is null');
             const requiredOrder = this.getAction(orderId);
             orderType = requiredOrder.orderType;
             type = requiredOrder.activityType;

@@ -86,7 +86,7 @@ export default class StockListItemMobile extends React.Component {
 
     checkIfAllowerNiftyIndex = (ticker) => {
         let tickerParts = ticker.split('_');
-        const allowedIndex = ['50', 'it', 'bank'];
+        const allowedIndex = ['50', 'bank'];
 
         if (tickerParts.length > 1 && _.get(tickerParts, '[0]', '').toLowerCase() === 'nifty') {
             const secondPart = _.get(tickerParts, '[1]', null);
@@ -101,8 +101,18 @@ export default class StockListItemMobile extends React.Component {
         return true;
     }
 
+    checkIfNiftyIndex = ticker => {
+        let tickerParts = ticker.split('_');
+        if (tickerParts[0].toLowerCase() === 'nifty') {
+            return true;
+        }
+
+        return false;
+    }
+
     render() {
         const {
+            allowed = false,
             symbol, 
             name, 
             change, 
@@ -118,6 +128,7 @@ export default class StockListItemMobile extends React.Component {
             hide = false,
             onPredictIconClicked = () => {}
         } = this.props;
+        
         const itemContainerStyle = {
             borderBottom: '1px solid #eaeaea',
             color: textColor,
@@ -228,12 +239,12 @@ export default class StockListItemMobile extends React.Component {
                             (showPredict || watchlistPredict) &&
                             <PredictButton 
                                 style={
-                                    this.checkIfAllowerNiftyIndex(symbol)
+                                    (this.checkIfNiftyIndex(symbol) && this.checkIfAllowerNiftyIndex(symbol)) || allowed
                                         ?   {background: 'linear-gradient(to bottom, #2987F9, #386FFF)'}
                                         :   {backgroundColor: '#c2c2c2'}
                                 }
                                 onClick={() => {
-                                    this.checkIfAllowerNiftyIndex(symbol)
+                                    (this.checkIfNiftyIndex(symbol) && this.checkIfAllowerNiftyIndex(symbol)) || allowed
                                     ?   showPredict
                                             ?   onAddIconClick(symbol)
                                             :   onPredictIconClicked(symbol)

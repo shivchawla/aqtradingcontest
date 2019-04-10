@@ -111,14 +111,17 @@ export const getDailyContestPredictionsN = (
 }
 
 export const getRealPredictions = (
-        {date = null, advisorId = null, category = 'started', active = true},
+        {date = null, advisorId = null, category = 'started', active = null},
         history,
         currentUrl,
         handleError = true,
         cancelCb = null
 ) => {
     const requiredDate = date === null ? moment().format(dateFormat) : date.format(dateFormat);
-    let url = `${requestUrl}/dailycontest/realpredictions?date=${requiredDate}&category=${category}&active=${active}`;
+    let url = `${requestUrl}/dailycontest/realpredictions?date=${requiredDate}&category=${category}`;
+    if (active !== null) {
+        url = `${url}&active=${active}`;
+    }
 
     if (advisorId !== null) {
         url = `${url}&advisorId=${advisorId}`;
@@ -388,6 +391,14 @@ export const processPredictions = (predictions = [], locked = false, calculateAv
                 total: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.net.winRatio', 0)),
                 long: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.long.winRatio', 0)),
                 short: getPctFromRatio(_.get(prediction, 'simulatedPnlStats.total.short.winRatio', 0)),
+            },
+            simulatedCount: {
+                countPositive: _.get(prediction, 'simulatedPnlStats.total.long.countPositive', null),
+                countNegative: _.get(prediction, 'simulatedPnlStats.total.long.countNegative', null)
+            },
+            realCount: {
+                countPositive: _.get(prediction, 'realPnlStats.total.long.countPositive', null),
+                countNegative: _.get(prediction, 'realPnlStats.total.long.countNegative', null)
             },
             buyAvgPrice,
             sellAvgPrice

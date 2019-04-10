@@ -24,7 +24,7 @@ import { Utils } from '../../../../../utils';
 
 const DateHelper = require('../../../../../utils/date');
 const predictionTypes = ['All', 'Ended', 'Started'];
-const realSimulatedPredictionTypes = ['Simulated', 'Real'];
+const realSimulatedPredictionTypes = ['Virtual', 'Real'];
 
 class DisplayPredictions extends React.Component {
     constructor(props) {
@@ -75,9 +75,11 @@ class DisplayPredictions extends React.Component {
     }
 
     onPredictionTypeRadioClicked = (value) => {
-        this.setState({listView: value}, () => {
-        	this.props.handlePreviewListMenuItemChange(predictionTypes[value].toLowerCase());
-        });
+        if (value !== this.state.listView) {
+            this.setState({listView: value}, () => {
+                this.props.handlePreviewListMenuItemChange(predictionTypes[value].toLowerCase());
+            });
+        }
     }
 
     getPositions = (type = 'started') => {
@@ -240,8 +242,11 @@ class DisplayPredictions extends React.Component {
     }
 
     toggleRealPredictionType = (value = 0) => {
+        const presentReal = _.get(this.props, 'real', false);
         const real = value > 0;
-        this.props.setRealFlag(real);
+        if (presentReal !== real) {
+            this.props.setRealFlag(real);
+        }
     }
 
     renderContent() {

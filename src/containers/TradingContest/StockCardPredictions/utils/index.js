@@ -3,7 +3,7 @@ import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
 import {targetKvp, horizonKvp, investmentKvp, conditionalKvp, conditionalTypeItems, conditionalKvpValue, targetKvpValue, horizonKvpReal} from '../constants';
 import {getStockTicker} from '../../utils';
-import { fetchAjaxPromise } from '../../../../utils';
+import { fetchAjaxPromise, Utils } from '../../../../utils';
 const dateFormat = 'YYYY-MM-DD';
 
 const DateHelper = require('../../../../utils/date');
@@ -23,7 +23,8 @@ export const formatIndividualStock = (stockData, defaultStockData) => {
     let changePct = _.get(stockData, 'latestDetailRT.change_p', null) || _.get(stockData, 'latestDetail.ChangePct', 0);
     const sector = _.get(stockData, 'detail.Sector', '');
     const industry = _.get(stockData, 'Industry', '');
-    const shortable = _.get(stockData, 'shortable', false)
+    const shortable = _.get(stockData, 'shortable', false);
+    const allowed = _.get(stockData, 'allowed', false);
 
     const target = defaultTarget;
     const horizon = defaultHorizon;
@@ -318,7 +319,11 @@ export const getConditionalItems = (lastPrice, valueTypePct) => {
 }
 
 export const getAdvisorAllocation = (advisorId, history, redirectUrl) => {
-    const url = `${requestUrl}/advisor/${advisorId}/allocation`;
+    let selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+    if (Utils.isLocalStorageItemPresent(selectedAdvisorId)) {
+        advisorId = selectedAdvisorId;;
+    }
+    let url = `${requestUrl}/advisor/${advisorId}/allocation`;
 
     return fetchAjaxPromise(url, history, redirectUrl, false);
 }

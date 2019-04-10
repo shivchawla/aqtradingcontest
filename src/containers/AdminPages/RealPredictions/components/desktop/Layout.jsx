@@ -64,7 +64,11 @@ export default class Layout extends React.Component {
     }
 
     onPredictionStatusChanged = (value = 0) => {
-        const activeStatus = value === 0;
+        const activeStatus = value === 2
+            ?   null
+            :   value === 0
+                ?   true
+                :   false;
         this.props.handlePredictionStatusChange(activeStatus);
     }
 
@@ -104,8 +108,14 @@ export default class Layout extends React.Component {
         const {
             positions = [], 
             predictions = [],
-            activePredictionStatus = true,
+            activePredictionStatus = null,
         } = this.props;
+
+        const selectedPredictionRadio = activePredictionStatus === null
+            ?   2
+            :   activePredictionStatus === true
+                    ?   0
+                    :   1;
 
         return (
             <React.Fragment>
@@ -126,8 +136,8 @@ export default class Layout extends React.Component {
                         onMenuItemClicked={this.onPredictionTypeMenuItemClicked}
                     />
                     <RadioGroup 
-                        items={['ACTIVE', 'IN-ACTIVE']}
-                        defaultSelected={activePredictionStatus ? 0 : 1}
+                        items={['ACTIVE', 'IN-ACTIVE', 'ALL']}
+                        defaultSelected={selectedPredictionRadio}
                         onChange={this.onPredictionStatusChanged}
                         CustomRadio={CustomRadio}
                         small

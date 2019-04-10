@@ -340,6 +340,8 @@ class SearchStocks extends React.Component {
 
             const real = _.get(stock, 'real', false);
 
+            const allowed =  _.get(stock, 'allowed', false)
+
             return {
                 symbol,
                 name: _.get(stock, 'detail.Nse_Name', null),
@@ -357,7 +359,8 @@ class SearchStocks extends React.Component {
                 shortable,
                 hideActions: false,
                 hide: false,
-                real
+                real,
+                allowed
             };
         }).filter(stock => stock.name !== null);;
     }

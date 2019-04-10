@@ -29,7 +29,7 @@ class StockPreviewExtendedList extends React.Component {
         this.state = {
             selectedSort: sortingMenu[0],
             searchInput: '',
-            readStatusSelected: readStatusRadioItems[0],
+            readStatusSelected: readStatusRadioItems[4],
             loading: false,
             predictions: [],
             predictionsLength: 0
