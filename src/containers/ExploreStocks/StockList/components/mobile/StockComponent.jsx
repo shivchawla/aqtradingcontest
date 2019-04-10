@@ -50,7 +50,7 @@ class StockComponent extends React.Component {
             change = 20.55,
             changePct = 5.5,
         } = this.props;
-        changePct = (changePct * 100).toFixed(2);
+        changePct = changePct * 100;
         const containerColor = change > 0 
             ?   positiveColor
             :   change === 0
@@ -60,7 +60,7 @@ class StockComponent extends React.Component {
 
 
         return (
-            <Container onClick={this.goToStockDetailPage}>
+            <Container container onClick={this.goToStockDetailPage}>
                 <ExternalContainer item xs={12}>
                     <Grid container>
                         <Grid 
@@ -81,7 +81,7 @@ class StockComponent extends React.Component {
                                     marginTop: '15px'
                                 }}
                         >
-                            <LastPrice>₹{(lastPrice || 0)}</LastPrice>
+                            <LastPrice>₹{(lastPrice || 0).toFixed(2)}</LastPrice>
                         </Grid>
                         <Grid 
                                 item 
@@ -92,9 +92,9 @@ class StockComponent extends React.Component {
                                 }}
                         >
                             <PriceContainer color={containerColor}>
-                                <Change positive={positive}>₹{(change || 0)}</Change>
+                                <Change positive={positive}>₹{(change || 0).toFixed(2)}</Change>
                                 <Bar>|</Bar>
-                                <Change positive={positive}>{(changePct || 0)}%</Change>
+                                <Change positive={positive}>{(changePct || 0).toFixed(2)}%</Change>
                             </PriceContainer>
                         </Grid>
                     </Grid>
@@ -111,7 +111,6 @@ const Container = styled(Grid)`
     padding: 10px;
     position: relative;
     min-width: 120px;
-    width: 120px;
     height: 135px;
     margin-right: 20px;
     box-sizing: border-box;
