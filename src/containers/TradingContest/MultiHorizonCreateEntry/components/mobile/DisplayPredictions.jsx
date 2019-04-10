@@ -75,9 +75,11 @@ class DisplayPredictions extends React.Component {
     }
 
     onPredictionTypeRadioClicked = (value) => {
-        this.setState({listView: value}, () => {
-        	this.props.handlePreviewListMenuItemChange(predictionTypes[value].toLowerCase());
-        });
+        if (value !== this.state.listView) {
+            this.setState({listView: value}, () => {
+                this.props.handlePreviewListMenuItemChange(predictionTypes[value].toLowerCase());
+            });
+        }
     }
 
     getPositions = (type = 'started') => {
@@ -240,8 +242,11 @@ class DisplayPredictions extends React.Component {
     }
 
     toggleRealPredictionType = (value = 0) => {
+        const presentReal = _.get(this.props, 'real', false);
         const real = value > 0;
-        this.props.setRealFlag(real);
+        if (presentReal !== real) {
+            this.props.setRealFlag(real);
+        }
     }
 
     renderContent() {

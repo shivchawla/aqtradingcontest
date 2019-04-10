@@ -61,7 +61,7 @@ export default class Layout extends React.Component {
     }
 
     renderInternalData = () => {
-        const {dashboardData = {}} = this.props;
+        const {dashboardData = {}, real = false} = this.props;
         const {
             avgPnlPct = {}, 
             profitFactor = {}, 
@@ -181,7 +181,7 @@ export default class Layout extends React.Component {
                             />                     
                         </Grid>
                         <Grid item xs={12}>
-                            <PortfolioDetail />
+                            <PortfolioDetail real={real}/>
                         </Grid>
                     </Grid>
         );
