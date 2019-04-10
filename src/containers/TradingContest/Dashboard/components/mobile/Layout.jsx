@@ -226,7 +226,7 @@ export default class Layout extends React.Component {
                                 : <LoaderComponent />
                             }
                             <div style={{marginTop: '15px'}}>
-                                <PortfolioDetail />
+                                <PortfolioDetail real={real} />
                             </div>
                         </React.Fragment>
                 }
