@@ -438,7 +438,7 @@ class OrderContent extends React.Component {
                         shouldProfitLimitPrice &&
                         <MetricContainer>
                             <InputHeader style={{marginBottom: '0px'}}>Profit Limit Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultProfitLimitPrice)}</InputHeader>
-                            <Metric style={{color: modifiedQuantity ? primaryColor: 'transparent'}}>
+                            <Metric style={{color: modifiedTarget ? primaryColor: 'transparent'}}>
                                 Modified - ₹{Utils.formatMoneyValueMaxTwoDecimals(modifiedTarget)}
                             </Metric>
                             <CustomOutlinedInput
@@ -454,7 +454,7 @@ class OrderContent extends React.Component {
                         shouldStopLossPrice &&
                         <MetricContainer>
                             <InputHeader style={{marginBottom: '0px'}}>Stop Loss Price - ₹{Utils.formatMoneyValueMaxTwoDecimals(defaultStopLossPrice)}</InputHeader>
-                            <Metric style={{color: modifiedQuantity ? primaryColor: 'transparent'}}>
+                            <Metric style={{color: modifiedStopLoss ? primaryColor: 'transparent'}}>
                                 Modified - ₹{Utils.formatMoneyValueMaxTwoDecimals(modifiedStopLoss)}
                             </Metric>
                             <CustomOutlinedInput
