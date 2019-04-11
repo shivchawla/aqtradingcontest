@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Tag from '../../../../../components/Display/Tag';
-import {isMarketOpen} from '../../../utils';
+import {isMarketOpen, roundOffToNearestFive} from '../../../utils';
 import {Utils} from '../../../../../utils';
 import {hasEndDatePassed} from '../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
@@ -124,6 +124,11 @@ export default class StockPreviewPredictionListItem extends React.Component {
             triggered = false,
             conditional = false
         } = this.props.prediction;
+
+        avgPrice = roundOffToNearestFive(avgPrice);
+        stopLoss = roundOffToNearestFive(stopLoss);
+        target = roundOffToNearestFive(target);
+
         const allowAfterMaketHourExit = conditional && !triggered;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;

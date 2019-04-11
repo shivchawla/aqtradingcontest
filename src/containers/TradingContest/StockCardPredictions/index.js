@@ -295,7 +295,6 @@ class StockCardPredictions extends React.Component {
 
             let selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
             if (Utils.isLocalStorageItemPresent(selectedAdvisorId)) {
-                console.log('3rd party selected');
                 // Localstorage will be saved for 3rd party user
                 Utils.localStorageSave('isSelectedAdvisorAllocated', allocationStatus);
                 Utils.localStorageSave('selectedUserAllowedInvestments', allowedInvestments);

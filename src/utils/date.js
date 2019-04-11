@@ -2,29 +2,55 @@
 * @Author: Shiv Chawla
 * @Date:   2018-03-31 19:38:33
 * @Last Modified by:   Shiv Chawla
-* @Last Modified time: 2018-12-28 20:58:23
+* @Last Modified time: 2019-04-05 20:51:21
 */
 const moment = require('moment-timezone');
 const indiaTimeZone = "Asia/Kolkata";
 const localTimeZone = moment.tz.guess();
 
 
-function _isBeforeMarketClose() {
-	return moment().isBefore(exports.getMarketClose());
+function _isBeforeMarketClose(minuteOffset = 0) {
+	return moment.utc().isBefore(exports.getMarketClose().subtract(minuteOffset, 'minutes'));
 }
 
-function _isAfterMarketOpen() {
-	return moment().isAfter(exports.getMarketOpen());
+function _isAfterMarketOpen(minuteOffset = 0) {
+	return moment.utc().isAfter(exports.getMarketOpen().add(minuteOffset, 'minutes'));
 }
 
 module.exports.getMarketOpen = function() {
 	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
-	return moment.tz(`${cd} 09:15:00`, indiaTimeZone).tz(localTimeZone);
+	return moment.tz(`${cd} 09:15:00`, indiaTimeZone).utc();
 }
 
 module.exports.getMarketClose = function() {
 	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
+	return moment.tz(`${cd} 15:30:00`, indiaTimeZone).utc();
+}
+
+module.exports.getMarketOpenLocal = function() {
+	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
+	return moment.tz(`${cd} 09:15:00`, indiaTimeZone).tz(localTimeZone);
+}
+
+module.exports.getMarketCloseLocal = function() {
+	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
 	return moment.tz(`${cd} 15:30:00`, indiaTimeZone).tz(localTimeZone);
+}
+
+module.exports.convertIndianTimeInLocalTz = function(dt, format) {
+	if (format) {
+		return moment.tz(dt, format, indiaTimeZone).tz(localTimeZone);
+	} else {
+		return moment.tz(dt, indiaTimeZone).tz(localTimeZone);
+	}
+}
+
+module.exports.convertLocaTimeToIndiaTz = function(dt, format) {
+	if (format) {
+		return moment(dt, format).tz(indiaTimeZone);
+	} else {
+		return moment(dt).tz(indiaTimeZone);
+	}
 }
 
 module.exports.getMarketOpenHour = function() {
@@ -41,6 +67,22 @@ module.exports.getMarketCloseHour = function() {
 
 module.exports.getMarketCloseMinute = function(){
 	return exports.getMarketClose().get('minute');
+}
+
+module.exports.getMarketOpenHourLocal = function() {
+	return exports.getMarketOpenLocal().get('hour');
+}
+
+module.exports.getMarketOpenMinuteLocal = function(){
+	return exports.getMarketOpenLocal().get('minute');
+}
+
+module.exports.getMarketCloseHourLocal = function() {
+	return exports.getMarketCloseLocal().get('hour');
+}
+
+module.exports.getMarketCloseMinuteLocal = function(){
+	return exports.getMarketCloseLocal().get('minute');
 }
 
 module.exports.compareDates = function(date1, date2) {
@@ -156,10 +198,6 @@ module.exports.getLatestWeekday = function(date) {
 	}
 }
 
-module.exports.getLatestTradingDay = function(date = moment()) {
-	return moment(exports.getPreviousNonHolidayWeekday(date.add(1, 'days')));
-}
-
 module.exports.getNextWeekday = function(date) {
 	date = !date ? exports.getCurrentDate() : exports.getDate(date);
 	var day = date.getDay();
@@ -248,17 +286,27 @@ module.exports.isHoliday = function(date) {
 
 module.exports.getMarketCloseDateTime = function(date) {
 	var d = moment.tz(date, indiaTimeZone).format("YYYY-MM-DD"); 
-	return moment.tz(d, localTimeZone).set({hour: exports.getMarketCloseHour(), minute: exports.getMarketCloseMinute(), second: 0, millisecond: 0});
+	return moment.utc(d).set({hour: exports.getMarketCloseHour(), minute: exports.getMarketCloseMinute(), second: 0, millisecond: 0});
 };
 
 module.exports.getMarketOpenDateTime = function(date) {
 	var d = moment.tz(date, indiaTimeZone).format("YYYY-MM-DD"); 
-	return moment.tz(d, localTimeZone).set({hour: exports.getMarketOpenHour(), minute: exports.getMarketOpenMinute(), second: 0, millisecond: 0});
+	return moment.utc(d).set({hour: exports.getMarketOpenHour(), minute: exports.getMarketOpenMinute(), second: 0, millisecond: 0});
 };
 
-module.exports.isMarketTrading = function() {
+module.exports.getMarketCloseDateTimeLocal = function(date) {
+	var d = moment.tz(date, indiaTimeZone).format("YYYY-MM-DD"); 
+	return moment.tz(d, localTimeZone).set({hour: exports.getMarketCloseHourLocal(), minute: exports.getMarketCloseMinuteLocal(), second: 0, millisecond: 0});
+};
+
+module.exports.getMarketOpenDateTimeLocal = function(date) {
+	var d = moment.tz(date, indiaTimeZone).format("YYYY-MM-DD"); 
+	return moment.tz(d, localTimeZone).set({hour: exports.getMarketOpenHourLocal(), minute: exports.getMarketOpenMinuteLocal(), second: 0, millisecond: 0});
+};
+
+module.exports.isMarketTrading = function(openMinuteOffset = 0, closeMinuteOffset = 0) {
 	if (!exports.isHoliday()) {
-		return _isAfterMarketOpen() && _isBeforeMarketClose();
+		return _isAfterMarketOpen(openMinuteOffset) && _isBeforeMarketClose(closeMinuteOffset);
 	}
 };
 
@@ -285,10 +333,23 @@ module.exports.getTradingDays = function(startDate, endDate) {
 	return count;
 };
 
+module.exports.getTradingDates = function(startDate, endDate, includeStart = true) {		
+	var dates = [];
+	
+	var _sd = includeStart ? moment(startDate).subtract(1, 'days').toDate() : moment(startDate).toDate();
+
+	while(exports.compareDates(_sd, endDate) < 0) {
+		_sd = exports.getNextNonHolidayWeekday(_sd);	
+		dates.push(_sd);
+	}
+
+	return dates;
+};
+
 module.exports.isEndOfMonth = function(date, offset = 0) {
 	date = exports.getDate(date);
 	
-	var previousNonHolidayWeekday = exports.getPreviousNonHolidayWeekday(date, offset)
+	var previousNonHolidayWeekday = exports.getPreviousNonHolidayWeekday(date, offset = 0)
 	var nextNonHolidayWeekday = exports.getNextNonHolidayWeekday(date);
 
 	return ((nextNonHolidayWeekday.getYear() > previousNonHolidayWeekday.getYear()) || (nextNonHolidayWeekday.getMonth() > previousNonHolidayWeekday.getMonth())) 
@@ -316,7 +377,7 @@ module.exports.getEndOfLastMonth = function(date) {
 module.exports.isEndOfWeek = function(date, offset = 0) {
 	date = exports.getDate(date);
 	
-	var previousNonHolidayWeekday = exports.getPreviousNonHolidayWeekday(date, offset)
+	var previousNonHolidayWeekday = exports.getPreviousNonHolidayWeekday(date, offset = 0)
 	var nextNonHolidayWeekday = exports.getNextNonHolidayWeekday(date);
 
 	return (nextNonHolidayWeekday.getDay() < previousNonHolidayWeekday.getDay()) 
@@ -345,19 +406,6 @@ module.exports.getEndOfWeek = function(date) {
 	} 
 
 	return date;
-};
-
-module.exports.getNextEndOfWeek = function(date) {
-	date = exports.getDate(date);
-	const endOfWeekDate = exports.getEndOfWeek(date);
-	const difference = moment(exports.getCurrentDate()).diff(endOfWeekDate, 'days');
-	if (difference < 7) {
-		return exports.getEndOfWeek(date);
-	} else {
-		//Set 7 days forward
-		date.setDate(date.getDate() + 7);
-		return exports.getEndOfWeek(date);
-	}
 };
 
 module.exports.getEndOfLastWeek = function(date) {
@@ -399,4 +447,20 @@ const holidays = [
 	"2019-11-12",
 	"2019-12-25"
 ].map(item => exports.getDate(item));
+
+
+//Test cases
+// console.log(`UTC: ${exports.getMarketCloseDateTime()}`);
+// console.log(`UTC: ${exports.getMarketOpenDateTime()}`);
+// console.log(`UTC: ${exports.getMarketOpen()}`);
+// console.log(`UTC: ${exports.getMarketClose()}`);
+// console.log(_isBeforeMarketClose());
+// console.log(_isAfterMarketOpen());
+
+// console.log(`Local: ${exports.getMarketCloseDateTimeLocal()}`);
+// console.log(`Local: ${exports.getMarketOpenDateTimeLocal()}`);
+// console.log(`Local: ${exports.getMarketOpenLocal()}`);
+// console.log(`Local: ${exports.getMarketCloseLocal()}`);
+
+
 
