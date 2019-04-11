@@ -122,7 +122,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
             _id = null,
             stopLoss = 0,
             triggered = false,
-            conditional = false
+            conditional = false,
         } = this.props.prediction;
 
         avgPrice = roundOffToNearestFive(avgPrice);
@@ -181,12 +181,24 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 color={typeTextColor} 
                                 backgroundColor={typeColor} 
                             />
-                            <Tag 
-                                label={typeLabel} 
-                                style={{marginLeft: '10px'}}
-                                color={iconConfig.color} 
-                                backgroundColor={iconConfig.backgroundColor} 
-                            />
+                            {
+                                iconConfig.type !== 'INACTIVE' &&
+                                <Tag 
+                                    label={typeLabel} 
+                                    style={{marginLeft: '10px'}}
+                                    color={iconConfig.color} 
+                                    backgroundColor={iconConfig.backgroundColor} 
+                                />
+                            }
+                            {
+                                !triggered &&
+                                <Tag 
+                                    label='INACTIVE' 
+                                    style={{marginLeft: '10px'}}
+                                    color='#b8b8b8'
+                                    backgroundColor='#e0e0e0'
+                                />
+                            }
                         </div>
                         {
                             !endDatePassed &&
