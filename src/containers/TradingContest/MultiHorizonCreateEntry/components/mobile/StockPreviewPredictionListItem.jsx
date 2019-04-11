@@ -160,7 +160,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 ? metricColor.negative 
                 : metricColor.neutral;
         const typeLabel = iconConfig.type.toUpperCase() === 'EXITED'
-            ?   `${iconConfig.type} - ₹${Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}`
+            ?   triggered 
+                    ? `${iconConfig.type} - ₹${Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}` 
+                    : iconConfig.type
             :   iconConfig.type;
 
         return (
