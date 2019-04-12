@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
 import Email from '../common/Email';
 import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../../constants';
 import {getRankMedal} from '../../utils';
@@ -31,7 +32,8 @@ export default class ParticipantListItemWeekly extends React.Component {
             netTotal = 0,
             netTotalLastWeek='0',
             funnyName = '',
-            shouldShowFunnyName = true
+            shouldShowFunnyName = true,
+            isUser = false
         }  = this.props;
         const medal = getRankMedal(rank);
         const changeColor = pnl > 0 ? metricColor.positive : pnl === 0 ? neutralColor : metricColor.negative;
@@ -48,7 +50,13 @@ export default class ParticipantListItemWeekly extends React.Component {
                         }}
                 >
                     <div style={{...verticalBox, alignItems: 'flex-start'}}>
-                        <Name>{convertNameToTitleCase(userName)}</Name>
+                        <div style={horizontalBox}>
+                            {
+                                isUser &&
+                                <Icon style={{color: primaryColor, marginTop: '2px'}}>person_pin</Icon>
+                            }
+                            <Name>{convertNameToTitleCase(userName)}</Name>
+                        </div>
                         {
                             Utils.isAdmin() && email &&
                             <Email>{email}</Email>

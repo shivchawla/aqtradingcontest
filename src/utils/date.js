@@ -45,6 +45,19 @@ module.exports.convertIndianTimeInLocalTz = function(dt, format) {
 	}
 }
 
+module.exports.getNextEndOfWeek = function(date) {
+	date = exports.getDate(date);
+	const endOfWeekDate = exports.getEndOfWeek(date);
+	const difference = moment(exports.getCurrentDate()).diff(endOfWeekDate, 'days');
+	if (difference < 7) {
+		return exports.getEndOfWeek(date);
+	} else {
+		//Set 7 days forward
+		date.setDate(date.getDate() + 7);
+		return exports.getEndOfWeek(date);
+	}
+};
+
 module.exports.convertLocaTimeToIndiaTz = function(dt, format) {
 	if (format) {
 		return moment(dt, format).tz(indiaTimeZone);
