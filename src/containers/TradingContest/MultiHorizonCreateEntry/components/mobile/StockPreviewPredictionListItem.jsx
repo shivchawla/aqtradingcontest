@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Tag from '../../../../../components/Display/Tag';
-import {isMarketOpen} from '../../../utils';
+import {isMarketOpen, roundOffToNearestFive} from '../../../utils';
 import {Utils} from '../../../../../utils';
 import {hasEndDatePassed} from '../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
@@ -122,8 +122,13 @@ export default class StockPreviewPredictionListItem extends React.Component {
             _id = null,
             stopLoss = 0,
             triggered = false,
-            conditional = false
+            conditional = false,
         } = this.props.prediction;
+
+        avgPrice = roundOffToNearestFive(avgPrice);
+        stopLoss = roundOffToNearestFive(stopLoss);
+        target = roundOffToNearestFive(target);
+
         const allowAfterMaketHourExit = conditional && !triggered;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
@@ -155,7 +160,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 ? metricColor.negative 
                 : metricColor.neutral;
         const typeLabel = iconConfig.type.toUpperCase() === 'EXITED'
-            ?   `${iconConfig.type} - ₹${Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}`
+            ?   triggered 
+                    ? `${iconConfig.type} - ₹${Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}` 
+                    : iconConfig.type
             :   iconConfig.type;
 
         return (
@@ -176,12 +183,24 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 color={typeTextColor} 
                                 backgroundColor={typeColor} 
                             />
-                            <Tag 
-                                label={typeLabel} 
-                                style={{marginLeft: '10px'}}
-                                color={iconConfig.color} 
-                                backgroundColor={iconConfig.backgroundColor} 
-                            />
+                            {
+                                iconConfig.type !== 'INACTIVE' &&
+                                <Tag 
+                                    label={typeLabel} 
+                                    style={{marginLeft: '10px'}}
+                                    color={iconConfig.color} 
+                                    backgroundColor={iconConfig.backgroundColor} 
+                                />
+                            }
+                            {
+                                !triggered &&
+                                <Tag 
+                                    label='INACTIVE' 
+                                    style={{marginLeft: '10px'}}
+                                    color='#b8b8b8'
+                                    backgroundColor='#e0e0e0'
+                                />
+                            }
                         </div>
                         {
                             !endDatePassed &&

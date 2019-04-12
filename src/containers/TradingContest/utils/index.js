@@ -12,7 +12,11 @@ import {
     getMarketCloseHour, 
     getMarketCloseMinute, 
     getMarketOpenHour, 
-    getMarketOpenMinute
+    getMarketOpenMinute,
+    getMarketOpenHourLocal,
+    getMarketOpenMinuteLocal,
+    getMarketCloseHourLocal,
+    getMarketCloseMinuteLocal
 } from '../../../utils/date';
 import funnyNames from '../Leaderboard/constants/funnyNames';
 
@@ -169,8 +173,8 @@ export const getMultiStockData = (stocks = []) => {
 }
 
 export const isMarketOpen = (currentTime = moment()) => {
-    const marketOpenTime = moment().hours(getMarketOpenHour()).minutes(getMarketOpenMinute());
-    const marketCloseTime = moment().hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
+    const marketOpenTime = moment().hours(getMarketOpenHourLocal()).minutes(getMarketOpenMinuteLocal());
+    const marketCloseTime = moment().hours(getMarketCloseHourLocal()).minutes(getMarketCloseMinuteLocal());
     if (currentTime.isSameOrAfter(marketOpenTime) && currentTime.isSameOrBefore(marketCloseTime)) {
         return {status: true};
     } else if (currentTime.isBefore(marketOpenTime)) {
@@ -240,4 +244,10 @@ export const isSelectedDateSameAsCurrentDate = (selectedDate = moment()) => {
 export const getStockTicker = (stock, defaultValue = '') => {
     // security.detail.NSE_Id || security.ticker
     return _.get(stock, 'detail.NSE_ID', null) || _.get(stock, 'ticker', defaultValue);
+}
+
+export const roundOffToNearestFive = (value) => {
+    value = Number(value);
+    
+    return Math.round(value * 20) / 20;
 }

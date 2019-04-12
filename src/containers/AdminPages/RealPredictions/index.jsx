@@ -287,13 +287,17 @@ class RealPredictions extends React.Component {
     }
 
     getPredictions = (predictions, active = true) => {
-        const requiredPredictions = predictions.filter(prediction => {
-            const activationStatus = _.get(prediction, 'triggered.status', false);
-            
-            return activationStatus === active;
-        });
-
-        return requiredPredictions;
+        if (active === null) {
+            return predictions;
+        } else {
+            const requiredPredictions = predictions.filter(prediction => {
+                const activationStatus = _.get(prediction, 'triggered.status', false);
+                
+                return activationStatus === active;
+            });
+    
+            return requiredPredictions;
+        }
     }
 
     updateAdvisorPortfolioStatsForRealtimeData = realtimeData => {
