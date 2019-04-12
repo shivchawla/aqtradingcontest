@@ -160,7 +160,7 @@ class Layout extends React.Component {
                             {this.props.renderStaticPerformanceSelector()}
                         </Grid>
                         <Grid item xs={12}>
-                            <HighChartBar 
+                            <HighChartBar
                                 id='staticPerformance'
                                 series={this.props.staticPerformance}
                                 updateTimeline={true}

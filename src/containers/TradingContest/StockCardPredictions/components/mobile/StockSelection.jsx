@@ -72,7 +72,7 @@ class StockSelection extends React.Component {
     }
 
     renderSearchStocks = () => {
-        const {showPredict = false, watchlistPredict = false} = this.props;
+        const {showPredict = false, watchlistPredict = false, hideButtons = false} = this.props;
         return (
             <SearchStocks 
                 showPredict={showPredict}
@@ -105,6 +105,7 @@ class StockSelection extends React.Component {
                 searchInput={this.props.searchInput}
                 updateSearchInput={this.props.updateSearchInput}
                 hideInput={this.props.hideInput}
+                hideButtons={hideButtons}
             />
         );
     }
@@ -163,6 +164,7 @@ class StockSelection extends React.Component {
     }
 
     render() {
+        console.log('Stock Selection Mounted');
         const {list = false} = this.props;
 
         return list ? this.renderListMode() : this.renderDialogMode();

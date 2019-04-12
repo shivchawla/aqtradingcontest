@@ -4,7 +4,7 @@ import windowSize from 'react-window-size';
 import styled from 'styled-components';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
-import StockDetailBottomSheet from '../../../TradingContest/StockDetailBottomSheet';
+import StockDetailBottomSheet from '../../../ExploreStocks/Outer/BottomSheet';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ActionIcon from '../../../TradingContest/Misc/ActionIcons';
 import TranslucentLoader from '../../../../components/Loaders/TranslucentLoader';
@@ -48,7 +48,7 @@ class WatchList extends React.Component {
 
     onStockInfoClicked = (symbol, name, lastPrice, change, changePct) => {
         this.setState({
-            selectedInfoStock: {symbol, name, lastPrice, chg: change, chgPct: changePct}
+            selectedInfoStock: {symbol, name, lastPrice, chg: change, chgPct: changePct, change, changePct}
         }, () => {
             this.toggleStockDetailBottomSheetOpen()
         });

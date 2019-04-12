@@ -332,6 +332,15 @@ class StockCardPredictions extends React.Component {
         this.setState({stockData});
     }
 
+    updateStockDataWithValue = (data = {}) => {
+        if (typeof(data) === 'object') {
+            this.setState({
+                ...this.state.stockData,
+                ...data
+            });
+        }
+    }
+
     showSuccess = () => {
         this.setState({showSuccess: true});
         setTimeout(() => {

@@ -13,6 +13,7 @@ import Loader from './containers/TradingContest/Misc/Loader';
 import TokenUpdate from './containers/AuthPages/TokenUpdate';
 import Snackbar from './components/Alerts/SnackbarComponent';
 import DummyLogin from './containers/DummyLogin';
+// import ExploreStocks from './containers/ExploreStocks';
 import {horizontalBox} from './constants';
 import {Utils} from './utils';
 import './App.css';
@@ -43,6 +44,7 @@ const PortfolioDetail = React.lazy(() => import('./containers/PortfolioDetail'))
 const AboutUs = React.lazy(() => import('./containers/AboutUs'));
 const TnC = React.lazy(() => import('./containers/TnC'));
 const Policy = React.lazy(() => import('./containers/Policy'));
+const ExploreStocks = React.lazy(() => import('./containers/ExploreStocks'));
 
 class App extends React.Component {
     constructor(props) {
@@ -282,6 +284,7 @@ class App extends React.Component {
                                             }}
                                         />
                                         <Route path='/dailycontest' component={TradingContest} />
+                                        <Route path='/explore' component={ExploreStocks} />
                                         <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>

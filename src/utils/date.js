@@ -22,6 +22,11 @@ module.exports.getMarketOpen = function() {
 	return moment.tz(`${cd} 09:15:00`, indiaTimeZone).utc();
 }
 
+module.exports.getLatestTradingDay = function(date = moment()) {
+	return moment(exports.getPreviousNonHolidayWeekday(date.add(1, 'days')));
+}
+
+
 module.exports.getMarketClose = function() {
 	var cd = moment().tz(indiaTimeZone).format("YYYY-MM-DD");
 	return moment.tz(`${cd} 15:30:00`, indiaTimeZone).utc();

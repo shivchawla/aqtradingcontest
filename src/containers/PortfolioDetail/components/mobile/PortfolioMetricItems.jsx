@@ -5,10 +5,15 @@ import MetricItem from '../desktop/MetricItem';
 
 export default class PortfolioMetricsItems extends React.Component {
     render() {
-        const {metrics} = this.props;
+        const {metrics, metricStyle = {}, labelStyle = {}, valueStyle = {}, containerStyle = {}, spacing = 0} = this.props;
 
         return (
-            <Grid container justify="space-between">
+            <Grid 
+                    container 
+                    justify="space-between"
+                    style={containerStyle}
+                    spacing={spacing}
+            >
                 {
                     metrics.map((item, index) => {
                         return (
@@ -18,8 +23,8 @@ export default class PortfolioMetricsItems extends React.Component {
                             >
                                 <MetricItem 
                                     key={index}
-                                    valueStyle = {{...metricsValueStyle, fontSize: '16px'}} 
-                                    labelStyle={{fontSize: '12px'}} 
+                                    valueStyle = {{...metricsValueStyle, fontSize: '16px', ...valueStyle}} 
+                                    labelStyle={{fontSize: '12px', ...labelStyle}} 
                                     value={item.value} 
                                     label={item.label} 
                                     money={item.money}
@@ -27,7 +32,8 @@ export default class PortfolioMetricsItems extends React.Component {
                                     color={item.color}
                                     style={{
                                         ...metricItemStyle, 
-                                        marginBottom: index < 3 ? '10px' : 0
+                                        marginBottom: index < 3 ? '10px' : 0,
+                                        ...metricStyle
                                     }} 
                                     isNetValue={item.isNetValue}
                                     dailyChange={item.dailyChange || null}

@@ -14,7 +14,7 @@ import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import PredictionsBottomSheet from './components/mobile/PredictionsBottomSheet';
-import StockDetailBottomSheet from '../../TradingContest/StockDetailBottomSheet';
+import StockDetailBottomSheet from '../../ExploreStocks/Outer/BottomSheet';
 import {DailyContestmyPicksMeta} from '../metas';
 import {processSelectedPosition} from '../utils';
 import {Utils, handleCreateAjaxError} from '../../../utils';
@@ -125,9 +125,16 @@ class CreateEntry extends React.Component {
 
     selectPosition = symbol => {
         const positonIndex = _.findIndex(this.state.previewPositions, position => position.symbol === symbol);
+        let requiredPosition = this.state.previewPositions[positonIndex];
+        requiredPosition = {
+            ...requiredPosition,
+            change: _.get(requiredPosition, 'chg', 0),
+            changePct: _.get(requiredPosition, 'chgPct', 0),
+        };
+
         this.setState({
             selectedPositionIndex: positonIndex,
-            selectedPosition: this.state.previewPositions[positonIndex]
+            selectedPosition: requiredPosition
         });
     }
 

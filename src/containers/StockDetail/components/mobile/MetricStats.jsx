@@ -32,7 +32,7 @@ export default class MetricStats extends React.Component {
 }
 
 const Container = styled(Grid)`
-    padding: 10px;
+    /* padding: 10px; */
 `;
 
 const MetricContainer = styled(Grid)`

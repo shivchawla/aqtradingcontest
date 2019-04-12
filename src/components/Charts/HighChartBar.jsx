@@ -2,7 +2,7 @@ import * as React from 'react';
 import _ from 'lodash';
 import Grid from '@material-ui/core/Grid';
 import HighChart from 'highcharts';
-import {benchmarkColor, currentPerformanceColor, simulatedPerformanceColor} from '../../constants';
+import {benchmarkColor, currentPerformanceColor} from '../../constants';
 
 export default class HighChartBar extends React.Component {
     constructor(props) {
@@ -34,7 +34,6 @@ export default class HighChartBar extends React.Component {
                         enabled: false,
                     },
                     gridLineColor: 'transparent',
-                    // tickInterval: 5,
                 },
                 xAxis: {
                     gridLineColor: 'transparent',
@@ -51,7 +50,7 @@ export default class HighChartBar extends React.Component {
                     }
                 },
                 legend: {
-                    enabled: true,
+                    enabled: _.get(props, 'legendEnabled', true),
                 },
                 credits: {
                     enabled: false
@@ -80,7 +79,7 @@ export default class HighChartBar extends React.Component {
     componentWillReceiveProps(nextProps, nextState) {
         if (nextProps.series !== this.props.series) {
             try {
-                this.updateSeries(nextProps.series);
+                this.updateSeries(nextProps.series, nextProps);
             } catch(err) {}
         }
     }
@@ -104,19 +103,21 @@ export default class HighChartBar extends React.Component {
         } catch(err) {} 
     }
 
-    updateSeries = series => {
+    updateSeries = (series, props = this.props) => {
+        const {graphColor = currentPerformanceColor} = props;
+
         if (series.length > 0) {
             this.clearSeries()
             series.map((item, index) => {
                 this.chart.addSeries({
                     name: item.name,
-                    data: this.props.updateTimeline 
+                    data: props.updateTimeline 
                         ? item.timelineData.map(itemValue  => itemValue.value)
                         : item.data,
                 });
             });
             this.chart.update({
-                colors: [currentPerformanceColor, benchmarkColor],
+                colors: [graphColor, benchmarkColor],
                 yAxis: {
                     max: Number(this.findYAxisMaxValue(series))
                 }
@@ -124,8 +125,8 @@ export default class HighChartBar extends React.Component {
             this.chart.update({
                 xAxis: {
                     gridLineColor: 'transparent',
-                    categories: this.props.categories 
-                            ? this.props.categories 
+                    categories: props.categories 
+                            ? props.categories 
                             : series[0].timelineData.map(item => item.timeline.format('MMM YY'))
                 }
             })
