@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import {Utils} from '../../../../../utils';
-import {isMarketOpen} from '../../../utils';
+import {isMarketOpen, roundOffToNearestFive} from '../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
 import {hasEndDatePassed} from '../../utils';
@@ -89,7 +89,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
 
     render() {
         const {preview = false} = this.props;
-        const {
+        let {
             horizon = 1, 
             investment = 0, 
             target = 1, 
@@ -107,6 +107,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
             triggered = false,
             conditional = false
         } = this.props.prediction;
+
+        target = roundOffToNearestFive(target);
+        avgPrice = roundOffToNearestFive(avgPrice);
+
         const allowAfterMaketHourExit = conditional && !triggered;
         const typeBackgroundColor = '#fff';
         const typeColor = type === 'buy' ? '#009688' : '#FE6662';
