@@ -12,7 +12,8 @@ export default class StockList extends React.Component {
         super(props);
         this.state = {
             categories: [],
-            loading: false
+            loading: false,
+            noDataFound: true
         }
     }
 
@@ -32,7 +33,7 @@ export default class StockList extends React.Component {
         this.fetchStocksByCategories()
         .then(response => {
             const categories = response.data;
-            
+            this.setState({noDataFound: false});
             return Promise.map(categories, async categoryItem => {
                 return {
                     category: categoryItem.category,
@@ -44,6 +45,7 @@ export default class StockList extends React.Component {
             this.setState({categories});
         })
         .catch(err => {
+            this.setState({noDataFound: true});
             console.log('Error ', err.message);
         })
         .finally(() => {
@@ -58,7 +60,8 @@ export default class StockList extends React.Component {
     render() {
         const props = {
             categories: this.state.categories,
-            loading: this.state.loading
+            loading: this.state.loading,
+            noDataFound: this.state.noDataFound
         };
 
         return (

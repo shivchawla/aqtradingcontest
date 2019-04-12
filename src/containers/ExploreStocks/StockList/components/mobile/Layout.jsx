@@ -7,6 +7,7 @@ import Icon from '@material-ui/core/Icon';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Section from './Section';
 import AqLayout from '../../../../../components/ui/AqLayout';
+import NoDataFound from '../../../../../components/Errors/NoDataFound';
 import StockDetailBottomSheet from '../../../Outer/BottomSheet';
 import StockSelection from '../../../../TradingContest/StockCardPredictions/components/mobile/StockSelection';
 import { verticalBox } from '../../../../../constants';
@@ -45,24 +46,36 @@ export default class Layout extends React.Component {
     }
 
     renderContent = () => {
-        if (!this.state.showStockSelection) {
+        const {noDataFound = false} = this.props;
+
+        if (noDataFound) {
             return (
                 <Grid container>
-                    {this.renderCategories()}
-                </Grid>
-            );
-        } else {
-            return (
-                <Grid container>
-                    <Grid item xs={12} style={{padding: '0 5px'}}>
-                        <StockSelection 
-                            list={true}
-                            mobile={true}
-                            hideButtons={true}
-                        />
+                    <Grid item xs={12}>
+                        <NoDataFound />
                     </Grid>
                 </Grid>
             );
+        } else {
+            if (!this.state.showStockSelection) {
+                return (
+                    <Grid container>
+                        {this.renderCategories()}
+                    </Grid>
+                );
+            } else {
+                return (
+                    <Grid container>
+                        <Grid item xs={12} style={{padding: '0 5px'}}>
+                            <StockSelection 
+                                list={true}
+                                mobile={true}
+                                hideButtons={true}
+                            />
+                        </Grid>
+                    </Grid>
+                );
+            }
         }
     }
 
