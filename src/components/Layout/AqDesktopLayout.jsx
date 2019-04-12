@@ -17,10 +17,19 @@ class AqDesktopLayout extends React.Component {
     }
 
     render() {
-        const {loading = false, hideFooter = false} = this.props;
+        const {loading = false, hideFooter = false, style = {}} = this.props;
 
         return (
-            <ContainerGrid container>
+            <Grid 
+                    container 
+                    justify="flex-start"
+                    style={{
+                        minHeight: 'calc(100vh - 80px)',
+                        paddingTop: global.screen.width > 600 ? 0 : '10px',
+                        backgroundColor: '#fff',
+                        ...style
+                    }}
+            >
                 <Grid item xs={12}>
                     <Header activeIndex={1} />
                     <div className="main-loader">
@@ -41,24 +50,15 @@ class AqDesktopLayout extends React.Component {
                         <Footer style={{marginTop: '110px'}}/>
                     }
                 </ColContainer>
-            </ContainerGrid>
+            </Grid>
         );
     }
 }
 
 export default withRouter(AqDesktopLayout);
 
-const ContainerGrid = styled(Grid)`
-    height: 100%;
-    min-height: calc(100vh - 80px);
-    width: 100%; 
-    justify-content: 'center';
-    padding-top: ${global.screen.width > 600 ? 0 : '10px'};
-    background-color: #fff;
-`;
-
 const ColContainer = styled(Grid)`
-    display: 'flex';
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;

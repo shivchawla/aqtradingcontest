@@ -140,7 +140,7 @@ export default class HighChartBar extends React.Component {
             data = [...data, ..._.get(seriesItem, 'data', [])];
         });
         const maxValue = _.max(data);
-
+        
         return Math.ceil(maxValue);
     }
 

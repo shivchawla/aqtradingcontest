@@ -2,6 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
+import Icon from '@material-ui/core/Icon';
+import Email from '../common/Email';
 import {horizontalBox, verticalBox, metricColor, primaryColor} from '../../../../constants';
 import {getRankMedal} from '../../utils';
 import {Utils} from '../../../../utils';
@@ -21,13 +23,15 @@ export default class ParticipantListItem extends React.Component {
     render() {
         const {
             userName = '',
+            email = null,
             advisorId = null,
             cost = 0, 
             pnl = 0, 
             rank = 0, 
             pnlPct = 0, 
             profitFactor = 0,
-            listType='long'
+            listType='long',
+            isUser = false
         }  = this.props;
         
         const medal = getRankMedal(rank);
@@ -44,7 +48,19 @@ export default class ParticipantListItem extends React.Component {
                             alignItems: 'center'
                         }}
                 >
-                    <Name>{convertNameToTitleCase(userName)}</Name>
+                    <div style={{...verticalBox, alignItems: 'flex-start'}}>
+                        <div style={horizontalBox}>
+                            {
+                                isUser &&
+                                <Icon style={{color: primaryColor, marginTop: '2px'}}>person_pin</Icon>
+                            }
+                            <Name>{convertNameToTitleCase(userName)}</Name>
+                        </div>
+                        {
+                            Utils.isAdmin() && email &&
+                            <Email>{email}</Email>
+                        }
+                    </div>
                     <img src={medal} width={24}/>
                 </Grid>
                 <Grid 

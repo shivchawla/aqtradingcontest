@@ -74,7 +74,8 @@ export const getIntraDayStockPerformance = (tickerName, detailType='detail') => 
 			if (data.length > 0) { // Check if ticker is valid
 				const formattedData = data.map(item => {
 					const stillUtc = moment.utc(item.datetime).toDate();
-					const local = moment(stillUtc).local().add(1, 'minutes').startOf('minute').valueOf();
+					const local = moment(stillUtc).local().valueOf();
+
 					return [local, item.close];
 				})
 				const throttledData = getIntraDayThrottledPerformance(formattedData);
@@ -101,11 +102,17 @@ export const sortPerformanceData = data => {
 export const getIntraDayThrottledPerformance = (data) => {
 	const clonedData = _.map(data, _.cloneDeep);
 	const performanceArray = [];
-	for (let i=clonedData.length - 1; i >= 0; i-=5) {
+	const lastDataPoint = clonedData[clonedData.length - 1];
+	for(let i = 0; i < clonedData.length - 1; i +=5) {
 		const item = clonedData[i];
 		performanceArray.push(item);
 	}
-	return (_.reverse(performanceArray));
+
+	if (performanceArray[performanceArray.length - 1][0] !== lastDataPoint[0]) {
+		performanceArray.push(lastDataPoint);
+	}
+
+	return performanceArray;
 }
 
 export const getStockStaticPerformance = (tickerName, detailType='detail', field='staticPerformance') => {
@@ -163,11 +170,11 @@ export class Utils{
 	}
 
 	static setShouldUpdateToken(status){
-		this.localStorageSave('SHOULDUPDATETOKEN', status);
+		this.cookieStorageSave('SHOULDUPDATETOKEN', status);
 	}
 
 	static getShouldUpdateToken(){
-		return this.getFromLocalStorage('SHOULDUPDATETOKEN');
+		return cookie.load('SHOULDUPDATETOKEN');
 	}
 
 	static getAnnouncementUrl(){
@@ -275,6 +282,12 @@ export class Utils{
 		this.localStorageSave('selectedAdviceId', null);
 		this.localStorageSave('contestId', null);
 		this.localStorageSave('contestSelectedPage', 0);
+		this.localStorageSave('selectedAdvisorId', null);
+		this.localStorageSave('selectedUserId', null);
+		this.localStorageSave('selectedUserName', null);
+		this.localStorageSave('isSelectedAdvisorAllocated', null);
+		this.localStorageSave('selectedUserAllowedInvestments', null);
+		this.localStorageSave('selectedUserMaxInvestment', null);
 		this.setLoggedInUserInfo({});
 	}
 
@@ -668,7 +681,7 @@ export class Utils{
 	}
 
 	static isNull(value) {
-		return value === null && value === 'null';
+		return value === null || value === 'null';
 	}
 
 	static isLocalStorageItemPresent = (item) => {
@@ -682,6 +695,35 @@ export class Utils{
 		}
 		else {
 			return null;
+		}
+	}
+
+	static getLocalStorageBooleanValue(value) {
+		if (this.isLocalStorageItemPresent(value)) {
+			if (typeof(value)=== 'boolean') {
+				return value
+			} else {
+				if (value.toLowerCase() === 'true') {
+					return true;
+				}
+	
+				return false
+			}
+		}
+
+		return false;
+	}
+
+	static isUserAllocated() {
+		const isAdmin = this.isAdmin();
+		const isLoggedInUserAllocated = _.get(this.getUserInfo(), 'allocationAdvisor', null) !== null;
+		const isSelectedAdvisorAllocated = this.getLocalStorageBooleanValue(this.getFromLocalStorage('isSelectedAdvisorAllocated'));
+		const isAdvisorSelected = this.isLocalStorageItemPresent(this.getFromLocalStorage('selectedAdvisorId'));
+		// If logged user is admin and another 3rd party advisor is selected
+		if (isAdmin && isAdvisorSelected) {
+			return Boolean(isSelectedAdvisorAllocated);
+		} else {
+			return Boolean(isLoggedInUserAllocated);
 		}
 	}
 }

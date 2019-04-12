@@ -7,9 +7,10 @@ import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import {Utils} from '../../../../../utils';
-import {isMarketOpen} from '../../../utils';
+import {isMarketOpen, roundOffToNearestFive} from '../../../utils';
 import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
+import {hasEndDatePassed} from '../../utils';
 
 const readableDateFormat = "Do MMM 'YY";
 const DateHelper = require('../../../../../utils/date');
@@ -80,8 +81,15 @@ export default class StockPreviewPredictionListItem extends React.Component {
         }
     }
 
+    shouldShowUnreadStatus = () => {
+        const {readStatus = ''} = this.props.prediction;
+
+        return readStatus.toLowerCase() === 'unread';
+    }
+
     render() {
-        const {
+        const {preview = false} = this.props;
+        let {
             horizon = 1, 
             investment = 0, 
             target = 1, 
@@ -99,6 +107,10 @@ export default class StockPreviewPredictionListItem extends React.Component {
             triggered = false,
             conditional = false
         } = this.props.prediction;
+
+        target = roundOffToNearestFive(target);
+        avgPrice = roundOffToNearestFive(avgPrice);
+
         const allowAfterMaketHourExit = conditional && !triggered;
         const typeBackgroundColor = '#fff';
         const typeColor = type === 'buy' ? '#009688' : '#FE6662';
@@ -116,9 +128,17 @@ export default class StockPreviewPredictionListItem extends React.Component {
                 : metricColor.neutral;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
+        const endDatePassed = hasEndDatePassed(endDate);
 
         return (
-            <Container container alignItems="center">
+            <Container 
+                    container 
+                    alignItems="center"
+                    style={{
+                        border: '3px solid',
+                        borderColor: (preview && this.shouldShowUnreadStatus()) ? '#00ef00' : 'transparent'
+                    }}
+            >
                 <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start', paddingLeft: '20px'}}>
                     <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
                     <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
@@ -146,6 +166,8 @@ export default class StockPreviewPredictionListItem extends React.Component {
                         {iconConfig.status}
                     </MetricText>
                     {
+                        !endDatePassed &&
+                        !preview &&
                         (allowAfterMaketHourExit || marketOpen) &&
                         (
                             iconConfig.status.toLowerCase() === 'active' 
@@ -235,4 +257,11 @@ const CallDate = styled.h3`
     color: #7B7B7B;
     text-align: start;
     font-weight: 400;
+`;
+
+const UnreadDot = styled.div`
+    width: 25px;
+    height: 25px;
+    border-radius: 20px;
+    background-color: green;
 `;

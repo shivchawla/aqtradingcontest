@@ -17,12 +17,14 @@ import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
 import DateComponent from '../../../Misc/DateComponent';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
-import {verticalBox, primaryColor, horizontalBox, metricColor} from '../../../../../constants';
+import {verticalBox, primaryColor, horizontalBox} from '../../../../../constants';
 import {isMarketOpen, isSelectedDateSameAsCurrentDate} from '../../../utils';
 import {searchPositions} from '../../utils';
+import { Utils } from '../../../../../utils';
 
 const DateHelper = require('../../../../../utils/date');
 const predictionTypes = ['All', 'Ended', 'Started'];
+const realSimulatedPredictionTypes = ['Virtual', 'Real'];
 
 class DisplayPredictions extends React.Component {
     constructor(props) {
@@ -31,7 +33,8 @@ class DisplayPredictions extends React.Component {
             listView: this.getListViewFromUrl(props.listViewType),
             anchorEl: null,
             searchInputValue: '',
-            searchInputOpen: false
+            searchInputOpen: false,
+            isUserAllocated: Utils.isUserAllocated()
         };
     }
 
@@ -72,9 +75,11 @@ class DisplayPredictions extends React.Component {
     }
 
     onPredictionTypeRadioClicked = (value) => {
-        this.setState({listView: value}, () => {
-        	this.props.handlePreviewListMenuItemChange(predictionTypes[value].toLowerCase());
-        });
+        if (value !== this.state.listView) {
+            this.setState({listView: value}, () => {
+                this.props.handlePreviewListMenuItemChange(predictionTypes[value].toLowerCase());
+            });
+        }
     }
 
     getPositions = (type = 'started') => {
@@ -236,17 +241,31 @@ class DisplayPredictions extends React.Component {
         );
     }
 
+    toggleRealPredictionType = (value = 0) => {
+        const presentReal = _.get(this.props, 'real', false);
+        const real = value > 0;
+        if (presentReal !== real) {
+            this.props.setRealFlag(real);
+        }
+    }
+
     renderContent() {
         const {
             toggleEntryDetailBottomSheet,
             getRequiredMetrics,
             pnlFound = false,
-            portfolioStats = {}
+            portfolioStats = {},
         } = this.props;
         const statsExpanded = (this.props.previewPositions.length === 0 || this.props.noEntryFound);
         
         return (
-            <Grid container justify="space-between">
+            <Grid 
+                    container 
+                    justify="space-between"
+                    style={{
+                        marginTop: this.state.isUserAllocated ? 0 : '10px'
+                    }}
+            >
                 {
                     pnlFound &&
                     <div style={{width:'95%', margin: '0 auto'}}>
@@ -264,6 +283,7 @@ class DisplayPredictions extends React.Component {
     }
 
     render() {
+        const {real = false} = this.props;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
 
@@ -277,7 +297,7 @@ class DisplayPredictions extends React.Component {
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             padding: '0 2%',
-                            marginBottom: '10px'
+                            marginBottom: '5px'
                         }}
                 >
                     <RadioGroup
@@ -299,6 +319,26 @@ class DisplayPredictions extends React.Component {
                         }
                     </div>
                 </Grid>
+                {
+                    this.state.isUserAllocated &&
+                    <Grid 
+                            item 
+                            xs={12}
+                            style={{
+                                ...horizontalBox,
+                                marginBottom: '15px',
+                                marginLeft: '10px'
+                            }}
+                    >
+                        <RadioGroup 
+                            items={realSimulatedPredictionTypes}
+                            defaultSelected={real ? 1 : 0}
+                            CustomRadio={WatchlistCustomRadio}
+                            onChange={this.toggleRealPredictionType}
+                            small
+                        />
+                    </Grid>
+                }
                 <Grid item xs={12}>
                     {
                         this.props.loading ? <LoaderComponent /> : this.renderContent()

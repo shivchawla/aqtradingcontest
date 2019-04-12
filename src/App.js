@@ -24,10 +24,11 @@ const {gaTrackingId = null} = require('./localConfig');
 const AppHome = React.lazy(() => import('./containers/HomeFrame'));
 // const DailyContestHome = React.lazy(() => import('./containers/DailyContestHomeFrame'));
 const TradingContest = React.lazy(() => import('./containers/TradingContest'));
-// const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
-// const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
-// const TradingContestLeaderboard = React.lazy(() => import('./containers/TradingContestLeaderboard'));
-// const TradingContestTopPicks = React.lazy(() => import('./containers/TradingContestTopPicks'));
+const AdminPages = React.lazy(() => import('./containers/AdminPages'));
+const AdvisorSelector = React.lazy(() => import('./containers/AdvisorSelector'));
+const StockCardPredictions = React.lazy(() => import('./containers/TradingContest/StockCardPredictions'));
+const TradingContestLeaderboard = React.lazy(() => import('./containers/TradingContestLeaderboard'));
+const TradingContestTopPicks = React.lazy(() => import('./containers/TradingContestTopPicks'));
 const Login = React.lazy(() => import('./containers/AuthPages/Login'));
 // const Signup = React.lazy(() => import('./containers/AuthPages/SignUp'));
 // const ForgotPassword = React.lazy(() => import('./containers/AuthPages/ForgotPassword'));
@@ -354,6 +355,7 @@ class App extends React.Component {
                                         />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route path='/dailycontest' component={TradingContest} />
+                                        <Route path='/admin' component={AdminPages} />
                                         <Route 
                                             path='/quantresearch' 
                                             render={(props) => {

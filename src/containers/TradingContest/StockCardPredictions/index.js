@@ -11,19 +11,21 @@ import DefaultSettings from './components/mobile/DefaultSettings';
 import LoaderComponent from '../Misc/Loader';
 import Snackbar from '../../../components/Alerts/SnackbarComponent';
 import LoginBottomSheet from '../LoginBottomSheet';
-import {fetchAjaxPromise, handleCreateAjaxError, Utils} from '../../../utils';
+import ConfirmationDialog from './components/common/ConfirmationDialog';
+import {fetchAjaxPromise, handleCreateAjaxError, Utils, isHoliday} from '../../../utils';
 import {createPredictions} from '../MultiHorizonCreateEntry/utils';
-import {formatIndividualStock, constructPrediction, getConditionalNetValue} from './utils';
-import {getDailyContestPredictions, getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
-import {horizontalBox, primaryColor} from '../../../constants';
-import {onPredictionCreated, onSettingsClicked, onUserLoggedIn} from '../constants/events';
+import {formatIndividualStock, constructPrediction, getConditionalNetValue, getConditionalMaxValue, getConditionalItems, getAdvisorAllocation} from './utils';
+import {getPortfolioStats} from '../MultiHorizonCreateEntry/utils';
+import {onPredictionCreated, onSettingsClicked} from '../constants/events';
 import {conditionalTypeItems} from './constants';
+import {isMarketOpen} from '../utils';
 
 const URLSearchParamsPoly = require('url-search-params');
 
 const DateHelper = require('../../../utils/date');
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
+const marketTrading = !isHoliday() && isMarketOpen().status;
 
 // Variable that stores the query param of predct from the url
 let predictQueryParam = null;
@@ -54,7 +56,8 @@ class StockCardPredictions extends React.Component {
             stockCardBottomSheetOpen: false,
             listMode: false,
             predictionsAllowed: false,
-            loginOpen: false
+            loginOpen: false,
+            confirmationDialogOpen: false
         };
         const queryParams = new URLSearchParamsPoly(props.location.search);
         predictQueryParam =  queryParams.get('predict') === 'true' ? true : false;
@@ -73,10 +76,16 @@ class StockCardPredictions extends React.Component {
         }
     })
 
+    /**
+     * Method that's called to initialize the default settings stored in localstorage
+     */
     initializeDefaultStockData = () => new Promise((resolve, reject) => {
         try {
             const defaultStockData = Utils.getObjectFromLocalStorage('defaultSettings');
-        
+            const valueTypePct = _.get(defaultStockData, 'valueTypePct', true);
+            // If market is not trading then conditonalType should be cross by default
+            // If market is not trading then conditional is true else it is the default value
+
             resolve({
                 benchmark: _.get(defaultStockData, 'benchmark', 'NIFTY_500'),
                 horizon: _.get(defaultStockData, 'horizon', 5),
@@ -87,8 +96,10 @@ class StockCardPredictions extends React.Component {
                 stopLoss: _.get(defaultStockData, 'stopLoss', 5),
                 investment: _.get(defaultStockData, 'investment', 50000),
                 conditional: _.get(defaultStockData, 'conditional', false),
-                conditionalValue: _.get(defaultStockData, 'conditionalValue', 0.25),
-                conditionalType: _.get(defaultStockData, 'conditionalType', 'NOW')
+                conditionalValue: valueTypePct ? 0.25 : 100000, // deliberately putting a very high value such that it will be converted the second value from the items
+                conditionalType: _.get(defaultStockData, 'conditionalType', 'NOW'),
+                valueTypePct: _.get(defaultStockData, 'valueTypePct', true),
+                realPrediction: false
             });
         } catch (err) {
             reject(err);
@@ -279,10 +290,44 @@ class StockCardPredictions extends React.Component {
         })
     }
 
+    updateAdvisorAllocation = () => {
+        const advisorId = _.get(Utils.getUserInfo(), 'advisor', null);
+        getAdvisorAllocation(advisorId, this.props.history, this.props.match.url)
+        .then(response => {
+            let userInfo = Utils.getUserInfo();
+            const allocation = _.get(response.data, 'allocation', {});
+            const allowedInvestments = _.get(allocation, 'allowedInvestments', []);
+            const maxInvestment = _.get(allocation, 'maxInvestment', 0);
+            const allocationStatus = _.get(allocation, 'status', false);
+
+            let selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+            if (Utils.isLocalStorageItemPresent(selectedAdvisorId)) {
+                // Localstorage will be saved for 3rd party user
+                Utils.localStorageSave('isSelectedAdvisorAllocated', allocationStatus);
+                Utils.localStorageSave('selectedUserAllowedInvestments', allowedInvestments);
+                Utils.localStorageSave('selectedUserMaxInvestment', maxInvestment);
+            } else {
+                userInfo = {
+                    ...userInfo,
+                    allowedInvestments,
+                    maxInvestment,
+                    allocationStatus
+                };
+                Utils.cookieStorageSave(Utils.userInfoString, userInfo);
+            }
+        })
+        .catch(err => {
+            console.log('Error ', err.message);
+        })
+    }
+
     componentWillMount() {
         console.log('Predict Query Param ', typeof predictQueryParam, predictQueryParam);
         this.setState({loading: true});
-        this.initializeStateFromLocalStorage()
+        Promise.all([
+            this.initializeStateFromLocalStorage(),
+            this.updateAdvisorAllocation()
+        ])
         .catch(error => {
             console.log('Error', error);
         })
@@ -312,18 +357,31 @@ class StockCardPredictions extends React.Component {
     }
 
     updateStockDataToDefaultSettings = () => {
-        const {defaultStockData} = this.state;
-        const horizon = _.get(defaultStockData, 'horizon', 5);
+        const {defaultStockData, stockData} = this.state;
+        const isRealPrediction = _.get(stockData, 'realPrediction', false);
+        const stockDataInvestment = _.get(stockData, 'investment', 1);
+        const isRealPredictionSelected = _.get(stockData, 'realPrediction', false)
+        let horizon = _.get(defaultStockData, 'horizon', 5);
         const target = _.get(defaultStockData, 'target', 5);
         const investment = _.get(defaultStockData, 'investment', 10000);
         const stopLoss = _.get(defaultStockData, 'stopLoss', 2);
+
+        // If prediction type is real and horizon is less than 2 days then
+        // horizon should be set to 2 days
+        if (isRealPrediction) {
+            horizon = horizon < 2 ? 2: horizon;
+        }
+
+        // If prediction type is real then don't update the investment, 
+        // since default investment is in terms of notional 
         this.setState({
             stockData: {
                 ...this.state.stockData,
                 horizon,
                 target,
-                investment,
-                stopLoss
+                investment: isRealPredictionSelected ? stockDataInvestment : investment,
+                stopLoss,
+                realPrediction: false
             }
         });
     }
@@ -335,16 +393,18 @@ class StockCardPredictions extends React.Component {
     }
 
     createDailyContestPrediction = (type = 'buy') => {
+        this.setState({confirmationDialogOpen: false});
         const {
             conditional = false, 
             conditionalValue = 0.25, 
-            conditionalType = conditionalTypeItems[0]
+            conditionalType = conditionalTypeItems[0],
+            valueTypePct = true
         } = this.state.stockData;
         if (!Utils.isLoggedIn()) {
             this.toggleLoginBottomSheet();
             return;
         }
-        const predictions = constructPrediction(this.state.stockData, type, conditionalType, conditionalValue);
+        const predictions = constructPrediction(this.state.stockData, type, conditionalType, conditionalValue, valueTypePct);
         this.setState({loadingCreatePredictions: true});
         this.updatePortfolioStats()
         .then(portfolioStats => {
@@ -377,10 +437,24 @@ class StockCardPredictions extends React.Component {
         })
     }
 
-    getConditionalNetValue = (positive = true) => {
-        const {lastPrice = 0, conditionalValue} = this.state.stockData;
-
-        return getConditionalNetValue(positive, lastPrice, conditionalValue);
+    /**
+     * Getting the conditional net value, i.e avgPrice, when conditional is true
+     * Gets the max allowed conditionalValue
+     * If conditionalValue is > max 
+     * then conditional value is the last value obtained from the getConditionalItems() method call
+     * Required net value is obtained from the getConditionalNetValue() method call
+     */
+    getConditionalNetValue = (positive = true, valueTypePct = true) => {
+        let {lastPrice = 0, conditionalValue, conditionalType = 'NOW'} = this.state.stockData;
+        const conditionalMaxValue = getConditionalMaxValue(lastPrice, valueTypePct);
+        conditionalValue = conditionalValue > conditionalMaxValue 
+            ? getConditionalItems(lastPrice, valueTypePct)[1].key 
+            : conditionalValue;
+        
+        // Check this implementation
+        return conditionalType.toUpperCase() !== 'NOW' 
+            ? getConditionalNetValue(positive, lastPrice, conditionalValue, valueTypePct)
+            : lastPrice;
     }
 
     toggleSearchStocksBottomSheet = () => {
@@ -428,7 +502,16 @@ class StockCardPredictions extends React.Component {
     }
 
     toggleStockCardBottomSheet = () => {
-        this.setState({stockCardBottomSheetOpen: !this.state.stockCardBottomSheetOpen});
+        this.setState({stockCardBottomSheetOpen: !this.state.stockCardBottomSheetOpen}, () => {
+            if (!this.state.stockCardBottomSheetOpen) {
+                this.setState({
+                    stockData: {
+                        ...this.state.stockData,
+                        realPrediction: false
+                    }
+                })
+            }
+        });
     }
 
     closeStockCardBottomSheet = () => {
@@ -441,6 +524,10 @@ class StockCardPredictions extends React.Component {
 
     closeLoginBottomSheet = () => {
         this.setState({loginOpen: false});
+    }
+
+    toggleConfirmationDialog = () => {
+        this.setState({confirmationDialogOpen: !this.state.confirmationDialogOpen});
     }
 
     renderStockCard = (bottomSheet = false) => {
@@ -466,6 +553,8 @@ class StockCardPredictions extends React.Component {
                 bottomSheet={bottomSheet}
                 toggleLoginBottomSheet={this.toggleLoginBottomSheet}
                 getConditionalNetValue={this.getConditionalNetValue}
+                confirmationDialogOpen={this.state.confirmationDialogOpen}
+                toggleConfirmationDialog={this.toggleConfirmationDialog}
             />
         );
     }
@@ -486,6 +575,11 @@ class StockCardPredictions extends React.Component {
                     onClose={this.toggleLoginBottomSheet}
                     dialog={this.props.windowWidth > 800}
                     eventEmitter={this.props.eventEmitter}
+                />
+                <ConfirmationDialog 
+                    open={this.state.confirmationDialogOpen}
+                    onClose={this.toggleConfirmationDialog}
+                    createPrediction={() => this.createDailyContestPrediction('buy')}
                 />
                 <DefaultSettings 
                     open={this.state.defaultSettingsOpen}

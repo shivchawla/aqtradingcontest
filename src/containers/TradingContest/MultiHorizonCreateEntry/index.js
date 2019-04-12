@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import $ from 'jquery';
 import styled from 'styled-components';
 import moment from 'moment';
 import Media from 'react-media';
@@ -9,7 +10,6 @@ import Snackbar from '@material-ui/core/Snackbar';
 import {withRouter} from 'react-router';
 import SearchStocks from '../SearchStocks';
 import EntryDetailBottomSheet from './components/mobile/EntryDetailBottomSheet';
-import CreateEntryEditMobile from './components/mobile/CreateEntryEditScreen';
 import CreateEntryEditDesktop from './components/desktop/CreateEntryEditScreen';
 import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
@@ -23,16 +23,16 @@ import {
     getPredictionsFromPositions, 
     createPredictions, 
     checkHorizonDuplicationStatus, 
-    getDailyContestPredictions, 
     convertPredictionsToPositions, 
     processPredictions, 
-    getPnlStats, 
-    getPortfolioStats,
     getDefaultPrediction,
     checkForUntouchedPredictionsInPositions,
     getPositionsWithNewPredictions,
     exitPrediction,
-    stopPredictionInPositions
+    stopPredictionInPositions,
+    getDailyContestPredictionsN,
+    getPnlStatsN,
+    getPortfolioStatsN
 } from './utils';
 import {onPredictionCreated, onUserLoggedIn} from '../constants/events';
 import WS from '../../../utils/websocket';
@@ -41,6 +41,7 @@ const dateFormat = 'YYYY-MM-DD';
 const pnlCancelledMessage = 'pnlCancelled';
 const predictionsCancelledMessage = 'predictionsCancelled';
 const portfolioStatsCancelledMessage = 'portfolioStatsCancelled';
+const subscriberId = Math.random().toString(36).substring(2, 8);
 
 class CreateEntry extends React.Component {
     constructor(props) {
@@ -93,7 +94,8 @@ class CreateEntry extends React.Component {
             selectedPositionIndex: 0,
             stockDetailBottomSheetOpen: false,
             stopPredictionLoading: false,
-            selectedPosition: {}
+            selectedPosition: {},
+            real: false, // Flag to toggle between real and simulated predictions
         };
         this.mounted = false;
         this.webSocket = new WS();
@@ -353,21 +355,24 @@ class CreateEntry extends React.Component {
     updatePortfolioStats = portfolioStats => {
         this.setState({
             portfolioStatsFound: true,
-            portfolioStats
+            portfolioStats: {
+                ...this.state.portfolioStats,
+                ...portfolioStats
+            }
         });
     }
 
     getDailyPredictionsOnDateChange = (selectedDate = moment(), type = this.state.selectedView) => {
+        const {real = false} = this.state;
         try {
             this.cancelFetchPredictionsRequest(predictionsCancelledMessage);
         } catch(err) {}
         let predictions = [];
-        return getDailyContestPredictions(
-            selectedDate, 
-            type, 
-            false, 
-            this.props.history, 
-            this.props.match.url, 
+
+        return getDailyContestPredictionsN(
+            {date: selectedDate, category: type, populatePnl: false, real},
+            this.props.history,
+            this.props.match.url,
             false,
             c => {
                 this.cancelFetchPredictionsRequest = c
@@ -385,17 +390,18 @@ class CreateEntry extends React.Component {
     }
 
     getDailyPnlStats = (selectedDate = moment(), type='all') => {
+        const {real = false} = this.state;
         try {
             this.cancelFetchPnLRequest(pnlCancelledMessage);
         } catch (err){}
-        return getPnlStats(
-            selectedDate, 
-            type, 
-            this.props.history, 
-            this.props.match.url, 
+
+        return getPnlStatsN(
+            {date: selectedDate, type, real},
+            this.props.history,
+            this.props.match.url,
             false,
             c => {
-                this.cancelFetchPnLRequest = c;
+                this.cancelFetchPredictionsRequest = c
             }
         )
         .then(response => {
@@ -411,16 +417,13 @@ class CreateEntry extends React.Component {
     }
 
     getDailyPortfolioStats = (selectedDate = moment()) => {
-        // if (this.state.portfolioStatsFound) {
-        //     return 'requestCompleted';
-        // }
-
+        const {real = false} = this.state;
         try {
             this.cancelFetchPortfolioStatsRequest(portfolioStatsCancelledMessage);
         } catch (err) {}
         
-        return getPortfolioStats(
-            selectedDate,
+        return getPortfolioStatsN(
+            {date: selectedDate, real},
             this.props.history,
             this.props.match.url,
             false,
@@ -460,7 +463,9 @@ class CreateEntry extends React.Component {
         let msg = {
             "aimsquant-token": Utils.getAuthToken(),
             "action": "subscribe-prediction",
-            "category": type
+            "category": type,
+            "real": this.state.real,
+            "subscriberId": subscriberId
         };
         if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
             msg = {
@@ -471,21 +476,28 @@ class CreateEntry extends React.Component {
         this.webSocket.sendWSMessage(msg);
     }
 
-    unSubscribeToPredictions = (type = this.state.selectedView) => {
-        const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
-        let msg = {
-            'aimsquant-token': Utils.getAuthToken(),
-            'action': 'unsubscribe-predictions',
-            'category': type,
-        };
-        if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
-            msg = {
-                ...msg,
-                advisorId: selectedAdvisorId
+    unSubscribeToPredictions = (type = this.state.selectedView) => new Promise((resolve, reject) => {
+        try {
+            const selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+            let msg = {
+                'aimsquant-token': Utils.getAuthToken(),
+                'action': 'unsubscribe-predictions',
+                'category': type,
+                "real": this.state.real,
+                "subscriberId": subscriberId
             };
-        }
+            if (Utils.isLocalStorageItemPresent(selectedAdvisorId) && Utils.isAdmin()) {
+                msg = {
+                    ...msg,
+                    advisorId: selectedAdvisorId
+                };
+            }
+            resolve(msg);
         this.webSocket.sendWSMessage(msg);
-    }
+        } catch (err) {
+            reject(err);
+        }
+    });
 
     processRealtimeMessage = msg => {
         const currentDate = moment().format(dateFormat);
@@ -494,9 +506,11 @@ class CreateEntry extends React.Component {
             try {
                 const realtimeData = JSON.parse(msg.data);
                 const predictons = _.get(realtimeData, 'predictions', {});
-                const pnl = _.get(realtimeData, 'pnlStats', []);
+                const pnl = _.get(realtimeData, 'pnlStats', {});
+                const portfolioStats = _.get(realtimeData, 'portStats', {});
                 this.updateDailyPredictions(predictons);
                 this.updateDailyPnLStats(pnl);
+                this.updatePortfolioStats(portfolioStats);
             } catch(error) {
                 return error;
             }
@@ -583,17 +597,7 @@ class CreateEntry extends React.Component {
                 });
             }
         }
-    }
-
-    adjustPriceDifference = (lastPrice, target, type = 'buy') => {
-        const difference = lastPrice > target ? lastPrice - target : target - lastPrice;
-
-        if (type === 'buy') {
-            return lastPrice + difference;
-        }
-
-        return lastPrice - difference;
-    }   
+    }  
 
     deletePrediction = (symbol, key) => {
         const clonedPositions = _.map(this.state.positions, _.cloneDeep);
@@ -672,6 +676,14 @@ class CreateEntry extends React.Component {
 
     componentDidMount() {
         try {
+            const self = this;
+            $(window).bind('beforeunload', function() {
+                self.unSubscribeToPredictions()
+                .then(() => {
+                    window.onbeforeunload = null;
+                    return false;
+                });
+            });
             this.mounted = true;
             this.props.eventEmitter && this.props.eventEmitter.on(onPredictionCreated, this.captureEvent);
             this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureEvent);
@@ -703,22 +715,18 @@ class CreateEntry extends React.Component {
     } 
 
     renderDesktopLayout = (props) => {
-        const currentDate = moment().format(dateFormat);
-        const selectedDate = this.state.selectedDate.format(dateFormat);
-        const shouldRenderEdit = currentDate === selectedDate;
-
         return <CreateEntryEditDesktop {...props} />;
     }
 
     renderMobileLayout = (props) => {
-        const {componentType = 'create'} = this.props;
+        return <DisplayPredictionsMobile {...props} />;
+    }
 
-        return (
-            <React.Fragment>
-                <DisplayPredictionsMobile {...props} />
-                <CreateEntryEditMobile {...props} />
-            </React.Fragment>
-        )
+    setRealFlag = (real = false) => {
+        this.setState({real}, () => {
+            this.fetchPredictionsAndStats(this.state.selectedDate);
+            this.takeSubscriptionAction();
+        });
     }
 
     renderPortfolioPicksDetail = () => {
@@ -774,7 +782,9 @@ class CreateEntry extends React.Component {
             updateDate: this.props.updateDate,
             stopPrediction: this.stopPrediction,
             portfolioStats: this.state.portfolioStats,
-            stopPredictionLoading: this.state.stopPredictionLoading
+            stopPredictionLoading: this.state.stopPredictionLoading,
+            setRealFlag: this.setRealFlag,
+            real: this.state.real
         };
         const {mobile = false} = this.props;
 

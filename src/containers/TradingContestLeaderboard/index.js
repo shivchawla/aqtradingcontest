@@ -65,7 +65,7 @@ export class TradingContestLeaderboardMobile extends React.Component {
                             }}
                     >
                         <RadioGroup
-                            items={['Daily', 'Weekly', 'Overall']}
+                            items={['Daily', 'Weekly']}
                             defaultSelected={this.state.selectedTab}
                             onChange={this.onRadioChange}
                             CustomRadio={CustomRadio}

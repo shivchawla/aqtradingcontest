@@ -17,6 +17,9 @@ const theme = createMuiTheme({
         secondary: {
             main: '#EB5555'
         },
+        disabled: {
+            main: '#B0BEC5'
+        }
     },
     overrides: {
         MuiButton: {
@@ -46,19 +49,31 @@ const theme = createMuiTheme({
 
 export default class SubmitButton extends React.Component {
     render() {
-        let {target, lastPrice, onClick, type = 'buy', classes} = this.props;
+        let {
+            target, 
+            lastPrice, 
+            onClick, 
+            type = 'buy', 
+            classes, 
+            valueTypePct = true,
+            disabled = false
+        } = this.props;
         const icon = type === 'buy' ? Icons.faAngleDoubleUp : Icons.faAngleDoubleDown;
         const label = type === 'buy' ? 'HIGHER' : 'LOWER';
-        const color = type === 'buy' ? metricColor.positive : metricColor.negative;
-        const targetValue = getPercentageModifiedValue(target, lastPrice, type === 'buy');
+        const targetValue = getPercentageModifiedValue(target, lastPrice, type === 'buy', valueTypePct);
 
         return (
             <MuiThemeProvider theme={theme}>
                 <div style={{...verticalBox}}>
                     <Button 
                             variant="contained" 
-                            color={type === 'buy' ? 'primary' : 'secondary'}
+                            color={
+                                type === 'buy' 
+                                            ? 'primary' 
+                                            : 'secondary'
+                            }
                             onClick={onClick}
+                            disabled={disabled}
                     >
                         <div
                                 style={{
@@ -72,7 +87,11 @@ export default class SubmitButton extends React.Component {
                             />
                             <div style={{...verticalBox}}>
                                 {label}
-                                <Target color='#fff'>₹{Utils.formatMoneyValueMaxTwoDecimals(targetValue)}</Target>
+                                <Target 
+                                        color='#fff'
+                                >
+                                    ₹{Utils.formatMoneyValueMaxTwoDecimals(targetValue)}
+                                </Target>
                             </div>
                         </div>
                     </Button>

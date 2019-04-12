@@ -96,9 +96,9 @@ export const HowItWorksCard = ({image, header, content}) => {
 
     return (
         <div style={containerStyle}>
-            <h3 style={cardHeaderTextStyle}>{header}</h3>
             <Grid container>
                 <Grid item xs={9} style={{marginTop: '10px'}}>
+                    <h3 style={cardHeaderTextStyle}>{header}</h3>
                     <h5 style={cardContentTextStyle}>{content}</h5>
                 </Grid>
                 <Grid item xs={3} style={{...verticalBox, alignItems: 'flex-end', paddingRight: '20px', marginTop: '-20px'}}>

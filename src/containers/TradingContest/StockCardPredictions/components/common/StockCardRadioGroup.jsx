@@ -11,6 +11,7 @@ import CustomRadio from '../../../../../components/selections/CustomRadio';
 import TextField from '@material-ui/core/TextField';
 import {horizontalBox, verticalBox, primaryColor} from '../../../../../constants';
 import {getNextNonHolidayWeekday} from '../../../../../utils/date';
+import {constructKvpPairs} from '../../utils';
 
 let sliderInputTimeout = null;
 const yellowColor = '#dda91a';
@@ -54,22 +55,27 @@ class StockCardRadioGroup extends React.Component {
     }
 
     handleChange = value => {
-        this.setState({selected: this.props.getValue ? this.props.getValue(value) : value});
-        this.props.onChange && this.props.onChange(value);
+        const {customValues = true, items = []} = this.props;
+        const requiredValue = this.props.getValue 
+            ? this.props.getValue(value, customValues, constructKvpPairs(items)) 
+            : value
+        this.setState({selected: requiredValue});
+
+        this.props.onChange && this.props.onChange(requiredValue);
     }
 
     handleSliderChange = (e, value) => {
         this.setState({sliderValue: value});
         clearTimeout(sliderInputTimeout);
         sliderInputTimeout = setTimeout(() => {
-            this.props.onChange && this.props.onChange(value, false);
+            this.props.onChange && this.props.onChange(value, true);
         }, 300);
     }
 
     handleTextChange = (e) => {
         const value = e.target.value;
-        const {max = 30} = this.props;
-        if (Number(value) >=0 && Number(value) <= max) {
+        const {max = 30, min = 0} = this.props;
+        if (Number(value) >= min && Number(value) <= max) {
             this.setState({sliderValue: value});
             const requiredValue = value.length === 0 ? null : Number(value);
             clearTimeout(sliderInputTimeout);
@@ -93,7 +99,9 @@ class StockCardRadioGroup extends React.Component {
             max = 30,
             min = 1,
             step = 1,
-            disabled = false
+            disabled = false,
+            customValues = true,
+            decimal = true
         } = this.props;
         const isDesktop = this.props.windowWidth > 800;
         const textFieldLabel = this.props.date 
@@ -101,7 +109,7 @@ class StockCardRadioGroup extends React.Component {
                 : this.state.sliderValue;
 
         return (
-            <Grid container style={{...verticalBox, alignItems: 'flex-start'}}>
+            <Grid container>
                 <Grid item xs={12} 
                         style={{
                             ...horizontalBox, 
@@ -148,7 +156,7 @@ class StockCardRadioGroup extends React.Component {
                             >
                                 {
                                     this.props.checkIfCustom && 
-                                    this.props.checkIfCustom(this.props.defaultSelected) && 
+                                    this.props.checkIfCustom(this.props.defaultSelected, customValues, constructKvpPairs(items)) && 
                                     <div 
                                             style={{
                                                 ...verticalBox,
@@ -156,8 +164,14 @@ class StockCardRadioGroup extends React.Component {
                                                 width: '48px'
                                             }}
                                     >
-                                        <ValueContainer>
-                                            <CustomValue>{this.props.defaultSelected}</CustomValue>
+                                        <ValueContainer disabled={disabled}>
+                                            <CustomValue disabled={disabled}>
+                                                {
+                                                    this.props.formatValue
+                                                        ?   this.props.formatValue(this.props.defaultSelected)
+                                                        :   this.props.defaultSelected
+                                                }
+                                            </CustomValue>
                                         </ValueContainer>
                                         {
                                             this.props.date && !this.props.hideLabel &&
@@ -204,8 +218,8 @@ class StockCardRadioGroup extends React.Component {
                                             }}
                                     >
                                         <CustomText style={{color: primaryColor, fontWeight: 700, fontSize: '14px'}}>
-                                            {(this.state.sliderValue || 0).toFixed(2)} 
-                                            {this.props.label}
+                                            {decimal ? (this.state.sliderValue || 0).toFixed(2) : this.state.sliderValue} 
+                                            &nbsp;{this.props.label}
                                             {
                                                 this.props.date &&
                                                 <span style={{color: '#444', marginLeft: '2px', fontWeight: 400}}>
@@ -267,7 +281,8 @@ const ValueContainer = styled.div`
     align-items: center;
     flex-direction: column;
     border-radius: 2px;
-    background-color: #3e4db8;
+    background-color: ${props => props.disabled ? '#0000001f' : '#3e4db8'};
+    border: ${props => props.disabled ? '1px solid #a2aabe' : 'none'}
 `;
 
 const CustomText = styled.h3`
@@ -283,7 +298,7 @@ const CustomValue = styled.h3`
     font-weight: 700;
     font-size: 12px;
     text-align: start;
-    color: #fff;
+    color: ${props => props.disabled ? '#00000042' : '#fff'};
 `;
 
 const HelperText = styled.h3`

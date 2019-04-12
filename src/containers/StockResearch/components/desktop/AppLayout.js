@@ -60,11 +60,11 @@ class AppLayout extends React.Component {
                         <div 
                                 style={{
                                     height: 'calc(100vh - 64px)',
-                                    ...verticalBox,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    paddingLeft: '20px',
                                     ...this.props.style
+                                    // ...verticalBox,
+                                    // justifyContent: 'center',
+                                    // alignItems: 'center',
+                                    // paddingLeft: '20px',
                                 }}
                         >
                             {this.props.content}

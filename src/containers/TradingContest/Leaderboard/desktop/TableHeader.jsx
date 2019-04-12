@@ -5,11 +5,11 @@ import Grid from '@material-ui/core/Grid';
 export default class TableHeader extends React.Component {
     render() {
         return (
-            <Grid container style={{marginBottom: '10px'}}>
-                <Grid item xs={1} style={{paddingLeft: '10px'}}>
+            <Grid container style={{marginBottom: '10px', padding: '0 10px', boxSizing: 'border-box'}}>
+                <Grid item xs={1}>
                     <TableHeaderText>Rank</TableHeaderText>
                 </Grid>
-                <Grid item xs={2} style={{paddingLeft: '10px'}}>
+                <Grid item xs={3}>
                     <TableHeaderText>Name</TableHeaderText>
                 </Grid>
                 <Grid item xs={2}>
@@ -18,8 +18,8 @@ export default class TableHeader extends React.Component {
                 <Grid item xs={2}>
                     <TableHeaderText>Pnl Pct</TableHeaderText>
                 </Grid>
-                <Grid item xs={3}>
-                    <TableHeaderText>Profit Factor</TableHeaderText>
+                <Grid item xs={2}>
+                    <TableHeaderText>Profit Fct.</TableHeaderText>
                 </Grid>
                 <Grid item xs={2}>
                     <TableHeaderText>Investment</TableHeaderText>

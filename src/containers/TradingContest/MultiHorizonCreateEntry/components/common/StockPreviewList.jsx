@@ -1,12 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
 import windowSize from 'react-window-size';
-import Media from 'react-media';
 import styled from 'styled-components';
 import Grid from '@material-ui/core/Grid'
 import StockPreviewListItemMobile from '../mobile/StockPreviewListItem';
 import StockPreviewListItemDesktop from '../desktop/StockPreviewListItem';
-import {primaryColor} from '../../../../../constants';
 const moment = require('moment');
 
 class StockPreviewList extends React.Component {
@@ -20,7 +18,7 @@ class StockPreviewList extends React.Component {
 
     render() {
         const isDesktop = this.props.windowWidth > 800;
-        const {positions = [], type='buy', selectedDate = moment()} = this.props;
+        const {positions = [], type='buy', selectedDate = moment(), preview = false} = this.props;
         const StockPreviewListItem = global.screen.width < 801 ? StockPreviewListItemMobile : StockPreviewListItemDesktop;
         const errorText = 'No predictions found';
         return (
@@ -47,6 +45,7 @@ class StockPreviewList extends React.Component {
                                 deletePrediction={this.props.deletePrediction}
                                 stopPredictionLoading={this.props.stopPredictionLoading}
                                 selectedDate={selectedDate}
+                                preview={preview}
                             />
                         );
                     })

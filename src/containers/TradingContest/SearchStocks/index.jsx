@@ -322,7 +322,7 @@ class SearchStocks extends React.Component {
             const change = _.get(stock, 'latestDetailRT.change', 0) || 
                 _.get(stock, 'latestDetail.Change', 0);
 
-            const changePct = _.get(stock, 'latestDetailRT.changePct', 0) ||
+            const changePct = _.get(stock, 'latestDetailRT.change_p', 0) ||
                 _.get(stock, 'latestDetail.ChangePct', 0);
 
             const high = _.get(stock, 'latestDetailRT.high', 0) ||
@@ -334,11 +334,14 @@ class SearchStocks extends React.Component {
             const open = _.get(stock, 'latestDetailRT.open', 0) ||
                 _.get(stock, 'latestDetail.Open', 0);
 
-            const current = _.get(stock, 'latestDetailRT.current', 0) ||
+            const current = _.get(stock, 'latestDetailRT.close', 0) ||
                 _.get(stock, 'latestDetail.Close', 0);
 
             const shortable = _.get(stock, 'shortable', false);
 
+            const real = _.get(stock, 'real', false);
+
+            const allowed =  _.get(stock, 'allowed', false)
 
             return {
                 symbol,
@@ -356,7 +359,9 @@ class SearchStocks extends React.Component {
                 industry: _.get(stock, 'detail.Industry', null),
                 shortable,
                 hideActions: false,
-                hide: false
+                hide: false,
+                real,
+                allowed
             };
         }).filter(stock => stock.name !== null);;
     }

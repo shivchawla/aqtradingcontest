@@ -9,39 +9,6 @@ import HighChartBar from '../../../../components/Charts/HighChartBar';
 import HighStock from '../../../../components/Charts/HighStock';
 import TranslucentLoader from '../../../../components/Loaders/TranslucentLoader';
 
-const metrics = [
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    },
-    {
-        metricValue: 0.6,
-        rank: 10,
-        label: 'Max Loss'
-    }
-];
-
 class Layout extends React.Component {
     constructor(props) {
         super(props);
@@ -134,7 +101,7 @@ class Layout extends React.Component {
                                     marginBottom: '10px'
                                 }}
                         >
-                             <SectionHeader style={{marginBottom: 0}}>Periodic Performance</SectionHeader>
+                             <SectionHeader style={{marginBottom: 0}}>Rolling Performance</SectionHeader>
                         </Grid>
                         <Grid 
                                 item 
@@ -179,7 +146,7 @@ class Layout extends React.Component {
                                 item 
                                 xs={12}
                         >
-                            <SectionHeader>Monthly Performance</SectionHeader>
+                            <SectionHeader>Static Performance</SectionHeader>
                         </Grid>
                         <Grid 
                                 item 
@@ -196,7 +163,6 @@ class Layout extends React.Component {
                             <HighChartBar
                                 id='staticPerformance'
                                 series={this.props.staticPerformance}
-                                categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']}
                                 updateTimeline={true}
                             />
                         </Grid>

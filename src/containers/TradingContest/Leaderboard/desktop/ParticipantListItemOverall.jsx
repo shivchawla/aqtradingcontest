@@ -33,7 +33,7 @@ export default class ParticipantListItemOverall extends React.Component {
             netValue = 0, 
             totalEarnings = 1, 
             totalReturn = 0, 
-            index = 0
+            index = 0,
         }  = this.props;
         const medal = getRankMedal(1);
         

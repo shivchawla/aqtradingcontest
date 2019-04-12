@@ -45,7 +45,7 @@ export default class StockEditPredictionList extends React.Component {
     }
  
     render() {
-        const {predictions = [], stopPredictionLoading = false} = this.props;
+        const {predictions = [], stopPredictionLoading = false, preview = false} = this.props;
 
         return (
             <Grid item xs={12}>
@@ -100,6 +100,7 @@ export default class StockEditPredictionList extends React.Component {
                                 prediction={prediction} 
                                 key={index}
                                 openDialog={this.openStopPredictionDialog}
+                                preview={preview}
                             />
                         )
                     })

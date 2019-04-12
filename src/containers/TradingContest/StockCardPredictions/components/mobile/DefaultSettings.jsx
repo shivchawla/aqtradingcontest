@@ -16,9 +16,25 @@ import BottomSheet from '../../../../../components/Alerts/BottomSheet';
 import DialogComponent from '../../../../../components/Alerts/DialogComponent';
 import DialogHeaderComponent from '../../../../../components/Alerts/DialogHeader';
 import {horizontalBox, verticalBox, primaryColor, sectors} from '../../../../../constants';
-import {getTarget, getTargetValue, getHorizon, getHorizonValue, checkIfCustomHorizon, checkIfCustomTarget, getInvestment, getInvestmentValue} from '../../utils';
 import {Utils} from '../../../../../utils';
-import {targetKvp, horizonKvp, investmentKvp, conditionalTypeItems} from '../../constants';
+import {
+    getTarget, 
+    getTargetValue, 
+    getHorizon, 
+    getHorizonValue, 
+    checkIfCustomHorizon, 
+    checkIfCustomTarget, 
+    getInvestment, 
+    getInvestmentValue,
+    roundToValue
+} from '../../utils';
+import {
+    targetKvp, 
+    horizonKvp, 
+    investmentKvp, 
+    conditionalTypeItems, 
+    selectionTypeItems
+} from '../../constants';
 
 const styles = theme => ({
     dialogContentRoot: {
@@ -63,42 +79,14 @@ class DefaultSettings extends React.Component {
         });
     }
 
-    handleHorizonChange = (value = null, format = true) => {
-        if (value !== null) {
-            const requiredHorizon = format ? getHorizonValue(value) : value;
+    /**
+     * Handles the stock card radio group change
+     */
+    handleStockCardRadioGroupChange = (value = null, key) => {
+        if (value != null) {
             this.props.modifyDefaultStockData({
                 ...this.props.defaultStockData,
-                horizon: requiredHorizon
-            });
-        }
-    }
-
-    handleTargetChange = (value = null, format = true) => {
-        if (value !== null) {
-            const requiredTarget = format ? getTargetValue(value) : value;
-            this.props.modifyDefaultStockData({
-                ...this.props.defaultStockData,
-                target: requiredTarget
-            });
-        }
-    }
-
-    handleStopLossChange = (value = null, format = true) => {
-        if (value !== null) {
-            const requiredStopLoss = format ? getTargetValue(value) : value;
-            this.props.modifyDefaultStockData({
-                ...this.props.defaultStockData,
-                stopLoss: requiredStopLoss
-            });
-        }
-    }
-
-    handleInvestmentChange = (value = null) => {
-        if (value !== null) {
-            const requiredInvestment = getInvestmentValue(value);
-            this.props.modifyDefaultStockData({
-                ...this.props.defaultStockData,
-                investment: requiredInvestment
+                [key]: value
             });
         }
     }
@@ -113,12 +101,29 @@ class DefaultSettings extends React.Component {
         }
     }
 
+    handleConditionalBooleanChange = (value = null) => {
+        let {conditionalType = conditionalTypeItems[0]} = this.props.defaultStockData;
+
+        if (value !== null) {
+            this.props.modifyDefaultStockData({
+                ...this.props.defaultStockData,
+                conditional: value === 0 ? true : false,
+                conditionalType: value === 0 ? conditionalType : 'NOW'
+            });
+        }
+    }
+
     onEditModeChanged = (value) => {
         this.props.modifyDefaultStockData({
             ...this.props.defaultStockData,
             editMode: value === 1
         });
         this.props.updateEditMode(value === 1);
+    }
+
+    updateSelectionType = (value = 0) => {
+        const valueTypePct = value === 0;
+        this.resetToPercentageDefaultSettings(valueTypePct);
     }
 
     onListModeChanged = (value) => {
@@ -133,6 +138,23 @@ class DefaultSettings extends React.Component {
         Utils.localStorageSave('selectedAdvisorId', null);
         Utils.localStorageSave('selectedUserId', null);
         Utils.localStorageSave('selectedUserName', null);
+        Utils.localStorageSave('selectedUserAllowedInvestments', null);
+		Utils.localStorageSave('selectedUserMaxInvestment', null);
+    }
+
+    resetToPercentageDefaultSettings = (valueTypePct = true) => {
+        const targetItems = this.getTargetItems(valueTypePct);
+        const target = getTargetValue(targetItems[0].key, valueTypePct, this.getTargetItems());
+        const stopLoss = getTargetValue(targetItems[0].key, valueTypePct, this.getTargetItems());
+        const conditionalValue = valueTypePct ? 0.25 : 1;
+
+        this.props.modifyDefaultStockData({
+            ...this.props.defaultStockData,
+            valueTypePct,
+            stopLoss,
+            target,
+            conditionalValue
+        });
     }
 
     renderHeader = () => {
@@ -156,6 +178,15 @@ class DefaultSettings extends React.Component {
         );
     }
 
+    getTargetItems = (valueTypePct = _.get(this.props, 'defaultStockData.valueTypePct', true)) => {
+        const {lastPrice = 500} = this.props.defaultStockData;
+        let targetItems = targetKvp.map(target => {
+            const requiredValue = roundToValue(lastPrice, target.value);
+            return {key: valueTypePct ? target.value:  requiredValue, label: null};
+        });
+        return _.uniqBy(targetItems, 'key');
+    }
+
     render() {
         let {
             horizon = 2, 
@@ -166,14 +197,23 @@ class DefaultSettings extends React.Component {
             stopLoss = 0, 
             investment = 1,
             conditionalType = conditionalTypeItems[0],
-            conditional = false
+            conditional = false,
+            valueTypePct = true
         } = this.props.defaultStockData;
-        const targetItems = targetKvp.map(target => ({key: target.value, label: null}));
+        const targetItems = this.getTargetItems(true);
         const investmentItems = investmentKvp.map(investment => ({key: investment.value, label: null}));
         const horizonItems = horizonKvp.map(horizon => (
             {key: horizon.value, label: null}
         ));
-        const radioGroupStyle = {...verticalBox, alignItems: 'flex-start', minHeight: '80px', width: '90%'};
+        const radioGroupStyle = {
+            ...verticalBox, 
+            alignItems: 'flex-start', 
+            width: '90%',
+            margin: '5px 0'
+        };
+        const headerStyle = {
+            marginBottom: '5px'
+        }
         const Dialog = this.props.dialog ? DialogComponent : BottomSheet;
         const isDesktop = this.props.windowWidth > 800;
         const gridContainerStyle = isDesktop? {minWidth: '38vw'} : {};
@@ -212,102 +252,115 @@ class DefaultSettings extends React.Component {
                                 }}
                         >
                             <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '10px'
-                                        }}
-                                >
+                                <MetricLabel style={headerStyle}>
+                                    Selection Type
+                                </MetricLabel>
+                                <RadioGroup 
+                                    items={selectionTypeItems}
+                                    onChange={this.updateSelectionType}
+                                    defaultSelected={valueTypePct === true ? 0 : 1}
+                                    CustomRadio={CardCustomRadio}
+                                    small
+                                />
+                            </div>
+                            <div style={radioGroupStyle}>
+                                <MetricLabel style={headerStyle}>
                                     Horizon in Days
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={horizonItems}
-                                    onChange={this.handleHorizonChange}
+                                    onChange={value => this.handleStockCardRadioGroupChange(value, 'horizon')}
                                     defaultSelected={horizon}
                                     getIndex={getHorizon}
                                     checkIfCustom={checkIfCustomHorizon}
+                                    getValue={getHorizonValue}
                                     showSlider
+                                    customValues={false}
                                     label='Days'
                                     date={true}
+                                    max={15}
                                 />
                             </div>
-                            <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '20px'
-                                        }}
-                                >
+                            <div style={{...radioGroupStyle, marginTop: 0}}>
+                                <MetricLabel style={headerStyle}>
                                     Target in %
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
-                                    onChange={this.handleTargetChange}
+                                    onChange={value => this.handleStockCardRadioGroupChange(value, 'target')}
                                     defaultSelected={target}
                                     hideLabel={true}
                                     getIndex={getTarget}
+                                    getValue={getTargetValue}
                                     checkIfCustom={checkIfCustomTarget}
+                                    valueTypePct={valueTypePct}
                                     showSlider
                                     label='%'
+                                    disabled={!valueTypePct}
                                 />
                             </div>
                             <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '20px'
-                                        }}
-                                >
-                                    Stop-Loss %
+                                <MetricLabel style={headerStyle}>
+                                    Stop-Loss in %
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={targetItems}
-                                    onChange={this.handleStopLossChange}
+                                    onChange={value => this.handleStockCardRadioGroupChange(value, 'stopLoss')}
                                     defaultSelected={stopLoss}
                                     hideLabel={true}
                                     getIndex={getTarget}
+                                    getValue={getTargetValue}
+                                    valueTypePct={valueTypePct}
                                     checkIfCustom={checkIfCustomTarget}
                                     showSlider
                                     label='%'
+                                    disabled={!valueTypePct}
                                 />
                             </div>
                             <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '20px'
-                                        }}
-                                >
-                                    Investment
+                                <MetricLabel style={headerStyle}>
+                                    Investment (₹)
                                 </MetricLabel>
                                 <StockCardRadioGroup 
                                     items={investmentItems}
-                                    onChange={this.handleInvestmentChange}
+                                    onChange={value => this.handleStockCardRadioGroupChange(value, 'investment')}
                                     defaultSelected={investment}
                                     hideLabel={true}
                                     getIndex={getInvestment}
+                                    getValue={getInvestmentValue}
                                     label='%'
                                     hideSlider={true}
                                     formatValue={Utils.formatInvestmentValueNormal}
+                                    customValues={false}
                                 />
                             </div>
                             <div style={radioGroupStyle}>
-                                <MetricLabel 
-                                        style={{
-                                            marginBottom: '10px',
-                                            marginTop: '20px'
-                                        }}
-                                >
+                                <MetricLabel style={headerStyle}>
                                     Conditional
                                 </MetricLabel>
                                 <RadioGroup 
-                                    items={conditionalTypeItems}
-                                    onChange={this.updateConditionalChange}
-                                    defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
-                                    style={{marginLeft: '-10px'}}
+                                    items={['True', 'False']}
+                                    onChange={this.handleConditionalBooleanChange}
+                                    defaultSelected={conditional === true ? 0 : 1}
                                     CustomRadio={CardCustomRadio}
+                                    small
                                 />
                             </div>
+                            {
+                                conditional &&
+                                <div style={radioGroupStyle}>
+                                    <MetricLabel style={headerStyle}>
+                                        Schedule/On Change(%)
+                                    </MetricLabel>
+                                    <RadioGroup 
+                                        items={conditionalTypeItems}
+                                        onChange={this.updateConditionalChange}
+                                        defaultSelected={_.findIndex(conditionalTypeItems, item => item === conditionalType)}
+                                        CustomRadio={CardCustomRadio}
+                                        small
+                                    />
+                                </div>
+                            }
                         </div>
                         <div
                                 style={{
@@ -395,7 +448,7 @@ const applyButtonStyle = {
 }
 
 const MetricLabel = styled.h3`
-    font-size: 16px;
+    font-size: 12px;
     color: #5D5D5D;
     font-weight: 600;
     text-align: start;

@@ -86,7 +86,7 @@ export default class StockListItemMobile extends React.Component {
 
     checkIfAllowerNiftyIndex = (ticker) => {
         let tickerParts = ticker.split('_');
-        const allowedIndex = ['50', 'it', 'bank'];
+        const allowedIndex = ['50', 'bank'];
 
         if (tickerParts.length > 1 && _.get(tickerParts, '[0]', '').toLowerCase() === 'nifty') {
             const secondPart = _.get(tickerParts, '[1]', null);
@@ -101,8 +101,18 @@ export default class StockListItemMobile extends React.Component {
         return true;
     }
 
+    checkIfNiftyIndex = ticker => {
+        let tickerParts = ticker.split('_');
+        if (tickerParts[0].toLowerCase() === 'nifty') {
+            return true;
+        }
+
+        return false;
+    }
+
     render() {
         const {
+            allowed = false,
             symbol, 
             name, 
             change, 
@@ -119,6 +129,7 @@ export default class StockListItemMobile extends React.Component {
             onPredictIconClicked = () => {},
             hideButtons = false
         } = this.props;
+        
         const itemContainerStyle = {
             borderBottom: '1px solid #eaeaea',
             color: textColor,
@@ -128,7 +139,11 @@ export default class StockListItemMobile extends React.Component {
             width: '100%'
         };
 
-        const changeColor = change < 0 ? metricColor.negative : metricColor.positive;
+        const changeColor = change < 0 
+            ? metricColor.negative 
+            : change === 0 
+                ? metricColor.neutral 
+                : metricColor.positive;
         const changeIcon = change < 0 ? 'arrow_drop_down' : 'arrow_drop_up';
         const nChangePct = (changePct * 100).toFixed(2);
 
@@ -223,12 +238,18 @@ export default class StockListItemMobile extends React.Component {
                         }
                         {
                             (showPredict || watchlistPredict) &&
-                            this.checkIfAllowerNiftyIndex(symbol) &&
                             <PredictButton 
+                                style={
+                                    (this.checkIfNiftyIndex(symbol) && this.checkIfAllowerNiftyIndex(symbol)) || allowed
+                                        ?   {background: 'linear-gradient(to bottom, #2987F9, #386FFF)'}
+                                        :   {backgroundColor: '#c2c2c2'}
+                                }
                                 onClick={() => {
-                                    showPredict
-                                        ?   onAddIconClick(symbol)
-                                        :   onPredictIconClicked(symbol)
+                                    (this.checkIfNiftyIndex(symbol) && this.checkIfAllowerNiftyIndex(symbol)) || allowed
+                                    ?   showPredict
+                                            ?   onAddIconClick(symbol)
+                                            :   onPredictIconClicked(symbol)
+                                    :   null
                                 }}
                             />
                         }
@@ -242,8 +263,7 @@ export default class StockListItemMobile extends React.Component {
     }
 }
 
-const PredictButton = ({onClick}) => {
-    const background = 'linear-gradient(to bottom, #2987F9, #386FFF)';
+const PredictButton = ({onClick, style}) => {
     const color = '#fff';
     const fontSize = '12px';
     const padding = '4px 8px';
@@ -255,9 +275,8 @@ const PredictButton = ({onClick}) => {
                     color,
                     fontSize,
                     padding,
-                    background,
-                    // boxShadow,
-                    marginLeft: '10px'
+                    marginLeft: '10px',
+                    ...style
                 }}
                 onClick={onClick}
         >

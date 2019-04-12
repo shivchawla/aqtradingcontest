@@ -177,7 +177,7 @@ class PortfolioDetailImpl extends React.Component {
                 metricValue = Math.exp(Math.log(1 + annualreturn) / 12) - 1;
             }
             const metricValuePercentage = Number((metricValue * 100).toFixed(2));
-            benchmarkData.push({metricValuePercentage});
+            benchmarkData.push(metricValuePercentage);
             benchmarkTimelineData.push({
                 timeline: key,
                 value: metricValuePercentage
@@ -247,8 +247,12 @@ class PortfolioDetailImpl extends React.Component {
     }
 
     getAdvisorPerformanceData = () => {
-        const selectedAdvisorId = _.get(Utils.getUserInfo(), 'advisor', null);
-        const advicePerformanceUrl = `${requestUrl}/dailycontest/performance?advisor=${selectedAdvisorId}`;
+        const {real = false} = this.props;
+        let selectedAdvisorId = Utils.getFromLocalStorage('selectedAdvisorId');
+        selectedAdvisorId = (selectedAdvisorId === null || selectedAdvisorId === 'null' || selectedAdvisorId === undefined) 
+            ? _.get(Utils.getUserInfo(), 'advisor', null) 
+            : selectedAdvisorId
+        const advicePerformanceUrl = `${requestUrl}/dailycontest/performance?advisor=${selectedAdvisorId}&real=${real}`;
 
         let benchmark = '';
         this.setState({loading: true});

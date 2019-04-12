@@ -284,6 +284,9 @@ class StockChartImpl extends React.Component {
         }
     })
 
+    /**
+     * Used to create the transparent dummy series for intraday performance
+     */
     getDummyDataForSeries = (data) => {
         const endTime = moment(data[data.length - 1][0]).hours(15).minutes(30).valueOf();
         const intradayData = _.get(this.props, 'intraDaySeries.data', []);
@@ -379,7 +382,7 @@ class StockChartImpl extends React.Component {
             }
         } else {
             if (series.length > legendItems.length) { // Item needs to be added
-                console.log("Items will be added");
+                // console.log("Items will be added");
                 series.map(item => {
                     const seriesIndex = _.findIndex(this.chart.series, seriesItem => seriesItem.name.toUpperCase() === item.name.toUpperCase());
                     if (seriesIndex === -1) {

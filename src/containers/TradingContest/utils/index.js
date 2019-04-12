@@ -12,8 +12,14 @@ import {
     getMarketCloseHour, 
     getMarketCloseMinute, 
     getMarketOpenHour, 
-    getMarketOpenMinute
+    getMarketOpenMinute,
+    getMarketOpenHourLocal,
+    getMarketOpenMinuteLocal,
+    getMarketCloseHourLocal,
+    getMarketCloseMinuteLocal
 } from '../../../utils/date';
+import funnyNames from '../Leaderboard/constants/funnyNames';
+
 const {requestUrl} = require('../../../localConfig');
 const dateFormat = 'YYYY-MM-DD';
 const currentDate = moment().format(dateFormat);
@@ -167,8 +173,8 @@ export const getMultiStockData = (stocks = []) => {
 }
 
 export const isMarketOpen = (currentTime = moment()) => {
-    const marketOpenTime = moment().hours(getMarketOpenHour()).minutes(getMarketOpenMinute());
-    const marketCloseTime = moment().hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
+    const marketOpenTime = moment().hours(getMarketOpenHourLocal()).minutes(getMarketOpenMinuteLocal());
+    const marketCloseTime = moment().hours(getMarketCloseHourLocal()).minutes(getMarketCloseMinuteLocal());
     if (currentTime.isSameOrAfter(marketOpenTime) && currentTime.isSameOrBefore(marketCloseTime)) {
         return {status: true};
     } else if (currentTime.isBefore(marketOpenTime)) {
@@ -199,8 +205,9 @@ export const getOverallLeaderboard = (skip, limit, history, currentUrl, handleEr
 }
 
 export const processLeaderboardWinners = (leaders = []) => {
-    return Promise.map(leaders, leader => {
+    return Promise.map(leaders, (leader, index) => {
         const userName = _.get(leader, 'user.firstName', '') + ' ' + _.get(leader, 'user.lastName', '');
+        const email = _.get(leader, 'user.email', null);
         const advisorId = _.get(leader, 'advisor', null);
         const pnl = _.get(leader, 'pnlStats.pnl', 0);
         const pnlPct = _.get(leader, 'pnlStats.pnlPct', 0);
@@ -210,8 +217,10 @@ export const processLeaderboardWinners = (leaders = []) => {
         const netTotalLastWeek = _.get(leader, 'pnlStats.netTotalLastWeek', 0);
         const cash = _.get(leader, 'pnlStats.cash', 0);
         const rank = _.get(leader, 'rank', 0);
+        const isUser = _.get(leader, 'user.isUser', false);
 
         return {
+            email,
             userName, 
             pnl, 
             pnlPct, 
@@ -221,7 +230,8 @@ export const processLeaderboardWinners = (leaders = []) => {
             advisorId,
             netTotal,
             netTotalLastWeek,
-            cash
+            cash,
+            isUser
         };
     })
 }
@@ -236,4 +246,10 @@ export const isSelectedDateSameAsCurrentDate = (selectedDate = moment()) => {
 export const getStockTicker = (stock, defaultValue = '') => {
     // security.detail.NSE_Id || security.ticker
     return _.get(stock, 'detail.NSE_ID', null) || _.get(stock, 'ticker', defaultValue);
+}
+
+export const roundOffToNearestFive = (value) => {
+    value = Number(value);
+    
+    return Math.round(value * 20) / 20;
 }
