@@ -222,7 +222,7 @@ export default class Layout extends React.Component {
                                     <HighchartBar
                                         id='staticPerformance'
                                         series={staticPerformance}
-                                        categories={staticPerformance[0].categories}
+                                        categories={_.get(staticPerformance, '[0].categories', [])}
                                         updateTimeline={true}
                                         legendEnabled={false}
                                         graphColor='#2a5cf7'

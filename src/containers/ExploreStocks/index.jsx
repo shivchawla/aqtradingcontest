@@ -13,12 +13,12 @@ class ExploreStocks extends React.Component {
                 <Switch>
                     <Route 
                         exact
-                        path={`${this.props.match.path}/list`}
+                        path={`${this.props.match.path}`}
                         component={StockList}
                     />
                     <Route 
                         exact
-                        path={`${this.props.match.path}/detail/:symbol`}
+                        path={`${this.props.match.path}/:symbol`}
                         component={StockDetail}
                     />
                 </Switch>
