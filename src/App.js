@@ -43,6 +43,7 @@ const PortfolioDetail = React.lazy(() => import('./containers/PortfolioDetail'))
 const AboutUs = React.lazy(() => import('./containers/AboutUs'));
 const TnC = React.lazy(() => import('./containers/TnC'));
 const Policy = React.lazy(() => import('./containers/Policy'));
+const ThreadUnsubscription = React.lazy(() => import('./containers/ThreadUnsubscription'));
 
 class App extends React.Component {
     constructor(props) {
@@ -250,11 +251,7 @@ class App extends React.Component {
                                         <Route 
                                             exact={true}
                                             path='/authMessage'
-                                            render={(props) => {
-                                                return Utils.isLoggedIn()
-                                                    ? this.redirectToDailyContest()
-                                                    : <AuthFeedback {...props} />
-                                            }}
+                                            component={AuthFeedback}
                                         />
                                         <Route exact={true} path='/dailycontest/stockdetail' component={StockDetail} /> 
                                         <Route
@@ -282,6 +279,7 @@ class App extends React.Component {
                                             }}
                                         />
                                         <Route path='/dailycontest' component={TradingContest} />
+                                        <Route path='/community/thread/:threadId' component={ThreadUnsubscription} />
                                         <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
@@ -344,15 +342,12 @@ class App extends React.Component {
                                         <Route 
                                             exact={true}
                                             path='/authMessage'
-                                            render={(props) => {
-                                                return Utils.isLoggedIn()
-                                                    ? this.redirectToDailyContest()
-                                                    : <AuthFeedback {...props} />
-                                            }}
+                                            component={AuthFeedback}
                                         />
                                         <Route exact={true} path='/forbiddenAccess' component={ForbiddenAccess} />
                                         <Route path='/dailycontest' component={TradingContest} />
                                         <Route path='/admin' component={AdminPages} />
+                                        <Route path='/community/thread/:threadId' component={ThreadUnsubscription} />
                                         <Route 
                                             path='/quantresearch' 
                                             render={(props) => {

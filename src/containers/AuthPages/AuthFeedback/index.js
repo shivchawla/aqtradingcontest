@@ -92,6 +92,9 @@ export default class AuthFeedback extends React.Component {
                 case "weekly_performance_digest":
                     emailType = "Weekly performance emails";
                     break;
+                case "thread_unsubscription":
+                    emailType = "Thread";
+                    break;
                 default:
                     emailType = "Weekly performance emails";
                     break;
