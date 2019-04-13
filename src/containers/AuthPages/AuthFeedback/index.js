@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Button from '@material-ui/core/Button';
 
 const URLSearchParamsPoly = require('url-search-params');
+const {researchDomain} = require('../../../localConfig');
 
 export default class AuthFeedback extends React.Component {
     params = {};
@@ -16,12 +17,22 @@ export default class AuthFeedback extends React.Component {
     }
 
     renderGoBackButton = () => {
+        const type = this.params.get('type');
+        const isUnsubscribeThread = type === 'thread_unsubscription';
+        const redirectUrl = isUnsubscribeThread
+            ?   `${researchDomain}/community`
+            :   '/login';
+
         return (
             <Button 
                     color="primary" 
                     style={goBackButtonStyle}
                     variant="contained"
-                    onClick={() => this.props.history.push('/login')}
+                    onClick={() => {
+                        isUnsubscribeThread 
+                            ?   window.location.href = redirectUrl
+                            :   this.props.history.push(redirectUrl); 
+                    }}
             >
                 GO BACK
             </Button>
