@@ -286,10 +286,11 @@ class StockCardPredictions extends React.Component {
 
     updateAdvisorAllocation = () => {
         const advisorId = _.get(Utils.getUserInfo(), 'advisor', null);
+        let userInfo = Utils.getUserInfo();
         getAdvisorAllocation(advisorId, this.props.history, this.props.match.url)
         .then(response => {
-            let userInfo = Utils.getUserInfo();
             const allocation = _.get(response.data, 'allocation', {});
+            const allocationAdvisor = _.get(allocation, 'advisor', null);
             const allowedInvestments = _.get(allocation, 'allowedInvestments', []);
             const maxInvestment = _.get(allocation, 'maxInvestment', 0);
             const allocationStatus = _.get(allocation, 'status', false);
@@ -305,13 +306,20 @@ class StockCardPredictions extends React.Component {
                     ...userInfo,
                     allowedInvestments,
                     maxInvestment,
-                    allocationStatus
+                    allocationStatus,
+                    allocationAdvisor
                 };
                 Utils.cookieStorageSave(Utils.userInfoString, userInfo);
             }
         })
         .catch(err => {
-            console.log('Error ', err.message);
+            userInfo = {
+                ...userInfo,
+                allowedInvestments: [],
+                allocationStatus: false,
+                allocationAdvisor: null
+            };
+            Utils.cookieStorageSave(Utils.userInfoString, userInfo);
         })
     }
 

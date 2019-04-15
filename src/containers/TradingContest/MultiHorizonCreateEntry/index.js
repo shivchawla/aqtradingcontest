@@ -115,7 +115,17 @@ class CreateEntry extends React.Component {
     }
 
     predictStock = (stock) => {
-        this.setState({selectedStockForPrediction: stock});
+        this.setState({selectedStockForPrediction: stock}, () => {
+            this.toggleStockCardPredictionsBottomSheet();
+        });
+    }
+    
+    toggleStockCardPredictionsBottomSheet = () => {
+        this.setState({stockCardPredictionsBottomSheetOpen: !this.state.stockCardPredictionsBottomSheetOpen});
+    }
+
+    closeStockCardPredictionsBottomSheet = () => {
+        this.setState({stockCardPredictionsBottomSheetOpen: false});
     }
 
     toggleSearchStockBottomSheet = () => {
@@ -841,7 +851,13 @@ class CreateEntry extends React.Component {
                     <StockDetailBottomSheet 
                         open={this.state.stockDetailBottomSheetOpen}
                         onClose={this.toggleStockDetailBottomSheet}
+                        selectStock={this.predictStock}
                         {...this.state.selectedPosition}
+                    />
+                    <StockCardPredictionsBottomSheet 
+                        open={this.state.stockCardPredictionsBottomSheetOpen}
+                        onClose={this.closeStockCardPredictionsBottomSheet}
+                        stockData={this.state.selectedStockForPrediction}
                     />
                     <SnackbarComponent 
                         openStatus={this.state.snackbarOpenStatus} 
