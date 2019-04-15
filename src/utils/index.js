@@ -445,13 +445,14 @@ export class Utils{
 			var afterPoint = '';
 			if(x.indexOf('.') > 0)
 			   afterPoint = x.substring(x.indexOf('.'),x.length);
-			x = value > 0 ? Math.floor(x) : Math.ceil(x)
-			x = x.toString();
+			x = value > 0 ? Math.floor(x) : Math.ceil(x);
+			x = x == 0 && value < 0 ? '-' + x.toString() : x.toString(); 
 			var lastThree = x.substring(x.length-3);
 			var otherNumbers = x.substring(0,x.length-3);
 			if(otherNumbers !== '' && otherNumbers !== '-')
-			    lastThree = ',' + lastThree;
-			return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
+				lastThree = ',' + lastThree;
+
+				return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
 		} else{
 			return value;
 		}
