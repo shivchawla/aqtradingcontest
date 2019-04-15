@@ -29,7 +29,7 @@ class Winners extends React.Component {
             loading: false,
             contestEnded: false,
             timelineView: 'daily',
-            noContestFound: false
+            noContestFound: false,
         };
     }
 

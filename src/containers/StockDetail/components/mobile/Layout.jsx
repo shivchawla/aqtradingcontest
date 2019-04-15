@@ -59,8 +59,8 @@ export default class LayoutMobile extends React.Component {
             changePct: Number((changePct * 100).toFixed(2))
         };
         this.props.selectStock(stockData);
+        this.props.toggleStockCardBottomSheet && this.props.toggleStockCardBottomSheet();
         // this.props.toggleStockDetailBottomSheetOpen();
-        this.props.toggleStockCardBottomSheet();
     }
 
     renderPredictButton = () => {
