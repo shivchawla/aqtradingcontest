@@ -1,3 +1,6 @@
+/**
+ * This component is used to render the entire StockCardPredictions inside a bottomsheet
+ */
 import React from 'react';
 import _ from 'lodash';
 import styled from 'styled-components';

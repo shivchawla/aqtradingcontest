@@ -53,7 +53,7 @@ class StockCardPredictions extends React.Component {
             predictionsAllowed: false,
             loginOpen: false,
             confirmationDialogOpen: false,
-            bottomSheetMode: _.get(props, 'bottomSheetMode', false)
+            bottomSheetMode: _.get(props, 'bottomSheetMode', false) // Flag that makes this render as bottomsheet
         };
     }
     
@@ -604,7 +604,7 @@ class StockCardPredictions extends React.Component {
                     fetchStocks={this.fetchStocks}
                     dialog={isDesktop}
                 />
-                {
+                {   // If bottomsheet mode wathclist is not rendered
                     !this.state.bottomSheetMode &&
                     <Grid item xs={12}>
                         <WatchlistComponent 

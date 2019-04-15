@@ -1280,7 +1280,7 @@ class StockCard extends React.Component {
 
     render() {
         const {bottomSheet = false, parentBottomSheetMode = false} = this.props;
-        
+        // Rendering stock card content normally if parent is bottomsheet
         if (parentBottomSheetMode) {
             return this.renderStockCard();
         } else {
