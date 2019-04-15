@@ -27,7 +27,7 @@ export default class TopPicksLayout extends React.Component {
     }
 
     renderContent() {
-        const {winners = [], winnersWeekly = [], winnersOverall = []} = this.props;
+        const {winners = [], winnersWeekly = [], winnersOverall = [], errorMessage = null} = this.props;
         const type = getLeadeboardType(this.props.type);
         const requiredWinners = type === 'daily'
             ? winners
@@ -82,7 +82,7 @@ export default class TopPicksLayout extends React.Component {
                                     >
                                         {
                                             requiredWinners.length == 0 
-                                            ?   <NoDataFound /> 
+                                            ?   <NoDataFound errorMessage={errorMessage} /> 
                                             :   <LeaderboardTable 
                                                     winners={winners}
                                                     winnersWeekly={winnersWeekly}
@@ -123,12 +123,18 @@ export default class TopPicksLayout extends React.Component {
     }
 }
 
-const NoDataFound = () => {
+const NoDataFound = ({errorMessage = null}) => {
     return (
         <Grid container>
             <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
                 <img src={notFoundLogo} />
-                <NoDataText style={{marginTop: '20px'}}>No Data Found</NoDataText>
+                <NoDataText style={{marginTop: '20px'}}>
+                    {
+                        errorMessage
+                            ?   errorMessage
+                            :   'No data found.'
+                    }
+                </NoDataText>
             </Grid>
         </Grid>
     );
@@ -136,7 +142,7 @@ const NoDataFound = () => {
 
 const NoDataText = styled.h3`
     font-size: 18px;
-    color: #535353;
+    color: #8c8c8c;
     font-weight: 400;
 `;
 

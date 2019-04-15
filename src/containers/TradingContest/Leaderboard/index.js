@@ -30,7 +30,7 @@ class Participants extends React.Component {
                 advisorId: null
             },
             skip: 0,
-            funnyNames: [] // Name used as aliases
+            errorMessage: null
         };
     }
 
@@ -73,7 +73,8 @@ class Participants extends React.Component {
             this.setState({winners, winnersWeekly});
         })
         .catch(err => {
-            this.setState({winners: [], winnersWeekly: []});
+            const errMessage = _.get(err, 'response.data.message', 'No Data Found.');
+            this.setState({winners: [], winnersWeekly: [], errorMessage: errMessage});
             // console.log(err);
         }) 
         .finally(() => {
@@ -169,7 +170,8 @@ class Participants extends React.Component {
             handleLeaderboardTypeChange: this.props.handleLeaderboardTypeChange,
             handleDateChange: this.props.handleDateChange,
             fetchOverallLeaderboard: this.fetchOverallLeaderboard,
-            overallPageLoading: this.state.overallPageLoading
+            overallPageLoading: this.state.overallPageLoading,
+            errorMessage: this.state.errorMessage
         };
 
         return (
