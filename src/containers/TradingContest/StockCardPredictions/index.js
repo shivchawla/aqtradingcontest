@@ -358,10 +358,19 @@ class StockCardPredictions extends React.Component {
         this.setState({stockData});
     }
 
+    // Shows the success message and closes the bottomsheet
     showSuccess = () => {
+        const {bottomSheetMode = false} = this.props;
+
         this.setState({showSuccess: true});
         setTimeout(() => {
-            this.setState({showSuccess: false}, () => this.closeStockCardBottomSheet());
+            this.setState({showSuccess: false}, () => {
+                if (bottomSheetMode) {
+                    this.props.onClose && this.props.onClose();
+                } else {
+                    this.closeStockCardBottomSheet()
+                }
+            });
         }, 1400);
     }
 

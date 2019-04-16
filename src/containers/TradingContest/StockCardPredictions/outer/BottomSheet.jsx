@@ -42,6 +42,7 @@ export default class StockCardPredictionBottomSheet extends React.Component {
                     <Grid item xs={12}>
                         <StockCardPredictions
                             open={open} 
+                            onClose={this.props.onClose}
                             bottomSheetMode={true}
                             parentStockData={stockData}
                         />
