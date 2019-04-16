@@ -338,7 +338,7 @@ class StockCardPredictions extends React.Component {
     }
 
     componentWillReceiveProps(nextProps, nextState) {
-        // console.log('StockCardPredictions componentWillReceiveProps');
+        // This is used when the component is bottomsheet mode to get data from the parent
         const {bottomSheetMode = false} = this.props;
         const oldParentStockData = _.get(this.props, 'parentStockData', {});
         const newParentStockData = _.get(nextProps, 'parentStockData', {});
