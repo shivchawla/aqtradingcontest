@@ -52,7 +52,8 @@ class StockCardPredictions extends React.Component {
             listMode: false,
             predictionsAllowed: false,
             loginOpen: false,
-            confirmationDialogOpen: false
+            confirmationDialogOpen: false,
+            bottomSheetMode: _.get(props, 'bottomSheetMode', false) // Flag that makes this render as bottomsheet
         };
     }
     
@@ -285,10 +286,11 @@ class StockCardPredictions extends React.Component {
 
     updateAdvisorAllocation = () => {
         const advisorId = _.get(Utils.getUserInfo(), 'advisor', null);
+        let userInfo = Utils.getUserInfo();
         getAdvisorAllocation(advisorId, this.props.history, this.props.match.url)
         .then(response => {
-            let userInfo = Utils.getUserInfo();
             const allocation = _.get(response.data, 'allocation', {});
+            const allocationAdvisor = _.get(allocation, 'advisor', null);
             const allowedInvestments = _.get(allocation, 'allowedInvestments', []);
             const maxInvestment = _.get(allocation, 'maxInvestment', 0);
             const allocationStatus = _.get(allocation, 'status', false);
@@ -304,13 +306,20 @@ class StockCardPredictions extends React.Component {
                     ...userInfo,
                     allowedInvestments,
                     maxInvestment,
-                    allocationStatus
+                    allocationStatus,
+                    allocationAdvisor
                 };
                 Utils.cookieStorageSave(Utils.userInfoString, userInfo);
             }
         })
         .catch(err => {
-            console.log('Error ', err.message);
+            userInfo = {
+                ...userInfo,
+                allowedInvestments: [],
+                allocationStatus: false,
+                allocationAdvisor: null
+            };
+            Utils.cookieStorageSave(Utils.userInfoString, userInfo);
         })
     }
 
@@ -328,14 +337,40 @@ class StockCardPredictions extends React.Component {
         })
     }
 
+    componentWillReceiveProps(nextProps, nextState) {
+        // This is used when the component is bottomsheet mode to get data from the parent
+        const {bottomSheetMode = false} = this.props;
+        const oldParentStockData = _.get(this.props, 'parentStockData', {});
+        const newParentStockData = _.get(nextProps, 'parentStockData', {});
+
+        if (bottomSheetMode) {
+            // console.log('Stock Data will be updated ', newParentStockData);
+            this.setState({
+                stockData: {
+                    ...this.state.stockData,
+                    ...newParentStockData
+                }
+            })
+        }
+    }
+
     modifyStockData = (stockData = this.state.stockData) => {
         this.setState({stockData});
     }
 
+    // Shows the success message and closes the bottomsheet
     showSuccess = () => {
+        const {bottomSheetMode = false} = this.props;
+
         this.setState({showSuccess: true});
         setTimeout(() => {
-            this.setState({showSuccess: false}, () => this.closeStockCardBottomSheet());
+            this.setState({showSuccess: false}, () => {
+                if (bottomSheetMode) {
+                    this.props.onClose && this.props.onClose();
+                } else {
+                    this.closeStockCardBottomSheet()
+                }
+            });
         }, 1400);
     }
 
@@ -538,6 +573,7 @@ class StockCardPredictions extends React.Component {
                 getConditionalNetValue={this.getConditionalNetValue}
                 confirmationDialogOpen={this.state.confirmationDialogOpen}
                 toggleConfirmationDialog={this.toggleConfirmationDialog}
+                parentBottomSheetMode={this.state.bottomSheetMode}
             />
         );
     }
@@ -577,18 +613,21 @@ class StockCardPredictions extends React.Component {
                     fetchStocks={this.fetchStocks}
                     dialog={isDesktop}
                 />
-                <Grid item xs={12}>
-                    <WatchlistComponent 
-                        stockSelectionOpen={this.state.searchStockOpen}
-                        toggleStockSelection={this.toggleSearchStocksBottomSheet}
-                        selectStock={this.modifyStockData}
-                        stockData={this.state.stockData}
-                        toggleStockCardBottomSheet={this.toggleStockCardBottomSheet}
-                        toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
-                        predictionsAllowed={this.state.predictionsAllowed}
-                        eventEmitter={this.props.eventEmitter}
-                    />
-                </Grid>
+                {   // If bottomsheet mode wathclist is not rendered
+                    !this.state.bottomSheetMode &&
+                    <Grid item xs={12}>
+                        <WatchlistComponent 
+                            stockSelectionOpen={this.state.searchStockOpen}
+                            toggleStockSelection={this.toggleSearchStocksBottomSheet}
+                            selectStock={this.modifyStockData}
+                            stockData={this.state.stockData}
+                            toggleStockCardBottomSheet={this.toggleStockCardBottomSheet}
+                            toggleDefaultSettingsBottomSheet={this.toggleDefaultSettingsBottomSheet}
+                            predictionsAllowed={this.state.predictionsAllowed}
+                            eventEmitter={this.props.eventEmitter}
+                        />
+                    </Grid>
+                }
                 <Grid item xs={12}>
                     {this.renderStockCard(!isDesktop)}
                 </Grid>

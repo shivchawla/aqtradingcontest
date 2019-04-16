@@ -20,6 +20,7 @@ import ConfirmationDialog from '../common/ConfirmationDialog';
 import TradeActivtyDialog from './TradeActivityDialog';
 import CancelDialog from './CancelDialog';
 import OrderDialog from './OrderDialog';
+import UpdateAvgPriceDialog from './UpateAvgPriceDialog';
 import {horizontalBox, verticalBox, metricColor} from '../../../../../constants';
 import CustomOutlinedInput from '../../../../../components/input/CustomOutlinedInput';
 
@@ -195,6 +196,7 @@ export default class Layout extends React.Component {
                                             selectPredictionIdForCancel={this.props.selectPredictionIdForCancel}
                                             skipPrediction={this.openSkipConfirmation}
                                             updateNewPredictionText={this.props.updateNewPredictionText}
+                                            toggleUpdateAvgPriceDialog={this.props.toggleUpdateAvgPriceDialog}
                                         />
                             }
                         </Grid>
@@ -218,7 +220,8 @@ export default class Layout extends React.Component {
             advisors = [],
             selectedAdvisor = null,
             requiredAdvisorForPredictions = {},
-            cancelLoading = false
+            cancelLoading = false,
+            updateAvgPriceDialogOpen
         } = this.props;
 
         return (
@@ -241,6 +244,11 @@ export default class Layout extends React.Component {
                     advisor={{
                         advisorId: selectedAdvisor
                     }}
+                />
+                <UpdateAvgPriceDialog 
+                    open={updateAvgPriceDialogOpen}
+                    onClose={this.props.toggleUpdateAvgPriceDialog}
+                    {...this.props.selectedPredictionForAvgPriceUpdate}
                 />
                 <UpdateAdvisorStatsDialog 
                     open={this.props.updateAdvisorStatsDialogOpen}

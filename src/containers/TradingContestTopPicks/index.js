@@ -9,6 +9,7 @@ import AqLayout from '../../components/ui/AqLayout';
 import TopPicks from '../TradingContest/TopPicks';
 import DateComponent from '../TradingContest/Misc/DateComponent';
 import StockDetailBottomSheet from '../TradingContest/StockDetailBottomSheet';
+import StockCardPredictionsBottomSheet from '../TradingContest/StockCardPredictions/outer/BottomSheet';
 import {Utils} from '../../utils';
 import {verticalBox} from '../../constants';
 
@@ -25,8 +26,18 @@ export class TradingContestLeaderboardMobile extends React.Component {
             selectedTab: 0,
             selectedDate: defaultDate,
             stockDetailBottomSheetOpen: false,
-            selectedStock: {}
+            selectedStock: {},
+            stockCardPredictionsBottomSheetOpen: false,
+            selectedStockForPrediction: {}
         };
+    }
+
+    toggleStockCardPredictionsBottomSheet = () => {
+        this.setState({stockCardPredictionsBottomSheetOpen: !this.state.stockCardPredictionsBottomSheetOpen});
+    }
+
+    closeStockCardPredictionsBottomSheet = () => {
+        this.setState({stockCardPredictionsBottomSheetOpen: false});
     }
 
     updateDate = (date) => {
@@ -34,7 +45,6 @@ export class TradingContestLeaderboardMobile extends React.Component {
     }
 
     onListItemClick = stock => {
-        // console.log('Selected Stock', stock);
         this.setState({selectedStock: stock}, () => {
             this.toggleStockDetailBottomSheet();
         });
@@ -44,13 +54,25 @@ export class TradingContestLeaderboardMobile extends React.Component {
         this.setState({stockDetailBottomSheetOpen: !this.state.stockDetailBottomSheetOpen});
     }
 
+    predictStock = stock => {
+        this.setState({selectedStockForPrediction: stock}, () => {
+            this.toggleStockCardPredictionsBottomSheet();
+        })
+    }
+
     renderMobile = () => {        
         return (
             <AqLayout pageTitle='Top Picks'>
                 <StockDetailBottomSheet 
                     open={this.state.stockDetailBottomSheetOpen}
                     onClose={this.toggleStockDetailBottomSheet}
+                    selectStock={this.predictStock}
                     {...this.state.selectedStock}
+                />
+                <StockCardPredictionsBottomSheet 
+                    open={this.state.stockCardPredictionsBottomSheetOpen}
+                    onClose={this.closeStockCardPredictionsBottomSheet}
+                    stockData={this.state.selectedStockForPrediction}
                 />
                 <Grid 
                         container 
