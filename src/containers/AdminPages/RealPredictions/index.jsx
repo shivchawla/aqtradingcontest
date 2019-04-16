@@ -4,6 +4,7 @@ import _ from 'lodash';
 import $ from "jquery";
 import moment from 'moment';
 import Media from 'react-media';
+import ReactBrowserNotifications from 'react-browser-notifications';
 import {withRouter} from 'react-router';
 import {
     getRealPredictions,
@@ -16,6 +17,7 @@ import LayoutDesktop from './components/desktop/Layout';
 import LayoutMobile from './components/mobile/Layout';
 import WS from '../../../utils/websocket';
 import {Utils, handleCreateAjaxError} from '../../../utils';
+import advicequbeLogo from '../../../assets/AdviceLogoMobile.svg';
 
 const URLSearchParamsPoly = require('url-search-params');
 const DateHelper = require('../../../utils/date');
@@ -29,6 +31,7 @@ const advisorsCancelledMessage = 'advisorsCancelled';
 const subscriberId = Math.random().toString(36).substring(2, 8);
 
 class RealPredictions extends React.Component {
+    reactBrowserNotification = null;
     constructor(props) {
         super(props);
         this.cancelFetchPredictionsRequest = null;
@@ -86,6 +89,24 @@ class RealPredictions extends React.Component {
         this.setState({showNewPredictionText: status});
     }
 
+    showBrowserNotifications() {
+        // If the Notifications API is supported by the browser
+        // then show the notification
+        if(this.reactBrowserNotification.supported()) {
+            this.reactBrowserNotification.show();
+        }
+    }
+
+    handleBrowserNotificationClick(event) {
+        // Do something here such as
+        // console.log("Notification Clicked") OR
+        // window.focus() OR
+        // window.open("http://www.google.com")
+     
+        // Lastly, Close the notification
+        this.reactBrowserNotification.close(event.target.tag);
+      }
+
     checkForNewPredictions = (predictions = []) => {
         const presentPredictions = _.get(this.state, 'predictions', []);
         let newPredictionsCount = 0;
@@ -105,7 +126,8 @@ class RealPredictions extends React.Component {
         .then(() => {
             if (newPredictionsCount > 0) {
                 this.toggleSnackbar(`${newPredictionsCount} New Predictions Received`); 
-                this.updateNewPredictionText(true);               
+                this.updateNewPredictionText(true);    
+                this.showBrowserNotifications();           
             }
         })
     }
@@ -824,6 +846,15 @@ class RealPredictions extends React.Component {
                     autoHideDuration={3000}
                     vertical='top'
                     horizontal='right'
+                />
+                <ReactBrowserNotifications
+                    onRef={ref => (this.reactBrowserNotification = ref)} // Required
+                    title="New Predictions" // Required
+                    icon={advicequbeLogo}
+                    body="New Predictions Received"
+                    tag="abcdef"
+                    timeout="5000"
+                    onClick={event => this.handleBrowserNotificationClick(event)}
                 />
                 <Media 
                     query="(max-width: 800px)"
