@@ -76,7 +76,9 @@ class RealPredictions extends React.Component {
             cancelDialogOpen: false, // flag to open or close cancel dialog,
             cancelLoading: false,
             skipPredictionDialogOpen: false,
-            showNewPredictionText: false
+            showNewPredictionText: false,
+            updateAvgPriceDialogOpen: false,
+            selectedPredictionForAvgPriceUpdate: {}
         };
     }
 
@@ -789,6 +791,13 @@ class RealPredictions extends React.Component {
         this.setState({skipPredictionDialogOpen: !this.state.skipPredictionDialogOpen});
     }
 
+    toggleUpdateAvgPriceDialog = (predictionId, advisorId, avgPrice) => {
+        this.setState({
+            selectedPredictionForAvgPriceUpdate: {predictionId, advisorId, avgPrice},
+            updateAvgPriceDialogOpen: !this.state.updateAvgPriceDialogOpen
+        });
+    }
+
     render() {
         const layoutProps = {
             positions: this.state.positions,
@@ -834,7 +843,10 @@ class RealPredictions extends React.Component {
             skipPredictionDialogOpen: this.state.skipPredictionDialogOpen,
             toggleSkipPredictionDialog: this.toggleSkipPredictionDialog,
             updateNewPredictionText: this.updateNewPredictionText,
-            showNewPredictionText: this.state.showNewPredictionText
+            showNewPredictionText: this.state.showNewPredictionText,
+            updateAvgPriceDialogOpen: this.state.updateAvgPriceDialogOpen,
+            toggleUpdateAvgPriceDialog: this.toggleUpdateAvgPriceDialog,
+            selectedPredictionForAvgPriceUpdate: this.state.selectedPredictionForAvgPriceUpdate
         };
 
         return (
