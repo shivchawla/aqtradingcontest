@@ -69,8 +69,11 @@ export default class LayoutMobile extends React.Component {
     }
 
     renderPredictButton = () => {
+        const {latestDetail = {}} = this.props;
+        const allowed = _.get(latestDetail, 'allowed', false);
+
         return (
-            this.props.selectStock 
+            (this.props.selectStock && allowed)
             ?   <Button 
                         style={predictButtonStyle}
                         onClick={this.predictStock}

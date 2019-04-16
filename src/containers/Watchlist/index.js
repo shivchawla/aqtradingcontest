@@ -183,7 +183,10 @@ class WatchlistComponent extends React.Component {
                     change: _.get(item, 'realtime.change', 0.0) || _.get(item, 'eod.Change', 0.0),
                     current: _.get(item, 'realtime.current', 0.0) || _.get(item, 'eod.Close', 0.0),
                     changePct: _.get(item, 'realtime.change_p', 0.0) || _.get(item, 'eod.ChangePct', 0.0),
-                    name: _.get(item, 'detail.Nse_Name', '')
+                    name: _.get(item, 'detail.Nse_Name', ''),
+                    shortable: _.get(item, 'shortable', false),
+                    real: _.get(item, 'real', false),
+                    allowed: _.get(item, 'allowed', false)
                 }
             });
             this.setState({watchlists});
@@ -206,6 +209,7 @@ class WatchlistComponent extends React.Component {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
                 const watchlists = [...this.state.watchlists];
+                console.log('Watchlists ', watchlists);
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
                 if (targetWatchlist) {
