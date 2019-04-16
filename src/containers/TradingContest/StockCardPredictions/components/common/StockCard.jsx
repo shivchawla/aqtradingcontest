@@ -1102,7 +1102,7 @@ class StockCard extends React.Component {
     renderStockCard = () => {
         const {symbol = null} = this.props.stockData;
         const noData = symbol === null || (symbol.length === 0);
-        const {bottomSheet = false} = this.props;
+        const {bottomSheet = false, parentBottomSheetMode = false} = this.props;
 
         return (
             <Container 
@@ -1127,7 +1127,9 @@ class StockCard extends React.Component {
                 >
                     {
                         noData
-                        ? this.renderNoContent()
+                        ? parentBottomSheetMode 
+                                ?   <PreProcessingLoader /> 
+                                :   this.renderNoContent()
                         : this.renderContent()
                     }
                 </Grid>
@@ -1277,9 +1279,13 @@ class StockCard extends React.Component {
     }
 
     render() {
-        const {bottomSheet = false} = this.props;
-
-        return bottomSheet ? this.renderStockCardBottomSheet() : this.renderStockCardDialog();
+        const {bottomSheet = false, parentBottomSheetMode = false} = this.props;
+        // Rendering stock card content normally if parent is bottomsheet
+        if (parentBottomSheetMode) {
+            return this.renderStockCard();
+        } else {
+            return bottomSheet ? this.renderStockCardBottomSheet() : this.renderStockCardDialog();
+        }
     }
 }
 
@@ -1303,6 +1309,27 @@ const Loader = ({text = null, success= false}) => {
                     :   <CircularProgress />
             }
         </LoaderContainer>
+    );
+}
+
+const PreProcessingLoader = () => {
+    return (
+        <Grid container>
+            <Grid 
+                    item 
+                    xs={12}
+                    style={{
+                        ...verticalBox,
+                        width: '100vw',
+                        height: 'calc(100vh - 48px)'
+                    }}
+            >
+                <div style={{...horizontalBox}}>
+                    <CircularProgress size={16} style={{color: primaryColor}}/>
+                    <PreProcessingText>Processing</PreProcessingText>
+                </div>
+            </Grid>
+        </Grid>
     );
 }
 
@@ -1414,4 +1441,11 @@ const Bar = styled.h3`
     color: #848484;
     font-family: 'Lato', sans-serif;
     font-weight: 500;
+`;
+
+const PreProcessingText = styled.h3`
+    color: ${primaryColor};
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 5px;
 `;
