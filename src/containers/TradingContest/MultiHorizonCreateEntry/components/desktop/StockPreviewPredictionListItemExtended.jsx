@@ -11,7 +11,7 @@ import {Utils} from '../../../../../utils';
 import {hasActiveOrders} from '../../utils';
 import Tag from '../../../../../components/Display/Tag';
 import {getLastestAdminMoficiation} from '../../../../AdminPages/RealPredictions/utils';
-import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
+import {getMarketCloseHourLocal, getMarketCloseMinuteLocal} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
 
 const readableDateFormat = "Do MMM 'YY";
@@ -32,7 +32,7 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
         const {endDate = null} = this.props.prediction;
         const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
         const todayDate = moment().format(dateTimeFormat);
-        let endTime = moment(endDate, dateFormat).hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
+        let endTime = moment(endDate, dateFormat).hours(getMarketCloseHourLocal()).minutes(getMarketCloseMinuteLocal());
         endTime = endTime.format(dateTimeFormat);
         const active = moment(todayDate, dateTimeFormat).isBefore(moment(endTime, dateTimeFormat));
         const manualExit = _.get(status, 'manualExit', false);

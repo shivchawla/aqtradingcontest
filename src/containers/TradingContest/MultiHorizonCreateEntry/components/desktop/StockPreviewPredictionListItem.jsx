@@ -8,7 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import {Utils} from '../../../../../utils';
 import {isMarketOpen, roundOffToNearestFive} from '../../../utils';
-import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
+import {getMarketCloseHourLocal, getMarketCloseMinuteLocal} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox, primaryColor} from '../../../../../constants';
 import {hasEndDatePassed} from '../../utils';
 
@@ -29,7 +29,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const {endDate = null} = this.props.prediction;
         const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
         const todayDate = moment().format(dateTimeFormat);
-        let endTime = moment(endDate, dateFormat).hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
+        let endTime = moment(endDate, dateFormat).hours(getMarketCloseHourLocal()).minutes(getMarketCloseMinuteLocal());
         endTime = endTime.format(dateTimeFormat);
         const active = moment(todayDate, dateTimeFormat).isBefore(moment(endTime, dateTimeFormat));
         const manualExit = _.get(status, 'manualExit', false);
