@@ -79,7 +79,7 @@ export default class WinnerListItem extends React.Component {
                                 |
                             </div>
                             <PriceText style={{color: changeColor}}>
-                                ₹{Utils.formatMoneyValueMaxTwoDecimals(change)} {changePct}
+                                ₹{change} {changePct}
                             </PriceText>
                         </div>
                         <div 
