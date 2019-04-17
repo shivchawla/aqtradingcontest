@@ -81,7 +81,7 @@ class TokenUpdateImpl extends Component {
 	}
 
 	checkIfShouldRedirectToLogin = () => {
-		const allowedUrls = ['/dailycontest/mypicks', 'dailycontest/stockpredictions', '/dailycontest/toppicks'];
+		const allowedUrls = ['dailycontest/stockpredictions'];
 		const redirectUrl = this.redirectUrl;
 		const shouldRedirectToLogin = allowedUrls.indexOf(redirectUrl) > -1;
 
