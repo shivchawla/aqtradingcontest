@@ -209,7 +209,6 @@ class WatchlistComponent extends React.Component {
             try {
                 const realtimeResponse = JSON.parse(msg.data);
                 const watchlists = [...this.state.watchlists];
-                console.log('Watchlists ', watchlists);
                 // Getting the required wathclist
                 const targetWatchlist = watchlists.filter(item => item.id === realtimeResponse.watchlistId)[0];
                 if (targetWatchlist) {
