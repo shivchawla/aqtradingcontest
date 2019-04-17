@@ -171,7 +171,8 @@ class Participants extends React.Component {
             handleDateChange: this.props.handleDateChange,
             fetchOverallLeaderboard: this.fetchOverallLeaderboard,
             overallPageLoading: this.state.overallPageLoading,
-            errorMessage: this.state.errorMessage
+            errorMessage: this.state.errorMessage,
+            eventEmitter: this.props.eventEmitter
         };
 
         return (

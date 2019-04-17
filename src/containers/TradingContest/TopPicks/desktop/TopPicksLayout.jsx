@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import LoaderComponent from '../../Misc/Loader';
 import TopPicksTable from './TopPicksTable';
 import NotLoggedIn from '../../Misc/NotLoggedIn';
+import LoginBottomSheet from '../../LoginBottomSheet';
 import {verticalBox, horizontalBox} from '../../../../constants';
 import {Utils} from '../../../../utils';
 import notFoundLogo from '../../../../assets/NoDataFound.svg';
@@ -12,7 +13,8 @@ export default class TopPicksLayout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            view: 'byUsers'
+            view: 'byUsers',
+            loginOpen: false
         };
     }
 
@@ -30,15 +32,27 @@ export default class TopPicksLayout extends React.Component {
         }
     }
 
+    toggleLoginBottomSheet = () => {
+        this.setState({loginOpen: !this.state.loginOpen});
+    }
+
     renderContent() {
         const winnerStocksByInvestment = this.props.winnerStocksByInvestment;
         const winnerStocksByUsers = this.props.winnerStocksByUsers;
 
         return (
             <SGrid container>
+                <LoginBottomSheet 
+                    open={this.state.loginOpen} 
+                    onClose={this.toggleLoginBottomSheet}
+                    dialog={true}
+                    eventEmitter={this.props.eventEmitter}
+                />
                 {
                     !Utils.isLoggedIn()
-                    ?   <NotLoggedIn />
+                    ?   <NotLoggedIn 
+                            onLoginClick={this.toggleLoginBottomSheet}
+                        />
                     :   (winnerStocksByInvestment.length === 0 && winnerStocksByUsers.length === 0)
                             ?   <NoDataFound />
                             :   <Grid item xs={12} style={containerColStyle}>

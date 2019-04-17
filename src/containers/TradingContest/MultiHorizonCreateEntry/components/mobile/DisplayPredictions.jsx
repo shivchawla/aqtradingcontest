@@ -10,6 +10,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import ActionIcon from '../../../Misc/ActionIcons';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import {withRouter} from 'react-router-dom';
+import NotLoggedIn from '../../../Misc/NotLoggedIn';
+import LoginBottomSheet from '../../../LoginBottomSheet';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import EnclosedContainer from '../../../../../components/Display/EnclosedContainer';
 import WatchlistCustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
@@ -34,7 +36,8 @@ class DisplayPredictions extends React.Component {
             anchorEl: null,
             searchInputValue: '',
             searchInputOpen: false,
-            isUserAllocated: Utils.isUserAllocated()
+            isUserAllocated: Utils.isUserAllocated(),
+            loginOpen: false
         };
     }
 
@@ -282,7 +285,11 @@ class DisplayPredictions extends React.Component {
         );
     }
 
-    render() {
+    toggleLoginBottomSheet = () => {
+        this.setState({loginOpen: !this.state.loginOpen});
+    }
+
+    renderMainContent = () => {
         const {real = false} = this.props;
         const isMarketTrading = !DateHelper.isHoliday();
         const marketOpen = isMarketTrading && isMarketOpen().status;
@@ -345,6 +352,24 @@ class DisplayPredictions extends React.Component {
                     }
                 </Grid>
             </Grid>
+        );
+    }
+
+    render() {
+        return (
+            <React.Fragment>
+                <LoginBottomSheet 
+                    open={this.state.loginOpen} 
+                    onClose={this.toggleLoginBottomSheet}
+                    dialog={false}
+                    eventEmitter={this.props.eventEmitter}
+                />
+                {
+                    Utils.isLoggedIn()
+                    ?   this.renderMainContent()
+                    :   <NotLoggedIn onLoginClick={this.toggleLoginBottomSheet}/>
+                }
+            </React.Fragment>
         );
     }
 }

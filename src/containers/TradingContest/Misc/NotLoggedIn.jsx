@@ -13,7 +13,15 @@ class NotLoggedIn extends React.Component {
             <Grid container>
                 <Grid item xs={12} style={{...verticalBox, height: 'calc(100vh - 220px)'}}>
                     <Text style={{marginTop: '20px'}}>Please login to continue</Text>
-                    <LoginButton onClick={() => this.props.history.push('/login')}/>
+                    <LoginButton 
+                        onClick={
+                            () => {
+                                this.props.onLoginClick
+                                    ?   this.props.onLoginClick()
+                                    :   this.props.history.push('/login')  
+                            }   
+                        }
+                    />
                 </Grid>
             </Grid>
         );

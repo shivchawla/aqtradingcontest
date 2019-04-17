@@ -58,21 +58,37 @@ class TokenUpdateImpl extends Component {
 				}
 			} else {
 				Utils.logoutUser();
-				this.props.history.push('/login');
+				if (!this.checkIfShouldRedirectToLogin()) {
+					this.props.history.push(this.redirectUrl);
+				} else {
+					this.props.history.push('/login');
+				}
 			}
 		})
 		.catch((error) => {
 			Utils.setShouldUpdateToken(false);
 			Utils.logoutUser();
-			this.props.history.push('/login');
+			if (!this.checkIfShouldRedirectToLogin()) {
+				this.props.history.push(this.redirectUrl);
+			} else {
+				this.props.history.push('/login');
+			}
 		})
 		.finally(() => {
 			this.setState({loading: false})
 		});
     }
-  }
+	}
 
-  	componentDidMount(){
+	checkIfShouldRedirectToLogin = () => {
+		const allowedUrls = ['/dailycontest/mypicks', 'dailycontest/stockpredictions', '/dailycontest/toppicks'];
+		const redirectUrl = this.redirectUrl;
+		const shouldRedirectToLogin = allowedUrls.indexOf(redirectUrl) > -1;
+
+		return shouldRedirectToLogin;
+	}
+
+  componentDidMount(){
 		this._mounted = true;
 		if (Utils.getShouldUpdateToken() === 'true' || Utils.getShouldUpdateToken() === true){
 			this.updateToken();
