@@ -8,6 +8,7 @@ import LeaderboardTable from './LeaderboardTable';
 import RadioGroup from '../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import NotLoggedIn from '../../Misc/NotLoggedIn';
+import LoginBottomSheet from '../../LoginBottomSheet';
 import UserProfileDialog from '../../UserProfile';
 import {Utils} from '../../../../utils';
 import {getLeadeboardType} from '../utils';
@@ -19,11 +20,16 @@ export default class TopPicksLayout extends React.Component {
         super(props);
         this.state = {
             listType: 'total',
+            loginOpen: false
         };
     }
 
     handleLeaderboardTypeChange = value => {
         this.setState({leaderTypeView: value});
+    }
+
+    toggleLoginBottomSheet = () => {
+        this.setState({loginOpen: !this.state.loginOpen});
     }
 
     renderContent() {
@@ -37,6 +43,12 @@ export default class TopPicksLayout extends React.Component {
 
         return (
             <SGrid container>
+                <LoginBottomSheet 
+                    open={this.state.loginOpen} 
+                    onClose={this.toggleLoginBottomSheet}
+                    dialog={true}
+                    eventEmitter={this.props.eventEmitter}
+                />
                 <UserProfileDialog 
                     open={this.props.userProfileBottomSheetOpenStatus}
                     onClose={this.props.toggleUserProfileBottomSheet}
@@ -44,7 +56,7 @@ export default class TopPicksLayout extends React.Component {
                 />
                 {
                     !Utils.isLoggedIn()
-                        ?   <NotLoggedIn />
+                        ?   <NotLoggedIn onLoginClick={this.toggleLoginBottomSheet} />
                         :   <React.Fragment>
                                 <Grid 
                                         item 

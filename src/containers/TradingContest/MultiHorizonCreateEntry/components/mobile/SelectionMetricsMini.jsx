@@ -81,7 +81,7 @@ class SelectionMetricsMini extends React.Component {
                             <Grid container>
                                 <MetricItemMobile 
                                     label='PnL' 
-                                    value={((pnl || 0) * 1000)} 
+                                    value={((pnl || 0) * 1000).toFixed(2)} 
                                     money 
                                     coloured 
                                 />

@@ -319,8 +319,19 @@ export default class StockPreviewPredictionListItemExtended extends React.Compon
                     </div>
                 </Grid>
                 <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start'}}>
-                    <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
-                    <CallDate>{moment(createdDate).format(readableDateFormat)}</CallDate>
+                    <div style={horizontalBox}>
+                        <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
+                        <ActionIcon 
+                            type='edit' 
+                            size={16}
+                            onClick={() => {
+                                const predictionId = _.get(prediction, '_id', null);
+                                const advisorId = _.get(prediction, 'advisor', null);
+                                this.props.toggleUpdateAvgPriceDialog(predictionId, advisorId, avgPrice);
+                            }}
+                        />
+                    </div>
+                    <CallDate style={{marginTop: '-10px'}}>{moment(createdDate).format(readableDateFormat)}</CallDate>
                     <CallDate>{moment(createdDate).format(readableHourlyFormat)}</CallDate>
                 </Grid>
                 <Grid 

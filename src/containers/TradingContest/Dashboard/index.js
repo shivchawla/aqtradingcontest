@@ -9,6 +9,7 @@ import {
     getDailyContestStatsN, 
     getDailyContestStatsBySymbolN
 } from './utils';
+import {onUserLoggedIn} from '../constants/events';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -81,6 +82,14 @@ class Dashboard extends React.Component {
         this.updateDailyContestStats();
     }
 
+    captureEvent = () => {
+        this.updateDailyContestStats();
+    }
+
+    componentDidMount() {
+        this.props.eventEmitter && this.props.eventEmitter.on(onUserLoggedIn, this.captureEvent);
+    }
+
     onRadioChange = (value) => {
         let selectedType = 'total';
         switch(value) {
@@ -130,7 +139,8 @@ class Dashboard extends React.Component {
             updateDailyContestStats: this.updateDailyContestStats,
             selectedType: this.state.selectedType,
             setRealFlag: this.setRealFlag,
-            real: this.state.real
+            real: this.state.real,
+            eventEmitter: this.props.eventEmitter
         };
 
         return (

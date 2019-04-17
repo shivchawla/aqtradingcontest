@@ -15,6 +15,7 @@ import DisplayPredictionsMobile from './components/mobile/DisplayPredictions';
 import DuplicatePredictionsDialog from './components/desktop/DuplicatePredictionsDialog';
 import PredictionsBottomSheet from './components/mobile/PredictionsBottomSheet';
 import StockDetailBottomSheet from '../../TradingContest/StockDetailBottomSheet';
+import StockCardPredictionsBottomSheet from '../StockCardPredictions/outer/BottomSheet';
 import {DailyContestmyPicksMeta} from '../metas';
 import {processSelectedPosition} from '../utils';
 import {Utils, handleCreateAjaxError} from '../../../utils';
@@ -95,7 +96,9 @@ class CreateEntry extends React.Component {
             stockDetailBottomSheetOpen: false,
             stopPredictionLoading: false,
             selectedPosition: {},
-            real: false, // Flag to toggle between real and simulated predictions
+            real: false, // Flag to toggle between real and simulated predictions,
+            stockCardPredictionsBottomSheetOpen: false, // Flag to open the prediction stock card bottomsheet
+            selectedStockForPrediction: {}
         };
         this.mounted = false;
         this.webSocket = new WS();
@@ -109,6 +112,20 @@ class CreateEntry extends React.Component {
         }
 
         return allowedTypes[allowedTypeIndex];
+    }
+
+    predictStock = (stock) => {
+        this.setState({selectedStockForPrediction: stock}, () => {
+            this.toggleStockCardPredictionsBottomSheet();
+        });
+    }
+    
+    toggleStockCardPredictionsBottomSheet = () => {
+        this.setState({stockCardPredictionsBottomSheetOpen: !this.state.stockCardPredictionsBottomSheetOpen});
+    }
+
+    closeStockCardPredictionsBottomSheet = () => {
+        this.setState({stockCardPredictionsBottomSheetOpen: false});
     }
 
     toggleSearchStockBottomSheet = () => {
@@ -777,7 +794,8 @@ class CreateEntry extends React.Component {
             portfolioStats: this.state.portfolioStats,
             stopPredictionLoading: this.state.stopPredictionLoading,
             setRealFlag: this.setRealFlag,
-            real: this.state.real
+            real: this.state.real,
+            eventEmitter: this.props.eventEmitter
         };
         const {mobile = false} = this.props;
 
@@ -834,7 +852,13 @@ class CreateEntry extends React.Component {
                     <StockDetailBottomSheet 
                         open={this.state.stockDetailBottomSheetOpen}
                         onClose={this.toggleStockDetailBottomSheet}
+                        selectStock={this.predictStock}
                         {...this.state.selectedPosition}
+                    />
+                    <StockCardPredictionsBottomSheet 
+                        open={this.state.stockCardPredictionsBottomSheetOpen}
+                        onClose={this.closeStockCardPredictionsBottomSheet}
+                        stockData={this.state.selectedStockForPrediction}
                     />
                     <SnackbarComponent 
                         openStatus={this.state.snackbarOpenStatus} 

@@ -33,7 +33,6 @@ export default class StockPreviewPredictionListItem extends React.Component {
         let endTime = moment(endDate, dateFormat).hours(getMarketCloseHourLocal()).minutes(getMarketCloseMinuteLocal());
         endTime = endTime.format(dateTimeFormat);
         const active = moment(todayDate, dateTimeFormat).isBefore(moment(endTime, dateTimeFormat));
-        console.log('Active ' , active);
         const manualExit = _.get(status, 'manualExit', false);
         const profitTarget = _.get(status, 'profitTarget', false);
         const stopLoss = _.get(status, 'stopLoss', false);

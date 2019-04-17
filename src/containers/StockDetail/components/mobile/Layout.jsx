@@ -49,6 +49,8 @@ export default class LayoutMobile extends React.Component {
         const changePct = _.get(latestDetail, 'changePct', 0);
         const change = _.get(latestDetail, 'change', 0);
         const lastPrice = _.get(latestDetail, 'latestPrice', 0);
+        const allowed = _.get(latestDetail, 'allowed', false);
+        const shortable = _.get(latestDetail, 'shortable', false);
 
         stockData = {
             ...stockData,
@@ -56,16 +58,22 @@ export default class LayoutMobile extends React.Component {
             name,
             lastPrice,
             change,
-            changePct: Number((changePct * 100).toFixed(2))
+            changePct: Number((changePct * 100).toFixed(2)),
+            allowed,
+            real: true,
+            shortable
         };
         this.props.selectStock(stockData);
+        this.props.toggleStockCardBottomSheet && this.props.toggleStockCardBottomSheet();
         // this.props.toggleStockDetailBottomSheetOpen();
-        this.props.toggleStockCardBottomSheet();
     }
 
     renderPredictButton = () => {
+        const {latestDetail = {}} = this.props;
+        const allowed = _.get(latestDetail, 'allowed', false);
+
         return (
-            this.props.selectStock 
+            (this.props.selectStock && allowed)
             ?   <Button 
                         style={predictButtonStyle}
                         onClick={this.predictStock}

@@ -33,6 +33,7 @@
     "react": "16.7.0",
     "react-app-rewired": "^1.6.2",
     "react-aria-menubutton": "^6.1.0",
+    "react-browser-notifications": "1.0.14",
     "react-cookie": "^3.0.8",
     "react-cookies": "^0.1.0",
     "react-copy-to-clipboard": "^5.0.1",

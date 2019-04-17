@@ -7,6 +7,8 @@ import Icon from '@material-ui/core/Icon';
 import TopCard from './TopCard';
 import HorizontalCard from './HorizontalCard';
 import VerticalCard from './VerticalCard';
+import LoginBottomSheet from '../../../LoginBottomSheet';
+import NotLoggedIn from '../../../Misc/NotLoggedIn';
 import ActionIcon from '../../../Misc/ActionIcons';
 import LoaderComponent from '../../../Misc/Loader';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
@@ -25,7 +27,8 @@ export default class Layout extends React.Component {
         this.state = {
             searchTopSheetOpen: false,
             searchSymbolValue: '',
-            isUserAllocated: Utils.isUserAllocated()
+            isUserAllocated: Utils.isUserAllocated(),
+            loginOpen: false
         };
     }
 
@@ -234,7 +237,11 @@ export default class Layout extends React.Component {
         );
     }
 
-    render() {
+    toggleLoginBottomSheet = () => {
+        this.setState({loginOpen: !this.state.loginOpen});
+    }
+
+    renderMainContent = () => {
         const {real = false} = this.props;
 
         return (
@@ -274,6 +281,25 @@ export default class Layout extends React.Component {
                     }
                 </Grid>
             </Container>
+        );
+    }
+
+    render() {
+        return (
+            <React.Fragment>
+                <LoginBottomSheet 
+                    open={this.state.loginOpen} 
+                    onClose={this.toggleLoginBottomSheet}
+                    dialog={false}
+                    eventEmitter={this.props.eventEmitter}
+                />
+                {
+                    Utils.isLoggedIn()
+                    ?   this.renderMainContent()
+                    :   <NotLoggedIn onLoginClick={this.toggleLoginBottomSheet} />
+                }
+            </React.Fragment>
+            
         );
     }
 }

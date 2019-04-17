@@ -284,14 +284,13 @@ class TradingContest extends React.Component {
                                 exact
                                 path={`${this.props.match.path}/mypicks`}
                                 render={() => 
-                                    Utils.isLoggedIn()
-                                    ?   <CreateEntry 
-                                            selectedDate={this.state.selectedDate}
-                                            componentType='preview'
-                                            listViewType={this.getListViewTypeFromUrl(this.props)}
-                                            updateDate={this.updateDate}
-                                        />
-                                    :   this.redirectToLogin(`${this.props.match.path}/mypicks`)
+                                    <CreateEntry 
+                                        selectedDate={this.state.selectedDate}
+                                        componentType='preview'
+                                        listViewType={this.getListViewTypeFromUrl(this.props)}
+                                        updateDate={this.updateDate}
+                                        eventEmitter={this.eventEmitter}
+                                    />
                                 }
                             />
                             <Route 
@@ -308,22 +307,21 @@ class TradingContest extends React.Component {
                             <Route 
                                 exact
                                 path={`${this.props.match.path}/metrics`}
-                                render={() => Utils.isLoggedIn()
-                                    ?   <Dashboard />
-                                    :   this.redirectToLogin(`${this.props.match.path}/metrics`)
+                                render={() => 
+                                    <Dashboard eventEmitter={this.eventEmitter}/>
                                 }
                             />
                             <Route 
                                 exact
                                 path={`${this.props.match.path}`}
-                                render={() => Utils.isLoggedIn()
-                                    ?   <CreateEntry 
-                                            selectedDate={this.state.selectedDate}
-                                            componentType='preview'
-                                            updateDate={this.updateDate}
-                                            listViewType={this.getListViewTypeFromUrl(this.props)}
-                                        />
-                                    :   this.redirectToLogin(`${this.props.match.path}`)
+                                render={() => 
+                                    <CreateEntry 
+                                        selectedDate={this.state.selectedDate}
+                                        componentType='preview'
+                                        updateDate={this.updateDate}
+                                        listViewType={this.getListViewTypeFromUrl(this.props)}
+                                        eventEmitter={this.eventEmitter}
+                                    />
                                 }
                             />
                             <Redirect push to='/404' />
