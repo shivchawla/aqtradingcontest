@@ -169,7 +169,6 @@ class App extends React.Component {
         return (
             <MuiPickersUtilsProvider utils={MomentUtils}>
                 <div className="App">
-                    <h1>Hello World</h1>
                     <Snackbar 
                         openStatus={this.state.newContentToast}
                         message='New update available plese reload!!'
