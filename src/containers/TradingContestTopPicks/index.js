@@ -70,8 +70,6 @@ export class TradingContestLeaderboardMobile extends React.Component {
     renderMobile = () => {        
         return (
             <AqLayout pageTitle='Top Picks'>
-                <h1>Hello Trading Contest</h1>
-                <h1>Hello Trading Contest</h1>
                 <LoginBottomSheet 
                     open={this.state.loginOpen} 
                     onClose={this.toggleLoginBottomSheet}
