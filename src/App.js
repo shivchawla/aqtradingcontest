@@ -96,7 +96,6 @@ class App extends React.Component {
 
     componentDidMount() {
         var self = this;
-        // cookie.save('userId', 'saru.sreyo@gmail.com', { path: '/' });
         window.addEventListener('beforeinstallprompt', function (e) {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
@@ -172,13 +171,11 @@ class App extends React.Component {
                 <div className="App">
                     <Snackbar 
                         openStatus={this.state.newContentToast}
-                        // handleClose={this.onSnackbarClose}
                         message='New update available plese reload!!'
                         renderAction={this.renderSnackbarAction}
                     />
                     <Snackbar 
                         openStatus={this.state.addToHomescreenToast}
-                        // handleClose={this.onSnackbarClose}
                         message='Please add AdviceQube to homescreen'
                         renderAction={this.renderA2HSSnackbarAction}
                     />
