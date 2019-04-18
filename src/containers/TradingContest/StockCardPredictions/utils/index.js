@@ -277,7 +277,10 @@ export const constructKvpPairs = (items) => {
 export const getNumSharesFromInvestment = (notional, lastPrice, maxInvestmentValue = 50) => {
     const ceilValue = Math.ceil(notional / lastPrice);
     const floorValue = Math.floor(notional / lastPrice);
-    if ((ceilValue * lastPrice) < Math.min((maxInvestmentValue * 1000), 1.05 * notional)) {
+    if (
+        (ceilValue * lastPrice) < Math.min((maxInvestmentValue * 1000), 1.05 * notional) ||
+        (floorValue * lastPrice) < 10000
+    ) {
         return ceilValue;
     }
 
