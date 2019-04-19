@@ -475,6 +475,28 @@ export class Utils{
 		}
 	}
 
+	static formatInvestmentValueFinancial(value) {
+		if (value && typeof(value) == "number") {
+			const comparableValue = Math.abs(value);
+			var valueLac = comparableValue / 100;
+			var valueCr = comparableValue / 10000;
+			var valueThousandCr = comparableValue / 10000000;
+			const sign = value < 0 ? '-' : '';
+
+			return (
+				valueLac >= 1.0 
+				?	valueCr >= 1.0
+					?	valueThousandCr >= 1.0
+						?	`${sign}${this.formatMoneyValueMaxTwoDecimals(valueThousandCr)}K Cr`
+						:	`${sign}${this.formatMoneyValueMaxTwoDecimals(valueCr)}Cr`
+					:	`${sign}${this.formatMoneyValueMaxTwoDecimals(valueLac)}L`
+				:	`${sign}${this.formatMoneyValueMaxTwoDecimals(value)}K`
+			);
+		} else{
+			return value;
+		}
+	}
+
 	static formatInvestmentValueNormal(value) {
 		if (value && typeof(value) == "number"){
 			var valueThousand = value / 1000;
@@ -806,6 +828,7 @@ export const sendErrorToBackend = (errorToSend = '', email = '', subject = 'Logi
 		finallyCallback !== null && finallyCallback();
 	})
 }
+
 
 // Utils.openSocketConnection();
 // setInterval(function(){Utils.openSocketConnection();}, 10000);

@@ -34,7 +34,8 @@ export default class FinancialDetailListItem extends React.Component {
                     <Value>
                         {
                             value !== null
-                                ?   numeral(Number(value)).format('₹ 0.00 a')
+                                // ?   numeral(Number(value)).format('₹ 0.00 a')
+                                ?   Utils.formatInvestmentValueFinancial(Number(value / 1000))
                                 :   '-'
                         }
                     </Value>
@@ -78,7 +79,7 @@ export default class FinancialDetailListItem extends React.Component {
 }
 
 const Value = styled.h3`
-    font-size: 14px;
+    font-size: 13px;
     color: #303030;
     font-family: 'Lato', sans-serif;
     font-weight: 500;
@@ -87,7 +88,7 @@ const Value = styled.h3`
 
 const MetricName = styled.h3`
     width: 140px;
-    font-size: 14px;
+    font-size: 13px;
     color: #303030;
     font-family: 'Lato', sans-serif;
     font-weight: 500;
