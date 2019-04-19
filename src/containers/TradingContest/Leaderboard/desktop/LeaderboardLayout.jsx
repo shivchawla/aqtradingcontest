@@ -8,6 +8,7 @@ import LeaderboardTable from './LeaderboardTable';
 import RadioGroup from '../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../Watchlist/components/mobile/WatchlistCustomRadio';
 import NotLoggedIn from '../../Misc/NotLoggedIn';
+import LoginBottomSheet from '../../LoginBottomSheet';
 import UserProfileDialog from '../../UserProfile';
 import {Utils} from '../../../../utils';
 import {getLeadeboardType} from '../utils';
@@ -19,6 +20,7 @@ export default class TopPicksLayout extends React.Component {
         super(props);
         this.state = {
             listType: 'total',
+            loginOpen: false
         };
     }
 
@@ -26,8 +28,12 @@ export default class TopPicksLayout extends React.Component {
         this.setState({leaderTypeView: value});
     }
 
+    toggleLoginBottomSheet = () => {
+        this.setState({loginOpen: !this.state.loginOpen});
+    }
+
     renderContent() {
-        const {winners = [], winnersWeekly = [], winnersOverall = []} = this.props;
+        const {winners = [], winnersWeekly = [], winnersOverall = [], errorMessage = null} = this.props;
         const type = getLeadeboardType(this.props.type);
         const requiredWinners = type === 'daily'
             ? winners
@@ -37,6 +43,12 @@ export default class TopPicksLayout extends React.Component {
 
         return (
             <SGrid container>
+                <LoginBottomSheet 
+                    open={this.state.loginOpen} 
+                    onClose={this.toggleLoginBottomSheet}
+                    dialog={true}
+                    eventEmitter={this.props.eventEmitter}
+                />
                 <UserProfileDialog 
                     open={this.props.userProfileBottomSheetOpenStatus}
                     onClose={this.props.toggleUserProfileBottomSheet}
@@ -44,7 +56,7 @@ export default class TopPicksLayout extends React.Component {
                 />
                 {
                     !Utils.isLoggedIn()
-                        ?   <NotLoggedIn />
+                        ?   <NotLoggedIn onLoginClick={this.toggleLoginBottomSheet} />
                         :   <React.Fragment>
                                 <Grid 
                                         item 
@@ -82,7 +94,7 @@ export default class TopPicksLayout extends React.Component {
                                     >
                                         {
                                             requiredWinners.length == 0 
-                                            ?   <NoDataFound /> 
+                                            ?   <NoDataFound errorMessage={errorMessage} /> 
                                             :   <LeaderboardTable 
                                                     winners={winners}
                                                     winnersWeekly={winnersWeekly}
@@ -123,12 +135,18 @@ export default class TopPicksLayout extends React.Component {
     }
 }
 
-const NoDataFound = () => {
+const NoDataFound = ({errorMessage = null}) => {
     return (
         <Grid container>
             <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
                 <img src={notFoundLogo} />
-                <NoDataText style={{marginTop: '20px'}}>No Data Found</NoDataText>
+                <NoDataText style={{marginTop: '20px'}}>
+                    {
+                        errorMessage
+                            ?   errorMessage
+                            :   'No data found.'
+                    }
+                </NoDataText>
             </Grid>
         </Grid>
     );
@@ -136,7 +154,7 @@ const NoDataFound = () => {
 
 const NoDataText = styled.h3`
     font-size: 18px;
-    color: #535353;
+    color: #8c8c8c;
     font-weight: 400;
 `;
 

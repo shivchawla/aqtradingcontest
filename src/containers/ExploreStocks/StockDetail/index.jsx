@@ -133,8 +133,13 @@ class StockDetailComponent extends React.Component {
     fetchStockLatestDetail = (symbol) => {
         return getStockData(symbol, 'latestDetail')
         .then(response => {
+            const latestDetailRT = _.get(response, 'data.latestDetailRT', {});
             return {
-                priceDetail: _.get(response, 'data.latestDetailRT', {}),
+                priceDetail: {
+                    ...latestDetailRT,
+                    allowed: _.get(response, 'data.allowed', false),
+                    shortable: _.get(response, 'data.shortable', false)
+                },
                 position: _.get(response, 'data.detail', {})
             };
         });
@@ -146,16 +151,16 @@ class StockDetailComponent extends React.Component {
         .then(({priceDetail, position}) => {
             const name = _.get(position, 'Nse_Name', '');
             const symbol = _.get(position, 'NSE_ID', '');
-            const lastPrice = _.get(priceDetail, 'current', 0);
+            const lastPrice = _.get(priceDetail, 'close', 0);
             const chg = _.get(priceDetail, 'change', 0);
-            const chgPct = _.get(priceDetail, 'changePct', 0);
+            const chgPct = _.get(priceDetail, 'change_p', 0);
             this.setState({latestDetail: priceDetail, position});
             this.props.updateStockData({
                 name,
                 symbol,
                 lastPrice,
-                chg,
-                chgPct
+                change: chg,
+                changePct: chgPct
             })
         });
     }

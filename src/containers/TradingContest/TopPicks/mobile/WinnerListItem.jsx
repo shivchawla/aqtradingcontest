@@ -21,7 +21,10 @@ export default class WinnerListItem extends React.Component {
             symbol,
             lastPrice,
             chg,
-            chgPct
+            chgPct,
+            shortable: true,
+            real: true,
+            allowed: true
         });
     }
     
@@ -37,7 +40,16 @@ export default class WinnerListItem extends React.Component {
         const medal = getRankMedal(rank);
 
         return (
-            <SGrid container onClick={() => this.onClick({symbol, name, lastPrice, change, changePct: unformattedChangePct})}>
+            <SGrid 
+                    container 
+                    onClick={() => this.onClick({
+                        symbol, 
+                        name, 
+                        lastPrice, 
+                        change, 
+                        changePct: unformattedChangePct
+                    })}
+            >
                 <Grid item xs={12} style={{...verticalBox, alignItems: 'flex-start'}}>
                     <div style={{...horizontalBox, justifyContent: 'space-between', width: '100%'}}>
                         <div style={{...verticalBox, alignItems: 'flex-start'}}>
@@ -79,7 +91,7 @@ export default class WinnerListItem extends React.Component {
                                 |
                             </div>
                             <PriceText style={{color: changeColor}}>
-                                ₹{Utils.formatMoneyValueMaxTwoDecimals(change)} {changePct}
+                                ₹{change} {changePct}
                             </PriceText>
                         </div>
                         <div 

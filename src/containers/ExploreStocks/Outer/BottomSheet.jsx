@@ -14,7 +14,8 @@ export default class StockDetailBottomSheet extends React.Component {
         this.state = {
             stockData: {
                 change: _.get(props, 'change', 0),
-                changePct: _.get(props, 'changePct', 0)
+                changePct: _.get(props, 'changePct', 0),
+                lastPrice: _.get(props, 'lastPrice', 0),
             },
             loading: false
         };
@@ -34,12 +35,14 @@ export default class StockDetailBottomSheet extends React.Component {
                 symbol = '',
                 name = '',
                 change = 0,
-                changePct = 0
+                changePct = 0,
+                lastPrice = 0
             } = nextProps;
             this.setState({
                 stockData: {
                     change,
-                    changePct
+                    changePct,
+                    lastPrice
                 }
             });
         }
@@ -49,7 +52,8 @@ export default class StockDetailBottomSheet extends React.Component {
         const positiveColor = '#32FFD8';
         const negativeColor = '#FF7B7B';
         const neutralCOlor = '#DFDFDF';
-        let {symbol = '', name = '', lastPrice = 0, change = 0, changePct = 0,} = this.props;
+        let {lastPrice = 0, change = 0, changePct = 0} = this.state.stockData;
+        let {symbol = '', name = ''} = this.props;
 
         changePct = Number((changePct * 100).toFixed(2));
         const changeColor = change > 0 ? positiveColor : change === 0 ? neutralCOlor : negativeColor;
@@ -99,10 +103,13 @@ export default class StockDetailBottomSheet extends React.Component {
     }
 
     updateStockData = (stockData) => {
+        console.log('Update Stock Data called ', stockData);
         this.setState({stockData: {
             ...this.state.stockData,
             ...stockData
-        }});
+        }}, () => {
+            console.log('State ', this.state.stockData);
+        });
     }
     
     updateLoading = (loading) => {

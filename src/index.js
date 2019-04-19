@@ -20,5 +20,5 @@ ReactDOM.render(
     </CookiesProvider>, 
     document.getElementById('root')
 );
-unregister();
-// registerServiceWorker(event);
+// unregister();
+registerServiceWorker(event);

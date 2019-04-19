@@ -9,7 +9,7 @@ import Tag from '../../../../../components/Display/Tag';
 import {isMarketOpen, roundOffToNearestFive} from '../../../utils';
 import {Utils} from '../../../../../utils';
 import {hasEndDatePassed} from '../../utils';
-import {getMarketCloseHour, getMarketCloseMinute} from '../../../../../utils/date';
+import {getMarketCloseHourLocal, getMarketCloseMinuteLocal} from '../../../../../utils/date';
 import {verticalBox, metricColor, horizontalBox} from '../../../../../constants';
 
 const DateHelper = require('../../../../../utils/date');
@@ -30,7 +30,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
         const {endDate = null} = this.props.prediction;
         const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
         const todayDate = moment().format(dateTimeFormat);
-        let endTime = moment(endDate, dateFormat).hours(getMarketCloseHour()).minutes(getMarketCloseMinute());
+        let endTime = moment(endDate, dateFormat).hours(getMarketCloseHourLocal()).minutes(getMarketCloseMinuteLocal());
         endTime = endTime.format(dateTimeFormat);
         const active = moment(todayDate, dateTimeFormat).isBefore(moment(endTime, dateTimeFormat));
         const manualExit = _.get(status, 'manualExit', false);

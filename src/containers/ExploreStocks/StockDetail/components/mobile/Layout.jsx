@@ -108,7 +108,8 @@ export default class Layout extends React.Component {
             changePct: Number((changePct * 100).toFixed(2))
         };
         this.props.selectStock(stockData);
-        this.props.toggleStockCardBottomSheet();
+        // this.props.toggleStockCardBottomSheet();
+        this.props.toggleStockCardBottomSheet && this.props.toggleStockCardBottomSheet();
     }
 
     renderContent() {
@@ -117,8 +118,10 @@ export default class Layout extends React.Component {
             loading = false,
             staticPerformance = {},
             rollingPerformance = {},
-            rollingPerformanceTimelines = []
+            rollingPerformanceTimelines = [],
+            latestDetail = {}
         } = this.props;
+        const {allowed = false} = latestDetail;
         const staticPerformanceRadioItems = [
             this.props.selectedStaticPerformanceYearly ? 'Annual Return' : 'Total Return', 
             'Volatility', 
@@ -163,6 +166,7 @@ export default class Layout extends React.Component {
                         <Header>PRICE CHART</Header>
                         {
                             this.props.selectStock &&
+                            allowed &&
                             <Button 
                                     style={predictButtonStyle}
                                     onClick={this.predictStock}

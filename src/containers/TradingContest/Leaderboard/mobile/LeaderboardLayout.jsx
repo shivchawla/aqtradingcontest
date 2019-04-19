@@ -29,7 +29,7 @@ export default class LeaderboardLayout extends React.Component {
     }
 
     renderContent() {
-        const {winners = [], winnersWeekly = [], winnersOverall = []} = this.props;
+        const {winners = [], winnersWeekly = [], winnersOverall = [], errorMessage = null} = this.props;
         const type = getLeadeboardType(this.props.type);
         const requiredWinners = type === 'daily'
             ? winners
@@ -47,7 +47,7 @@ export default class LeaderboardLayout extends React.Component {
                 <Grid item xs={12} style={listContainer}>
                     {
                         requiredWinners.length == 0 
-                        ?   <NoDataFound /> 
+                        ?   <NoDataFound errorMessage={errorMessage}/> 
                         :   <ParticipantList 
                                 winners={winners}
                                 winnersWeekly={winnersWeekly}
@@ -101,12 +101,18 @@ export default class LeaderboardLayout extends React.Component {
     }
 }
 
-const NoDataFound = () => {
+const NoDataFound = ({errorMessage}) => {
     return (
         <Grid container>
             <Grid item xs={12} style={{height: 'calc(100vh - 220px)', ...verticalBox}}>
                 <img src={notFoundLogo} />
-                <ContestNotAvailableText style={{marginTop: '20px'}}>No Data Found</ContestNotAvailableText>
+                <ContestNotAvailableText style={{marginTop: '20px'}}>
+                    {
+                        errorMessage
+                            ?   errorMessage
+                            :   'No Data Found.'
+                    }
+                </ContestNotAvailableText>
             </Grid>
         </Grid>
     );
@@ -115,7 +121,7 @@ const NoDataFound = () => {
 const ContestNotAvailableText = styled.h3`
     font-size: 18px;
     font-weight: 400;
-    color: primaryColor;
+    color: #8c8c8c;
 `;
 
 const SGrid = styled(Grid)`

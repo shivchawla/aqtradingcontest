@@ -43,6 +43,8 @@ export const getPriceMetrics = data => {
     latestDetail.changePct = _.get(data, 'latestDetailRT.change_p', 0);
     latestDetail.change = _.get(data, 'latestDetailRT.change', 0);
     latestDetail.name = _.get(data, 'detail.Nse_Name', '');
+    latestDetail.shortable = _.get(data, 'shortable', false),
+    latestDetail.allowed = _.get(data, 'allowed', false);
 
     return latestDetail;
 }
