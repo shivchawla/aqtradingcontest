@@ -38,11 +38,11 @@ export default class DailyContestTnC extends React.Component {
                         <p>In order to be eligible for participation in the Contest, predictions are required to meet a particular set of requirements. All predictions are checked for applicable requirements before submission. These are the requirements that are required of all entries/predictions:</p>
                         <p><br /><strong>NIFTY_500 Stocks only</strong>: Contest entries can choose stocks only from a broad universe of NIFTY_500 stocks when <em>Buying</em>.</p>
                         <p><strong>Ineligible Stocks: </strong>Company reserves the right to remove some highly volatile or almost bankrupt stocks from list of tradeable securities&nbsp;</p>
-                        <p><strong>Min 10 unique predictions:&nbsp;</strong>Participants must have at-least 10 unique stock predictions each day&nbsp; &nbsp;</p>
+                        <p><strong>Min 6 unique predictions:&nbsp;</strong>Participants must have at-least 6 unique stock predictions each day&nbsp; &nbsp;</p>
                         <p><strong>Max. of 3 Predictions per Stock: </strong>Participants can submit a maximum of 3 predictions for a single stock.&nbsp;</p>
                         <p><strong>Max. of 1 Predictions per Stock/Horizon combination: </strong>Participants can submit only ONE prediction for a stock and horizon combination. For ex: Buy TCS for 3 days with profit target of 3%. In this case case, another 3 day prediction for TCS is not allowed.&nbsp;&nbsp;</p>
                         <p><strong>Max. of 10% of investment per stock: </strong>Participants can't invest more than 10% of Net Total in single stock (across all predictions)</p>
-                        <p><strong>Min. average investment: </strong>Average investment across all predictions must be greater than 35K.&nbsp;<strong>&nbsp;</strong></p>
+                        <p><strong>Min. average investment: </strong>Average investment across all predictions must be greater than 45K.&nbsp;<strong>&nbsp;</strong></p>
                         <p><strong>Attribute Requirements: </strong>Each prediction must contain a prediction horizon, trade direction, investment amount and stoploss. Investment amount can only be a subset of 10K, 25K, 50K, 75K or 1Lac.</p> 
                         <p><strong>Virtual Cash Availability: </strong>Each participant is a given a virtual cash of 10 Lacs at the beginning of the contest. Once all cash is invested, particpants must liquidate a trade OR wait for prediction maturity to create new predictions.</p>
                         <p>&nbsp;</p>
