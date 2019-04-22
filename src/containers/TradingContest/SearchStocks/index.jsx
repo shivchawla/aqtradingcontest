@@ -11,6 +11,7 @@ import TextField from '@material-ui/core/TextField';
 import Snackbar from '@material-ui/core/Snackbar';
 import StockDetail from '../../StockDetail';
 import StockDetailBottomSheet from '../StockDetailBottomSheet';
+import StockCardPredictionsBottomSheet from '../StockCardPredictions/outer/BottomSheet';
 import StockFilter from './components/StockFilter';
 import {screenSize} from '../constants';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -55,7 +56,9 @@ class SearchStocks extends React.Component {
             selectedStocksDialogOpen: false,
             newStocks: [],
             stockDetailBottomSheetOpen: false,
-            selectedInfoStock: {}
+            selectedInfoStock: {},
+            stockCardPredictionsBottomSheetOpen: false,
+            selectedStockForPrediction: {} // Object that store the stock detail of the selected stock used for prediction from StockDetailBottomSheet
         };
         this.localStocks = []; // Used to get the list of all stocks obtained from N/W calls
         this.stockListComponent = null;
@@ -64,6 +67,20 @@ class SearchStocks extends React.Component {
 
     toggleStockDetailBottomSheetOpen = () => {
         this.setState({stockDetailBottomSheetOpen: !this.state.stockDetailBottomSheetOpen});
+    }
+
+    toggleStockCardPredictionsBottomSheet = () => {
+        this.setState({stockCardPredictionsBottomSheetOpen: !this.state.stockCardPredictionsBottomSheetOpen});
+    }
+
+    closeStockCardPredictionsBottomSheet = () => {
+        this.setState({stockCardPredictionsBottomSheetOpen: false});
+    }
+
+    predictStock = stock => {
+        this.setState({selectedStockForPrediction: stock}, () => {
+            this.toggleStockCardPredictionsBottomSheet();
+        })
     }
 
     renderSearchStocksList = () => {
@@ -936,8 +953,14 @@ class SearchStocks extends React.Component {
                 <StockDetailBottomSheet 
                     open={this.state.stockDetailBottomSheetOpen}
                     onClose={this.toggleStockDetailBottomSheetOpen}
+                    selectStock={this.predictStock}
                     {...this.state.selectedInfoStock}
                     dialog={isDesktop}
+                />
+                <StockCardPredictionsBottomSheet 
+                    open={this.state.stockCardPredictionsBottomSheetOpen}
+                    onClose={this.closeStockCardPredictionsBottomSheet}
+                    stockData={this.state.selectedStockForPrediction}
                 />
                 <Snackbar
                     anchorOrigin={{

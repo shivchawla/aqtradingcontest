@@ -10,8 +10,10 @@ import Leaderboard from '../TradingContest/Leaderboard';
 import DateComponent from '../TradingContest/Misc/DateComponent';
 import RadioGroup from '../../components/selections/RadioGroup';
 import CustomRadio from '../Watchlist/components/mobile/WatchlistCustomRadio';
+import LoginBottomSheet from '../TradingContest/LoginBottomSheet';
 import {Utils} from '../../utils';
 import {verticalBox, horizontalBox} from '../../constants';
+import NotLoggedIn from '../TradingContest/Misc/NotLoggedIn';
 
 const DateHelper = require('../../utils/date');
 const URLSearchParamsPoly = require('url-search-params');
@@ -26,8 +28,13 @@ export class TradingContestLeaderboardMobile extends React.Component {
             selectedTab: 0,
             selectedDate: defaultDate,
             bottomSheetOpen: false,
-            overallLoading: false
+            overallLoading: false,
+            loginOpen: false
         };
+    }
+
+    toggleLoginBottomSheet = () => {
+        this.setState({loginOpen: !this.state.loginOpen});
     }
 
     updateDate = (date) => {
@@ -47,44 +54,54 @@ export class TradingContestLeaderboardMobile extends React.Component {
 
         return (
             <AqLayout pageTitle='Leaderboard'>
-                <Grid 
-                        container 
-                        style={{
-                            backgroundColor: '#f5f6fa'
-                        }}
-                >
-                    <Grid 
-                            item 
-                            xs={12} 
-                            style={{
-                                ...horizontalBox, 
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                padding: '0 2%',
-                                backgroundColor: '#fff'
-                            }}
-                    >
-                        <RadioGroup
-                            items={['Daily', 'Weekly']}
-                            defaultSelected={this.state.selectedTab}
-                            onChange={this.onRadioChange}
-                            CustomRadio={CustomRadio}
-                            disabled={this.state.overallLoading}
-                        />
-                        <DateComponent 
-                            selectedDate={this.state.selectedDate}
-                            color='grey'
-                            onDateChange={this.updateDate}
-                            compact
-                            type={type}
-                        />
-                    </Grid>
-                    <Leaderboard 
-                        selectedDate={this.state.selectedDate}
-                        type={this.state.selectedTab}
-                        updateOverallLoading={this.updateOverallLoading}
-                    />
-                </Grid>
+                <LoginBottomSheet 
+                    open={this.state.loginOpen} 
+                    onClose={this.toggleLoginBottomSheet}
+                    dialog={false}
+                    eventEmitter={this.props.eventEmitter}
+                />
+                {
+                    Utils.isLoggedIn()
+                        ?   <Grid 
+                                    container 
+                                    style={{
+                                        backgroundColor: '#f5f6fa'
+                                    }}
+                            >
+                                <Grid 
+                                        item 
+                                        xs={12} 
+                                        style={{
+                                            ...horizontalBox, 
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            padding: '0 2%',
+                                            backgroundColor: '#fff'
+                                        }}
+                                >
+                                    <RadioGroup
+                                        items={['Daily', 'Weekly']}
+                                        defaultSelected={this.state.selectedTab}
+                                        onChange={this.onRadioChange}
+                                        CustomRadio={CustomRadio}
+                                        disabled={this.state.overallLoading}
+                                    />
+                                    <DateComponent 
+                                        selectedDate={this.state.selectedDate}
+                                        color='grey'
+                                        onDateChange={this.updateDate}
+                                        compact
+                                        type={type}
+                                    />
+                                </Grid>
+                                <Leaderboard 
+                                    selectedDate={this.state.selectedDate}
+                                    type={this.state.selectedTab}
+                                    updateOverallLoading={this.updateOverallLoading}
+                                />
+                            </Grid>
+                        :   <NotLoggedIn onLoginClick={this.toggleLoginBottomSheet} />
+                }
             </AqLayout>
         );
     }
@@ -104,9 +121,6 @@ export class TradingContestLeaderboardMobile extends React.Component {
         const date = this.params.get('date');
         if (date !== null) {
             this.setState({selectedDate: moment(date, dateFormat)});
-        }
-        if (!Utils.isLoggedIn()) {
-            this.props.history.push('/login');
         }
     }
 

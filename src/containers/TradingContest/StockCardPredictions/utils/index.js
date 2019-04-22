@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import {getPercentageModifiedValue} from '../../MultiHorizonCreateEntry/utils';
 import {targetKvp, horizonKvp, investmentKvp, conditionalKvp, conditionalTypeItems, conditionalKvpValue, targetKvpValue, horizonKvpReal} from '../constants';
-import {getStockTicker} from '../../utils';
+import {getStockTicker, roundOffToNearestFive} from '../../utils';
 import { fetchAjaxPromise, Utils } from '../../../../utils';
 const dateFormat = 'YYYY-MM-DD';
 
@@ -127,12 +127,12 @@ export const constructPrediction = (stockData, type = 'buy', conditionalType = c
             quantity: realPrediction 
                 ?   (type === 'buy' ? 1 : -1) * investment
                 :   0,
-            avgPrice: (conditional && conditionalType.toUpperCase() !== 'NOW') ?  Number(avgPrice) : 0
+            avgPrice: roundOffToNearestFive((conditional && conditionalType.toUpperCase() !== 'NOW') ?  Number(avgPrice) : 0)
         },
         startDate,
         endDate,
-        target: targetValue,
-        stopLoss,
+        target: roundOffToNearestFive(targetValue),
+        stopLoss: roundOffToNearestFive(stopLoss),
         real: realPrediction,
         conditionalType: conditional ? conditionalType : 'NOW'
     };
@@ -277,7 +277,10 @@ export const constructKvpPairs = (items) => {
 export const getNumSharesFromInvestment = (notional, lastPrice, maxInvestmentValue = 50) => {
     const ceilValue = Math.ceil(notional / lastPrice);
     const floorValue = Math.floor(notional / lastPrice);
-    if ((ceilValue * lastPrice) < Math.min((maxInvestmentValue * 1000), 1.05 * notional)) {
+    if (
+        (ceilValue * lastPrice) < Math.min((maxInvestmentValue * 1000), 1.05 * notional) ||
+        (floorValue * lastPrice) < 10000
+    ) {
         return ceilValue;
     }
 

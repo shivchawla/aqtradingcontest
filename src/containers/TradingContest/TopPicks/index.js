@@ -29,7 +29,7 @@ class Winners extends React.Component {
             loading: false,
             contestEnded: false,
             timelineView: 'daily',
-            noContestFound: false
+            noContestFound: false,
         };
     }
 
@@ -96,6 +96,7 @@ class Winners extends React.Component {
             timelineView: this.state.timelineView,
             loading: this.state.loading,
             selectedDate: this.state.selectedDate,
+            eventEmitter: this.props.eventEmitter
         };
 
         return (

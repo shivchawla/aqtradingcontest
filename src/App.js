@@ -15,6 +15,7 @@ import Snackbar from './components/Alerts/SnackbarComponent';
 import DummyLogin from './containers/DummyLogin';
 import {horizontalBox} from './constants';
 import {Utils} from './utils';
+import {Event} from './utils/events';
 import './App.css';
 
 const {gaTrackingId = null} = require('./localConfig');
@@ -55,6 +56,7 @@ class App extends React.Component {
             responseSnackbar: false,
             responseSnackbarMessage: ''
         }
+        this.eventEmitter = new Event();
         ReactGA.initialize(gaTrackingId); //Unique Google Analytics tracking number
     }
 
@@ -94,7 +96,6 @@ class App extends React.Component {
 
     componentDidMount() {
         var self = this;
-        // cookie.save('userId', 'saru.sreyo@gmail.com', { path: '/' });
         window.addEventListener('beforeinstallprompt', function (e) {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
@@ -170,13 +171,11 @@ class App extends React.Component {
                 <div className="App">
                     <Snackbar 
                         openStatus={this.state.newContentToast}
-                        // handleClose={this.onSnackbarClose}
                         message='New update available plese reload!!'
                         renderAction={this.renderSnackbarAction}
                     />
                     <Snackbar 
                         openStatus={this.state.addToHomescreenToast}
-                        // handleClose={this.onSnackbarClose}
                         message='Please add AdviceQube to homescreen'
                         renderAction={this.renderA2HSSnackbarAction}
                     />
@@ -255,19 +254,25 @@ class App extends React.Component {
                                         />
                                         <Route exact={true} path='/dailycontest/stockdetail' component={StockDetail} /> 
                                         <Route
+                                            exact={true}
                                             path='/dailycontest/leaderboard'
                                             render={() => {
-                                                return Utils.isLoggedIn()
-                                                    ? <TradingContestLeaderboard />
-                                                    : this.redirectToLogin('/dailycontest/leaderboard')
+                                                return (
+                                                    <TradingContestLeaderboard 
+                                                    eventEmitter={this.eventEmitter}
+                                                    />
+                                                );
                                             }}
                                         />
                                         <Route
+                                            exact={true}
                                             path='/dailycontest/toppicks'
                                             render={() => {
-                                                return Utils.isLoggedIn()
-                                                    ? <TradingContestTopPicks />
-                                                    : this.redirectToLogin('/dailycontest/toppicks')
+                                                return(
+                                                    <TradingContestTopPicks 
+                                                        eventEmitter={this.eventEmitter}
+                                                    />
+                                                );
                                             }}
                                         />
                                         <Route

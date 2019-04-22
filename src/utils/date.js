@@ -204,6 +204,11 @@ module.exports.getFirstMonday = function(offset) {
 	} 
 };
 
+
+module.exports.getLatestTradingDay = function(date = moment()) {
+	return moment(exports.getPreviousNonHolidayWeekday(date.add(1, 'days')));
+}
+
 module.exports.getLatestWeekday = function(date) {
 	date = !date ? exports.getCurrentDate() : exports.getDate(date);
 
