@@ -794,7 +794,8 @@ class CreateEntry extends React.Component {
             portfolioStats: this.state.portfolioStats,
             stopPredictionLoading: this.state.stopPredictionLoading,
             setRealFlag: this.setRealFlag,
-            real: this.state.real
+            real: this.state.real,
+            eventEmitter: this.props.eventEmitter
         };
         const {mobile = false} = this.props;
 

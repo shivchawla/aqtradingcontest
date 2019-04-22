@@ -11,6 +11,7 @@ import {withRouter} from 'react-router-dom';
 import StockPreviewList from '../common/StockPreviewList';
 import LoaderComponent from '../../../Misc/Loader';
 import NotLoggedIn from '../../../Misc/NotLoggedIn';
+import LoginBottomSheet from '../../../LoginBottomSheet';
 import SelectionMetricsMini from '../mobile/SelectionMetricsMini';
 import RadioGroup from '../../../../../components/selections/RadioGroup';
 import CustomRadio from '../../../../Watchlist/components/mobile/WatchlistCustomRadio';
@@ -25,7 +26,8 @@ class CreateEntryEditScreen extends React.Component {
         this.state = {
             listView: this.props.listViewType || 'all',
             anchorEl: null,
-            isUserAllocated: Utils.isUserAllocated()
+            isUserAllocated: Utils.isUserAllocated(),
+            loginOpen: false
         };
     }
 
@@ -183,13 +185,25 @@ class CreateEntryEditScreen extends React.Component {
         );
     }
 
+    toggleLoginBottomSheet = () => {
+        this.setState({loginOpen: !this.state.loginOpen});
+    }
+
     renderContent() {        
         return (
             <Grid container justify="space-between" style={{backgroundColor:'#fff'}}>
+                <LoginBottomSheet 
+                    open={this.state.loginOpen} 
+                    onClose={this.toggleLoginBottomSheet}
+                    dialog={true}
+                    eventEmitter={this.props.eventEmitter}
+                />
                 {
                     Utils.isLoggedIn()
-                    ? this.renderPredictionList()
-                    : <NotLoggedIn />
+                    ?   this.renderPredictionList()
+                    :   <NotLoggedIn 
+                            onLoginClick={this.toggleLoginBottomSheet}
+                        />
                 }
             </Grid>
         );
