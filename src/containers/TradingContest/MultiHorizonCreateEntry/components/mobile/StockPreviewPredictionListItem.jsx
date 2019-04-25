@@ -147,7 +147,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
         endDate = moment(endDate).format(dateFormat);
 
         const directionUnit = type === 'buy' ? 1 : -1;
-        const changeInvestment = avgPrice !== 0 
+        const changeInvestment = (avgPrice !== 0  && typeof(avgPrice) === 'number') 
             ? ((lastPrice - avgPrice) / avgPrice) * investment
             : 0;
         const changedInvestment = investment + (changeInvestment * directionUnit);
@@ -268,7 +268,7 @@ export default class StockPreviewPredictionListItem extends React.Component {
                                 >
                                     {
                                         triggered
-                                            ? avgPrice === 0 
+                                            ? (avgPrice === 0 || avgPrice === null || isNaN(avgPrice)) 
                                                 ?   '-'
                                                 :   Utils.formatInvestmentValue(changedInvestment)
                                             : Utils.formatInvestmentValue(investment)
@@ -337,7 +337,7 @@ const stopPredictionButtonStyle = {
 const PriceComponent = ({label, price, date}) => (
     <div style={{...verticalBox, alignItems: 'flex-start'}}>
         <MetricLabel>{label}</MetricLabel>
-        <PriceText style={{marginTop: '5px'}}>₹{price}</PriceText>
+        <PriceText style={{marginTop: '5px'}}>{price ? `₹${price}` : '-'}</PriceText>
         <DateText style={{marginTop: '5px'}}>{date}</DateText>
     </div>
 )
