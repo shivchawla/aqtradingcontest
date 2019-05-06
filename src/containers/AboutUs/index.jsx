@@ -224,7 +224,7 @@ class AboutUs extends React.Component {
                 ref="careers" 
                 item={careers} 
                 scrollButton
-                careerOnClick={() => {document.location.href = 'mailto:connect@aimsquant.com'}}
+                careerOnClick={() => {document.location.href = 'mailto:connect@adviceqube.com'}}
             />
             <AboutUsItem
                 ref="connectWithUs" 
