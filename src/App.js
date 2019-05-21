@@ -115,7 +115,7 @@ class App extends React.Component {
     }
 
     redirectToDailyContest = () => {
-        return <Redirect push to='/dailycontest/home' />;
+        return <Redirect push to='/dailycontest/stockpredictions' />;
     }
 
     renderSnackbarAction = () => {
