@@ -70,7 +70,7 @@ class Participants extends React.Component {
             const winnerDataWeekly = _.get(response, 'data.weeklyWinners', []);
             const winners = await processLeaderboardWinners(winnerData);
             const winnersWeekly = await processLeaderboardWinners(winnerDataWeekly);
-            this.setState({winners, winnersWeekly});
+            this.setState({winners, winnersWeekly, errorMessage: null});
         })
         .catch(err => {
             const errMessage = _.get(err, 'response.data.message', 'No Data Found.');

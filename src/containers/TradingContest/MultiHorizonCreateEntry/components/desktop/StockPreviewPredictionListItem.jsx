@@ -140,7 +140,13 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     }}
             >
                 <Grid item xs={2} style={{...verticalBox, alignItems: 'flex-start', paddingLeft: '20px'}}>
-                    <MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}</MetricText>
+                    <MetricText>
+                        {
+                            (avgPrice === 0 || avgPrice === null || isNaN(avgPrice))
+                                ?   '-'
+                                :   `₹${Utils.formatMoneyValueMaxTwoDecimals(avgPrice)}`
+                        }
+                    </MetricText>
                     <CallDate>{moment(startDate, dateFormat).format(readableDateFormat)}</CallDate>
                 </Grid>
                 <Grid item xs={2}><MetricText>₹{Utils.formatMoneyValueMaxTwoDecimals(target)}</MetricText></Grid>
@@ -155,7 +161,9 @@ export default class StockPreviewPredictionListItem extends React.Component {
                     <MetricText color={changedInvestmentColor}>
                         {
                             triggered
-                                ? Utils.formatInvestmentValue(changedInvestment)
+                                ?   (avgPrice === 0 || avgPrice === null || isNaN(avgPrice))
+                                        ?   '-'
+                                        :   Utils.formatInvestmentValue(changedInvestment)
                                 : Utils.formatInvestmentValue(investment)
                         }
                     </MetricText>

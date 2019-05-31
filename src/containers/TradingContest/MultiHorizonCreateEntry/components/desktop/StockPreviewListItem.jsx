@@ -141,14 +141,27 @@ const SymbolComponent = ({symbol, name, predictions}) => {
 
 const ChangeComponent = ({lastPrice, change, changePct}) => {
     const changeColor = change > 0 ? metricColor.positive : change === 0 ? metricColor.neutral : metricColor.negative;
-    let formattedChangePct = (changePct * 100).toFixed(2);
+    const isChangeNumber = typeof(change) === 'number';
+    const isChangePctNumber = typeof(changePct) === 'number';
+    const isLastPriceNumber = typeof(lastPrice) === 'number';
+    let formattedChangePct = !isChangePctNumber ? '-' : (changePct * 100).toFixed(2);
+    let formattedChange = !isChangeNumber ? '-' : (change || 0).toFixed(2);
 
     return (
         <div style={{...verticalBox, alignItems: 'flex-start'}}>
             <div style={{...horizontalBox, justifyContent: 'flex-start'}}>
-                <LastPrice>₹{Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}</LastPrice>
+                <LastPrice>
+                    {
+                        isLastPriceNumber
+                        ? `₹${Utils.formatMoneyValueMaxTwoDecimals(lastPrice)}`
+                        : '-'   
+                    }
+                </LastPrice>
                 <ChangeDivider>|</ChangeDivider>
-                <Change color={changeColor}>₹{change.toFixed(2)} ({formattedChangePct}%)</Change>
+                <Change color={changeColor}>
+                    {!isChangeNumber ? formattedChangePct : `₹${formattedChange}`}
+                    ({!isChangePctNumber ? '-' : `${formattedChangePct}%`})
+                </Change>
             </div>
             <LastPriceLabel>Last Price</LastPriceLabel>
         </div>

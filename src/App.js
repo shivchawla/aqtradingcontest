@@ -115,7 +115,7 @@ class App extends React.Component {
     }
 
     redirectToDailyContest = () => {
-        return <Redirect push to='/dailycontest/home' />;
+        return <Redirect push to='/dailycontest/stockpredictions' />;
     }
 
     renderSnackbarAction = () => {
@@ -285,6 +285,7 @@ class App extends React.Component {
                                         />
                                         <Route path='/dailycontest' component={TradingContest} />
                                         <Route path='/community/thread/:threadId' component={ThreadUnsubscription} />
+                                        <Route exact={true} path='/home' component={AppHome}/>
                                         <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>
@@ -361,6 +362,7 @@ class App extends React.Component {
                                                 return <h3>Redirecting</h3>
                                             }} 
                                         />
+                                        <Route exact={true} path='/home' component={AppHome}/>
                                         <Route exact path='/' component={AppHome} />
                                         <Route component={PageNotFound}/>
                                     </Switch>

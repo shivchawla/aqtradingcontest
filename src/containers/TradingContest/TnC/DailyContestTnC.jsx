@@ -37,8 +37,12 @@ export default class DailyContestTnC extends React.Component {
                         <h3 style={h3Style}>Criteria</h3>
                         <p>In order to be eligible for participation in the Contest, predictions are required to meet a particular set of requirements. All predictions are checked for applicable requirements before submission. These are the requirements that are required of all entries/predictions:</p>
                         <p><br /><strong>NIFTY_500 Stocks only</strong>: Contest entries can choose stocks only from a broad universe of NIFTY_500 stocks when <em>Buying</em>.</p>
+                        <p><strong>Ineligible Stocks: </strong>Company reserves the right to remove some highly volatile or almost bankrupt stocks from list of tradeable securities&nbsp;</p>
+                        <p><strong>Min 6 unique predictions:&nbsp;</strong>Participants must have at-least 6 unique stock predictions each day&nbsp; &nbsp;</p>
                         <p><strong>Max. of 3 Predictions per Stock: </strong>Participants can submit a maximum of 3 predictions for a single stock.&nbsp;</p>
                         <p><strong>Max. of 1 Predictions per Stock/Horizon combination: </strong>Participants can submit only ONE prediction for a stock and horizon combination. For ex: Buy TCS for 3 days with profit target of 3%. In this case case, another 3 day prediction for TCS is not allowed.&nbsp;&nbsp;</p>
+                        <p><strong>Max. of 10% of investment per stock: </strong>Participants can't invest more than 10% of Net Total in single stock (across all predictions)</p>
+                        <p><strong>Min. average investment: </strong>Average investment across all predictions must be greater than 45K.&nbsp;<strong>&nbsp;</strong></p>
                         <p><strong>Attribute Requirements: </strong>Each prediction must contain a prediction horizon, trade direction, investment amount and stoploss. Investment amount can only be a subset of 10K, 25K, 50K, 75K or 1Lac.</p> 
                         <p><strong>Virtual Cash Availability: </strong>Each participant is a given a virtual cash of 10 Lacs at the beginning of the contest. Once all cash is invested, particpants must liquidate a trade OR wait for prediction maturity to create new predictions.</p>
                         <p>&nbsp;</p>
@@ -52,7 +56,7 @@ export default class DailyContestTnC extends React.Component {
                         <h3 style={h3Style}>Scoring </h3>
                         <p><strong>The contest is designed to award stock pickers that generate profits. As we award prizes on two different horizon, we will use two different scoring methods to select winners.</strong></p>
                         <p><strong>DAILY WINNERS: </strong>At the end of each trading day, ONLY active predictions on that date are considered and participant's&nbsp; daily profit/loss (%) is calculated. The top 3 winners will get Rs 100, Rs 75 and Rs 50 respectively. User MUST have at-least 3 distinct predictions by stock symbol.</p>
-                        <p><strong>WEEKLY WINNERS: </strong>At the end of each trading week, we will calculate the change in NET VALUE from last week&rsquo;s net value. The top 3 winners will get Rs.500, Rs, 300 and Rs 200 respectively. User MUST have active predictions for at-least 3 days in a week for the weekly prizes.</p>
+                        <p><strong>WEEKLY WINNERS: </strong>At the end of each trading week, we will calculate the change in NET VALUE from last week&rsquo;s net value. The top 3 winners will get Rs.500, Rs, 300 and Rs 200 respectively. User MUST have active predictions for at-least 4 days in a week for the weekly prizes. Also, net total must be greater than net total for all previous weeks.</p>
                         <p>&nbsp;</p>
                         <p><strong>Positive PnL Requirement</strong>: Only net profitable predictions/portfolios are considered for evaluation and any award. For ex: If active predictions or Portfolio&rsquo;s profit sum to a NET LOSS, it WILL NOT eligible for any awards and prizes. In addition, there is a mimumum profit threshold of minimum 0.5% for daily winners and 1% for weekly winners.</p>
                         <p>&nbsp;</p>
