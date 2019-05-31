@@ -38,9 +38,7 @@ class NavigationDrawerImpl extends React.Component {
 
     render() {
         const {open = false, onToggle = null} = this.props;
-        const navigationLinks = Utils.isAdmin()
-            ? [...menuCategories, advisorLink]
-            : menuCategories;
+        const navigationLinks = menuCategories;
 
         return (
             <Drawer 
@@ -255,24 +253,24 @@ const listItemTextStyle = {
 
 
 const menuCategories = [
-    {
-        name: "Submit Predictions", icon:'create', url: '/dailycontest/stockpredictions'
-    },
-    {
-        name: "My Picks", icon:'view_list', url: '/dailycontest/mypicks'
-    },
-    {
-        name: "Metrics", icon:'assessment', url: '/dailycontest/metrics'
-    },
-    {
-        name: "Top Picks", url:'/dailycontest/toppicks', icon:'assignment'
-    },
-    {
-        name: "Leaderboard", url:'/dailycontest/leaderboard', icon:'multiline_chart'
-    },
-    {
-        name: "Rules", url:'/dailycontest/rules', icon:'format_align_justify'
-    },
+    // {
+    //     name: "Submit Predictions", icon:'create', url: '/dailycontest/stockpredictions'
+    // },
+    // {
+    //     name: "My Picks", icon:'view_list', url: '/dailycontest/mypicks'
+    // },
+    // {
+    //     name: "Metrics", icon:'assessment', url: '/dailycontest/metrics'
+    // },
+    // {
+    //     name: "Top Picks", url:'/dailycontest/toppicks', icon:'assignment'
+    // },
+    // {
+    //     name: "Leaderboard", url:'/dailycontest/leaderboard', icon:'multiline_chart'
+    // },
+    // {
+    //     name: "Rules", url:'/dailycontest/rules', icon:'format_align_justify'
+    // },
     {
         name: 'Advices', url: `${marketPlaceDomain}/advice`, icon: 'group_work', href: true
     }

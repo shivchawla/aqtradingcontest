@@ -148,7 +148,7 @@ const HeaderLinks = ({
     ];
     return (
         <React.Fragment>
-            {
+            {/* {
                 urls.map((item, index) => (
                     <NavLink
                         active={index === activeIndex}
@@ -163,7 +163,7 @@ const HeaderLinks = ({
                         {item.name}
                     </NavLink>
                 ))
-            }
+            } */}
             {renderQuantResearchMenu()}
             <NavLink onClick={handleMenuClick}>
                 Quant Research
