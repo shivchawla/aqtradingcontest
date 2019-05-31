@@ -28,7 +28,7 @@ class NavigationDrawerImpl extends React.Component {
         return false;
     }
 
-    routeUrl = (url, href = true) => {
+    routeUrl = (url, href = false) => {
         if (href) {
             window.location.href = url;
         } else {
@@ -274,7 +274,7 @@ const menuCategories = [
         name: "Rules", url:'/dailycontest/rules', icon:'format_align_justify'
     },
     {
-        name: 'Advices', url: `${marketPlaceDomain}/advice`, icon: 'group_work'
+        name: 'Advices', url: `${marketPlaceDomain}/advice`, icon: 'group_work', href: true
     }
 ];
 
