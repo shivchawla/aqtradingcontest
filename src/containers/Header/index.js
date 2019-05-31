@@ -26,17 +26,27 @@ class Header extends React.Component {
         this.state = {
             contestMenuOpen: false,
             anchorEl: null,
+            marketPlaceAnchorEl: null
         }
     }
 
     handleMenuClick = event => {
         this.setState({ anchorEl: event.currentTarget });
     };
+
+    handleMarketplaceMenuClick = event => {
+        this.setState({marketPlaceAnchorEl: event.currentTarget});
+    }
     
     handleMenuClose = (url = null) => {
         this.setState({ anchorEl: null });
         url !== null && Utils.goToResearchPage(url);
     };
+
+    handleMarketplaceClose = (url = null) => {
+        this.setState({marketPlaceAnchorEl: null});
+        url !== null && Utils.goToMarketPlace(url);
+    }
 
     renderQuantResearchMenu = () => {
         const { anchorEl } = this.state;
@@ -52,6 +62,22 @@ class Header extends React.Component {
                 <MenuItem onClick={() => this.handleMenuClose('/community')}>Community</MenuItem>
                 <MenuItem onClick={() => this.handleMenuClose('/help')}>Help</MenuItem>
                 <MenuItem onClick={() => this.handleMenuClose('/tutorial')}>Tutorial</MenuItem>
+            </Menu>
+        );
+    }
+
+    renderMarketPlaceMenu = () => {
+        const {marketPlaceAnchorEl} = this.state;
+
+        return (
+            <Menu
+                    id="marketplace-simple-menu"
+                    anchorEl={marketPlaceAnchorEl}
+                    open={Boolean(marketPlaceAnchorEl)}
+                    onClose={() => this.handleMarketplaceClose(null)}
+            >
+                <MenuItem onClick={() => this.handleMarketplaceClose('/advice')}>Advices</MenuItem>
+                <MenuItem onClick={() => this.handleMarketplaceClose('/dashboard/createadvice')}>Create Advice</MenuItem>
             </Menu>
         );
     }
@@ -94,8 +120,9 @@ class Header extends React.Component {
                                 history={this.props.history}
                                 isLoggedIn={isLoggedIn}
                                 renderQuantResearchMenu={this.renderQuantResearchMenu}
+                                renderMarketPlaceMenu={this.renderMarketPlaceMenu}
                                 handleMenuClick={this.handleMenuClick}
-                                handleMenuClose={this.handleMenuClose}
+                                handleMarketplaceMenuClick={this.handleMarketplaceMenuClick}
                             />
                         </Grid>
                     </Grid>
@@ -107,7 +134,15 @@ class Header extends React.Component {
 
 export default withStyles(styles)(withRouter(Header));
 
-const HeaderLinks = ({activeIndex = 0, history, isLoggedIn = null, renderQuantResearchMenu, handleMenuClick, handleMenuClose}) => {
+const HeaderLinks = ({
+        activeIndex = 0, 
+        history, 
+        isLoggedIn = null, 
+        renderQuantResearchMenu, 
+        renderMarketPlaceMenu,
+        handleMenuClick, 
+        handleMarketplaceMenuClick,
+    }) => {
     const urls = [
         {name: 'Contest', url: '/dailycontest/home', href: false},
     ];
@@ -132,6 +167,10 @@ const HeaderLinks = ({activeIndex = 0, history, isLoggedIn = null, renderQuantRe
             {renderQuantResearchMenu()}
             <NavLink onClick={handleMenuClick}>
                 Quant Research
+            </NavLink>
+            {renderMarketPlaceMenu()}
+            <NavLink onClick={handleMarketplaceMenuClick}>
+                Marketplace
             </NavLink>
             {
                 (isLoggedIn || Utils.isLoggedIn())

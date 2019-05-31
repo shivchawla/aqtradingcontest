@@ -12,10 +12,11 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Icon from '@material-ui/core/Icon';
-
 import {Utils} from '../../utils';
 import {horizontalBox, verticalBox, primaryColor} from '../../constants';
 import logo from "../../assets/logo-advq-new.png";
+
+const {marketPlaceDomain} = require('../../localConfig');
 
 
 class NavigationDrawerImpl extends React.Component {
@@ -27,8 +28,12 @@ class NavigationDrawerImpl extends React.Component {
         return false;
     }
 
-    routeUrl = (url, href) => {
-        this.props.history.push(url);
+    routeUrl = (url, href = true) => {
+        if (href) {
+            window.location.href = url;
+        } else {
+            this.props.history.push(url);
+        }
     }
 
     render() {
@@ -267,6 +272,9 @@ const menuCategories = [
     },
     {
         name: "Rules", url:'/dailycontest/rules', icon:'format_align_justify'
+    },
+    {
+        name: 'Advices', url: `${marketPlaceDomain}/advice`, icon: 'group_work'
     }
 ];
 

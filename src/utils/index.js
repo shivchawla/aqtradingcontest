@@ -7,7 +7,7 @@ import {reactLocalStorage} from 'reactjs-localstorage';
 import {graphColors, metricColor} from '../constants';
 import {getStockData} from './requests';
 
-const {researchDomain, env = ''} = require('../localConfig');
+const {researchDomain, env = '', marketPlaceDomain} = require('../localConfig');
 
 const {requestUrl, webSocketUrl} = require('../localConfig');
 const bowser = require('bowser/es5');
@@ -165,8 +165,11 @@ export class Utils{
 	}
 
 	static goToResearchPage = url => {
-		console.log(`${researchDomain}${url}`);
 		window.location.href = `${researchDomain}${url}`;
+	}
+
+	static goToMarketPlace = url => {
+		window.location.href = `${marketPlaceDomain}${url}`;
 	}
 
 	static setShouldUpdateToken(status){
