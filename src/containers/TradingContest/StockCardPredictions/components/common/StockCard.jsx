@@ -85,6 +85,7 @@ class StockCard extends React.Component {
             const openStatus = _.get(nextProps, 'open', false);
             const currentOpenStatus = _.get(this.props, 'open', false);
             const isRealPrediction = _.get(nextProps, 'stockData.realPrediction', false);
+            const isValueTypePct = _.get(nextStockData, 'valueTypePct', false);
 
             /**
              * If the current selected symbol is different from the old symbol and stock card
@@ -114,9 +115,9 @@ class StockCard extends React.Component {
                  * Setting target, stopLoss, investment, conditionalValue to a 
                  * default value of the first item in the received items array.
                  */
-                target = targetItems[0].key;
-                stopLoss = targetItems[0].key;
-                investment = investmentItems[0].key;
+                target = isValueTypePct ? target : targetItems[0].key;
+                stopLoss = isValueTypePct ? stopLoss : targetItems[0].key;
+                investment = isValueTypePct ? investment : investmentItems[0].key;
                 conditionalValue = conditionalItems[1].key;
                 conditional = marketOpen ? conditional : true;
                 conditionalType = marketOpen ? conditionalType : 'CROSS';
